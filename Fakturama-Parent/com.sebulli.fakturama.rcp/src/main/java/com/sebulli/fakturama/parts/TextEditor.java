@@ -283,11 +283,8 @@ public class TextEditor extends Editor<TextModule> {
         });
         editorText.setCategories(tmpCategory);
 
-        UpdateValueStrategy textCatModel2Target = new UpdateValueStrategy();
-        textCatModel2Target.setConverter(new CategoryConverter<TextCategory>(TextCategory.class));
-        
-        UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
-        target2VatcatModel.setConverter(new StringToCategoryConverter<TextCategory>(categories, TextCategory.class));
+        UpdateValueStrategy<TextCategory, String> textCatModel2Target = UpdateValueStrategy.create(new CategoryConverter<TextCategory>(TextCategory.class));
+        UpdateValueStrategy<String, TextCategory> target2VatcatModel = UpdateValueStrategy.create(new StringToCategoryConverter<TextCategory>(categories, TextCategory.class));
         bindModelValue(editorText, comboCategory, TextModule_.categories.getName(), target2VatcatModel, textCatModel2Target);
     }
 	

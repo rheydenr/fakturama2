@@ -1278,12 +1278,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		
 		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 64);
 		
-		UpdateValueStrategy strategy = new UpdateValueStrategy();
-		strategy.setBeforeSetValidator(new IValidator() {
+		UpdateValueStrategy<IStatus, String> strategy = new UpdateValueStrategy<IStatus, String>();
+		strategy.setBeforeSetValidator(new IValidator<String>() {
 
 		    @Override
-		    public IStatus validate(Object value) {
-		        String emailAddress = (String) value;
+		    public IStatus validate(String emailAddress) {
 		        if(StringUtils.isBlank(emailAddress) || EmailValidator.getInstance().isValid(emailAddress)) {
 		        	return ValidationStatus.ok();
 		        } else {
@@ -1337,11 +1336,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         comboViewerPayment.setInput(allPayments);
         editorContact.setPayment(tmpPayment);
 
-        UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
-        paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
-
-        UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
-        target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
+        UpdateValueStrategy<Payment, String> paymentModel2Target = UpdateValueStrategy.create(new EntityConverter<Payment>(Payment.class));
+        UpdateValueStrategy<String, Payment> target2PaymentModel = UpdateValueStrategy.create(new StringToEntityConverter<Payment>(allPayments, Payment.class));
 
         // Set the combo
         bindModelValue(editorContact, comboPayment, Contact_.payment.getName(),
@@ -1393,12 +1389,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
             }
         });
         editorContact.setCategories(tmpCategory);
-
-        UpdateValueStrategy catModel2Target = new UpdateValueStrategy();
-        catModel2Target.setConverter(new CategoryConverter<ContactCategory>(ContactCategory.class));
         
-        UpdateValueStrategy target2CatModel = new UpdateValueStrategy();
-        target2CatModel.setConverter(new StringToCategoryConverter<ContactCategory>(categories, ContactCategory.class));
+        UpdateValueStrategy<ContactCategory, String> catModel2Target = UpdateValueStrategy.create(new CategoryConverter<ContactCategory>(ContactCategory.class));
+        UpdateValueStrategy<String, ContactCategory> target2CatModel = UpdateValueStrategy.create(new StringToCategoryConverter<ContactCategory>(categories, ContactCategory.class));
         bindModelValue(editorContact, comboCategory, Contact_.categories.getName(), target2CatModel, catModel2Target);
     }
 	

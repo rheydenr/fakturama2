@@ -254,11 +254,8 @@ public class ListEditor extends Editor<ItemAccountType> {
         });
         editorListEntry.setCategory(tmpCategory);
 
-        UpdateValueStrategy itemListTypeCatModel2Target = new UpdateValueStrategy();
-        itemListTypeCatModel2Target.setConverter(new CategoryConverter<ItemListTypeCategory>(ItemListTypeCategory.class, msg));
-
-        UpdateValueStrategy target2ItemListTypecatModel = new UpdateValueStrategy();
-        target2ItemListTypecatModel.setConverter(new MessageKeyToCategoryConverter<ItemListTypeCategory>(categories, ItemListTypeCategory.class, msg));
+        UpdateValueStrategy<ItemListTypeCategory, String> itemListTypeCatModel2Target = UpdateValueStrategy.create(new CategoryConverter<ItemListTypeCategory>(ItemListTypeCategory.class, msg));
+        UpdateValueStrategy<String, ItemListTypeCategory> target2ItemListTypecatModel = UpdateValueStrategy.create(new MessageKeyToCategoryConverter<ItemListTypeCategory>(categories, ItemListTypeCategory.class, msg));
         bindModelValue(editorListEntry, comboCategory, ItemAccountType_.category.getName(), target2ItemListTypecatModel, itemListTypeCatModel2Target);
     }
 

@@ -13,7 +13,7 @@ import com.sebulli.fakturama.model.AbstractCategory;
 /**
  *
  */
-public class StringToCategoryConverter<T extends AbstractCategory> extends Converter {
+public class StringToCategoryConverter<T extends AbstractCategory> extends Converter<String, T> {
 
     private final TreeSet<T> categories;
     
@@ -26,13 +26,12 @@ public class StringToCategoryConverter<T extends AbstractCategory> extends Conve
      * @see org.eclipse.core.databinding.conversion.IConverter#convert(java.lang.Object)
      */
     @Override
-    public Object convert(Object fromObject) {
+    public T convert(String fromObject) {
         // in: "Umsatzsteuer"
         // out: VATCategory
         // TODO Look for a better approach! ==> ComboBoxLabelProvider??
-        String searchString = (String)fromObject;
         for (T category : categories) {
-            if(CommonConverter.getCategoryName(category, "").equals(searchString)) {
+            if(CommonConverter.getCategoryName(category, "").equals(fromObject)) {
                 return category;
             }
         }

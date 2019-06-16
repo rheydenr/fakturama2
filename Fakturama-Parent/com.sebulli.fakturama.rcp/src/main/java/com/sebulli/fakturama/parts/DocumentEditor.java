@@ -128,8 +128,6 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.Creditor;
-import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Document_;
@@ -736,13 +734,12 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
 		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
 
-		UpdateValueStrategy strategy = new UpdateValueStrategy();
-		strategy.setBeforeSetValidator(new IValidator() {
+		UpdateValueStrategy<IStatus, Date> strategy = new UpdateValueStrategy<IStatus, Date>();
+		strategy.setBeforeSetValidator(new IValidator<Date>() {
 
 		    @Override
-		    public IStatus validate(Object value) {
-		    	if(value == null || dtVestingPeriodEnd.getSelection() == null) return ValidationStatus.ok();
-		        Date vestingPeriodStart = (Date) value;
+		    public IStatus validate(Date vestingPeriodStart) {
+		    	if(vestingPeriodStart == null || dtVestingPeriodEnd.getSelection() == null) return ValidationStatus.ok();
 		        if(vestingPeriodStart.after(dtVestingPeriodEnd.getSelection())) {
 		        	return ValidationStatus.error("Startdatum liegt nach dem Endedatum!");
 		        } else {
@@ -783,8 +780,8 @@ public class DocumentEditor extends Editor<Document> {
 			if(spDueDays != null && !spDueDays.isDisposed()) {
 				// value is set by dueDays variable, not directly by binding
 				bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
-						new UpdateValueStrategy(),
-						new UpdateValueStrategy());
+						new UpdateValueStrategy<Spinner, Integer>(),
+						new UpdateValueStrategy<Integer, Spinner>());
 				spDueDays.setSelection(document.getDueDays());
 			}
 			
@@ -829,11 +826,8 @@ public class DocumentEditor extends Editor<Document> {
         comboViewerPayment.setInput(allPayments);
         document.setPayment(tmpPayment);
         
-        UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
-        paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
-        
-        UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
-        target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
+        UpdateValueStrategy<Payment, String> paymentModel2Target = UpdateValueStrategy.create(new EntityConverter<Payment>(Payment.class));
+        UpdateValueStrategy<String, Payment> target2PaymentModel = UpdateValueStrategy.create(new StringToEntityConverter<Payment>(allPayments, Payment.class));
         // Set the combo
         bindModelValue(document, comboViewerPayment.getCombo(), Document_.payment.getName(), target2PaymentModel, paymentModel2Target);
 	}
@@ -907,11 +901,8 @@ public class DocumentEditor extends Editor<Document> {
         }
         
         // Get the documents'shipping values.
-        UpdateValueStrategy shippingModel2Target = new UpdateValueStrategy();
-        shippingModel2Target.setConverter(new EntityConverter<Shipping>(Shipping.class));
-        
-        UpdateValueStrategy target2ShippingModel = new UpdateValueStrategy();
-        target2ShippingModel.setConverter(new StringToEntityConverter<Shipping>(allShippings, Shipping.class, true));
+        UpdateValueStrategy<Shipping, String> shippingModel2Target = UpdateValueStrategy.create(new EntityConverter<Shipping>(Shipping.class));
+        UpdateValueStrategy<String, Shipping> target2ShippingModel = UpdateValueStrategy.create(new StringToEntityConverter<Shipping>(allShippings, Shipping.class, true));
         // Set the combo
         bindModelValue(document, comboViewerShipping.getCombo(), Document_.shipping.getName(), target2ShippingModel, shippingModel2Target);
 	}
