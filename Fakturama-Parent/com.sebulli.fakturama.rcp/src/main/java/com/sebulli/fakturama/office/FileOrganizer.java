@@ -44,8 +44,10 @@ import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.OSDependent;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
@@ -70,6 +72,9 @@ public class FileOrganizer {
 
 	@Inject
 	private DocumentsDAO documentsDAO;
+	
+	@Inject
+	private IDocumentAddressManager addressManager;
 	
 	enum PathOption {
 		WITH_FILENAME,
@@ -126,7 +131,7 @@ public class FileOrganizer {
 
 		String address = replaceIllegalCharacters(document.getAddressFirstLine());
 
-		Contact documentContact = Optional.ofNullable(document.getBillingContact()).orElse(document.getDeliveryContact());
+		Contact documentContact = document.getReceiver().stream().filter(r -> r.getBillingType() == null || r.getBillingType().isINVOICE() || r.getBillingType().isDELIVERY()).findFirst().get();
 		String name = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getName()));
 		String companyOrName = replaceIllegalCharacters(contactUtil.getCompanyOrLastname(documentContact));
 

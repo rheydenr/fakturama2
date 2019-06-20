@@ -83,12 +83,4 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 	protected void setPartLabelForNewContact(MPart part) {
 		part.setLabel(msg.commandNewCreditorName);
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.sebulli.fakturama.parts.ContactEditor#getDeliveryContact()
-	 */
-	@Override
-	protected Creditor getDeliveryContact() {
-		return (Creditor) editorContact.getAlternateContacts();
-	}
 }

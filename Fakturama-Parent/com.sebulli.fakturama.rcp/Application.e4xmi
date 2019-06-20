@@ -620,7 +620,6 @@
   <addons xmi:id="_9yVlUNQwEeWToNpiaenuMA" elementId="fakturama.addon.wizardregistry.export" contributionURI="bundleclass://org.fakturama.wizards/org.fakturama.wizards.ExportWizardRegistry"/>
   <addons xmi:id="_SJPs4CnMEeahtpCtp7Z8KQ" elementId="fakturama.addon.wizardregistry.import" contributionURI="bundleclass://org.fakturama.wizards/org.fakturama.wizards.ImportWizardRegistry"/>
   <addons xmi:id="_6SgpMGTPEea2ueV9-PaQXw" elementId="com.sebulli.fakturama.rcp.addon.0" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.addons.WindowCloseListenerAddon"/>
-  <addons xmi:id="_vXo5II6BEemIC5UGrcA00g" elementId="org.fakturama.addressmanager" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.addons.DocumentAddressManager"/>
   <categories xmi:id="_no8mgEstEeOZ37-tYt-QvQ" elementId="com.sebulli.fakturama.toolbar.category" name="toolbar commands" description="Commands for Toolbars and Icons"/>
   <categories xmi:id="_ck9sUCTREeS9z6SQNducwg" elementId="com.sebulli.fakturama.menu.category" name="Menubar command category"/>
 </application:Application>

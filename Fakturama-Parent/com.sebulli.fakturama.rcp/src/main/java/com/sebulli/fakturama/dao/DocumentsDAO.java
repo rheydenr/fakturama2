@@ -45,6 +45,7 @@ import com.sebulli.fakturama.model.Credit;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Delivery_;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver_;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
@@ -66,7 +67,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
     @Inject
     @Translation
     protected Messages msg;
-
+    
     protected Class<Document> getEntityClass() {
     	return Document.class;
     }
@@ -188,7 +189,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
      * @return String[] of visible Documents properties
      */
     public String[] getVisibleProperties() {
-        return new String[] { Document_.name.getName(), Document_.addressFirstLine.getName(), 
+        return new String[] { Document_.name.getName(), Document_.receiver + "." + "addressfirstline", 
                 Document_.documentDate.getName(), Document_.totalValue.getName() };
     }
 
@@ -351,12 +352,23 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Invoice> criteria = cb.createQuery(Invoice.class);
         Root<Invoice> root = criteria.from(Invoice.class);
-        CriteriaQuery<Invoice> cq = criteria.where(
-                cb.and(
-                        cb.equal(root.<Boolean>get(Invoice_.paid), true),
-                        cb.equal(root.<Contact>get(Invoice_.billingContact), contact))
-                      );
-        return getEntityManager().createQuery(cq).getResultList();
+        
+        /*
+         * select from Document d where d.paid = true and d.receiver.customerNumber = $contactnumber
+         */
+        
+//        CriteriaQuery<Invoice> cq = criteria.where(
+//                cb.and(
+//                        cb.equal(root.<Boolean>get(Invoice_.paid), true),
+//                        cb.equal(root.join(Invoice_.receiver).get(DocumentReceiver_.customerNumber), contact.getCustomerNumber())
+//                      ));
+//        return getEntityManager().createQuery(cq).getResultList();
+        System.err.println("CHECK IT!!!!!!! (die Criteria Query obendrüber meine ich)");
+        TypedQuery<Invoice> query = getEntityManager()
+        		.createQuery("select from Invoice d where d.paid = true and d.receiver.customerNumber = :contactnumber", Invoice.class);
+        query.setParameter("contactnumber", contact.getCustomerNumber());
+        
+        return query.getResultList();
     }    
     
     public void updateDunnings(Document document) {

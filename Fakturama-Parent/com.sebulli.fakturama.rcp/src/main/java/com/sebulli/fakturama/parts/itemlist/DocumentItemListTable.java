@@ -131,6 +131,7 @@ import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DummyStringCategory;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -157,10 +158,6 @@ import ca.odell.glazedlists.GlazedLists;
  */
 public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO, DummyStringCategory> {
 
-//    this is for synchronizing the UI thread (unused at the moment)
-//    @Inject    
-//    private UISynchronize synch;
-    
     @Inject
     private ESelectionService selectionService;
     
@@ -178,6 +175,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	
 	@Inject
 	private INumberFormatterService numberFormatterService;
+	
+	@Inject
+	private IDocumentAddressManager addressManager;
 	
     // ID of this view
     public static final String ID = "fakturama.document.itemTable";
@@ -248,7 +248,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         this.container = container;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
-        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
+        this.useSET = document != null && addressManager.getBillingAdress(document) != null && BooleanUtils.isTrue(addressManager.getBillingAdress(document).getUseSalesEqualizationTax());
 //        // Get some settings from the preference store
 //        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
 //            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);

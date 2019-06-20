@@ -63,6 +63,8 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -70,11 +72,9 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -121,7 +121,6 @@ import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
  * The contact editor.
  * 
  */
-
 public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 	/** Editor's ID */
@@ -153,16 +152,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private Text txtCity;
 	private ComboViewer comboCountry;
 	private CDateTime dtBirthday;
-	private ComboViewer comboDeliveryGender;
-	private Text txtDeliveryTitle;
-	private Text txtDeliveryFirstname;
-	private Text txtDeliveryName;
-	private CDateTime dtDeliveryBirthday;
-	private Text txtDeliveryCompany;
-	private Text txtDeliveryStreet;
-	private Text txtDeliveryZip;
-	private Text txtDeliveryCity;
-	private ComboViewer comboDeliveryCountry;
 	private Text txtAccountHolder;
 	private Text txtAccount;
 	private Text txtBankCode;
@@ -184,13 +173,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private Text txtGln;
 	private FormattedText txtDiscount;
 	private Combo comboCategory;
-	private Group deliveryGroup;
-	private Button bDelAddrEquAddr;
 	private ComboViewer comboUseNetGross;
+	
+	private CTabFolder tabAddress;
 
 	// These flags are set by the preference settings.
 	// They define, if elements of the editor are displayed, or not.
-	private boolean useDelivery;
 	private boolean useBank;
 	private boolean useMisc;
 	private boolean useNote;
@@ -317,10 +305,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		}
 		
 		// remove any manual added address
-		editorContact.getAddress().setManualAddress(null);
-		if(editorContact.getAlternateContacts() != null && editorContact.getAlternateContacts().getAddress() != null) {
-			editorContact.getAlternateContacts().getAddress().setManualAddress(null);
-		}
+		editorContact.setManualAddress(null);
 
         try {
             // save the new or updated Contact
@@ -418,14 +403,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			editorContact.setUseNetGross((short)0);
 			
 			// country is determined by locale
-			editorContact.getAddress().setCountryCode(localeUtil.getDefaultLocale().getCountry());
+			// TODO set the locale for the current displayed address
+			// editorContact.getAddress().setCountryCode(localeUtil.getDefaultLocale().getCountry());
 
 			// Get the next contact number
 			editorContact.setCustomerNumber(getNextNr());
 			
             // a new contact is always dirty...
             setDirty(true);
-
 		}
 		else {
 
@@ -456,55 +441,55 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 * @return the contact
 	 */
 	protected abstract C createNewContact(FakturamaModelFactory modelFactory2);
+//
+//	/**
+//	 * Defines, if the delivery address is equal to the billing address
+//	 * 
+//	 * @param isEqual
+//	 */
+//	private void deliveryAddressIsEqual(boolean isEqual) {
+//		deliveryGroup.setVisible(!isEqual);
+//		if (isEqual) {
+////			copyAddressToDeliveryAdress();
+//			editorContact.setAlternateContacts(null);
+//		} else {
+//			editorContact.setAlternateContacts(createNewContact(modelFactory));
+//			
+//			// country is determined by origin address or by locale
+//			editorContact.getAlternateContacts().getAddress().setCountryCode(
+//					editorContact.getAddress() != null 
+//						? editorContact.getAddress().getCountryCode() 
+//						: localeUtil.getDefaultLocale().getCountry()); 
+//			rebindAlternativeContactsEditor();
+//		}
+//	}
 
-	/**
-	 * Defines, if the delivery address is equal to the billing address
-	 * 
-	 * @param isEqual
-	 */
-	private void deliveryAddressIsEqual(boolean isEqual) {
-		deliveryGroup.setVisible(!isEqual);
-		if (isEqual) {
-//			copyAddressToDeliveryAdress();
-			editorContact.setAlternateContacts(null);
-		} else {
-			editorContact.setAlternateContacts(createNewContact(modelFactory));
-			
-			// country is determined by origin address or by locale
-			editorContact.getAlternateContacts().getAddress().setCountryCode(
-					editorContact.getAddress() != null 
-						? editorContact.getAddress().getCountryCode() 
-						: localeUtil.getDefaultLocale().getCountry()); 
-			rebindAlternativeContactsEditor();
-		}
-	}
-
-	/**
-	 * Rebinds all delivery fields from editor to the (newly) additional contact. This is
-	 * necessary because binding works only on objects. If you try to bind an editor field
-	 * to a (nested) property of a non-existent object nothing happens.
-	 * <br />
-	 * Example: <br />
-	 * <ul><li>Create an object, say, new Debitor()
-	 * <li>bind a field to alternateContacts.name
-	 * <li>enter a value in this field
-	 * <li>result: nothing is transported to the model
-	 * </ul>
-	 * Therefore we have to rebind the bindings.
-	 */
-	private void rebindAlternativeContactsEditor() {
-		bindModelValue(editorContact, comboDeliveryGender, Contact_.alternateContacts.getName() + "." + Contact_.gender.getName());
-		bindModelValue(editorContact, txtDeliveryTitle, Contact_.alternateContacts.getName() +"." +Contact_.title.getName(), 32);
-
-		bindModelValue(editorContact, txtDeliveryFirstname, Contact_.alternateContacts.getName() +"." +Contact_.firstName.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryName, Contact_.alternateContacts.getName() +"." +Contact_.name.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryCompany, Contact_.alternateContacts.getName() +"." +Contact_.company.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryStreet, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.street.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryZip, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.zip.getName(), 16);
-		bindModelValue(editorContact, txtDeliveryCity, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.city.getName(), 32);
-		bindModelValue(editorContact, comboDeliveryCountry, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.countryCode.getName());
-		bindModelValue(editorContact, dtDeliveryBirthday, Contact_.alternateContacts.getName() +"." +Contact_.birthday.getName());
-	}
+//	/**
+//	 * Rebinds all delivery fields from editor to the (newly) additional contact. This is
+//	 * necessary because binding works only on objects. If you try to bind an editor field
+//	 * to a (nested) property of a non-existent object nothing happens.
+//	 * <br />
+//	 * Example: <br />
+//	 * <ul><li>Create an object, say, new Debitor()
+//	 * <li>bind a field to alternateContacts.name
+//	 * <li>enter a value in this field
+//	 * <li>result: nothing is transported to the model
+//	 * </ul>
+//	 * Therefore we have to rebind the bindings.
+//	 */
+//	private void rebindAlternativeContactsEditor() {
+//		bindModelValue(editorContact, comboDeliveryGender, Contact_.alternateContacts.getName() + "." + Contact_.gender.getName());
+//		bindModelValue(editorContact, txtDeliveryTitle, Contact_.alternateContacts.getName() +"." +Contact_.title.getName(), 32);
+//
+//		bindModelValue(editorContact, txtDeliveryFirstname, Contact_.alternateContacts.getName() +"." +Contact_.firstName.getName(), 64);
+//		bindModelValue(editorContact, txtDeliveryName, Contact_.alternateContacts.getName() +"." +Contact_.name.getName(), 64);
+//		bindModelValue(editorContact, txtDeliveryCompany, Contact_.alternateContacts.getName() +"." +Contact_.company.getName(), 64);
+//		bindModelValue(editorContact, txtDeliveryStreet, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.street.getName(), 64);
+//		bindModelValue(editorContact, txtDeliveryZip, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.zip.getName(), 16);
+//		bindModelValue(editorContact, txtDeliveryCity, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.city.getName(), 32);
+//		bindModelValue(editorContact, comboDeliveryCountry, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.countryCode.getName());
+//		bindModelValue(editorContact, dtDeliveryBirthday, Contact_.alternateContacts.getName() +"." +Contact_.birthday.getName());
+//	}
 
 //	/**
 //	 * Copy all the address data to the delivery address
@@ -550,7 +535,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// Some of this editors' control elements can be hidden.
 		// Get the these settings from the preference store
-		useDelivery = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_DELIVERY);
 		useBank = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_BANK);
 		useMisc = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_MISC);
 		useNote = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_NOTE);
@@ -559,15 +543,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		useLastNameFirst = (preferences.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT) == 1);
 		useCompany = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COMPANY);
 		useCountry = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COUNTRY);
-		
-		// now do some helpful initializations (needed for combo boxes)
-        Map<String, String> countryNames = localeUtil.getLocaleCountryMap();
-		
-		Map<Integer, String> salutationList = new HashMap<>();
-		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
-		    salutationList.put(i, contactUtil.getSalutationString(i));
-		} 
-
 
 		// Create the ScrolledComposite to scroll horizontally and vertically
 	    ScrolledComposite scrollcomposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
@@ -591,21 +566,25 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, ContextHelpConstants.CONTACT_EDITOR);
 
 		// Create the address tab
-		Composite tabAddress;
-		if (useDelivery || useBank || useMisc || useNote) {
+		if (useBank || useMisc || useNote) {
 			tabFolder = new TabFolder(top, SWT.NONE);
 			GridDataFactory.fillDefaults().grab(true, true).applyTo(tabFolder);
 
 			TabItem item1 = new TabItem(tabFolder, SWT.NONE);
 			//T: Label in the contact editor
 			item1.setText(msg.editorContactLabelAddress);
-			tabAddress = new Composite(tabFolder, SWT.NONE);
+			tabAddress = new CTabFolder(tabFolder, SWT.NONE);
 			item1.setControl(tabAddress);
 		}
 		else {
-			tabAddress = new Composite(top, SWT.NONE);
+			tabAddress = new CTabFolder(top, SWT.NONE);
 		}
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(tabAddress);
+		
+		// add tab items to address CTabFolder
+		CTabItem tabItem = new CTabItem(tabAddress, SWT.NONE);
+		Composite addressControl = new Composite(tabAddress, SWT.NONE);
+		tabItem.setControl(addressControl);
+		tabItem.setText("Rechnungsadresse");
 
 		// Create the bank tab
 		Composite tabBank;
@@ -670,294 +649,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		txtNr.setToolTipText(labelNr.getToolTipText());
 		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtNr);
 
-		// Check button: delivery address equals billing address
-		bDelAddrEquAddr = new Button(tabAddress, SWT.CHECK);
-		//T: Label in the contact editor
-		bDelAddrEquAddr.setText(msg.editorContactFieldDeliveryaddressequalsName);
-		GridDataFactory.swtDefaults().applyTo(bDelAddrEquAddr);
-		bDelAddrEquAddr.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-				deliveryAddressIsEqual(bDelAddrEquAddr.getSelection());
-				comboDeliveryCountry.refresh();
-		}));
-
-		// Group: address
-		Group addressGroup = new Group(tabAddress, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(addressGroup);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(addressGroup);
-		//T: Label in the contact editor
-		addressGroup.setText(msg.editorContactLabelAddress);
-
-		// Controls in the group "address"
-
-		// The title and gender's label
-		Label labelTitle = new Label((useSalutation || useTitle) ? addressGroup : invisible, SWT.NONE);
-		if (useSalutation) {
-			labelTitle.setText(msg.commonFieldGender);
-		}
-		if (useSalutation && useTitle) {
-			labelTitle.setText(labelTitle.getText() + ", ");
-		}
-		if (useTitle) {
-			//T: "Title" ( part of an address)
-			labelTitle.setText(labelTitle.getText() + msg.commonFieldTitle);
-		}
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
-
-		// Salutation
-		comboSalutationViewer = new ComboViewer(useSalutation ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboSalutationViewer.setContentProvider(new HashMapContentProvider<Integer, String>());
-/*
-		allSalutations = itemListTypeDao.findAllSalutations();
-		comboSalutationViewer.setContentProvider(new EntityComboProvider());
-		comboSalutationViewer.setLabelProvider(new EntityLabelProvider());
-		comboSalutationViewer.setInput(allSalutations);
- */
-		comboSalutationViewer.setInput(salutationList);
-		comboSalutationViewer.setLabelProvider(new NumberLabelProvider<Integer, String>(salutationList));
-		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboSalutationViewer.getControl());
-
-		// Title
-		txtTitle = new Text(useTitle ? addressGroup : invisible, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).span(useSalutation ? 1 : 2, 1).applyTo(txtTitle);
-
-		// First and last name		
-		Label labelName = new Label(addressGroup, SWT.NONE);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
-		if (useLastNameFirst) {
-			//T: Format of the name in an address
-			labelName.setText(msg.editorContactFieldLastnamefirstnameName);
-			txtName = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(txtName);
-			txtFirstname = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtFirstname);
-		}
-		else {
-			//T: Format of the name in an address
-			labelName.setText(msg.editorContactFieldFirstnamelastnameName);
-			txtFirstname = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).grab(true, false).applyTo(txtFirstname);
-			txtName = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).grab(true, false).applyTo(txtName);
-		}
-		
-		txtFirstname.addFocusListener(new FocusAdapter() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
-			 */
-			@Override
-			public void focusLost(FocusEvent e) {
-			    checkDuplicateContact();
-			}
-		});
-		txtFirstname.addModifyListener(new ModifyListener() {
-			
-			@Override
-			public void modifyText(ModifyEvent e) {
-				if(!((Text)e.getSource()).getText().equals(editorContact.getFirstName())) {
-					isDuplicateWarningShown = false;
-				}
-			}
-		});
-		
-		txtName.addFocusListener(new FocusAdapter() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
-			 */
-			@Override
-			public void focusLost(FocusEvent e) {
-			    checkDuplicateContact();
-			}
-		});
-		txtName.addModifyListener(new ModifyListener() {
-			
-			@Override
-			public void modifyText(ModifyEvent e) {
-				if(!((Text)e.getSource()).getText().equals(editorContact.getName())) {
-					isDuplicateWarningShown = false;
-				}
-			}
-		});
-
-		// Company
-		Label labelCompany = new Label(useCompany ? addressGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelCompany.setText(msg.commonFieldCompany);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCompany);
-		txtCompany = new Text(useCompany ? addressGroup : invisible, SWT.BORDER | SWT.MULTI);
-//		txtCompany.setText(DataUtils.makeOSLineFeeds(editorContact.getCompany()));
-		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtCompany);
-
-		// Street
-		Label labelStreet = new Label(addressGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelStreet.setText(msg.commonFieldStreet);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStreet);
-		txtStreet = new Text(addressGroup, SWT.BORDER);
-		txtStreet.addFocusListener(new FocusAdapter() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
-			 */
-			@Override
-			public void focusLost(FocusEvent e) {
-			    checkDuplicateContact();
-			}
-		});
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtStreet);
-		setTabOrder(txtCompany, txtStreet);
-
-		// City
-		Label labelCity = new Label(addressGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelCity.setText(msg.editorContactFieldZipcityName);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCity);
-		txtZip = new Text(addressGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).applyTo(txtZip);
-		txtCity = new Text(addressGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).grab(true, false).applyTo(txtCity);
-
-		// Country
-		Label labelCountry = new Label(useCountry ? addressGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelCountry.setText(msg.commonFieldCountry);
-		//T: Tool Tip Text
-		labelCountry.setToolTipText(msg.editorContactHintSethomecountry);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
-
-		comboCountry = new ComboViewer(useCountry ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
-		comboCountry.setContentProvider(new StringHashMapContentProvider());
-		comboCountry.setInput(countryNames);
-		comboCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames, localeUtil));
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
-		
-		// Birthday
-		Label labelBirthday = new Label(addressGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelBirthday.setText(msg.editorContactFieldBirthdayName);
-		//T: Tool Tip Text
-		labelBirthday.setToolTipText(msg.editorContactFieldBirthdayTooltip);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBirthday);		
-
-		// Set the dtBirthday widget to the contact's birthday date
-        dtBirthday = new CDateTime(addressGroup, CDT.BORDER | CDT.DROP_DOWN);
-        dtBirthday.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
-        dtBirthday.setFormat(CDT.DATE_MEDIUM);
-		dtBirthday.setToolTipText(labelBirthday.getToolTipText());
-		GridDataFactory.fillDefaults().hint(250, SWT.DEFAULT).grab(true, false).applyTo(dtBirthday);
-
-		// Group: delivery address
-		deliveryGroup = new Group(tabAddress, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(deliveryGroup);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(deliveryGroup);
-		//T: Label in the contact editor
-		deliveryGroup.setText(msg.commonFieldDeliveryaddress);
-
-		// Controls in the group "Delivery"
-
-		// Delivery gender and title's label
-		Label labelDeliveryTitle = new Label((useSalutation || useTitle) ? deliveryGroup : invisible, SWT.NONE);
-		if (useSalutation)
-			labelDeliveryTitle.setText(msg.commonFieldGender);
-		if (useSalutation && useTitle)
-			labelDeliveryTitle.setText(labelDeliveryTitle.getText() + ", ");
-		if (useTitle)
-			//T: "Title" (part of an address)
-			labelDeliveryTitle.setText(labelDeliveryTitle.getText() + msg.commonFieldTitle);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryTitle);
-
-		// Delivery Gender
-		comboDeliveryGender = new ComboViewer(useSalutation ? deliveryGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboDeliveryGender.setContentProvider(new HashMapContentProvider<Integer, String>());
-        comboDeliveryGender.setInput(salutationList);
-        comboDeliveryGender.setLabelProvider(new NumberLabelProvider<Integer, String>(salutationList));
-		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender.getCombo());
-		
-		// Delivery Title
-		txtDeliveryTitle = new Text(useTitle ? deliveryGroup : invisible, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).span(useSalutation ? 1 : 2, 1).applyTo(txtDeliveryTitle);
-
-		// Delivery first and last name
-		Label labelDeliveryName = new Label(deliveryGroup, SWT.NONE);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryName);
-		if (useLastNameFirst) {
-			labelDeliveryName.setText(msg.editorContactFieldLastnamefirstnameName);
-			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
-			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
-		} else {
-			labelDeliveryName.setText(msg.editorContactFieldFirstnamelastnameName);
-			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
-			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
-		}
-
-		// Delivery company
-		Label labelDeliveryCompany = new Label(useCompany ? deliveryGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryCompany.setText(msg.commonFieldCompany);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCompany);
-		txtDeliveryCompany = new Text(useCompany ? deliveryGroup : invisible, SWT.BORDER | SWT.MULTI);
-		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtDeliveryCompany);
-
-//		// Delivery district
-//		Label labelDeliveryStreet = new Label(deliveryGroup, SWT.NONE);
-//		//T: Label in the contact editor
-//		labelDeliveryStreet.setText(msg.commonField);
-//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
-//		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
-//		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
-//		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
-//		
-		// Delivery street
-		Label labelDeliveryStreet = new Label(deliveryGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryStreet.setText(msg.commonFieldStreet);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
-		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
-		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
-
-		// Delivery city
-		Label labelDeliveryCity = new Label(deliveryGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryCity.setText(msg.editorContactFieldZipcityName);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCity);
-		txtDeliveryZip = new Text(deliveryGroup, SWT.BORDER);
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryZip);
-		txtDeliveryCity = new Text(deliveryGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryCity);
-
-		// Delivery country
-		Label labelDeliveryCountry = new Label(useCountry ? deliveryGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryCountry.setText(msg.commonFieldCountry);
-		labelDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCountry);
-		comboDeliveryCountry = new ComboViewer(useCountry ? deliveryGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboDeliveryCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
-        comboDeliveryCountry.setContentProvider(new StringHashMapContentProvider());
-        comboDeliveryCountry.setInput(countryNames);
-        comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames, localeUtil));
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboDeliveryCountry.getCombo());
-		
-		// Deliverer's Birthday
-		Label labelDelivererBirthday = new Label(deliveryGroup, SWT.NONE);
-		//T: Label in the deliverer editor
-		labelDelivererBirthday.setText(msg.editorContactFieldBirthdayName);
-		//T: Tool Tip Text
-		labelDelivererBirthday.setToolTipText(msg.editorContactFieldDeliverersbirthdayTooltip);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDelivererBirthday);		
-
-		dtDeliveryBirthday = new CDateTime(deliveryGroup, CDT.BORDER | CDT.DROP_DOWN);
-		dtDeliveryBirthday.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-		dtDeliveryBirthday.setFormat(CDT.DATE_MEDIUM);
-		dtDeliveryBirthday.setToolTipText(labelDelivererBirthday.getToolTipText());
-		GridDataFactory.swtDefaults().applyTo(dtDeliveryBirthday);
-//		if(editorContact.getAlternateContacts() != null) {
-//			rebindEditor();
-//		}
+		createAddressBlock(invisible);
 
 		// Controls in the tab "Bank"
 
@@ -1230,12 +922,188 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Test, if the address and the delivery address
 		// are equal. If they are, set the checkbox and
 		// hide the delivery address
-		Boolean isEqual = editorContact.getAlternateContacts() == null;
-		bDelAddrEquAddr.setSelection(isEqual);
-		deliveryGroup.setVisible(!isEqual);
+//		Boolean isEqual = editorContact.getAlternateContacts() == null;
+//		bDelAddrEquAddr.setSelection(isEqual);
+//		deliveryGroup.setVisible(!isEqual);
 		
         bindModel();
 		
+	}
+
+	private void createAddressBlock(Composite invisible) {
+		
+		// now do some helpful initializations (needed for combo boxes)
+        Map<String, String> countryNames = localeUtil.getLocaleCountryMap();
+		
+		Map<Integer, String> salutationList = new HashMap<>();
+		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
+		    salutationList.put(i, contactUtil.getSalutationString(i));
+		} 
+
+		// Group: address
+		Group addressGroup = new Group(tabAddress, SWT.NONE);
+		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(addressGroup);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(addressGroup);
+		//T: Label in the contact editor
+		addressGroup.setText(msg.editorContactLabelAddress);
+
+		// Controls in the group "address"
+
+		// The title and gender's label
+		Label labelTitle = new Label((useSalutation || useTitle) ? addressGroup : invisible, SWT.NONE);
+		if (useSalutation) {
+			labelTitle.setText(msg.commonFieldGender);
+		}
+		if (useSalutation && useTitle) {
+			labelTitle.setText(labelTitle.getText() + ", ");
+		}
+		if (useTitle) {
+			//T: "Title" ( part of an address)
+			labelTitle.setText(labelTitle.getText() + msg.commonFieldTitle);
+		}
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
+
+		// Salutation
+		comboSalutationViewer = new ComboViewer(useSalutation ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
+		comboSalutationViewer.setContentProvider(new HashMapContentProvider<Integer, String>());
+/*
+		allSalutations = itemListTypeDao.findAllSalutations();
+		comboSalutationViewer.setContentProvider(new EntityComboProvider());
+		comboSalutationViewer.setLabelProvider(new EntityLabelProvider());
+		comboSalutationViewer.setInput(allSalutations);
+ */
+		comboSalutationViewer.setInput(salutationList);
+		comboSalutationViewer.setLabelProvider(new NumberLabelProvider<Integer, String>(salutationList));
+		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboSalutationViewer.getControl());
+
+		// Title
+		txtTitle = new Text(useTitle ? addressGroup : invisible, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).span(useSalutation ? 1 : 2, 1).applyTo(txtTitle);
+
+		// First and last name		
+		Label labelName = new Label(addressGroup, SWT.NONE);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
+		if (useLastNameFirst) {
+			//T: Format of the name in an address
+			labelName.setText(msg.editorContactFieldLastnamefirstnameName);
+			txtName = new Text(addressGroup, SWT.BORDER);
+			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(txtName);
+			txtFirstname = new Text(addressGroup, SWT.BORDER);
+			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtFirstname);
+		}
+		else {
+			//T: Format of the name in an address
+			labelName.setText(msg.editorContactFieldFirstnamelastnameName);
+			txtFirstname = new Text(addressGroup, SWT.BORDER);
+			GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).grab(true, false).applyTo(txtFirstname);
+			txtName = new Text(addressGroup, SWT.BORDER);
+			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).grab(true, false).applyTo(txtName);
+		}
+		
+		txtFirstname.addFocusListener(new FocusAdapter() {
+			/* (non-Javadoc)
+			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+			 */
+			@Override
+			public void focusLost(FocusEvent e) {
+			    checkDuplicateContact();
+			}
+		});
+		txtFirstname.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				if(!((Text)e.getSource()).getText().equals(editorContact.getFirstName())) {
+					isDuplicateWarningShown = false;
+				}
+			}
+		});
+		
+		txtName.addFocusListener(new FocusAdapter() {
+			/* (non-Javadoc)
+			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+			 */
+			@Override
+			public void focusLost(FocusEvent e) {
+			    checkDuplicateContact();
+			}
+		});
+		txtName.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				if(!((Text)e.getSource()).getText().equals(editorContact.getName())) {
+					isDuplicateWarningShown = false;
+				}
+			}
+		});
+
+		// Company
+		Label labelCompany = new Label(useCompany ? addressGroup : invisible, SWT.NONE);
+		//T: Label in the contact editor
+		labelCompany.setText(msg.commonFieldCompany);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCompany);
+		txtCompany = new Text(useCompany ? addressGroup : invisible, SWT.BORDER | SWT.MULTI);
+//		txtCompany.setText(DataUtils.makeOSLineFeeds(editorContact.getCompany()));
+		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtCompany);
+
+		// Street
+		Label labelStreet = new Label(addressGroup, SWT.NONE);
+		//T: Label in the contact editor
+		labelStreet.setText(msg.commonFieldStreet);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStreet);
+		txtStreet = new Text(addressGroup, SWT.BORDER);
+		txtStreet.addFocusListener(new FocusAdapter() {
+			/* (non-Javadoc)
+			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+			 */
+			@Override
+			public void focusLost(FocusEvent e) {
+			    checkDuplicateContact();
+			}
+		});
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtStreet);
+		setTabOrder(txtCompany, txtStreet);
+
+		// City
+		Label labelCity = new Label(addressGroup, SWT.NONE);
+		//T: Label in the contact editor
+		labelCity.setText(msg.editorContactFieldZipcityName);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCity);
+		txtZip = new Text(addressGroup, SWT.BORDER);
+		GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).applyTo(txtZip);
+		txtCity = new Text(addressGroup, SWT.BORDER);
+		GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).grab(true, false).applyTo(txtCity);
+
+		// Country
+		Label labelCountry = new Label(useCountry ? addressGroup : invisible, SWT.NONE);
+		//T: Label in the contact editor
+		labelCountry.setText(msg.commonFieldCountry);
+		//T: Tool Tip Text
+		labelCountry.setToolTipText(msg.editorContactHintSethomecountry);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
+
+		comboCountry = new ComboViewer(useCountry ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
+		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
+		comboCountry.setContentProvider(new StringHashMapContentProvider());
+		comboCountry.setInput(countryNames);
+		comboCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames, localeUtil));
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
+		
+		// Birthday
+		Label labelBirthday = new Label(addressGroup, SWT.NONE);
+		//T: Label in the contact editor
+		labelBirthday.setText(msg.editorContactFieldBirthdayName);
+		//T: Tool Tip Text
+		labelBirthday.setToolTipText(msg.editorContactFieldBirthdayTooltip);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBirthday);		
+
+		// Set the dtBirthday widget to the contact's birthday date
+        dtBirthday = new CDateTime(addressGroup, CDT.BORDER | CDT.DROP_DOWN);
+        dtBirthday.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+        dtBirthday.setFormat(CDT.DATE_MEDIUM);
+		dtBirthday.setToolTipText(labelBirthday.getToolTipText());
+		GridDataFactory.fillDefaults().hint(250, SWT.DEFAULT).grab(true, false).applyTo(dtBirthday);
 	}
 	
 	/**
@@ -1255,15 +1123,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 64);
 		bindModelValue(editorContact, txtName, Contact_.name.getName(), 64);
 		bindModelValue(editorContact, txtCompany, Contact_.company.getName(), 64);
-		bindModelValue(editorContact, txtStreet, Contact_.address.getName() + "." + Address_.street.getName(), 64);
-		bindModelValue(editorContact, txtZip, Contact_.address.getName() + "." + Address_.zip.getName(), 16);
-		bindModelValue(editorContact, txtCity, Contact_.address.getName() + "." + Address_.city.getName(), 32);
-		bindModelValue(editorContact, comboCountry, Contact_.address.getName() + "." + Address_.countryCode.getName());
+		bindModelValue(editorContact, txtStreet, Contact_.addresses.getName() + "." + Address_.street.getName(), 64);
+		bindModelValue(editorContact, txtZip, Contact_.addresses.getName() + "." + Address_.zip.getName(), 16);
+		bindModelValue(editorContact, txtCity, Contact_.addresses.getName() + "." + Address_.city.getName(), 32);
+		bindModelValue(editorContact, comboCountry, Contact_.addresses.getName() + "." + Address_.countryCode.getName());
 		bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
 		
-		if(editorContact.getAlternateContacts() != null) {
-			rebindAlternativeContactsEditor();
-		}
+//		if(editorContact.getAlternateContacts() != null) {
+//			rebindAlternativeContactsEditor();
+//		}
 		
 		bindModelValue(editorContact, txtAccountHolder, Contact_.bankAccount.getName() +"." +BankAccount_.accountHolder.getName(), 64);
 		bindModelValue(editorContact, txtAccount, Contact_.bankAccount.getName() +"." +BankAccount_.name.getName(), 32);
@@ -1356,13 +1224,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	}
 
 	/**
-     * Gets the delivery contact. This is the additional contact if the billing address differs from delivery address.
-     *
-     * @return the delivery contact
-     */
-	abstract protected C getDeliveryContact();
-
-	/**
      * creates the combo box for the VAT category
      */
     private void fillAndBindCategoryCombo() {
@@ -1415,7 +1276,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 				isDuplicateWarningShown = true;
 				MessageDialog.openWarning(top.getShell(), msg.editorContactWarningDuplicate,
 						MessageFormat.format(msg.editorContactWarningDuplicateStreet, 
-								testContact.getFirstName(), testContact.getName(), testContact.getAddress().getStreet()));
+								testContact.getFirstName(), testContact.getName(), txtStreet.getText()));
 		}
 
 		// nothing found

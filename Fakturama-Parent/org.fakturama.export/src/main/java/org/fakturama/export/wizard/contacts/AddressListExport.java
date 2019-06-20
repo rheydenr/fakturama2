@@ -30,7 +30,10 @@ import org.odftoolkit.odfdom.type.Color;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
+import com.sebulli.fakturama.model.Address;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
 /**
@@ -48,6 +51,10 @@ public class AddressListExport extends OOCalcExporter {
     
     @Inject
     private IEclipseContext context;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
+
 
 	/**
 	 * 	Do the export job.
@@ -146,31 +153,27 @@ public class AddressListExport extends OOCalcExporter {
 			setCellText(row, col++, contact.getName());
 			setCellText(row, col++, contact.getCompany());
 			
-			if(contact.getAddress() != null) {
-				setCellText(row, col++, contact.getAddress().getStreet());
-				setCellText(row, col++, contact.getAddress().getZip());
-				setCellText(row, col++, contact.getAddress().getCity());
-				setCellText(row, col++, localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
+			Address billingAddress = addressManager.getAddressFromContact(contact, BillingType.INVOICE);
+			if(billingAddress != null) {
+				setCellText(row, col++, billingAddress.getStreet());
+				setCellText(row, col++, billingAddress.getZip());
+				setCellText(row, col++, billingAddress.getCity());
+				setCellText(row, col++, localeUtil.findByCode(billingAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
 			} else {
 				col += 4;
 			}
 			
-			Contact deliveryContact;
-			if (contact.getAlternateContacts() != null) {
-				deliveryContact = contact.getAlternateContacts();
-			} else {
-				deliveryContact = contact;
-			}
-			setCellText(row, col++, contactUtil.getSalutationString(deliveryContact.getGender()));
-			setCellText(row, col++, deliveryContact.getTitle());
-			setCellText(row, col++, deliveryContact.getFirstName());
-			setCellText(row, col++, deliveryContact.getName());
-			setCellText(row, col++, deliveryContact.getCompany());
-			if (deliveryContact.getAddress() != null) {
-				setCellText(row, col++, deliveryContact.getAddress().getStreet());
-				setCellText(row, col++, deliveryContact.getAddress().getZip());
-				setCellText(row, col++, deliveryContact.getAddress().getCity());
-				setCellText(row, col++, localeUtil.findByCode(deliveryContact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
+			setCellText(row, col++, contactUtil.getSalutationString(contact.getGender()));
+			setCellText(row, col++, contact.getTitle());
+			setCellText(row, col++, contact.getFirstName());
+			setCellText(row, col++, contact.getName());
+			setCellText(row, col++, contact.getCompany());
+			Address deliveryContact = addressManager.getAddressFromContact(contact, BillingType.INVOICE);
+			if (deliveryContact != null) {
+				setCellText(row, col++, deliveryContact.getStreet());
+				setCellText(row, col++, deliveryContact.getZip());
+				setCellText(row, col++, deliveryContact.getCity());
+				setCellText(row, col++, localeUtil.findByCode(deliveryContact.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
 			} else {
 				col += 4;
 			}

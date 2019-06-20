@@ -35,7 +35,7 @@ import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.resources.core.Icon;
 
 /**
- * Editor for {@link Debitor}s.
+ * Editor for {@link Debtor}s.
  */
 public class DebitorEditor extends ContactEditor<Debitor> {
 
@@ -107,10 +107,5 @@ public class DebitorEditor extends ContactEditor<Debitor> {
 	@Override
 	protected void setPartLabelForNewContact(MPart part) {
 		part.setLabel(msg.commandNewDebtorName);
-	}
-	
-	@Override
-	protected Debitor getDeliveryContact() {
-		return (Debitor) editorContact.getAlternateContacts();
 	}
 }

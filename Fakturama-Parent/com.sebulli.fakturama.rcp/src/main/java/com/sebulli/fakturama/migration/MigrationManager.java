@@ -105,9 +105,11 @@ import com.sebulli.fakturama.model.ContactType;
 //import com.sebulli.fakturama.model.CustomDocument;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.ItemAccountType;
 import com.sebulli.fakturama.model.ItemListTypeCategory;
@@ -171,6 +173,9 @@ public class MigrationManager {
 
 	@Inject
 	private IEclipsePreferences eclipsePrefs;
+	
+	@Inject
+	private IDocumentAddressManager addressManager;
 
 // this doesn't work because the IPreferenceStore isn't set at this stage
 //	@Inject
@@ -639,10 +644,12 @@ public class MigrationManager {
 						 * is equal to the address stored in the database :-(
 						 */
 						// at first we try to interpret the address data
-						Contact contact = modelFactory.createDebitor();
+						DocumentReceiver contact = modelFactory.createDocumentReceiver();
 						// there is NO Customer No. since we extracted it from a plain String.
 						Address address = contactUtil.createAddressFromString(oldDocument.getAddress());
-						contact.setAddress(address);
+						contact.getAddresses().add(address);
+						contact.setBillingType(billingType);
+						
 						// try to get the name
 						String name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME);
 						if(name.isEmpty()) {
@@ -651,11 +658,12 @@ public class MigrationManager {
 						contact.setName(name);
 						contact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME));
 //					document.getBillingContact().getAddress().setManualAddress(oldDocument.getAddress());
-						document.setBillingContact(contact);
+						document.getReceiver().add(contact);
 						
-						Contact deliveryContact = modelFactory.createDebitor();
+						DocumentReceiver deliveryContact = modelFactory.createDocumentReceiver();
 						Address deliveryAddress = contactUtil.createAddressFromString(oldDocument.getDeliveryaddress());
-						deliveryContact.setAddress(deliveryAddress);
+						deliveryContact.getAddresses().add(deliveryAddress);
+						deliveryContact.setBillingType(BillingType.DELIVERY);
 						String deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_LASTNAME);
 						if(deliveryName.isEmpty()) {
 							deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_NAME);
@@ -664,7 +672,7 @@ public class MigrationManager {
 //					deliveryContact.setName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "lastname"));
 						deliveryContact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_FIRSTNAME));
 //					if(!deliveryContact.isSameAs(contact)) {
-							document.setDeliveryContact(deliveryContact);
+							document.getReceiver().add(deliveryContact);
 //					}
 //					document.getDeliveryContact().getAddress().setManualAddress(oldDocument.getDeliveryaddress());
 					} else {
@@ -677,14 +685,8 @@ public class MigrationManager {
 						} else {
 							Contact contact = contactDAO.findById(newContactIdDerivedFromOld);
 							if(contact != null) {
-							    // delivery documents are slightly different...
-							    if(document.getBillingType() == BillingType.DELIVERY) {
-			                        document.setBillingContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
-			                        document.setDeliveryContact(contact);
-							    } else {
-			                        document.setBillingContact(contact);
-			                        document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
-							    }
+								addReceiverToDocument(document, contact, BillingType.INVOICE);
+								addReceiverToDocument(document, contact, BillingType.DELIVERY);
 							}
 						}
 					}
@@ -726,7 +728,9 @@ public class MigrationManager {
 					document.setPdfPath(oldDocument.getPdfpath());
 					document.setPrintTemplate(oldDocument.getPrintedtemplate());
 					
-					document.setConsultant(oldDocument.getConsultant());
+					// set the consultant for the current billing type
+					Optional<DocumentReceiver> activeReceiver = document.getReceiver().stream().filter(rcv -> rcv.getBillingType().compareTo(billingType) == 0).findFirst();
+					activeReceiver.ifPresent(dr -> dr.setConsultant(oldDocument.getConsultant()));
 					document.setPrinted(oldDocument.isPrinted());
 					document.setDeposit(oldDocument.isIsdeposit());
 					document.setDocumentDate(getSaveParsedDate(oldDocument.getDate()));
@@ -808,6 +812,15 @@ public class MigrationManager {
 		}
 	}
 
+
+	private Document addReceiverToDocument(Document document, Contact contact, BillingType billingType) {
+    	DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(contact, billingType);
+    	document.getReceiver().add(documentReceiver);
+    	if(documentReceiver != null) {
+    		document.getReceiver().add(documentReceiver);
+    	}
+    	return document;
+	}
 
 	/**
 	 * @param document
@@ -898,7 +911,7 @@ public class MigrationManager {
 			while(cs.hasNext()) {
 				OldContacts oldContact = (OldContacts) cs.next();
 				try {
-					Contact contact = createBaseContactFromOldContact(false, oldContact);
+					Contact contact = createBaseContactFromOldContact(BillingType.INVOICE, oldContact);
 	                if (StringUtils.isNotEmpty(oldContact.getBankCode()) && StringUtils.isNumericSpace(oldContact.getBankCode())) {
 	                    BankAccount bankAccount = modelFactory.createBankAccount();
 	                    bankAccount.setName(oldContact.getAccount());
@@ -915,18 +928,20 @@ public class MigrationManager {
 	                }
 					if(StringUtils.isNotBlank(oldContact.getCategory()) && contactCategories.containsKey(oldContact.getCategory())) {
 						// add it to the new entity
-	//					contact.addToCategories(contactCategories.get(oldContact.getCategory()));
 	                    contact.setCategories(contactCategoriesDAO.getCategory(oldContact.getCategory(), true));
 					}
 					contact.setCustomerNumber(oldContact.getNr());
 					contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
+					
+					Address address = createAddressFromOldContact(BillingType.INVOICE, oldContact);
+					contact.getAddresses().add(address);
+					
+					// create an alternative address for this contact (a.k.a. "Delivery Address")
 					if(!isAddressEqualToDeliveryAdress(oldContact)) {
-	    				Contact deliveryContact = createBaseContactFromOldContact(true, oldContact);
-	    				// maybe the old contact is deleted...
-	    				deliveryContact.setDeleted(oldContact.isDeleted());
-	    //				contact.getAlternateContacts().add(deliveryContact);
-	                    contact.setAlternateContacts(deliveryContact);
+						Address alternateAddress = createAddressFromOldContact(BillingType.DELIVERY, oldContact);
+	                    contact.getAddresses().add(alternateAddress);
 					}
+					
 					/*
 					 * This is crucial, since there could be (undeleted) documents which have references to deleted contacts!
 					 */
@@ -983,48 +998,54 @@ public class MigrationManager {
         return true;
     }
 
-	private Contact createBaseContactFromOldContact(boolean isDeliveryAddress, OldContacts oldContact) {
+	private Contact createBaseContactFromOldContact(BillingType billingtype, OldContacts oldContact) {
 		Contact contact = null;
 //		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) 
 //		        || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
 			contact = modelFactory.createDebitor();
-			contact.setContactType(isDeliveryAddress ? ContactType.DELIVERY : ContactType.BILLING);
-			contact.setCompany(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCompany(), oldContact.getCompany()));
-			contact.setFirstName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()));
-			contact.setGender(isDeliveryAddress ? oldContact.getDeliveryGender() : oldContact.getGender());
-			contact.setName(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName()));
-			contact.setTitle(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryTitle(), oldContact.getTitle()));
+			contact.setContactType(billingtype.isDELIVERY() ? ContactType.DELIVERY : ContactType.BILLING);
+			contact.setCompany(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryCompany(), oldContact.getCompany()));
+			contact.setFirstName(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryFirstname(), oldContact.getFirstname()));
+			contact.setGender(billingtype.isDELIVERY() ? oldContact.getDeliveryGender() : oldContact.getGender());
+			contact.setName(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryName(), oldContact.getName()));
+			contact.setTitle(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryTitle(), oldContact.getTitle()));
 			contact.setValidFrom(new Date());
-			contact.setBirthday(isDeliveryAddress ? getSaveParsedDate(oldContact.getBirthday()) :  getSaveParsedDate(oldContact.getDeliveryBirthday()));
+			contact.setBirthday(billingtype.isDELIVERY() ? getSaveParsedDate(oldContact.getBirthday()) :  getSaveParsedDate(oldContact.getDeliveryBirthday()));
 //			contact.setBirthday(LocalDate.parse(oldContact.getBirthday()));
-			
-			// create address
-			Address address = modelFactory.createAddress();
-			// if the contact is already deleted, we use the address only for documentation purposes
-			address.setDeleted(oldContact.isDeleted());
-			address.setStreet(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryStreet(), oldContact.getStreet()));
-			address.setCity(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCity(), oldContact.getCity()));
-			address.setZip(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryZip(), oldContact.getZip()));
-			address.setValidFrom(new Date());
-			// we don't have a CountryCode table :-(, therefore we have to look up in ULocale classes
-			String country = getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryCountry(), oldContact.getCountry());
-			if(country.equalsIgnoreCase("deu")) {
-				country = "de";
-			}
-			Optional<ULocale> locale = contactUtil.determineCountryCode(country);
-			if(locale.isPresent() && StringUtils.isNotBlank(locale.get().getCountry())) {
-			    address.setCountryCode(locale.get().getCountry());
-			} else {
-			    migLogUser.info(String.format("!!! unable to determine the country for contact number [%s]", oldContact.getNr()));
-			}
-			contact.setAddress(address);
 //		}
 // else there's no delivery contact!
 		return contact;
 	}
 
-	private String getDeliveryConsideredValue(boolean isDelivery, String deliveryValue, String normalValue) {
-		return isDelivery ? deliveryValue : normalValue;
+	private Address createAddressFromOldContact(BillingType billingtype, OldContacts oldContact) {
+		// create address
+		Address address = modelFactory.createAddress();
+		// if the contact is already deleted, we use the address only for documentation purposes
+		address.setDeleted(oldContact.isDeleted());
+		address.setStreet(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryStreet(), oldContact.getStreet()));
+		address.setCity(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryCity(), oldContact.getCity()));
+		address.setZip(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryZip(), oldContact.getZip()));
+		address.setValidFrom(new Date());
+		
+		// we don't have a CountryCode table :-(, therefore we have to look up in ULocale classes
+		String country = getDeliveryConsideredValue(billingtype, oldContact.getDeliveryCountry(), oldContact.getCountry());
+		if(country.equalsIgnoreCase("deu")) {
+			country = "de";
+		}
+		
+		Optional<ULocale> locale = contactUtil.determineCountryCode(country);
+		if(locale.isPresent() && StringUtils.isNotBlank(locale.get().getCountry())) {
+		    address.setCountryCode(locale.get().getCountry());
+		} else {
+		    migLogUser.info(String.format("!!! unable to determine the country for contact number [%s]", oldContact.getNr()));
+		}
+		
+		address.getBillingTypes().add(billingtype);
+		return address;
+	}
+
+	private String getDeliveryConsideredValue(BillingType billingtype, String deliveryValue, String normalValue) {
+		return billingtype.isDELIVERY() ? deliveryValue : normalValue;
 	}
 
 

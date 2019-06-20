@@ -23,7 +23,8 @@ Require-Bundle: javax.persistence;bundle-version="[2.0.0,3.0.0)",
  org.slf4j.api;bundle-version="1.7.2",
  com.ibm.icu;bundle-version="58.2.0"
 Meta-Persistence: META-INF/persistence.xml
-Service-Component: OSGI-INF/dbupdateservice.xml
+Service-Component: OSGI-INF/dbupdateservice.xml,
+ OSGI-INF/documentaddressmanager.xml
 Export-Package: com.sebulli.fakturama.converter,
  com.sebulli.fakturama.dbconnector,
  com.sebulli.fakturama.dbservice,

@@ -60,9 +60,6 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.CONTACT_PREFERENCE_PAGE);
 
-		//T: Preference page "Contact" - Label checkbox "Use delivery address"
-		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_DELIVERY, msg.preferencesContactUsedelivery, getFieldEditorParent()));
-
 		//T: Preference page "Contact" - Label checkbox "Use bank account"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_BANK, msg.preferencesContactUsebankaccount, getFieldEditorParent()));
 

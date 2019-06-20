@@ -126,6 +126,8 @@ import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.office.Placeholders;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -173,6 +175,9 @@ public class ZugferdExporter {
 
     @Inject
     private IDateFormatterService dateFormatterService;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
 
     private Shell shell;
 	
@@ -450,7 +455,7 @@ public class ZugferdExporter {
 		
 		// create buyer information
 		TradePartyType buyer = factory.createTradePartyType()
-				.withID(createIdFromString(invoice.getBillingContact().getCustomerNumber()))
+				.withID(createIdFromString(addressManager.getBillingAdress(invoice).getCustomerNumber()))
 				.withName(createText(invoice.getAddressFirstLine()))
 //TODO EXTENDED					.withDefinedTradeContact(createContact(invoice, ContactType.BUYER))
 				.withPostalTradeAddress(createAddress(invoice, ContactType.BUYER))
@@ -516,7 +521,7 @@ public class ZugferdExporter {
 		// Detailinformationen zum abweichenden Rechnungsempfänger
 //		tradeSettlement.setInvoiceeTradeParty(createTradeParty(invoice));  // das wird gar nicht erfaßt!
 
-		Contact contact = invoice.getBillingContact();
+		Contact contact = addressManager.getBillingAdress(invoice);
 		DebtorFinancialAccountType debtorAccount = createDebtorAccount(contact);
 		IDType id = StringUtils.isNotBlank(contact.getMandateReference()) ? 
 				factory.createIDType().withValue(contact.getMandateReference())
@@ -1031,11 +1036,12 @@ public class ZugferdExporter {
 	}
 
 	private DebtorFinancialInstitutionType createDebtorFinancialInstitution(Document invoice) {
-		if(!StringUtils.isEmpty(invoice.getBillingContact().getBankAccount().getBic())) {
+		DocumentReceiver billingAddress = addressManager.getBillingAdress(invoice);
+		if(!StringUtils.isEmpty(billingAddress.getBankAccount().getBic())) {
 			return factory.createDebtorFinancialInstitutionType()
-					.withBICID(createIdFromString(invoice.getBillingContact().getBankAccount().getBic()))
+					.withBICID(createIdFromString(billingAddress.getBankAccount().getBic()))
 //					.withGermanBankleitzahlID(createIdFromString(invoice.getFormatedStringValueByKeyFromOtherTable("addressid.CONTACTS:bank_code")))
-					.withName(createText(invoice.getBillingContact().getBankAccount().getBankName()));
+					.withName(createText(billingAddress.getBankAccount().getBankName()));
 		} else return null;
 	}
 
@@ -1102,9 +1108,10 @@ public class ZugferdExporter {
 			}
 			break;
 		case BUYER:
-			if(!StringUtils.isEmpty(invoice.getBillingContact().getVatNumber())) {
+			DocumentReceiver billingAddress = addressManager.getBillingAdress(invoice);
+			if(!StringUtils.isEmpty(billingAddress.getVatNumber())) {
 				retval = factory.createTaxRegistrationType()
-						.withID(createIdWithSchemeFromString(getNullCheckedValue(invoice.getBillingContact().getVatNumber()), "VA"));
+						.withID(createIdWithSchemeFromString(getNullCheckedValue(billingAddress.getVatNumber()), "VA"));
 			}
 			break;
 		default:
@@ -1143,13 +1150,14 @@ public class ZugferdExporter {
 				//.withCountryID(createCountry(preferences.getString("YOURCOMPANY_COMPANY_COUNTRY")));
 			break;
 		case BUYER:
+			DocumentReceiver billingAddress = addressManager.getBillingAdress(invoice);
 			// Korrektur
-			countryCode = invoice.getBillingContact().getAddress().getCountryCode();
+			countryCode = billingAddress.getCountryCode();
 			retval = factory.createTradeAddressType()
-				.withPostcodeCode(createCode(invoice.getBillingContact().getAddress().getZip()))
-				.withLineOne(createText(invoice.getBillingContact().getAddress().getStreet()))
+				.withPostcodeCode(createCode(billingAddress.getZip()))
+				.withLineOne(createText(billingAddress.getStreet()))
 	//		.withLineTwo(is empty at the moment)
-				.withCityName(createText(invoice.getBillingContact().getAddress().getCity()))
+				.withCityName(createText(billingAddress.getCity()))
 				.withCountryID(createCountry(countryCode));
 //			.withCountryID(createCountry(invoice.getFormatedStringValueByKeyFromOtherTable("addressid.CONTACTS:country")));
 			break;

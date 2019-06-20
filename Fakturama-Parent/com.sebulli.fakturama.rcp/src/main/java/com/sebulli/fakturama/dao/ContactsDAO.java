@@ -56,30 +56,32 @@ public class ContactsDAO extends AbstractDAO<Contact> {
          * name, name and ZIP are compared. Customer number is only compared, if it
          * is set.
          */
-        Set<Predicate> restrictions = new HashSet<>();
-        // Compare customer number, only if it is set.
-        if(StringUtils.isNotBlank(object.getCustomerNumber())) {
-            restrictions.add(cb.equal(root.get(Contact_.customerNumber), object.getCustomerNumber()));
-        }
-        // if the value is not set (null), then we use the empty String for comparison. 
-        // Then we get no result (which is correct).
-        restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(object.getFirstName())));
-        restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(object.getName())));
-        if (object.getAddress() != null) {
-            restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), StringUtils.defaultString(object.getAddress().getZip())));
-        } else {
-            // set to an undefined value so we get no result (then the contact is not found in the database)
-            restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), "-1"));
-        }
-        
-        // and, finally, filter all deleted contacts (or contacts that are'nt valid anymore)
-        restrictions.add(cb.and(
-                cb.not(root.get(Contact_.deleted)),
-                cb.or(
-                    cb.isNull(root.get(Contact_.validTo)),
-                    cb.greaterThanOrEqualTo(root.get(Contact_.validTo), cb.currentDate())
-                    )));
-        return restrictions;
+    	
+    	throw new RuntimeException("HIER BITTE NOCHMAL NACHSEHEN!!!");
+//        Set<Predicate> restrictions = new HashSet<>();
+//        // Compare customer number, only if it is set.
+//        if(StringUtils.isNotBlank(object.getCustomerNumber())) {
+//            restrictions.add(cb.equal(root.get(Contact_.customerNumber), object.getCustomerNumber()));
+//        }
+//        // if the value is not set (null), then we use the empty String for comparison. 
+//        // Then we get no result (which is correct).
+//        restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(object.getFirstName())));
+//        restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(object.getName())));
+//        if (object.getAddresses() != null) {
+//            restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), StringUtils.defaultString(object.getAddresses().getZip())));
+//        } else {
+//            // set to an undefined value so we get no result (then the contact is not found in the database)
+//            restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), "-1"));
+//        }
+//        
+//        // and, finally, filter all deleted contacts (or contacts that are'nt valid anymore)
+//        restrictions.add(cb.and(
+//                cb.not(root.get(Contact_.deleted)),
+//                cb.or(
+//                    cb.isNull(root.get(Contact_.validTo)),
+//                    cb.greaterThanOrEqualTo(root.get(Contact_.validTo), cb.currentDate())
+//                    )));
+//        return restrictions;
     }
 
 	@Override
@@ -105,7 +107,7 @@ public class ContactsDAO extends AbstractDAO<Contact> {
      */
     public String[] getVisibleProperties() {
         return new String[] { Contact_.customerNumber.getName(), Contact_.firstName.getName(), Contact_.name.getName(),
-                Contact_.company.getName(), Contact_.address.getName() + "." +Address_.zip.getName(), Contact_.address.getName() + "." +Address_.city.getName()};
+                Contact_.company.getName(), Address_.zip.getName(), Address_.city.getName()};
     }
 
 	/**
@@ -125,14 +127,17 @@ public class ContactsDAO extends AbstractDAO<Contact> {
         restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(firstName)));
         restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(name)));
         restrictions.add(cb.not(root.get(Contact_.deleted)));
-        restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.street), StringUtils.defaultString(street)));
-        CriteriaQuery<Contact> select = query.select(root);
-        select.where(restrictions.toArray(new Predicate[]{}));
-        List<Contact> resultList = getEntityManager().createQuery(select).getResultList();
-        if(!resultList.isEmpty()) {
-        	retval = resultList.get(0);
-        }
-		return retval;
+        
+    	throw new RuntimeException("HIER BITTE NOCHMAL NACHSEHEN!!!");
+//
+//        restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.street), StringUtils.defaultString(street)));
+//        CriteriaQuery<Contact> select = query.select(root);
+//        select.where(restrictions.toArray(new Predicate[]{}));
+//        List<Contact> resultList = getEntityManager().createQuery(select).getResultList();
+//        if(!resultList.isEmpty()) {
+//        	retval = resultList.get(0);
+//        }
+//		return retval;
 	}
 
 	/**

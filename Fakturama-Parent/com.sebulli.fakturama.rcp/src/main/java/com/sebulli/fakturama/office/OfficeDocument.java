@@ -87,6 +87,8 @@ import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.office.FileOrganizer.PathOption;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -128,6 +130,9 @@ public class OfficeDocument {
 
     @Inject
     private IDateFormatterService dateFormatterService;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
 
     /**
      * Event Broker for sending update events to the list table
@@ -197,7 +202,7 @@ public class OfficeDocument {
 			}
 			
 			// check if we have to use sales equalization tax
-	        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
+	        setUseSalesEquationTaxForDocument(document);
 
 			// remove previous images            
             cleanup();
@@ -1314,8 +1319,14 @@ public class OfficeDocument {
      */
     public void setDocument(Document document) {
         this.document = document;
-        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
+        
+        setUseSalesEquationTaxForDocument(document);
     }
+
+	private void setUseSalesEquationTaxForDocument(Document document) {
+		DocumentReceiver billingAdress = addressManager.getBillingAdress(document);
+		this.useSET = document != null && billingAdress != null && BooleanUtils.isTrue(billingAdress.getUseSalesEqualizationTax());
+	}
 
     /**
      * @return the template

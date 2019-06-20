@@ -8,38 +8,46 @@
 			<persistence:class>com.sebulli.fakturama.model.VoucherCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Address</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.BankAccount</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.CEFACTCode</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Confirmation</persistence:class>
+			
 			<persistence:class>com.sebulli.fakturama.model.Contact</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.Debitor</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.Creditor</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ContactCategory</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Creditor</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Debitor</persistence:class>
+			
 			<persistence:class>com.sebulli.fakturama.model.Document</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.Credit</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Invoice</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Order</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Delivery</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Offer</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Letter</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.Confirmation</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.Credit</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Dunning</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Proforma</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.DocumentItem</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.IndividualDocumentInfo</persistence:class>
+			<persistence:class>com.sebulli.fakturama.model.DocumentReceiver</persistence:class>
+			
 			<persistence:class>com.sebulli.fakturama.model.ItemAccountType</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ItemListTypeCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Payment</persistence:class>
+			
 			<persistence:class>com.sebulli.fakturama.model.Product</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ProductCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ProductOptions</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ProductBlockPrice</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.Role</persistence:class>
+			
 			<persistence:class>com.sebulli.fakturama.model.Shipping</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.ShippingCategory</persistence:class>
-			<persistence:class>com.sebulli.fakturama.model.CEFACTCode</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Tenant</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.TextCategory</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.TextModule</persistence:class>
+			
+			<persistence:class>com.sebulli.fakturama.model.Role</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.User</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.UserProperty</persistence:class>
+			
 			<persistence:class>com.sebulli.fakturama.model.VAT</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.Voucher</persistence:class>
 			<persistence:class>com.sebulli.fakturama.model.VoucherItem</persistence:class>
@@ -55,7 +63,7 @@
 			<!-- update database automagically ;-)  -->
 			<!-- enable this option if you want to skip liquibase usage -->
 			<!-- think about -DNODBUPDATE=true -->
-<!-- 			<persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" /> -->
+			<persistence:property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<persistence:property name="eclipselink.logging.level" value="INFO" />
 			
 			<!-- suppress upper case for column names -->
@@ -79,7 +87,6 @@
 			<!--  This is the real performance boost! Setting this property the internal connection pool is
 			      used. This prevents the database layer from permanently reconnecting. -->
 			<persistence:property name="eclipselink.connection-pool.force-internal-pool" value="true"/>
-			
 			
 			<!-- DOESN'T WORK!!! persistence:property name="eclipselink.logging.logger" value="com.sebulli.fakturama.log.FakturamaLogger" / -->
             <!-- custom SessionLog implementation -->

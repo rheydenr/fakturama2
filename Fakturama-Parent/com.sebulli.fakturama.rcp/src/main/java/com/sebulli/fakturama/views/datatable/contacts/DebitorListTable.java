@@ -79,8 +79,8 @@ public class DebitorListTable extends ContactListTable<Debitor> {
                         Debitor_.firstName.getName(),
                         Debitor_.name.getName(),
                         Debitor_.company.getName(),
-                        Debitor_.address.getName() + "." + Address_.zip.getName(),
-                        Debitor_.address.getName() + "." + Address_.city.getName()
+                        Debitor_.addresses.getName() + "." + Address_.zip.getName(),
+                        Debitor_.addresses.getName() + "." + Address_.city.getName()
                         ));
     }
 

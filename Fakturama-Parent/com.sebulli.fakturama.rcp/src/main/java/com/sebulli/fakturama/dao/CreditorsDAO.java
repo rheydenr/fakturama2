@@ -1,6 +1,5 @@
 package com.sebulli.fakturama.dao;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,7 +9,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -22,32 +20,13 @@ import com.sebulli.fakturama.model.Creditor_;
 public class CreditorsDAO extends AbstractDAO<Creditor> {
     
     @Override
-    protected Set<Predicate> getRestrictions(Creditor object, CriteriaBuilder cb, Root<Creditor> root) {
-        /* Customer number, first
-         * name, name and ZIP are compared. Customer number is only compared, if it
-         * is set.
-         */
-        Set<Predicate> restrictions = new HashSet<>();
-        // Compare customer number, only if it is set.
-        if(StringUtils.isNotBlank(object.getCustomerNumber())) {
-            restrictions.add(cb.equal(root.get(Creditor_.customerNumber), object.getCustomerNumber()));
-        }
-        // if the value is not set (null), then we use the empty String for comparison. 
-        // Then we get no result (which is correct).
-        restrictions.add(cb.equal(root.get(Creditor_.firstName), StringUtils.defaultString(object.getFirstName())));
-        restrictions.add(cb.equal(root.get(Creditor_.name), StringUtils.defaultString(object.getName())));
-        if (object.getAddress() != null) {
-            restrictions.add(cb.equal(root.get(Creditor_.address).get(Address_.zip), StringUtils.defaultString(object.getAddress().getZip())));
-        } else {
-            // set to an undefined value so we get no result (then the contact is not found in the database)
-            restrictions.add(cb.equal(root.get(Creditor_.address).get(Address_.zip), "-1"));
-        }
-        return restrictions;
+    public List<Creditor> findAll() {
+        return findAll(false);
     }
     
     @Override
-    public List<Creditor> findAll() {
-        return findAll(false);
+    protected Set<Predicate> getRestrictions(Creditor object, CriteriaBuilder criteriaBuilder, Root<Creditor> root) {
+    	throw new RuntimeException("HIER BITTE NOCHMAL NACHSEHEN!!!");
     }
     
     @Override
@@ -86,6 +65,6 @@ public class CreditorsDAO extends AbstractDAO<Creditor> {
      */
     public String[] getVisibleProperties() {
         return new String[] { Creditor_.customerNumber.getName(), Creditor_.firstName.getName(), Creditor_.name.getName(),
-                Creditor_.company.getName(), Creditor_.address.getName() + "." +Address_.zip.getName(), Creditor_.address.getName() + "." +Address_.city.getName()};
+                Creditor_.company.getName(), Creditor_.addresses.getName() + "." +Address_.zip.getName(), Creditor_.addresses.getName() + "." +Address_.city.getName()};
     }
 }

@@ -32,7 +32,9 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.model.Address;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
 /**
@@ -51,6 +53,9 @@ public class VcardExport {
     @Inject
     private IEclipseContext context;
     
+    @Inject
+    private IDocumentAddressManager addressManager;
+
 //    private SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
 
 	// Buffered writer for the output stream
@@ -194,7 +199,7 @@ public class VcardExport {
 //				if(contact.getBirthday() != null) {
 //					writeVCard("BDAY:", sdf.format(contact.getBirthday()));
 //				}
-				Address address = contact.getAddress();
+				Address address = addressManager.getAddressFromContact(contact, BillingType.INVOICE);
 				if(address != null
 						&& (StringUtils.isNotBlank(contact.getCompany()) 
 								|| StringUtils.isNotBlank(address.getStreet()) 
@@ -213,20 +218,14 @@ public class VcardExport {
 							);
 				}
 				
-				Contact alternateContacts;
-				if (contact.getAlternateContacts() != null) {
-					alternateContacts = contact.getAlternateContacts();
-				} else {
-					alternateContacts = contact;
-				}
-				address = alternateContacts.getAddress();
+				address = addressManager.getAddressFromContact(contact, BillingType.DELIVERY);
 				if(address != null) {
 					if(StringUtils.isNotBlank(contact.getCompany()) 
 							|| StringUtils.isNotBlank(address.getStreet()) 
 							|| StringUtils.isNotBlank(address.getCity())) {	
 						writeVCard("ADR;TYPE=postal:",
 								"",
-								alternateContacts.getCompany(),
+								contact.getCompany(),
 								address.getStreet(),
 								address.getCity(),
 								"",
@@ -235,8 +234,8 @@ public class VcardExport {
 								);
 					}
 					writeVCard("ADR;TYPE=other:",
-							contactUtil.getNameWithCompany(alternateContacts),
-							alternateContacts.getCompany(),
+							contactUtil.getNameWithCompany(contact),
+							contact.getCompany(),
 							address.getStreet(),
 							address.getCity(),
 							"",

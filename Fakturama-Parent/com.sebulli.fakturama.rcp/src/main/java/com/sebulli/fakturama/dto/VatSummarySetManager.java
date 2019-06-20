@@ -17,6 +17,7 @@ package com.sebulli.fakturama.dto;
 
 import java.util.Optional;
 
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
@@ -26,6 +27,8 @@ import org.javamoney.moneta.Money;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
@@ -35,6 +38,9 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
  * @author Gerd Bartelt
  */
 public class VatSummarySetManager {
+	@Inject
+	private IDocumentAddressManager addressManager;
+	
 	private VatSummarySet vatSummarySet;
 
 	/**
@@ -57,7 +63,8 @@ public class VatSummarySetManager {
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
 		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
-        boolean useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
+        DocumentReceiver billingAdress = addressManager.getBillingAdress(document);
+		boolean useSET = document != null && billingAdress != null && BooleanUtils.isTrue(billingAdress.getUseSalesEqualizationTax());
 		documentSummaryCalculator.setUseSET(useSET);
 		documentSummaryCalculator.calculate(vatSummarySet, document.getItems(), 
 				document.getShipping() != null ? document.getShipping().getShippingValue() : Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,

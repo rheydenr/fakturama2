@@ -34,7 +34,10 @@ import org.fakturama.wizards.ExporterHelper;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
+import com.sebulli.fakturama.model.Address;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
 
@@ -57,6 +60,9 @@ public class AddressExport {
     
 	@Inject
 	private INumberFormatterService numberFormatterService;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
 
 	/**
 	 * 	Do the export job.
@@ -147,32 +153,28 @@ public class AddressExport {
 					.append(ExporterHelper.inQuotes(contact.getName())).append(";")
 					.append(ExporterHelper.inQuotes(contact.getCompany())).append(";");
 				
-				if(contact.getAddress() != null) {
-						stringBuffer.append(ExporterHelper.inQuotes(contact.getAddress().getStreet())).append(";")
-						   .append(ExporterHelper.inQuotes(contact.getAddress().getZip())).append(";")
-						   .append(ExporterHelper.inQuotes(contact.getAddress().getCity())).append(";")
-						   .append(ExporterHelper.inQuotes(localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
+				Address billingAddress = addressManager.getAddressFromContact(contact, BillingType.INVOICE);
+				if(billingAddress != null) {
+						stringBuffer.append(ExporterHelper.inQuotes(billingAddress.getStreet())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getZip())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getCity())).append(";")
+						   .append(ExporterHelper.inQuotes(localeUtil.findByCode(billingAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
 				} else {
 					stringBuffer.append(";;;;");
 				}
 		
 				
-				Contact deliveryContact;
-				if (contact.getAlternateContacts() != null) {
-					deliveryContact = contact.getAlternateContacts();
-				} else {
-					deliveryContact = contact;
-				}
-				stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(deliveryContact.getGender()))).append(";")
-				   .append(ExporterHelper.inQuotes(deliveryContact.getTitle())).append(";")
-				   .append(ExporterHelper.inQuotes(deliveryContact.getFirstName())).append(";")
-				   .append(ExporterHelper.inQuotes(deliveryContact.getName())).append(";")
-				   .append(ExporterHelper.inQuotes(deliveryContact.getCompany())).append(";");
-				if (deliveryContact.getAddress() != null) {
-					stringBuffer.append(ExporterHelper.inQuotes(deliveryContact.getAddress().getStreet())).append(";")
-					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getZip())).append(";")
-					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getCity())).append(";")
-					   .append(ExporterHelper.inQuotes(localeUtil.findByCode(deliveryContact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
+				Address deliveryAddress = addressManager.getAddressFromContact(contact, BillingType.DELIVERY);
+				stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(contact.getGender()))).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getTitle())).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getFirstName())).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getName())).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getCompany())).append(";");
+				if (deliveryAddress != null) {
+					stringBuffer.append(ExporterHelper.inQuotes(deliveryAddress.getStreet())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getZip())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getCity())).append(";")
+					   .append(ExporterHelper.inQuotes(localeUtil.findByCode(deliveryAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
 				} else {
 					stringBuffer.append(";;;;");
 				}

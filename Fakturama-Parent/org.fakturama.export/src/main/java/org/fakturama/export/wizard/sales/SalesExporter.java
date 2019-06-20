@@ -49,6 +49,8 @@ import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
 
@@ -76,6 +78,10 @@ public class SalesExporter extends OOCalcExporter {
 	
 	@Inject
 	private DocumentsDAO documentsDao;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
+
 
 	/**
 	 * Constructor Sets the begin and end date
@@ -286,7 +292,7 @@ public class SalesExporter extends OOCalcExporter {
 			}
 			setCellText(row, col++, document.getName());
 			setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(document.getDocumentDate()));
-			Contact addressid = document.getBillingContact();
+			DocumentReceiver addressid = addressManager.getBillingAdress(document);
 
 			// Fill the address columns with the contact that corresponds to the addressid
 			if (addressid != null && addressid.getName() != null) {
@@ -294,14 +300,14 @@ public class SalesExporter extends OOCalcExporter {
 				setCellText(row, col++, addressid.getName());
 				setCellText(row, col++, addressid.getCompany());
 				setCellText(row, col++, addressid.getVatNumber());
-				if(addressid.getAddress() != null) {
-					setCellText(row, col++, addressid.getAddress().getCountryCode());
+				if(addressid.getCountryCode() != null) {
+					setCellText(row, col++, addressid.getCountryCode());
 				} else {
 					col++;
 				}
-			} else if(addressid.getAddress() != null && addressid.getAddress().getManualAddress() != null) {
-				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_FIRSTNAME));
-				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_LASTNAME));
+			} else if(addressid.getManualAddress() != null) {
+				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getManualAddress(), ContactUtil.KEY_FIRSTNAME));
+				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getManualAddress(), ContactUtil.KEY_LASTNAME));
 				col += 3;
 			}
 			// ... or use the documents first line

@@ -86,8 +86,8 @@ public class CreditorListTable extends ContactListTable<Creditor> {
                         Creditor_.firstName.getName(),
                         Creditor_.name.getName(),
                         Creditor_.company.getName(),
-                        Creditor_.address.getName() + "." + Address_.zip.getName(),
-                        Creditor_.address.getName() + "." + Address_.city.getName()
+     /* ??? geht das überhaupt? ***/          Creditor_.addresses.getName() + "." + Address_.zip.getName(),
+                        Creditor_.addresses.getName() + "." + Address_.city.getName()
                         ));
     }
 

@@ -6,6 +6,7 @@ package com.sebulli.fakturama.calculate;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
@@ -21,6 +22,7 @@ import com.sebulli.fakturama.dto.VatSummarySet;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
@@ -30,20 +32,24 @@ import com.sebulli.fakturama.model.VAT;
  *
  */
 public class DocumentSummaryCalculator {
+	@Inject
+	private IDocumentAddressManager addressManager;
 
     /**
      * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
      */
     private boolean useSET = false;
 	private CurrencyUnit currencyCode;
+	private Document document;
 	
 	public DocumentSummaryCalculator() {
 	    this(false, DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 	
 	public DocumentSummaryCalculator(Document document, boolean useSET) {
-		this(useSET && document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax()), 
-				DataUtils.getInstance().getDefaultCurrencyUnit());
+		this.useSET = useSET;
+		this.document = document;
+		this.currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
 	}
 	
 	public DocumentSummaryCalculator(CurrencyUnit currencyCode) {
@@ -56,19 +62,20 @@ public class DocumentSummaryCalculator {
 	}
 	
     public DocumentSummary calculate(Document dataSetDocument) {
-        this.useSET = dataSetDocument != null && dataSetDocument.getBillingContact() != null && BooleanUtils.isTrue(dataSetDocument.getBillingContact().getUseSalesEqualizationTax());
+    	this.document = dataSetDocument;
+    	this.useSET = document != null && addressManager.getBillingAdress(document) != null && BooleanUtils.isTrue(addressManager.getBillingAdress(document).getUseSalesEqualizationTax());
         Double scaleFactor = NumberUtils.DOUBLE_ONE;
-        int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
-        VAT noVatReference = dataSetDocument.getNoVatReference();
+        int netGross = document.getNetGross() != null ? document.getNetGross() : 0;
+        VAT noVatReference = document.getNoVatReference();
         // only calculate a deposit if the document is really deposited (else, if e.g. we have a fully paid invoice and the deposit 
         // amount is not equal to zero we get unpredictable results in later processing)
-        MonetaryAmount deposit = Money.of(BooleanUtils.isTrue(dataSetDocument.getDeposit()) ? dataSetDocument.getPaidValue() : NumberUtils.DOUBLE_ZERO, currencyCode);
-        Shipping shipping = dataSetDocument.getShipping();
-		return calculate(null, dataSetDocument.getItems(), 
-        		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(NumberUtils.DOUBLE_ZERO), 
+        MonetaryAmount deposit = Money.of(BooleanUtils.isTrue(document.getDeposit()) ? document.getPaidValue() : NumberUtils.DOUBLE_ZERO, currencyCode);
+        Shipping shipping = document.getShipping();
+		return calculate(null, document.getItems(), 
+        		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(document.getShippingValue()).orElse(NumberUtils.DOUBLE_ZERO), 
         		shipping != null ? shipping.getShippingVat() : null, 
-                shipping != null ? shipping.getAutoVat() : dataSetDocument.getShippingAutoVat(), 
-                Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO), noVatReference, 
+                shipping != null ? shipping.getAutoVat() : document.getShippingAutoVat(), 
+                Optional.ofNullable(document.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO), noVatReference, 
                 scaleFactor, netGross, deposit);
     }
     

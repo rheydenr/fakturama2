@@ -46,12 +46,13 @@ import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
-import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
@@ -82,6 +83,9 @@ public class Placeholders {
 
     @Inject
     private IPreferenceStore preferences;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
 
 	// all placeholders
 	private static String placeholders[] = {
@@ -666,22 +670,22 @@ public class Placeholders {
 		String deliverystring;
 		String differentstring;
 		// address and delivery address
+		DocumentReceiver billingAdress = addressManager.getBillingAdress(document);
+		DocumentReceiver deliveryAdress = addressManager.getDeliveryAdress(document);
 		for (int i = 0;i<2 ; i++) {
 		    String s;
 			deliverystring = i==1 ? "delivery" : "";
 			if(i == 1) {
-                s = contactUtil.getAddressAsString(document.getDeliveryContact());
+				s = contactUtil.getAddressAsString(deliveryAdress);
 			} else {
-			    s = contactUtil.getAddressAsString(document.getBillingContact());
+				s = contactUtil.getAddressAsString(billingAdress);
 			}
 			
 			//  with option "DIFFERENT" and without
 			for (int ii = 0 ; ii<2; ii++) {
 				differentstring = ii==1 ? ".DIFFERENT" : "";
-				if (ii==1) {
-					if (contactUtil.deliveryAddressEqualsBillingAddress(document))
-						s="";
-				}
+				if (ii==1 && contactUtil.deliveryAddressEqualsBillingAddress(document))
+					s="";
 				if (key.equals("DOCUMENT" + differentstring +"."+ deliverystring.toUpperCase()+ "ADDRESS")) return s;
 			}
 		}
@@ -690,7 +694,7 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.TYPE")) return msg.getMessageFromKey(DocumentTypeUtil.findByBillingType(document.getBillingType()).getSingularKey());
 		if (key.equals("DOCUMENT.NAME")) return document.getName();
 		if (key.equals("DOCUMENT.CUSTOMERREF")) return document.getCustomerRef();
-		if (key.equals("DOCUMENT.CONSULTANT")) return document.getConsultant();
+		if (key.equals("DOCUMENT.CONSULTANT")) return billingAdress.getConsultant();
 		if (key.equals("DOCUMENT.SERVICEDATE")) return dateFormatterService.getFormattedLocalizedDate(document.getServiceDate());
 		if (key.equals("DOCUMENT.MESSAGE")) return document.getMessage();
 		if (key.equals("DOCUMENT.MESSAGE1")) return document.getMessage();
@@ -758,25 +762,28 @@ public class Placeholders {
 		if (key.startsWith("DOCUMENT.REFERENCE.")) {
 			Transaction transaction = ContextInjectionFactory.make(Transaction.class, context).of(document);
 			if (transaction != null) {
-				if (key.equals("DOCUMENT.REFERENCE.OFFER"))
+				switch(key) {
+				case "DOCUMENT.REFERENCE.OFFER":
 					return transaction.getReference(DocumentType.OFFER);
-				if (key.equals("DOCUMENT.REFERENCE.ORDER"))
+				case "DOCUMENT.REFERENCE.ORDER":
 					return transaction.getReference(DocumentType.ORDER);
-				if (key.equals("DOCUMENT.REFERENCE.CONFIRMATION"))
+				case "DOCUMENT.REFERENCE.CONFIRMATION":
 					return transaction.getReference(DocumentType.CONFIRMATION);
-				if (key.equals("DOCUMENT.REFERENCE.INVOICE"))
+				case "DOCUMENT.REFERENCE.INVOICE":
 					return transaction.getReference(DocumentType.INVOICE);
-				if (key.equals("DOCUMENT.REFERENCE.INVOICE.DATE"))
+				case "DOCUMENT.REFERENCE.INVOICE.DATE":
 					return transaction.getFirstReferencedDocumentDate(DocumentType.INVOICE);
-				//			if (key.equals("DOCUMENT.REFERENCE.INVOICE.DUEDATE")) return transaction.getFirstReferencedDocumentDueDate(DocumentType.INVOICE);
-				if (key.equals("DOCUMENT.REFERENCE.DELIVERY"))
+//				case "DOCUMENT.REFERENCE.INVOICE.DUEDATE":
+//					return transaction.getFirstReferencedDocumentDueDate(DocumentType.INVOICE);
+				case "DOCUMENT.REFERENCE.DELIVERY":
 					return transaction.getReference(DocumentType.DELIVERY);
-				if (key.equals("DOCUMENT.REFERENCE.CREDIT"))
+				case "DOCUMENT.REFERENCE.CREDIT":
 					return transaction.getReference(DocumentType.CREDIT);
-				if (key.equals("DOCUMENT.REFERENCE.DUNNING"))
+				case "DOCUMENT.REFERENCE.DUNNING":
 					return transaction.getReference(DocumentType.DUNNING);
-				if (key.equals("DOCUMENT.REFERENCE.PROFORMA"))
+				case "DOCUMENT.REFERENCE.PROFORMA":
 					return transaction.getReference(DocumentType.PROFORMA);
+				}
 			}
 		}
 		
@@ -802,23 +809,20 @@ public class Placeholders {
 		
 		if (key.startsWith("DELIVERY.")) {
 			key2 = key.substring(9);
-            addressField = document.getDeliveryContact() != null 
-            		? contactUtil.getAddressAsString(document.getDeliveryContact()) 
-            		: contactUtil.getAddressAsString(document.getBillingContact() != null 
-            		  && document.getBillingContact().getAlternateContacts() != null 
-            		     ? document.getBillingContact().getAlternateContacts() 
-            		     : document.getBillingContact());
+            addressField = deliveryAdress != null 
+            		? contactUtil.getAddressAsString(deliveryAdress) 
+            		: contactUtil.getAddressAsString(billingAdress);
 		}
 		else {
 			key2 = key;
-			addressField = contactUtil.getAddressAsString(document.getBillingContact());
+			addressField = contactUtil.getAddressAsString(billingAdress);
 		}
 
 		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_ADDRESSFIRSTLINE);
 		
 		// Get the contact of the UniDataSet document
-		Contact contact = document.getBillingContact();
-	
+		
+		DocumentReceiver contact = billingAdress;
 		// There is a reference to a contact. Use this (but only if it's a valid contact!)
 		if (contact != null) {
 		    if (key.equals("ADDRESS")) return contactUtil.getAddressAsString(contact);
@@ -829,24 +833,24 @@ public class Placeholders {
 			if (key.equals("ADDRESS.BIRTHDAY")) {
 				return contact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(contact.getBirthday());
 			}
-			if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact, document.getReceiver().getManualAddress());
+			if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
 			if (key.equals("ADDRESS.FIRSTANDLASTNAME")) return contactUtil.getFirstAndLastName(contact);
 			if (key.equals("ADDRESS.FIRSTNAME")) return contact.getFirstName();
 			if (key.equals("ADDRESS.LASTNAME")) return contact.getName();
 			if (key.equals("ADDRESS.COMPANY")) return contact.getCompany();
 
-			Address address = contact.getAddress();
-			if(address != null) {
-    			if (key.equals("ADDRESS.STREET")) return address.getStreet();
-    			if (key.equals("ADDRESS.STREETNAME")) return contactUtil.getStreetName(address.getStreet());
-    			if (key.equals("ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
-    			if (key.equals("ADDRESS.ZIP")) return address.getZip();
-    			if (key.equals("ADDRESS.CITY")) return address.getCity();
-                if (key.equals("ADDRESS.COUNTRY.CODE2")) return address.getCountryCode();
-                Optional<ULocale> locale = localeUtil.findByCode(address.getCountryCode());
+//			Address address = contact.getAddress();
+//			if(address != null) {
+    			if (key.equals("ADDRESS.STREET")) return contact.getStreet();
+    			if (key.equals("ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
+    			if (key.equals("ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
+    			if (key.equals("ADDRESS.ZIP")) return contact.getZip();
+    			if (key.equals("ADDRESS.CITY")) return contact.getCity();
+                if (key.equals("ADDRESS.COUNTRY.CODE2")) return contact.getCountryCode();
+                Optional<ULocale> locale = localeUtil.findByCode(contact.getCountryCode());
                 if (key.equals("ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
                 if (key.equals("ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
-			}
+//			}
 			
 			BankAccount bankAccount = contact.getBankAccount();
 			if(bankAccount != null) {
@@ -877,8 +881,8 @@ public class Placeholders {
 			if (key.equals("ADDRESS.MANDATEREFERENCE")) return contact.getMandateReference();
 			
 			// now switch to delivery contact, if any
-			if(document.getDeliveryContact() != null) {
-			    contact = document.getDeliveryContact();
+			if(deliveryAdress != null) {
+			    contact = deliveryAdress;
 			    // if no delivery contact is available, use billing contact
 			}
 			if (key.equals("DELIVERY.ADDRESS")) return contactUtil.getAddressAsString(contact);
@@ -894,18 +898,18 @@ public class Placeholders {
 			if (key.equals("DELIVERY.ADDRESS.LASTNAME")) return contact.getName();
 			if (key.equals("DELIVERY.ADDRESS.COMPANY")) return contact.getCompany();
 
-            address = contact.getAddress();
-            if(address != null) {
-    			if (key.equals("DELIVERY.ADDRESS.STREET")) return address.getStreet();
-    			if (key.equals("DELIVERY.ADDRESS.STREETNAME")) return contactUtil.getStreetName(address.getStreet());
-    			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
-    			if (key.equals("DELIVERY.ADDRESS.ZIP")) return address.getZip();
-    			if (key.equals("DELIVERY.ADDRESS.CITY")) return address.getCity();
-    			Optional<ULocale> locale = localeUtil.findByCode(address.getCountryCode());
+//            address = contact.getAddress();
+//            if(address != null) {
+    			if (key.equals("DELIVERY.ADDRESS.STREET")) return contact.getStreet();
+    			if (key.equals("DELIVERY.ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
+    			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
+    			if (key.equals("DELIVERY.ADDRESS.ZIP")) return contact.getZip();
+    			if (key.equals("DELIVERY.ADDRESS.CITY")) return contact.getCity();
+    			locale = localeUtil.findByCode(contact.getCountryCode());
     			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
     			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : localeUtil.getDefaultLocale().getDisplayCountry();
    			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
-            }
+//            }
 		}
 		// There is no reference - Try to get the information from the address field
 		else {
@@ -1007,7 +1011,7 @@ public class Placeholders {
 	    censoredAccount = censorAccountNumber(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN));
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.IBAN.CENSORED>", censoredAccount);
 	    
-	    Contact contact = document.getBillingContact();
+	    Contact contact = addressManager.getBillingAdress(document);
         if(contact != null && contact.getBankAccount() != null) {
     	    // debitor's bank account
     	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.ACCOUNT.HOLDER>", 
