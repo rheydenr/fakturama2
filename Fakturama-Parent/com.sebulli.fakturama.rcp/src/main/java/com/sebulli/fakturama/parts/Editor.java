@@ -418,7 +418,6 @@ public abstract class Editor<T extends IEntity> {
         return bindModelValue(target, source, property, limit, null, null);
     }
 
-
     protected Binding bindModelValue(T target, FormattedText source, String property, int limit) {
     	Binding binding = null;
     	if(limit > 0) {

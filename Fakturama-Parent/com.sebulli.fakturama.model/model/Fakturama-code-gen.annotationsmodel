@@ -211,6 +211,7 @@
             <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
           </entityListeners>
         </entity>
+        <mappedSuperclass/>
       </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/customerNumber"/>
@@ -561,9 +562,7 @@
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//DocumentReceiver"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="The receiver's information for a certain document." documentation="The receiver's information for a certain document."/>
-      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
-        <inheritance strategy="TABLE_PER_CLASS"/>
-      </eClassAnnotations>
+      <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation" description="Contact for a concrete document."/>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentReceiver/consultant"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="A contact person for this document." name="consultant" getter="getConsultant" defaultValue="null" setter="setConsultant" validJavaMemberName="consultant" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.9/@eClassAnnotations.0"/>

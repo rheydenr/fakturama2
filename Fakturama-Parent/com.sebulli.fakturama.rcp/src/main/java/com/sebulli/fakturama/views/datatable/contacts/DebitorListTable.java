@@ -73,14 +73,15 @@ public class DebitorListTable extends ContactListTable<Debitor> {
         searchColumns[4] = "zip";
         searchColumns[5] = "city";
  */
-        return new TextWidgetMatcherEditor<Debitor>(searchText.getTextControl(), 
-                GlazedLists.textFilterator(Debitor.class, 
-                        Debitor_.customerNumber.getName(),
-                        Debitor_.firstName.getName(),
-                        Debitor_.name.getName(),
-                        Debitor_.company.getName(),
-                        Debitor_.addresses.getName() + "." + Address_.zip.getName(),
-                        Debitor_.addresses.getName() + "." + Address_.city.getName()
+        return new TextWidgetMatcherEditor<Debitor>(searchText.getTextControl(),
+        		new ContactListFilterator(
+//                GlazedLists.textFilterator(Debitor.class, 
+//                        Debitor_.customerNumber.getName(),
+//                        Debitor_.firstName.getName(),
+//                        Debitor_.name.getName(),
+//                        Debitor_.company.getName(),
+//                        Address_.zip.getName(),
+//                        Address_.city.getName()
                         ));
     }
 

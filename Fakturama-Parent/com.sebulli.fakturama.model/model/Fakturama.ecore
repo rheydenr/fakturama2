@@ -193,6 +193,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="countryCode" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="billingType" eType="#//BillingType"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="originContactId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="documentreceiverParentId"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Confirmation" eSuperTypes="#//Document"/>
   <eClassifiers xsi:type="ecore:EClass" name="Credit" eSuperTypes="#//Document"/>
