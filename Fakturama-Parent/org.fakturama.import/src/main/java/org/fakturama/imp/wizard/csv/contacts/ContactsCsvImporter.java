@@ -43,9 +43,9 @@ import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
-import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
@@ -213,7 +213,7 @@ public class ContactsCsvImporter {
 					address.setZip(prop.getProperty("zip"));
 					
 					// TODO make BillingType changeable
-					address.getBillingTypes().add(BillingType.INVOICE);
+					address.getContactTypes().add(ContactType.BILLING);
 					contact.getAddresses().add(address);
 					/*
 					 * Customer number, first name, name and ZIP are compared
@@ -239,7 +239,7 @@ public class ContactsCsvImporter {
 					testContact.setCompany(prop.getProperty("company"));
 					
 					// if previous address is given use it
-					Address tmpAddress = addressManager.getAddressFromContact(testContact, BillingType.INVOICE);
+					Address tmpAddress = addressManager.getAddressFromContact(testContact, ContactType.BILLING);
 					if(tmpAddress != null) {
 						address = tmpAddress;
 					}
@@ -249,7 +249,7 @@ public class ContactsCsvImporter {
 //					address.setCountryCode(prop.getProperty("country")); TODO get correct country code!
 					testContact.getAddresses().add(address);
 
-					Address deliveryAddress = addressManager.getAddressFromContact(testContact, BillingType.DELIVERY);
+					Address deliveryAddress = addressManager.getAddressFromContact(testContact, ContactType.DELIVERY);
 					Debitor deliveryContact = deliveryAddress != null ? (Debitor) testContact : modelFactory.createDebitor();
 //					deliveryContact.setGender(contactUtil.getSalutationID(prop.getProperty("delivery_gender")));
 //					deliveryContact.setTitle(prop.getProperty("delivery_title"));

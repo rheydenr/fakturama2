@@ -32,8 +32,8 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.model.Address;
-import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
@@ -199,7 +199,7 @@ public class VcardExport {
 //				if(contact.getBirthday() != null) {
 //					writeVCard("BDAY:", sdf.format(contact.getBirthday()));
 //				}
-				Address address = addressManager.getAddressFromContact(contact, BillingType.INVOICE);
+				Address address = addressManager.getAddressFromContact(contact,ContactType.BILLING);
 				if(address != null
 						&& (StringUtils.isNotBlank(contact.getCompany()) 
 								|| StringUtils.isNotBlank(address.getStreet()) 
@@ -218,7 +218,7 @@ public class VcardExport {
 							);
 				}
 				
-				address = addressManager.getAddressFromContact(contact, BillingType.DELIVERY);
+				address = addressManager.getAddressFromContact(contact, ContactType.DELIVERY);
 				if(address != null) {
 					if(StringUtils.isNotBlank(contact.getCompany()) 
 							|| StringUtils.isNotBlank(address.getStreet()) 

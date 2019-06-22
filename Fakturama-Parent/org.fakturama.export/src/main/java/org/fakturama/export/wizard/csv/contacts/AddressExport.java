@@ -35,8 +35,8 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Address;
-import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
@@ -153,7 +153,7 @@ public class AddressExport {
 					.append(ExporterHelper.inQuotes(contact.getName())).append(";")
 					.append(ExporterHelper.inQuotes(contact.getCompany())).append(";");
 				
-				Address billingAddress = addressManager.getAddressFromContact(contact, BillingType.INVOICE);
+				Address billingAddress = addressManager.getAddressFromContact(contact, ContactType.BILLING);
 				if(billingAddress != null) {
 						stringBuffer.append(ExporterHelper.inQuotes(billingAddress.getStreet())).append(";")
 						   .append(ExporterHelper.inQuotes(billingAddress.getZip())).append(";")
@@ -164,7 +164,7 @@ public class AddressExport {
 				}
 		
 				
-				Address deliveryAddress = addressManager.getAddressFromContact(contact, BillingType.DELIVERY);
+				Address deliveryAddress = addressManager.getAddressFromContact(contact, ContactType.DELIVERY);
 				stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(contact.getGender()))).append(";")
 				   .append(ExporterHelper.inQuotes(contact.getTitle())).append(";")
 				   .append(ExporterHelper.inQuotes(contact.getFirstName())).append(";")

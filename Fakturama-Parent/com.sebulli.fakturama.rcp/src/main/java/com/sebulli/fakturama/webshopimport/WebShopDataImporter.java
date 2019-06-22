@@ -592,7 +592,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         address.setZip(contact.getZip());
         address.setCity(contact.getCity());
         address.setValidFrom(today);
-        address.getBillingTypes().add(BillingType.INVOICE);
+        address.getContactTypes().add(com.sebulli.fakturama.model.ContactType.BILLING);
         String countryCode = localeUtil.findCodeByDisplayCountry(contact.getCountry(), lang);
         address.setCountryCode(countryCode);
         
@@ -614,7 +614,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         deliveryAddress.setZip(contact.getDeliveryZip());
         deliveryAddress.setCity(contact.getDeliveryCity());
         deliveryAddress.setValidFrom(today);
-        deliveryAddress.getBillingTypes().add(BillingType.DELIVERY);
+        deliveryAddress.getContactTypes().add(com.sebulli.fakturama.model.ContactType.DELIVERY);
         countryCode = localeUtil.findCodeByDisplayCountry(contact.getDeliveryCountry(), lang);
         deliveryAddress.setCountryCode(countryCode);
         

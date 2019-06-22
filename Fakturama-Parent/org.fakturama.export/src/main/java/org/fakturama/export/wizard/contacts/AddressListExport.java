@@ -31,8 +31,8 @@ import org.odftoolkit.odfdom.type.Color;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.model.Address;
-import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
@@ -153,7 +153,7 @@ public class AddressListExport extends OOCalcExporter {
 			setCellText(row, col++, contact.getName());
 			setCellText(row, col++, contact.getCompany());
 			
-			Address billingAddress = addressManager.getAddressFromContact(contact, BillingType.INVOICE);
+			Address billingAddress = addressManager.getAddressFromContact(contact, ContactType.BILLING);
 			if(billingAddress != null) {
 				setCellText(row, col++, billingAddress.getStreet());
 				setCellText(row, col++, billingAddress.getZip());
@@ -168,7 +168,7 @@ public class AddressListExport extends OOCalcExporter {
 			setCellText(row, col++, contact.getFirstName());
 			setCellText(row, col++, contact.getName());
 			setCellText(row, col++, contact.getCompany());
-			Address deliveryContact = addressManager.getAddressFromContact(contact, BillingType.INVOICE);
+			Address deliveryContact = addressManager.getAddressFromContact(contact, ContactType.BILLING);
 			if (deliveryContact != null) {
 				setCellText(row, col++, deliveryContact.getStreet());
 				setCellText(row, col++, deliveryContact.getZip());

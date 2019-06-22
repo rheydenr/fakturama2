@@ -39,7 +39,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		documentReceiver.setBillingType(billingType);
 
 		// copy address data
-		Address addressFromContact = getAddressFromContact(contact, billingType);
+		Address addressFromContact = getAddressFromContact(contact, billingType.isINVOICE() ? ContactType.BILLING : ContactType.DELIVERY);
 		documentReceiver.setStreet(addressFromContact.getStreet());
 		documentReceiver.setCity(addressFromContact.getCity());
 		documentReceiver.setZip(addressFromContact.getZip());
@@ -78,11 +78,11 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 	}
 
 	@Override
-	public Address getAddressFromContact(Contact contact, BillingType billingType) {
+	public Address getAddressFromContact(Contact contact, ContactType contactType) {
 		Address address = null;
-		if (contact != null && billingType != null) {
+		if (contact != null && contactType != null) {
 			address = contact.getAddresses().stream()
-					.filter(rcv -> rcv.getBillingTypes().isEmpty() || rcv.getBillingTypes().contains(billingType))
+					.filter(rcv -> rcv.getContactTypes().isEmpty() || rcv.getContactTypes().contains(contactType))
 					.findFirst().get();
 		}
 		return address;

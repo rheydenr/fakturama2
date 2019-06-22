@@ -52,7 +52,7 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 	@Override
 	protected Creditor createNewContact(FakturamaModelFactory modelFactory) {
 		Creditor createCreditor = modelFactory.createCreditor();
-		createCreditor.setContactType(ContactType.BILLING);
+//		createCreditor.setContactType(ContactType.BILLING);
 		return createCreditor;
 	}
 	

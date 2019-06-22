@@ -12,7 +12,7 @@ public interface IDocumentAddressManager {
 	 */
 	DocumentReceiver createDocumentReceiverFromContact(Contact contact, BillingType billingType);
 
-	Address getAddressFromContact(Contact contact, BillingType billingType);
+	Address getAddressFromContact(Contact contact, ContactType contactType);
 
 	DocumentReceiver getBillingAdress(Document document);
 

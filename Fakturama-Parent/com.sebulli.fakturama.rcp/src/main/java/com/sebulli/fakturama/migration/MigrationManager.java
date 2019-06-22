@@ -1003,7 +1003,6 @@ public class MigrationManager {
 //		if(!StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryName(), oldContact.getName())) 
 //		        || !StringUtils.isEmpty(getDeliveryConsideredValue(isDeliveryAddress, oldContact.getDeliveryFirstname(), oldContact.getFirstname()))) {
 			contact = modelFactory.createDebitor();
-			contact.setContactType(billingtype.isDELIVERY() ? ContactType.DELIVERY : ContactType.BILLING);
 			contact.setCompany(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryCompany(), oldContact.getCompany()));
 			contact.setFirstName(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryFirstname(), oldContact.getFirstname()));
 			contact.setGender(billingtype.isDELIVERY() ? oldContact.getDeliveryGender() : oldContact.getGender());
@@ -1020,6 +1019,7 @@ public class MigrationManager {
 	private Address createAddressFromOldContact(BillingType billingtype, OldContacts oldContact) {
 		// create address
 		Address address = modelFactory.createAddress();
+		address.getContactTypes().add(billingtype.isDELIVERY() ? ContactType.DELIVERY : ContactType.BILLING);
 		// if the contact is already deleted, we use the address only for documentation purposes
 		address.setDeleted(oldContact.isDeleted());
 		address.setStreet(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryStreet(), oldContact.getStreet()));
@@ -1040,7 +1040,6 @@ public class MigrationManager {
 		    migLogUser.info(String.format("!!! unable to determine the country for contact number [%s]", oldContact.getNr()));
 		}
 		
-		address.getBillingTypes().add(billingtype);
 		return address;
 	}
 

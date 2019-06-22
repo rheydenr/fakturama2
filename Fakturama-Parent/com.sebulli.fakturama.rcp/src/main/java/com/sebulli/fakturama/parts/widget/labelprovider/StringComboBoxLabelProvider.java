@@ -17,6 +17,8 @@ package com.sebulli.fakturama.parts.widget.labelprovider;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.viewers.LabelProvider;
 
 import com.sebulli.fakturama.i18n.ILocaleService;
@@ -29,21 +31,19 @@ import com.sebulli.fakturama.i18n.ILocaleService;
  */
 public class StringComboBoxLabelProvider extends LabelProvider {
     
+	@Inject
 	private ILocaleService localeUtil;
 
     /**
-     * The values.
-     */
-    private Map<String, String> values;
-
-    /**
-     * @param values the possible label values that this 
+     * @param countryNames the possible label values that this 
      * <code>ILabelProvider</code> may return.
      */
-    public StringComboBoxLabelProvider(Map<String, String> values, ILocaleService localeUtil) {
-        this.values = values;
-        this.localeUtil = localeUtil;
-    }
+    private Map<String, String> countryNames;
+//
+//    public StringComboBoxLabelProvider(Map<String, String> countryNames, ILocaleService localeUtil) {
+//        this.countryNames = countryNames;
+//        this.localeUtil = localeUtil;
+//    }
 
     /**
      * Returns the <code>String</code> that maps to the given 
@@ -57,11 +57,19 @@ public class StringComboBoxLabelProvider extends LabelProvider {
     public String getText(Object element) {
         String retval = "";
         if (element != null && element instanceof String) {
-            retval = values.get(element);
+            retval = countryNames.get(element);
         } else {
-            retval = values.get(localeUtil.getDefaultLocale().getLanguage());
+            retval = countryNames.get(localeUtil.getDefaultLocale().getLanguage());
         }
         
         return retval;
     }
+
+	public Map<String, String> getCountryNames() {
+		return countryNames;
+	}
+
+	public void setCountryNames(Map<String, String> countryNames) {
+		this.countryNames = countryNames;
+	}
 }

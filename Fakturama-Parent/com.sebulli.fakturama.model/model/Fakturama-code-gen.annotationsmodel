@@ -187,16 +187,20 @@
         <eAttribute href="Fakturama.ecore#//Address/countryCode"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The country information is stored as a String containing the language and the country abbreviation (from ISO 3166), e.g., &quot;de_CH&quot; for the German speaking part of Switzerland. The Locale class from java.util is used to display the country information." getter="getCountryCode" setter="setCountryCode"/>
       </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//Address/billingTypes"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The BillingType(s) for which this address is valid. If no BillingType is set this address is used for all BillingTypes."/>
-      </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Address/contact"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="The contact to which this address belongs. This field is set via Contact class (bidirectional association)." useList="false"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation" attributeOverride="">
           <joinColumn name="FK_CONTACT"/>
         </eReferenceAnnotations>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Address/localConsultant"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The localConsultant holds information about someone who is responsible at the given address."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Address/contactTypes"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="Denotes what kind of address it is (i.e., an address for billing, for delivery etc). If no ContactType is set this address is valid for all types."/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
@@ -207,6 +211,7 @@
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
+          <table name="FKT_CONTACT"/>
           <entityListeners>
             <entityListener description="listener for adding modification date to an entity" class="com.sebulli.fakturama.model.EntityListener"/>
           </entityListeners>
@@ -330,13 +335,6 @@
           <joinColumn name="FK_BANKACCOUNT"/>
           <manyToOne/>
         </eReferenceAnnotations>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//Contact/contactType"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="Denotes what kind of Contact it is (i.e., a contyt for billing, for delivery etc)"/>
-        <eAttributeAnnotations xsi:type="ormannotations:EAttributeORMAnnotation">
-          <basic enumerated="ORDINAL"/>
-        </eAttributeAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/useSalesEqualizationTax"/>

@@ -22,7 +22,9 @@ import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.IBeanListProperty;
 import org.eclipse.core.databinding.beans.IBeanValueProperty;
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -32,6 +34,8 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.jface.databinding.swt.ISWTObservableList;
+import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -45,6 +49,7 @@ import org.eclipse.nebula.jface.cdatetime.CDateTimeObservableValue;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.FormattedTextObservableValue;
+import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -55,7 +60,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
@@ -64,6 +71,7 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IEntity;
@@ -93,7 +101,7 @@ public abstract class Editor<T extends IEntity> {
     protected PropertiesDAO propertiesDao;
 	
     @Inject
-    private IEclipseContext context;
+    protected IEclipseContext context;
 
 	@Inject
 	@Translation
@@ -336,26 +344,28 @@ public abstract class Editor<T extends IEntity> {
 	 * @param source the SWT widget
 	 * @param property the property to observe
 	 */
-	protected Binding bindModelValue(T target, Control source, String property) {
+	protected <E extends IEntity> Binding bindModelValue(E target, Control source, String property) {
 	    return bindModelValue(target, source, property, null, null);
 	}
 	
-    protected Binding bindModelValue(T target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
-        IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
-        IObservableValue<T> model = nameProperty.observe(target);
+    protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+        IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
+
+// TODO using chained properties
+//        BeanProperties.value(target.getClass(), property).value(property).value(property).observe(source);
+
+        IObservableValue<E> model = nameProperty.observe(target);
         Binding retval = null;
         
-        IObservableValue<T> uiWidget;
+        IObservableValue<E> uiWidget;
         /*
          * ATTENTION! Dont't be attempted to put the Listener code in this if statement.
          * Otherwise you get ALWAYS a dirty editor!
          */
-        if(source instanceof Combo || source instanceof Button) {
+        if(source instanceof Combo || source instanceof Button || source instanceof Spinner) {
             uiWidget = WidgetProperties.selection().observe(source);
         } else if(source instanceof CDateTime) {
             uiWidget = new CDateTimeObservableValue((CDateTime) source);
-        } else if(source instanceof Spinner) {
-        	uiWidget = WidgetProperties.selection().observe(source);
         } else {
 //            uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
             uiWidget = WidgetProperties.text(SWT.Modify).observe(source);
@@ -392,7 +402,7 @@ public abstract class Editor<T extends IEntity> {
         return retval;
     }
 	
-    protected Binding bindModelValue(T target, Text source, String property, int limit, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+    protected <E extends IEntity> Binding bindModelValue(E target, Text source, String property, int limit, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
     	Binding binding = null;
         if (limit > 0) {
             source.setTextLimit(limit);
@@ -414,18 +424,44 @@ public abstract class Editor<T extends IEntity> {
      * Supervise this text widget. Set the text limit and request a new
      * "isDirty" validation, if the content of the text widget is modified.
      */
-    protected Binding bindModelValue(T target, Text source, String property, int limit) {
+    protected <E extends IEntity> Binding bindModelValue(E target, Text source, String property, int limit) {
         return bindModelValue(target, source, property, limit, null, null);
     }
+    
+    // Doesn't work because MultiChoice isn't supported by DataBinding at the moment.
+//	protected <E extends IEntity> Binding bindModelValue(E target, MultiChoice<ContactType> source, String property) {
+//		Binding binding = null;
+//
+//		IBeanListProperty nameProperty = BeanProperties.list(target.getClass(), property);
+//		IObservableList<E> model = nameProperty.observe(target);
+//		ISWTObservableList uiWidget = WidgetProperties.items().observe(source);
+//		binding = getCtx().bindList(uiWidget, model);
+//
+//		source.addListener(SWT.Modify, new Listener() {
+//			@Override
+//			public void handleEvent(Event event) {
+//				/*
+//				 * If the widget is in "calculating" state we don't have to update the dirty
+//				 * state, because this leads to a dirty editor as soon as it opens. The
+//				 * "calculating" state is set immediately before and after the calculation which
+//				 * influences this widget.
+//				 */
+//				if (((MultiChoice) event.widget).getData(CALCULATING_STATE) == null) {
+//					getMDirtyablePart().setDirty(true);
+//				}
+//			}
+//		});
+//		return binding;
+//	}
 
-    protected Binding bindModelValue(T target, FormattedText source, String property, int limit) {
+    protected <E extends IEntity> Binding bindModelValue(E target, FormattedText source, String property, int limit) {
     	Binding binding = null;
     	if(limit > 0) {
     		source.getControl().setTextLimit(limit);
     	}
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
-        IObservableValue<T> model = nameProperty.observe(target);
-        IObservableValue<T> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);
+        IObservableValue<E> model = nameProperty.observe(target);
+        IObservableValue<E> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);
         binding = getCtx().bindValue(uiWidget, model);
 
         source.getControl().addModifyListener(e -> {
@@ -442,11 +478,11 @@ public abstract class Editor<T extends IEntity> {
         return binding;
     }
 
-    protected Binding bindModelValue(T target, ComboViewer source, String property) {
+    protected <E extends IEntity> Binding bindModelValue(E target, ComboViewer source, String property) {
     	Binding binding = null;
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
-        IObservableValue<T> model = nameProperty.observe(target);
-        IObservableValue<T> uiWidget = ViewersObservables
+        IObservableValue<E> model = nameProperty.observe(target);
+        IObservableValue<E> uiWidget = ViewersObservables
                 .observeSingleSelection(source);
         binding = getCtx().bindValue(uiWidget, model);
         
@@ -550,5 +586,4 @@ public abstract class Editor<T extends IEntity> {
     }
 
     protected abstract Class<T> getModelClass();
-
 }
