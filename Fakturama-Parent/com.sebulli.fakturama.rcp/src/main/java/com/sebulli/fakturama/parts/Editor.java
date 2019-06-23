@@ -20,6 +20,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateListStrategy;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.IBeanListProperty;
@@ -34,8 +35,6 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.jface.databinding.swt.ISWTObservableList;
-import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -60,9 +59,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
@@ -75,6 +72,7 @@ import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.parts.widget.MultiChoiceWidgetObservableValue;
 
 /**
  * Parent class for all editors
@@ -348,7 +346,28 @@ public abstract class Editor<T extends IEntity> {
 	    return bindModelValue(target, source, property, null, null);
 	}
 	
-    protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+    protected <E extends IEntity> Binding bindModelList(E target, Object elementType, final Control source, 
+    		String property, UpdateListStrategy<String, E> targetToModel, 
+    		UpdateListStrategy<E,String> modelToTarget) {
+        Binding retval = null;
+        IBeanListProperty listProperty = BeanProperties.list(target.getClass(), property);
+        IObservableList<String> uiWidget = null;
+        IObservableList<E> modelList = listProperty.observe(target);
+    	   if (source instanceof MultiChoice) {
+    		   uiWidget = new MultiChoiceWidgetObservableValue((MultiChoice)source, elementType);
+    	   }
+
+           if (targetToModel != null || modelToTarget != null) {
+        	   // TODO doesn't work at the moment
+        	   retval = getCtx().bindList(uiWidget, modelList, targetToModel, modelToTarget);
+           } else {
+        	   retval = getCtx().bindList(uiWidget, modelList);
+           }    
+
+    	   return retval;
+    }
+    
+   	protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
 
 // TODO using chained properties

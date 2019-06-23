@@ -340,6 +340,11 @@
         <eAttribute href="Fakturama.ecore#//Contact/useSalesEqualizationTax"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="This contact has to pay a sales equalization tax."/>
       </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
+        <eReference href="Fakturama.ecore#//Contact/addresses"/>
+        <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="All addresses which belongs to this contact."/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation"/>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//Creditor"/>

@@ -127,17 +127,15 @@ public class ContactsDAO extends AbstractDAO<Contact> {
         restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(firstName)));
         restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(name)));
         restrictions.add(cb.not(root.get(Contact_.deleted)));
-        
-    	throw new RuntimeException("HIER BITTE NOCHMAL NACHSEHEN!!!");
-//
+System.err.println("HIER BITTE NOCHMAL NACHSEHEN!!!");
 //        restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.street), StringUtils.defaultString(street)));
-//        CriteriaQuery<Contact> select = query.select(root);
-//        select.where(restrictions.toArray(new Predicate[]{}));
-//        List<Contact> resultList = getEntityManager().createQuery(select).getResultList();
-//        if(!resultList.isEmpty()) {
-//        	retval = resultList.get(0);
-//        }
-//		return retval;
+        CriteriaQuery<Contact> select = query.select(root);
+        select.where(restrictions.toArray(new Predicate[]{}));
+        List<Contact> resultList = getEntityManager().createQuery(select).getResultList();
+        if(!resultList.isEmpty()) {
+        	retval = resultList.get(0);
+        }
+		return retval;
 	}
 
 	/**

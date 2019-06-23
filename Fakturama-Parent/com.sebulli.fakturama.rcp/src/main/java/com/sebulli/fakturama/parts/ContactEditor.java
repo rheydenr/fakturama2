@@ -38,7 +38,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.core.databinding.Binding;
+import org.eclipse.core.databinding.UpdateListStrategy;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -248,6 +250,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		 * - date_added (constant)
 		 */
 
+		// TODO bind combo to model!
 		// at first, check the category for a new entry
         // (the user could have written a new one into the combo field)
         String testCat = comboCategory.getText();
@@ -1161,7 +1164,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		    bindWidget(currentAddress, Address_.countryCode, addressTabItem, 0);
 
 		    // doesn't work at the moment because MultiChoice isn't supported by JFace databinding
-//		    bindListWidget(currentAddress, Address_.contactTypes, addressTabItem);
+		    bindListWidget(currentAddress, Address_.contactTypes, addressTabItem);
 		}
 		
 		bindModelValue(editorContact, txtAccountHolder, Contact_.bankAccount.getName() +"." +BankAccount_.accountHolder.getName(), 64);
@@ -1211,15 +1214,56 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
 
-//	private <E extends IEntity> void bindListWidget(E listEntity, ListAttribute<E, ContactType> property,
-//			CTabItem cTabItem) {
-//		java.util.Optional<Control> currentWidget = findAddressWidgetFor(property, cTabItem);
-//		currentWidget.ifPresent(w -> {
-//			if (w instanceof MultiChoice) {
-//				bindModelValue(listEntity, (MultiChoice)w, property.getName());
-//			}
-//		});
-//	}
+	@SuppressWarnings("unchecked")
+	private <E extends IEntity> void bindListWidget(E listEntity, ListAttribute<E, ContactType> property,
+			CTabItem cTabItem) {
+		java.util.Optional<Control> currentWidget = findAddressWidgetFor(property, cTabItem);
+		
+		UpdateListStrategy<String, E> targetToModel = new UpdateListStrategy<String, E>();
+		targetToModel.setConverter(new IConverter<String, E>() {
+
+			@Override
+			public Object getFromType() {
+				return ContactType.class;
+			}
+
+			@Override
+			public Object getToType() {
+				return String.class;
+			}
+
+			@Override
+			public E convert(String fromObject) {
+				return null;
+			}
+		});
+		
+		UpdateListStrategy<E,String> modelToTarget = new UpdateListStrategy<E, String>();
+		modelToTarget.setConverter(new IConverter<E, String>() {
+
+			@Override
+			public Object getFromType() {
+				return Object.class;
+			}
+
+			@Override
+			public Object getToType() {
+				return ContactType.class;
+			}
+
+			@Override
+			public String convert(E fromObject) {
+				return "Billing";
+			}
+		});
+		
+		currentWidget.ifPresent(w -> {
+			if (w instanceof MultiChoice) {
+				bindModelList(listEntity, ContactType.class, (MultiChoice<ContactType>)w, 
+						property.getName(), targetToModel, modelToTarget);
+			}
+		});
+	}
 
 	/**
 	 * Binds a widget from a {@link CTabFolder}'s {@link CTabItem} to a certain field of an entity. The entity
