@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.persistence.config.QueryHints;
 
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Contact_;
@@ -124,11 +126,11 @@ public class ContactsDAO extends AbstractDAO<Contact> {
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Contact> query = cb.createQuery(getEntityClass());
         Root<Contact> root = query.from(getEntityClass());
+        Join<Contact, Address> address = root.join(Contact_.addresses);
         restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(firstName)));
         restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(name)));
         restrictions.add(cb.not(root.get(Contact_.deleted)));
-System.err.println("HIER BITTE NOCHMAL NACHSEHEN!!!");
-//        restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.street), StringUtils.defaultString(street)));
+        restrictions.add(cb.equal(address.get(Address_.street), StringUtils.defaultString(street)));
         CriteriaQuery<Contact> select = query.select(root);
         select.where(restrictions.toArray(new Predicate[]{}));
         List<Contact> resultList = getEntityManager().createQuery(select).getResultList();

@@ -343,7 +343,9 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Contact/addresses"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="All addresses which belongs to this contact."/>
-        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_ADDRESSES"/>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">

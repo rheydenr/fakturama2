@@ -20,10 +20,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -41,6 +44,7 @@ import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateListStrategy;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -166,6 +170,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
     private TabFolder tabFolder;
     private CTabFolder addressTabFolder;
+    private List<AddressTabWidget> addressTabWidgets = new ArrayList<>();
     
 	private Text textNote;
 	private ComboViewer comboSalutationViewer;
@@ -1045,6 +1050,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private CTabItem createAddressTabForBillingType(String name, Composite invisible, Composite addressGroup, Map<String, String> countryNames,
 			Map<Integer, String> salutationList) {
 		CTabItem addressForBillingType = new CTabItem(addressTabFolder, SWT.NONE);
+		AddressTabWidget addressTabWidget = new AddressTabWidget();
 		addressForBillingType.setText(name);
 
 		// Local Consultant
@@ -1054,7 +1060,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelLocalConsultant);
 		
 		Text txtlocalConsultant = new Text(addressGroup, SWT.BORDER);
-		txtlocalConsultant.setData(WIDGET_IDENTIFIER, Address_.localConsultant);
+		addressTabWidget.setLocalConsultant(txtlocalConsultant);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtlocalConsultant);
 		
 		// Street
@@ -1063,7 +1069,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelStreet.setText(msg.commonFieldStreet);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStreet);
 		Text txtStreet = new Text(addressGroup, SWT.BORDER);
-		txtStreet.setData(WIDGET_IDENTIFIER, Address_.street);
 		txtStreet.addFocusListener(new FocusAdapter() {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
@@ -1073,6 +1078,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 				checkDuplicateContact(txtStreet.getText());
 			}
 		});
+		addressTabWidget.setStreet(txtStreet);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtStreet);
 //		setTabOrder(txtCompany, txtStreet);
 		
@@ -1082,7 +1088,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelCityAddon.setText("City Addon");
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCityAddon);
 		Text txtCityAddon = new Text(addressGroup, SWT.BORDER);
-		txtCityAddon.setData(WIDGET_IDENTIFIER, Address_.cityAddon);
+		addressTabWidget.setCityAddon(txtCityAddon);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtCityAddon);
 //		setTabOrder(txtStreet, txtCityAddon);
 
@@ -1093,11 +1099,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCity);
 		
 		Text txtZip = new Text(addressGroup, SWT.BORDER);
-		txtZip.setData(WIDGET_IDENTIFIER, Address_.zip);
+		addressTabWidget.setZip(txtZip);
 		GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).applyTo(txtZip);
 		
 		Text txtCity = new Text(addressGroup, SWT.BORDER);
-		txtCity.setData(WIDGET_IDENTIFIER, Address_.city);
+		addressTabWidget.setCity(txtCity);
 		GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).grab(true, false).applyTo(txtCity);
 
 		// Country
@@ -1115,8 +1121,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		StringComboBoxLabelProvider stringComboBoxLabelProvider = ContextInjectionFactory.make(StringComboBoxLabelProvider.class, context);
 		stringComboBoxLabelProvider.setCountryNames(countryNames);
 		comboCountry.setLabelProvider(stringComboBoxLabelProvider);
-		comboCountry.setSelection(new StructuredSelection(localeUtil.getDefaultLocale().getCountry()), true);
-		comboCountry.setData(WIDGET_IDENTIFIER, Address_.countryCode);
+		addressTabWidget.setCountryCombo(comboCountry);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
 		
 		Label labelAddressType = new Label(addressGroup, SWT.NONE);
@@ -1126,11 +1131,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		
 		final MultiChoice<ContactType> mcSimple = new MultiChoice<ContactType>(addressGroup, SWT.None);
 		mcSimple.setLabelProvider(new ContactTypeLabelProvider(msg));
-		mcSimple.setData(WIDGET_IDENTIFIER, Address_.contactTypes);
 		mcSimple.addAll(ContactType.values());
+		addressTabWidget.setContactTypeWidget(mcSimple);
 		GridDataFactory.swtDefaults().hint(400, SWT.DEFAULT).span(2, 1).applyTo(mcSimple);
 		
 		addressForBillingType.setControl(addressGroup);
+		addressTabWidgets.add(addressTabWidget);
 		return addressForBillingType;
 	}
 	
@@ -1157,14 +1163,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		for (int i = 0; i < items.length; i++) {
 			CTabItem addressTabItem = items[i];
 		    Address currentAddress = getOrCreateAddressByIndexFromContact(i);
-		    bindWidget(currentAddress, Address_.street, addressTabItem, 64);
-		    bindWidget(currentAddress, Address_.zip, addressTabItem, 16);
-		    bindWidget(currentAddress, Address_.city, addressTabItem, 32);
-		    bindWidget(currentAddress, Address_.cityAddon, addressTabItem, 64);
-		    bindWidget(currentAddress, Address_.countryCode, addressTabItem, 0);
+		    
+		    bindModelValue(currentAddress, addressTabWidgets.get(i).getLocalConsultant(), Address_.localConsultant.getName(), 64);
+		    bindModelValue(currentAddress, addressTabWidgets.get(i).getStreet(), Address_.street.getName(), 64);
+		    bindModelValue(currentAddress, addressTabWidgets.get(i).getZip(), Address_.zip.getName(), 16);
+		    bindModelValue(currentAddress, addressTabWidgets.get(i).getCity(), Address_.city.getName(), 32);
+		    bindModelValue(currentAddress, addressTabWidgets.get(i).getCityAddon(), Address_.cityAddon.getName(), 32);
+		    bindModelValue(currentAddress, addressTabWidgets.get(i).getCountryCombo(), Address_.countryCode.getName());
 
-		    // doesn't work at the moment because MultiChoice isn't supported by JFace databinding
-		    bindListWidget(currentAddress, Address_.contactTypes, addressTabItem);
+		    bindListWidget(currentAddress, addressTabWidgets.get(i).getContactTypeWidget(), Address_.contactTypes, addressTabItem);
 		}
 		
 		bindModelValue(editorContact, txtAccountHolder, Contact_.bankAccount.getName() +"." +BankAccount_.accountHolder.getName(), 64);
@@ -1215,89 +1222,54 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     }
 
 	@SuppressWarnings("unchecked")
-	private <E extends IEntity> void bindListWidget(E listEntity, ListAttribute<E, ContactType> property,
-			CTabItem cTabItem) {
-		java.util.Optional<Control> currentWidget = findAddressWidgetFor(property, cTabItem);
-		
-		UpdateListStrategy<String, E> targetToModel = new UpdateListStrategy<String, E>();
-		targetToModel.setConverter(new IConverter<String, E>() {
+	private <E extends IEntity> void bindListWidget(E listEntity, Control currentWidget,
+			ListAttribute<E, ContactType> property, CTabItem cTabItem) {
 
-			@Override
-			public Object getFromType() {
-				return ContactType.class;
-			}
-
-			@Override
-			public Object getToType() {
-				return String.class;
-			}
-
-			@Override
-			public E convert(String fromObject) {
-				return null;
-			}
-		});
-		
-		UpdateListStrategy<E,String> modelToTarget = new UpdateListStrategy<E, String>();
-		modelToTarget.setConverter(new IConverter<E, String>() {
-
-			@Override
-			public Object getFromType() {
-				return Object.class;
-			}
-
-			@Override
-			public Object getToType() {
-				return ContactType.class;
-			}
-
-			@Override
-			public String convert(E fromObject) {
-				return "Billing";
-			}
-		});
-		
-		currentWidget.ifPresent(w -> {
-			if (w instanceof MultiChoice) {
-				bindModelList(listEntity, ContactType.class, (MultiChoice<ContactType>)w, 
-						property.getName(), targetToModel, modelToTarget);
-			}
-		});
+		if (currentWidget instanceof MultiChoice) {
+			bindModelList(listEntity, ContactType.class, (MultiChoice<ContactType>) currentWidget, property.getName(),
+				null, null);
+		}
 	}
+//
+//	/**
+//	 * Binds a widget from a {@link CTabFolder}'s {@link CTabItem} to a certain field of an entity. The entity
+//	 * hereby is a part (entry) of a list which belongs to a parent entity (e.g., the {@link Address}
+//	 * entry from a {@link Contact}'s  list). The widget has to contain an entry in its data property which 
+//	 * names the containing property.
+//	 * 
+//	 * @see ContactEditor#findAddressWidgetFor(SingularAttribute, CTabItem)
+//	 * 
+//	 * @param listEntity the current entity
+//	 * @param property the property to bind
+//	 * @param cTabItem the current {@link CTabItem}
+//	 * @param length the length of this field (can be 0 for default length)
+//	 */
+//	private <E extends IEntity> void bindWidget(E listEntity, SingularAttribute<E, String> property, CTabItem cTabItem,
+//			int length) {
+//
+//		// each widget has a "marker" which identifies the widget for a certain property
+//		// of an address
+//		java.util.Optional<Control> currentWidget = findAddressWidgetFor(property, cTabItem);
+//		currentWidget.ifPresent(w -> {
+//			if (w instanceof Text) {
+//				if (length > 0) {
+//					bindModelValue(listEntity, (Text) w, property.getName(), length);
+//				} else {
+//					bindModelValue(listEntity, (Text) w, property.getName());
+//				}
+//			}
+//		});
+//	}
 
-	/**
-	 * Binds a widget from a {@link CTabFolder}'s {@link CTabItem} to a certain field of an entity. The entity
-	 * hereby is a part (entry) of a list which belongs to a parent entity (e.g., the {@link Address}
-	 * entry from a {@link Contact}'s  list). The widget has to contain an entry in its data property which 
-	 * names the containing property.
-	 * 
-	 * @see ContactEditor#findAddressWidgetFor(SingularAttribute, CTabItem)
-	 * 
-	 * @param listEntity the current entity
-	 * @param property the property to bind
-	 * @param cTabItem the current {@link CTabItem}
-	 * @param length the length of this field (can be 0 for default length)
-	 */
-	private <E extends IEntity> void bindWidget(E listEntity, SingularAttribute<E, String> property, CTabItem cTabItem,
-			int length) {
-
-		// each widget has a "marker" which identifies the widget for a certain property
-		// of an address
-		java.util.Optional<Control> currentWidget = findAddressWidgetFor(property, cTabItem);
-		currentWidget.ifPresent(w -> {
-			if (w instanceof Text) {
-				if (length > 0) {
-					bindModelValue(listEntity, (Text) w, property.getName(), length);
-				} else {
-					bindModelValue(listEntity, (Text) w, property.getName());
-				}
-			}
-		});
-	}
-
-	private <E extends IEntity> java.util.Optional<Control> findAddressWidgetFor(Attribute<E, ?> attribute, CTabItem addressTabItem) {
-		return Arrays.stream(((Composite)addressTabItem.getControl()).getChildren()).filter(w -> w.getData(WIDGET_IDENTIFIER) != null && w.getData(WIDGET_IDENTIFIER).equals(attribute)).findFirst();
-	}
+//	private <E extends IEntity> java.util.Optional<Control> findAddressWidgetFor(Attribute<E, ?> attribute, CTabItem addressTabItem) {
+////		for (Control w : ((Composite)addressTabItem.getControl()).getChildren()) {
+////			if(w.getData(WIDGET_IDENTIFIER) != null && w.getData(WIDGET_IDENTIFIER).equals(attribute)) {
+////				System.out.println("found widget: " + w);
+////			}
+////		}
+////		
+//		return Arrays.stream(((Composite)addressTabItem.getControl()).getChildren()).filter(w -> w.getData(WIDGET_IDENTIFIER) != null && w.getData(WIDGET_IDENTIFIER).equals(attribute)).findFirst();
+//	}
 
 	protected Address getOrCreateAddressByIndexFromContact(int i) {
 		// get last address and fill up the address list

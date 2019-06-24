@@ -224,13 +224,22 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 
             public Object getDataValue(T rowObject, int columnIndex) {
                 ContactListDescriptor descriptor = ContactListDescriptor.getDescriptorFromColumn(columnIndex);
+                // For the address always the first entry is displayed (if any)
                 switch (descriptor) {
                 case NO:
                 case FIRSTNAME:
                 case LASTNAME:
-                case ZIP:
-                case CITY:
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                case ZIP:
+                	if(!rowObject.getAddresses().isEmpty()) {
+                		return rowObject.getAddresses().get(0).getZip();
+                	}
+                	break;
+                case CITY:
+                	if(!rowObject.getAddresses().isEmpty()) {
+                		return rowObject.getAddresses().get(0).getCity();
+                	}
+                	break;
                 case COMPANY:
                 	String value = (String) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
                 	if(value != null) {

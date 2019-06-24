@@ -25,7 +25,9 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.IBeanListProperty;
 import org.eclipse.core.databinding.beans.IBeanValueProperty;
+import org.eclipse.core.databinding.observable.list.IListChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -59,7 +61,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
@@ -72,7 +76,7 @@ import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IEntity;
-import com.sebulli.fakturama.parts.widget.MultiChoiceWidgetObservableValue;
+import com.sebulli.fakturama.parts.widget.MultiChoiceWidgetObservableList;
 
 /**
  * Parent class for all editors
@@ -346,26 +350,39 @@ public abstract class Editor<T extends IEntity> {
 	    return bindModelValue(target, source, property, null, null);
 	}
 	
-    protected <E extends IEntity> Binding bindModelList(E target, Object elementType, final Control source, 
-    		String property, UpdateListStrategy<String, E> targetToModel, 
-    		UpdateListStrategy<E,String> modelToTarget) {
-        Binding retval = null;
-        IBeanListProperty listProperty = BeanProperties.list(target.getClass(), property);
-        IObservableList<String> uiWidget = null;
-        IObservableList<E> modelList = listProperty.observe(target);
-    	   if (source instanceof MultiChoice) {
-    		   uiWidget = new MultiChoiceWidgetObservableValue((MultiChoice)source, elementType);
-    	   }
+	protected <E extends IEntity> Binding bindModelList(E target, Object elementType, final Control source,
+			String property, UpdateListStrategy<String, E> targetToModel, UpdateListStrategy<E, String> modelToTarget) {
+		Binding retval = null;
+		IBeanListProperty listProperty = BeanProperties.list(target.getClass(), property, ContactType.class);
+		IObservableList<String> uiWidget = null;
+		IObservableList<E> modelList = (IObservableList<E>)listProperty.observe(target);
+		if (source instanceof MultiChoice) {
+			uiWidget = new MultiChoiceWidgetObservableList<>((MultiChoice) source, elementType);
+			uiWidget.addListChangeListener(new IListChangeListener<String>() {
 
-           if (targetToModel != null || modelToTarget != null) {
-        	   // TODO doesn't work at the moment
-        	   retval = getCtx().bindList(uiWidget, modelList, targetToModel, modelToTarget);
-           } else {
-        	   retval = getCtx().bindList(uiWidget, modelList);
-           }    
+				@Override
+				public void handleListChange(ListChangeEvent<? extends String> event) {
+		        	if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null 
+					/*
+					 * && (((MultiChoice)source).getSelectedIndex() !=
+					 * ((MultiChoice)e.getSource()).getSelectedIndex() ||
+					 * ((MultiChoice)e.getSource()).getSelectedIndex() == -1)
+					 */) {
+			    getMDirtyablePart().setDirty(true);
+			}
+				}
+				
+			});
+		}
 
-    	   return retval;
-    }
+		if (targetToModel != null || modelToTarget != null) {
+			retval = getCtx().bindList(uiWidget, modelList, targetToModel, modelToTarget);
+		} else {
+			retval = getCtx().bindList(uiWidget, modelList);
+		}
+
+		return retval;
+	}
     
    	protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
@@ -446,32 +463,6 @@ public abstract class Editor<T extends IEntity> {
     protected <E extends IEntity> Binding bindModelValue(E target, Text source, String property, int limit) {
         return bindModelValue(target, source, property, limit, null, null);
     }
-    
-    // Doesn't work because MultiChoice isn't supported by DataBinding at the moment.
-//	protected <E extends IEntity> Binding bindModelValue(E target, MultiChoice<ContactType> source, String property) {
-//		Binding binding = null;
-//
-//		IBeanListProperty nameProperty = BeanProperties.list(target.getClass(), property);
-//		IObservableList<E> model = nameProperty.observe(target);
-//		ISWTObservableList uiWidget = WidgetProperties.items().observe(source);
-//		binding = getCtx().bindList(uiWidget, model);
-//
-//		source.addListener(SWT.Modify, new Listener() {
-//			@Override
-//			public void handleEvent(Event event) {
-//				/*
-//				 * If the widget is in "calculating" state we don't have to update the dirty
-//				 * state, because this leads to a dirty editor as soon as it opens. The
-//				 * "calculating" state is set immediately before and after the calculation which
-//				 * influences this widget.
-//				 */
-//				if (((MultiChoice) event.widget).getData(CALCULATING_STATE) == null) {
-//					getMDirtyablePart().setDirty(true);
-//				}
-//			}
-//		});
-//		return binding;
-//	}
 
     protected <E extends IEntity> Binding bindModelValue(E target, FormattedText source, String property, int limit) {
     	Binding binding = null;
@@ -499,7 +490,7 @@ public abstract class Editor<T extends IEntity> {
 
     protected <E extends IEntity> Binding bindModelValue(E target, ComboViewer source, String property) {
     	Binding binding = null;
-        IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
+        IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
         IObservableValue<E> model = nameProperty.observe(target);
         IObservableValue<E> uiWidget = ViewersObservables
                 .observeSingleSelection(source);
