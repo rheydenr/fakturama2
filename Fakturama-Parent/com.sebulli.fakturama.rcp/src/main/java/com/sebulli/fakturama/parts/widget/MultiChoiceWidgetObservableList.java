@@ -11,8 +11,6 @@ import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.nebula.widgets.opal.multichoice.MultiChoiceSelectionListener;
 import org.eclipse.swt.widgets.Shell;
 
-import com.ibm.icu.util.Currency;
-
 public class MultiChoiceWidgetObservableList<T> extends AbstractObservableList<T> {
 	private Object elementType;
 
@@ -45,7 +43,6 @@ public class MultiChoiceWidgetObservableList<T> extends AbstractObservableList<T
 			@Override
 			public void handle(MultiChoice<T> parent, T receiver, boolean selected, Shell popup) {
 				if (!updating) {
-//					currentSelection = multiChoiceWidget.getSelection();
 					List<T> newSelection = new ArrayList<>(currentSelection);
 					if(selected) {
 						// a value was added to the list
@@ -56,7 +53,6 @@ public class MultiChoiceWidgetObservableList<T> extends AbstractObservableList<T
 					
 					if (((newSelection != null) && !newSelection.equals(currentSelection))
 							|| ((currentSelection != null) && !currentSelection.equals(newSelection))) {
-
 						fireListChange(Diffs.computeListDiff(currentSelection, newSelection));
 					}
 					currentSelection = newSelection;
@@ -70,13 +66,13 @@ public class MultiChoiceWidgetObservableList<T> extends AbstractObservableList<T
 	
 	@Override
 	public void add(int index, T element) {
-		multiChoiceWidget.selectAt(index);
+		multiChoiceWidget.select(element);
 		currentSelection.add(element);
 	}
 	
 	@Override
 	public boolean remove(Object o) {
-		multiChoiceWidget.deselect((T) o);
+//		multiChoiceWidget.deselect((T) o);
 		currentSelection.remove(o);
 		return true;
 	}

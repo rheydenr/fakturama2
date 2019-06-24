@@ -61,9 +61,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
@@ -350,6 +348,7 @@ public abstract class Editor<T extends IEntity> {
 	    return bindModelValue(target, source, property, null, null);
 	}
 	
+   	@SuppressWarnings("unchecked")
 	protected <E extends IEntity> Binding bindModelList(E target, Object elementType, final Control source,
 			String property, UpdateListStrategy<String, E> targetToModel, UpdateListStrategy<E, String> modelToTarget) {
 		Binding retval = null;
@@ -384,7 +383,8 @@ public abstract class Editor<T extends IEntity> {
 		return retval;
 	}
     
-   	protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+   	@SuppressWarnings("unchecked")
+	protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
 
 // TODO using chained properties
@@ -464,6 +464,7 @@ public abstract class Editor<T extends IEntity> {
         return bindModelValue(target, source, property, limit, null, null);
     }
 
+   	@SuppressWarnings("unchecked")
     protected <E extends IEntity> Binding bindModelValue(E target, FormattedText source, String property, int limit) {
     	Binding binding = null;
     	if(limit > 0) {
@@ -488,6 +489,7 @@ public abstract class Editor<T extends IEntity> {
         return binding;
     }
 
+   	@SuppressWarnings("unchecked")
     protected <E extends IEntity> Binding bindModelValue(E target, ComboViewer source, String property) {
     	Binding binding = null;
         IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);

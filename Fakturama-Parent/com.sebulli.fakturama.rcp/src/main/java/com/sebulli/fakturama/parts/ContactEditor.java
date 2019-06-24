@@ -21,30 +21,21 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.SingularAttribute;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.core.databinding.Binding;
-import org.eclipse.core.databinding.UpdateListStrategy;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -67,7 +58,6 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -85,7 +75,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
@@ -96,7 +85,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
@@ -148,11 +136,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 	/** Editor's ID */
 	public static final String ID = "com.sebulli.fakturama.editors.contactEditor";
-	
-	/**
-	 * The widget property identifier (needed for the widgets in the address tab group)
-	 */
-	public static final String WIDGET_IDENTIFIER = "WIDGET";
 	
 	public static final String EDITOR_ID = "ContactEditor";
 
@@ -1230,46 +1213,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 				null, null);
 		}
 	}
-//
-//	/**
-//	 * Binds a widget from a {@link CTabFolder}'s {@link CTabItem} to a certain field of an entity. The entity
-//	 * hereby is a part (entry) of a list which belongs to a parent entity (e.g., the {@link Address}
-//	 * entry from a {@link Contact}'s  list). The widget has to contain an entry in its data property which 
-//	 * names the containing property.
-//	 * 
-//	 * @see ContactEditor#findAddressWidgetFor(SingularAttribute, CTabItem)
-//	 * 
-//	 * @param listEntity the current entity
-//	 * @param property the property to bind
-//	 * @param cTabItem the current {@link CTabItem}
-//	 * @param length the length of this field (can be 0 for default length)
-//	 */
-//	private <E extends IEntity> void bindWidget(E listEntity, SingularAttribute<E, String> property, CTabItem cTabItem,
-//			int length) {
-//
-//		// each widget has a "marker" which identifies the widget for a certain property
-//		// of an address
-//		java.util.Optional<Control> currentWidget = findAddressWidgetFor(property, cTabItem);
-//		currentWidget.ifPresent(w -> {
-//			if (w instanceof Text) {
-//				if (length > 0) {
-//					bindModelValue(listEntity, (Text) w, property.getName(), length);
-//				} else {
-//					bindModelValue(listEntity, (Text) w, property.getName());
-//				}
-//			}
-//		});
-//	}
-
-//	private <E extends IEntity> java.util.Optional<Control> findAddressWidgetFor(Attribute<E, ?> attribute, CTabItem addressTabItem) {
-////		for (Control w : ((Composite)addressTabItem.getControl()).getChildren()) {
-////			if(w.getData(WIDGET_IDENTIFIER) != null && w.getData(WIDGET_IDENTIFIER).equals(attribute)) {
-////				System.out.println("found widget: " + w);
-////			}
-////		}
-////		
-//		return Arrays.stream(((Composite)addressTabItem.getControl()).getChildren()).filter(w -> w.getData(WIDGET_IDENTIFIER) != null && w.getData(WIDGET_IDENTIFIER).equals(attribute)).findFirst();
-//	}
 
 	protected Address getOrCreateAddressByIndexFromContact(int i) {
 		// get last address and fill up the address list
@@ -1384,12 +1327,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		Contact testContact = contactDAO.checkContactWithSameValues(txtName.getText()
 				, txtFirstname.getText()
 				, street);
-//		if(testContact != null) {
-//				isDuplicateWarningShown = true;
-//				MessageDialog.openWarning(top.getShell(), msg.editorContactWarningDuplicate,
-//						MessageFormat.format(msg.editorContactWarningDuplicateStreet, 
-//								testContact.getFirstName(), testContact.getName(), testContact.getAddress().getStreet()));
-//		}
+		if(testContact != null) {
+				isDuplicateWarningShown = true;
+				MessageDialog.openWarning(top.getShell(), msg.editorContactWarningDuplicate,
+						MessageFormat.format(msg.editorContactWarningDuplicateStreet, 
+								testContact.getFirstName(), testContact.getName(), testContact.getAddresses().get(0).getStreet()));
+		}
 
 		// nothing found
 	}
@@ -1480,8 +1423,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			}
 			super.mouseDown(e);
 		}
-
 	}
-
 }
 
