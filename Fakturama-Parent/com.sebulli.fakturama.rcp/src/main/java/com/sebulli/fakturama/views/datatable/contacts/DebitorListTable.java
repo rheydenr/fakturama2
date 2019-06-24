@@ -10,7 +10,6 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
-import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Debitor_;
 import com.sebulli.fakturama.parts.DebitorEditor;
@@ -73,15 +72,14 @@ public class DebitorListTable extends ContactListTable<Debitor> {
         searchColumns[4] = "zip";
         searchColumns[5] = "city";
  */
-        return new TextWidgetMatcherEditor<Debitor>(searchText.getTextControl(),
-        		new ContactListFilterator(
-//                GlazedLists.textFilterator(Debitor.class, 
-//                        Debitor_.customerNumber.getName(),
-//                        Debitor_.firstName.getName(),
-//                        Debitor_.name.getName(),
-//                        Debitor_.company.getName(),
-//                        Address_.zip.getName(),
-//                        Address_.city.getName()
+        return new TextWidgetMatcherEditor<Debitor>(searchText.getTextControl(), 
+                GlazedLists.textFilterator(Debitor.class, 
+                        Debitor_.customerNumber.getName(),
+                        Debitor_.firstName.getName(),
+                        Debitor_.name.getName(),
+                        Debitor_.company.getName() //,
+//                        Debitor_.address.getName() + "." + Address_.zip.getName(),
+//                        Debitor_.address.getName() + "." + Address_.city.getName()
                         ));
     }
 
