@@ -108,7 +108,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
-        log.info("create Contact list part");
+//        log.info("create Contact list part");
         super.createPartControl(parent, Contact.class, true, ID);
         this.listTablePart = listTablePart;
         // if another click handler is set we use it

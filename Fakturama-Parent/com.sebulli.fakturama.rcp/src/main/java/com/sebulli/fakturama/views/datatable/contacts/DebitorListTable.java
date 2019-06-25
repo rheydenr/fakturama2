@@ -5,11 +5,14 @@ package com.sebulli.fakturama.views.datatable.contacts;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
+import com.sebulli.fakturama.model.Address;
+import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Debitor_;
 import com.sebulli.fakturama.parts.DebitorEditor;
@@ -72,14 +75,15 @@ public class DebitorListTable extends ContactListTable<Debitor> {
         searchColumns[4] = "zip";
         searchColumns[5] = "city";
  */
+    	
         return new TextWidgetMatcherEditor<Debitor>(searchText.getTextControl(), 
-                GlazedLists.textFilterator(Debitor.class, 
-                        Debitor_.customerNumber.getName(),
-                        Debitor_.firstName.getName(),
-                        Debitor_.name.getName(),
-                        Debitor_.company.getName() //,
-//                        Debitor_.address.getName() + "." + Address_.zip.getName(),
-//                        Debitor_.address.getName() + "." + Address_.city.getName()
+                new ContactListFilterator<Debitor>( 
+                		BeanProperties.value(Debitor.class, Debitor_.customerNumber.getName()),
+                		BeanProperties.value(Debitor.class, Debitor_.firstName.getName()),
+                		BeanProperties.value(Debitor.class, Debitor_.name.getName()),
+                		BeanProperties.value(Debitor.class, Debitor_.company.getName()),
+                        BeanProperties.list(Debitor.class, Debitor_.addresses.getName(), Address.class).values(Address_.zip.getName()),
+                        BeanProperties.list(Debitor.class, Debitor_.addresses.getName(), Address.class).values(Address_.city.getName())
                         ));
     }
 
