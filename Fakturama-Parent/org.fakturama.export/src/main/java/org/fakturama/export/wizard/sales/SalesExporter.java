@@ -17,7 +17,6 @@ package org.fakturama.export.wizard.sales;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
