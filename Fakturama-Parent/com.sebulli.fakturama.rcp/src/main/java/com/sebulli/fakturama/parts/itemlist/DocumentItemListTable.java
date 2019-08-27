@@ -1001,19 +1001,17 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      *            The new item
      */
     public void addNewItem(DocumentItemDTO newItem) {
-//      newItem.setIntValueByKey("id", -(items.getDatasets().size() + 1));
+    	newItem.getDocumentItem().setPosNr(documentItemsListData.size());
         getDocumentItemsListData().add(newItem);
-        renumberItems();
+//        ILayerCommand scrollToLastPositionCommand = new SelectRowsCommand(gridListLayer.getGridLayer(), 1, newItem.getDocumentItem().getPosNr(), false, false);
+//		natTable.doCommand(scrollToLastPositionCommand);
         getContainer().setDirty(true);
-        ILayerCommand scrollToLastPositionCommand = new SelectRowsCommand(gridListLayer.getGridLayer(), 1, newItem.getDocumentItem().getPosNr(), false, false);
-		natTable.doCommand(scrollToLastPositionCommand);
     }
 
     /**
      * Renumber all items
      */
     public void renumberItems() {
-        
         int no = 1;
         for (DocumentItemDTO documentItemDTO : documentItemsListData) {
         	if(documentItemDTO.getDocumentItem().getDeleted()) {
@@ -1028,7 +1026,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      */
     public void refresh() {
     	natTable.refresh();
-    	
     }
 
     class DocumentItemTableConfiguration extends AbstractRegistryConfiguration {
