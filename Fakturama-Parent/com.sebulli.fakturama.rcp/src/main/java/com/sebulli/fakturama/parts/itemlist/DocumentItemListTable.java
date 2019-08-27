@@ -1002,8 +1002,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     public void addNewItem(DocumentItemDTO newItem) {
     	newItem.getDocumentItem().setPosNr(documentItemsListData.size());
         getDocumentItemsListData().add(newItem);
-//        ILayerCommand scrollToLastPositionCommand = new SelectRowsCommand(gridListLayer.getGridLayer(), 1, newItem.getDocumentItem().getPosNr(), false, false);
-//		natTable.doCommand(scrollToLastPositionCommand);
         getContainer().setDirty(true);
     }
 
@@ -1012,11 +1010,13 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      */
     public void renumberItems() {
         int no = 1;
-        for (DocumentItemDTO documentItemDTO : documentItemsListData) {
+        for (int i = 0; i < documentItemsListData.size(); i++) {
+        	DocumentItemDTO documentItemDTO = getDocumentItemsListData().get(i);
         	if(documentItemDTO.getDocumentItem().getDeleted()) {
         		continue;
         	}
-            documentItemDTO.getDocumentItem().setPosNr(no++);
+            int rowPositionByIndex = getGridLayer().getBodyLayerStack().getRowReorderLayer().getRowPositionByIndex(i);
+            getGridLayer().getBodyDataProvider().getRowObject(rowPositionByIndex).getDocumentItem().setPosNr(no++);
         }
     }
     
