@@ -965,7 +965,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         		natTable.getActiveCellEditor().close();
         	}
         	
-        	boolean isRemoved = getDocumentItemsListData().removeAll(selectedEntries);
+        	boolean isRemoved = documentItemsListData.removeAll(selectedEntries);
             if(isRemoved) {
             	renumberItems();
                 // Recalculate the total sum of the document if necessary
@@ -989,7 +989,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      * the 0% {@link VAT} (i.e, "no VAT" - there could be more than one entry for 0% {@link VAT}); else this parameter is <code>null</code>
      */
     public void setItemsNoVat(Boolean noVat, VAT dataSetVat) {
-        getDocumentItemsListData().forEach(item -> item.getDocumentItem().setNoVat(noVat));
+    	documentItemsListData.forEach(item -> item.getDocumentItem().setNoVat(noVat));
         this.noVatReference = dataSetVat;
     }
 
@@ -1001,7 +1001,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      */
     public void addNewItem(DocumentItemDTO newItem) {
     	newItem.getDocumentItem().setPosNr(documentItemsListData.size() + 1);
-        getDocumentItemsListData().add(newItem);
+    	documentItemsListData.add(newItem);
         getContainer().setDirty(true);
     }
 
@@ -1011,7 +1011,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     public void renumberItems() {
         int no = 1;
         for (int i = 0; i < documentItemsListData.size(); i++) {
-        	DocumentItemDTO documentItemDTO = getDocumentItemsListData().get(i);
+        	DocumentItemDTO documentItemDTO = documentItemsListData.get(i);
         	if(documentItemDTO.getDocumentItem().getDeleted()) {
         		continue;
         	}
