@@ -1000,7 +1000,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      *            The new item
      */
     public void addNewItem(DocumentItemDTO newItem) {
-    	newItem.getDocumentItem().setPosNr(documentItemsListData.size());
+    	newItem.getDocumentItem().setPosNr(documentItemsListData.size() + 1);
         getDocumentItemsListData().add(newItem);
         getContainer().setDirty(true);
     }
