@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Fakturama RCP
 Bundle-SymbolicName: com.sebulli.fakturama.rcp;singleton:=true
-Bundle-Version: 2.0.5.qualifier
+Bundle-Version: 2.0.5
 Bundle-ClassPath: .
 Bundle-Activator: com.sebulli.fakturama.Activator
 Bundle-Vendor: %Bundle-Vendor
