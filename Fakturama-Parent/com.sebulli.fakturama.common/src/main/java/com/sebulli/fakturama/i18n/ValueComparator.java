@@ -13,17 +13,18 @@
  */
 package com.sebulli.fakturama.i18n;
 
-import java.text.Collator;
 import java.util.Comparator;
-import java.util.Locale;
 import java.util.Map;
+
+import com.ibm.icu.text.Collator;
+import com.ibm.icu.util.ULocale;
 
 class ValueComparator implements Comparator<String> {
 
 	private Map<String, String> base;
 	private Collator collator;
 	
-    public ValueComparator(Map<String, String> base, Locale defaultLocale) {
+    public ValueComparator(Map<String, String> base, ULocale defaultLocale) {
         this.base = base;
         this.collator = Collator.getInstance(defaultLocale);
     }

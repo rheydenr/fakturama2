@@ -153,8 +153,21 @@ public class TemplateResourceManager implements ITemplateResourceManager {
     private void resourceCopy(String resource, final Path targetFile) {
         // Create the input stream from the resource file "Templates/Invoice/Document.ott"
         Bundle definingBundle = ResourceBundleHelper.getBundleForName(com.sebulli.fakturama.resources.Activator.BUNDLE_ID);
+        
 		URL fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
 				resource), null);
+		
+		// if we are running inside Eclipse IDE the path is a little different
+		if(fileResource == null) {
+			fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
+					"/target/classes/nl/de" + resource.replaceAll("/\\$nl\\$", "")), null);
+		}
+		
+		// if fileResource is still null then we have another problem. Skip this round...
+		if(fileResource == null) {
+			log.error("Resource file '" + resource +"' not found");
+			return;
+		}
 
 		try(InputStream in = fileResource.openStream()) {
             // Create the destination folder if it doesn't exists
@@ -165,11 +178,11 @@ public class TemplateResourceManager implements ITemplateResourceManager {
             // Copy the file
             Files.copy(in, targetFile);
         } catch (FileNotFoundException fnfex) {
-        	log.error(fnfex, "Resource file not found");
+        	log.error(fnfex, "Resource file '" + resource +"' not found");
         } catch (FileAlreadyExistsException | DirectoryNotEmptyException dnee) {
         	log.warn("file "+targetFile.toAbsolutePath()+" already exists in target directory.");
         } catch (IOException ioex) {
-        	log.error(ioex, "Error copying the resource file to the file system.");
+        	log.error(ioex, "Error copying the resource file " + resource +" '' to the file system.");
         }
     }
 

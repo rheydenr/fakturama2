@@ -3,15 +3,72 @@
  */
 package org.fakturama.imp.wizard;
 
+import javax.inject.Inject;
+
+import org.eclipse.jface.dialogs.IDialogSettings;
+
 /**
  *
  */
 public class ImportOptions {
-	private Boolean updateExisting;
-	private Boolean updateWithEmptyValues;
-	private String quoteChar;
-	private String separator;
+    public static final String IMPORT_SETTING_OPTIONS = "org.fakturama.import.options";
+    public static final String PICTURE_BASE_PATH = "import.picture.base.path";
+    public static final String IMPORT_CSV_UPDATEEXISTING = "import.csv.updateexisting";
+    public static final String IMPORT_CSV_UPDATEWITHEMPTYVALUES = "import.csv.withemptyvalues";
+    public static final String IMPORT_CSV_SEPARATOR = "import.csv.separator";
+    public static final String IMPORT_CSV_QUOTECHAR = "import.csv.quotechar";
+    public static final String IMPORT_CSV_FILENAME = "import.csv.filename";
 
+	// initialize with some predefined values
+	private Boolean updateExisting = false;
+	private Boolean updateWithEmptyValues = false;
+	private String quoteChar = "\"";
+	private String separator = ";";
+	private String basePath = "", csvFile = "";
+
+	public ImportOptions() {
+		
+	}
+
+	public ImportOptions(Boolean updateExisting, Boolean updateWithEmptyValues, String quoteChar, String separator) {
+		this.updateExisting = updateExisting;
+		this.updateWithEmptyValues = updateWithEmptyValues;
+		this.quoteChar = quoteChar;
+		this.separator = separator;
+	}
+    
+	@Inject
+    public ImportOptions(IDialogSettings settings) {
+		if(settings != null) {
+		    IDialogSettings importSettings = settings.getSection(IMPORT_SETTING_OPTIONS);
+		    if(importSettings == null) {
+		        settings.addNewSection(IMPORT_SETTING_OPTIONS);
+		    }
+	        if (importSettings.get(PICTURE_BASE_PATH) != null) {
+	            basePath = importSettings.get(PICTURE_BASE_PATH);
+	        }
+	
+	        if (importSettings.get(IMPORT_CSV_SEPARATOR) != null) {
+	            separator = importSettings.get(IMPORT_CSV_SEPARATOR);
+	        }
+	
+	        if (importSettings.get(IMPORT_CSV_QUOTECHAR) != null) {
+	            quoteChar = importSettings.get(IMPORT_CSV_QUOTECHAR);
+	        }
+	
+	        if (importSettings.get(IMPORT_CSV_FILENAME) != null) {
+	            csvFile = importSettings.get(IMPORT_CSV_FILENAME);
+	        }
+	        
+	        if (importSettings.get(IMPORT_CSV_UPDATEEXISTING) != null) {
+	            updateExisting = importSettings.getBoolean(IMPORT_CSV_UPDATEEXISTING);
+	        }
+	        
+	        if (settings.get(IMPORT_CSV_UPDATEWITHEMPTYVALUES) != null) {
+	            updateWithEmptyValues = settings.getBoolean(IMPORT_CSV_UPDATEWITHEMPTYVALUES);
+	        }
+		}
+    }
 	/**
 	 * @return the updateExisting
 	 */
@@ -75,50 +132,31 @@ public class ImportOptions {
 		this.separator = separator;
 	}
 
-
-	public ImportOptions(Boolean updateExisting, Boolean updateWithEmptyValues, String quoteChar, String separator) {
-		super();
-		this.updateExisting = updateExisting;
-		this.updateWithEmptyValues = updateWithEmptyValues;
-		this.quoteChar = quoteChar;
-		this.separator = separator;
+	/**
+	 * @return the basePath
+	 */
+	public String getBasePath() {
+		return basePath;
 	}
 
-
-	public static class ImportOptionsBuilder {
-		private Boolean updateExisting;
-		private Boolean updateWithEmptyValues;
-		private String quoteChar;
-		private String separator;
-
-		public ImportOptionsBuilder withUpdateExisting(Boolean updateExisting) {
-			this.updateExisting = updateExisting;
-			return this;
-		}
-
-		public ImportOptionsBuilder withUpdateWithEmptyValues(Boolean updateWithEmptyValues) {
-			this.updateWithEmptyValues = updateWithEmptyValues;
-			return this;
-		}
-
-		public ImportOptionsBuilder withQuoteChar(String quoteChar) {
-			this.quoteChar = quoteChar;
-			return this;
-		}
-
-		public ImportOptionsBuilder withSeparator(String separator) {
-			this.separator = separator;
-			return this;
-		}
-
-		public ImportOptions build() {
-			return new ImportOptions(updateExisting, updateWithEmptyValues, quoteChar, separator);
-		}
+	/**
+	 * @param basePath the basePath to set
+	 */
+	public void setBasePath(String basePath) {
+		this.basePath = basePath;
 	}
 
+    /**
+     * @return the csvfile
+     */
+    public String getCsvFile() {
+        return csvFile;
+    }
 
-	public static ImportOptionsBuilder importOptions() {
-		return new ImportOptionsBuilder();
-	}
-
+    /**
+     * @param csvfile the csvfile to set
+     */
+    public void setCsvFile(String csvfile) {
+        this.csvFile = csvfile;
+    }
 }

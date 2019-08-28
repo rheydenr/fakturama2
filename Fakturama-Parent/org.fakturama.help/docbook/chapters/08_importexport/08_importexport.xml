@@ -369,6 +369,12 @@
 				</listitem>
 			</varlistentry>
 			<varlistentry>
+				<term>payment</term>
+				<listitem>
+					<para>Zahlungsart</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
 				<term>date_added</term>
 				<listitem>
 					<para>Datum, an dem der Kunde angelegt wurde (kann leer gelassen werden)</para>

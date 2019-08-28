@@ -109,8 +109,10 @@ public class QRKExportHandler {
 	            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 	            
 	            // now create a file in the import directory of QRK
-	            Path qrkJsonFile = Paths.get(qrkImportDirectory, "r2b.json");
+	            Path qrkJsonFile = Paths.get(qrkImportDirectory, String.format("r2b-%s.json", document.getName()));
 	            marshaller.marshal(qrkVouchers, qrkJsonFile.toFile());
+	            
+	            MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.commandExportQrkSuccess);
 			} catch (JAXBException e1) {
 				log.error(e1, "Error while exporting document to JSON for QRK. Reason: ");
 			}

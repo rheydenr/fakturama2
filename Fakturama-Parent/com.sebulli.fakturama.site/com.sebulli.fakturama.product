@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.4" useFeatures="true" includeLaunchers="true">
+<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.5" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icon://APP_ABOUT_ICON"/>
@@ -25,7 +25,6 @@
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
-      <solaris/>
       <win useIco="false">
          <bmp
             winSmallHigh="app/app_16_32.bmp"
@@ -232,10 +231,10 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </plugins>
 
    <features>
-      <feature id="com.sebulli.fakturama.feature" version="2.0.4"/>
-      <feature id="org.fakturama.exporter.zugferd.feature" version="2.0.4"/>
-      <feature id="org.fakturama.export.feature" version="2.0.4"/>
-      <feature id="org.fakturama.import.feature" version="2.0.4"/>
+      <feature id="com.sebulli.fakturama.feature" version="2.0.5"/>
+      <feature id="org.fakturama.exporter.zugferd.feature" version="2.0.5"/>
+      <feature id="org.fakturama.export.feature" version="2.0.5"/>
+      <feature id="org.fakturama.import.feature" version="2.0.5"/>
       <feature id="org.eclipse.gemini.dbaccess.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" version="1.1.0.RELEASE"/>
@@ -271,9 +270,8 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_uk"/>
       <feature id="org.eclipse.babel.nls_eclipse_sk"/>
       <feature id="org.eclipse.babel.nls_eclipse_el"/>
-      <feature id="com.opencsv.feature" version="4.4.0"/>
-      <feature id="org.apache.commons.feature" version="3.3.0"/>
-      <feature id="org.eclipse.persistence.moxy" version="2.7.1.v20171221-bd47e8f"/>
+      <feature id="org.eclipse.persistence.moxy"/>
+      <feature id="com.opencsv.feature"/>
    </features>
 
    <configurations>

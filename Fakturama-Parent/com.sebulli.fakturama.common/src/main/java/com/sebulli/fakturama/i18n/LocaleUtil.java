@@ -6,7 +6,8 @@ package com.sebulli.fakturama.i18n;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Locale.Builder;
+//import java.util.Locale;
+//import java.util.Locale.Builder;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -22,6 +23,8 @@ import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.adaptor.EclipseStarter;
 
+import com.ibm.icu.util.ULocale;
+import com.ibm.icu.util.ULocale.Builder;
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.misc.Constants;
 
@@ -30,17 +33,18 @@ import com.sebulli.fakturama.misc.Constants;
  */
 public class LocaleUtil implements ILocaleService {
 
-    private final Map<String, Locale> countryLocaleMap = new HashMap<>();
+    private final Map<String, ULocale> countryLocaleMap = new HashMap<>();
 
-    private Locale defaultLocale = Locale.getDefault();
+    private ULocale defaultLocale = ULocale.getDefault();
     private SortedMap<String, String> localeCountryMap;
-    private final Map<String, Locale> localeLookUp = new HashMap<>();
+    private final Map<String, ULocale> localeLookUp = new HashMap<>();
     
     /**
      * Returns a reference to the {@link LocaleUtil}. Used for initialization with a language code.
      * @param lang the language code to be used. If <code>null</code>, then "en_US" is used.
      * @return a {@link LocaleUtil} instance
      */
+    @SuppressWarnings("restriction")
     @PostConstruct
 	public void getInstance() {
     	String lang = (Activator.getContext() == null ? System.getProperty(EclipseStarter.PROP_NL) : 
@@ -60,7 +64,7 @@ public class LocaleUtil implements ILocaleService {
 				List<Locale> countriesByLanguage = LocaleUtils.countriesByLanguage(lang);
 				// try to get the locale from language, use the first fitting country
 				if (!countriesByLanguage.isEmpty()) {
-					Locale tmpLocale = countriesByLanguage.get(0);
+					ULocale tmpLocale = ULocale.forLocale(countriesByLanguage.get(0));
 					initLocaleUtil(String.format("%s_%s", tmpLocale.getLanguage(), tmpLocale.getCountry()));
 				} else {
 					// if none found, try to guess it from country code (very uncertain!)
@@ -78,7 +82,7 @@ public class LocaleUtil implements ILocaleService {
      * @param lang
      */
     private void initLocaleUtil(String lang) {
-        Locale[] availableLocales = Locale.getAvailableLocales();
+        ULocale[] availableLocales = ULocale.getAvailableLocales();
 
         // clear caches
         localeLookUp.clear();
@@ -88,24 +92,24 @@ public class LocaleUtil implements ILocaleService {
         if(StringUtils.isNotBlank(lang)) {
             // the language code are the letters before "_"
             String splittedString[] = lang.split("_");
-            Builder builder = new Locale.Builder()
+            Builder builder = new ULocale.Builder()
                 .setLanguage(splittedString[0]);
             if(splittedString.length > 1) {
                 builder.setRegion(splittedString[1]);
             }
-            Locale b = builder.build();
+            ULocale b = builder.build();
             if(b != null) {
                 defaultLocale = b;
             }
         }
         
 //        for (String countryCode : locales) {
-//            Locale obj = new Locale("", countryCode);
+//            ULocale obj = new ULocale("", countryCode);
 //            localeLookUp.put(countryCode, obj);
 //            countryLocaleMap.put(obj.getDisplayCountry(defaultLocale), obj);
 //        }
         // fill some helper maps
-        for (Locale locale : availableLocales) {
+        for (ULocale locale : availableLocales) {
             if(locale != null && StringUtils.length(locale.getCountry()) > 0 && localeLookUp.get(locale.getCountry()) == null) {
                 localeLookUp.put(locale.getCountry(), locale);
                 countryLocaleMap.put(locale.getDisplayCountry(defaultLocale), locale);
@@ -120,7 +124,7 @@ public class LocaleUtil implements ILocaleService {
     @Override
 	public String findCodeByDisplayCountry(String country, String lang) {
     	// TODO use lang, but without interfering with other methods!
-        Optional<Locale> retval = findLocaleByDisplayCountry(country);
+        Optional<ULocale> retval = findLocaleByDisplayCountry(country);
         // hint: countryLocaleString.getDisplayCountry(defaultLocale) gives
         // the country as localized string
         return retval.isPresent() ? retval.get().getCountry() : null;
@@ -130,7 +134,7 @@ public class LocaleUtil implements ILocaleService {
 	 * @see com.sebulli.fakturama.i18n.ILocaleService#findLocaleByDisplayCountry(java.lang.String)
 	 */
     @Override
-	public Optional<Locale> findLocaleByDisplayCountry(String country) {
+	public Optional<ULocale> findLocaleByDisplayCountry(String country) {
          return Optional.ofNullable(countryLocaleMap.get(country));
     }
 
@@ -138,7 +142,7 @@ public class LocaleUtil implements ILocaleService {
  * @see com.sebulli.fakturama.i18n.ILocaleService#findByCode(java.lang.String)
  */
     @Override
-	public Optional<Locale> findByCode(String code) {
+	public Optional<ULocale> findByCode(String code) {
         return Optional.ofNullable(localeLookUp.get(StringUtils.upperCase(code)));
     }
     
@@ -146,7 +150,7 @@ public class LocaleUtil implements ILocaleService {
 	 * @see com.sebulli.fakturama.i18n.ILocaleService#getDefaultLocale()
 	 */
     @Override
-	public Locale getDefaultLocale() {
+	public ULocale getDefaultLocale() {
         return defaultLocale;
     }
 
@@ -154,7 +158,7 @@ public class LocaleUtil implements ILocaleService {
 	 * @see com.sebulli.fakturama.i18n.ILocaleService#getCountryLocaleMap()
 	 */
     @Override
-	public Map<String, Locale> getCountryLocaleMap() {
+	public Map<String, ULocale> getCountryLocaleMap() {
         return countryLocaleMap;
     }
 
@@ -166,8 +170,8 @@ public class LocaleUtil implements ILocaleService {
         if(localeCountryMap == null || localeCountryMap.isEmpty()) {
         	initLocaleUtil(getDefaultLocale().toString());
             Map<String, String> tmpMap = getCountryLocaleMap().entrySet().stream().collect(
-                    Collectors.toMap((Entry<String, Locale> e) -> e.getValue().getCountry(), 
-                                     (Entry<String, Locale> e) -> e.getKey()));
+                    Collectors.toMap((Entry<String, ULocale> e) -> e.getValue().getCountry(), 
+                                     (Entry<String, ULocale> e) -> e.getKey()));
             ValueComparator bvc = new ValueComparator(tmpMap, defaultLocale);
             localeCountryMap = new TreeMap<>(bvc);
             localeCountryMap.putAll(tmpMap);
@@ -179,17 +183,17 @@ public class LocaleUtil implements ILocaleService {
 	 * @see com.sebulli.fakturama.i18n.ILocaleService#getCurrencyLocale()
 	 */
     @Override
-	public Locale getCurrencyLocale() {
+	public ULocale getCurrencyLocale() {
         
-         Locale currencyLocale = null;
+         ULocale currencyLocale = null;
 //        if(currencyLocale == null) {
-            String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, Locale.US.getDisplayCountry());
+            String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, ULocale.US.getDisplayCountry());
             Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
             Matcher matcher = pattern.matcher(localeString);
             if (matcher.matches() && matcher.groupCount() > 1) {
                 String s = matcher.group(1);
                 String s2 = matcher.group(2);
-                currencyLocale = new Locale(s, s2);
+                currencyLocale = new ULocale(s, s2);
             } else {
                 currencyLocale = getDefaultLocale();
             }
@@ -205,20 +209,20 @@ public class LocaleUtil implements ILocaleService {
     public static void main(String[] args) {
 //    	ILocaleService localeService = new LocaleUtil();
 //        System.out.println(findCodeByDisplayCountry("Deutschland"));
-//        Optional<Locale> code = findByCode("LT");
+//        Optional<ULocale> code = findByCode("LT");
 //        System.out.println(code);
-//        System.out.println(code.get().getDisplayCountry(new Locale("lt")));
+//        System.out.println(code.get().getDisplayCountry(new ULocale("lt")));
 //
 //        String testCountry = "Lietuva";
-////        Locale lt = new Locale("lt");
+////        ULocale lt = new ULocale("lt");
 //        System.out.println(Runtime.getRuntime().availableProcessors());
 ////
-//        Optional<Locale> locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(testCountry);
+//        Optional<ULocale> locale = LocaleUtil.getInstance().findLocaleByDisplayCountry(testCountry);
 //        // if not found we try to find it in localized form
 //        if (!locale.isPresent()) {
-//            Locale[] availableLocales = Locale.getAvailableLocales();
+//            ULocale[] availableLocales = ULocale.getAvailableLocales();
 //            long nanoTime = System.nanoTime();
-//            for (Locale locale2 : availableLocales) {
+//            for (ULocale locale2 : availableLocales) {
 ////                if(StringUtils.isEmpty(locale2.getCountry())) continue;
 //                locale = Arrays.stream(availableLocales)
 //                        .filter(l -> l.getDisplayCountry(locale2).equalsIgnoreCase(testCountry))

@@ -14,9 +14,6 @@
  
 package com.sebulli.fakturama.parts.widget.formatter;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -26,6 +23,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.formattedtext.ITextFormatter;
 import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.INumberFormatterService;
@@ -60,7 +59,7 @@ public class DoubleValueFormatter extends NumberFormatter implements ITextFormat
         // Because the content is not interpreted by DecimalFormat, but by Formatter (nebula),
         // we can't use a normal currency pattern.
         String editFormatPattern = editFormat.toPattern();
-        setPatterns(StringUtils.substringBefore(editFormatPattern, ";"), format.toPattern(), localeUtil.getDefaultLocale());
+        setPatterns(StringUtils.substringBefore(editFormatPattern, ";"), format.toPattern(), localeUtil.getDefaultLocale().toLocale());
         setFixedLengths(false, true);
     }
     

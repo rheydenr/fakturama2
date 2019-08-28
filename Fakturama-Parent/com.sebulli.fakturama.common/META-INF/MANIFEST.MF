@@ -2,11 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Common
 Bundle-SymbolicName: com.sebulli.fakturama.common
-Bundle-Version: 2.0.4
+Bundle-Version: 2.0.5
 Export-Package: com.sebulli.fakturama.common,
  com.sebulli.fakturama.exception,
  com.sebulli.fakturama.i18n,
  com.sebulli.fakturama.log,
+ com.sebulli.fakturama.misc,
  com.sebulli.fakturama.misc,
  com.sebulli.fakturama.money,
  org.apache.xerces.dom,
@@ -92,7 +93,8 @@ Require-Bundle: org.eclipse.e4.core.services,
  org.apache.commons.lang3,
  org.eclipse.core.runtime;bundle-version="3.10.0",
  org.javamoney.osgi,
- org.eclipse.jface
+ org.eclipse.jface,
+ com.ibm.icu;bundle-version="58.2.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: ch.qos.logback.classic,
@@ -129,5 +131,6 @@ Bundle-Activator: com.sebulli.fakturama.common.Activator
 Service-Component: OSGI-INF/logservice.xml,OSGI-INF/monetary_amount_format_provider.xml,OSGI-INF/rounding_provider.xml,OSGI-INF/localeservice.xml,OSGI-INF/dateformatter.xml,
  OSGI-INF/numberformatter.xml
 Bundle-ClassPath: .,
- lib/simple-odf-0.9.0-incubating-SNAPSHOT-jar-with-dependencies.jar
+ lib/simple-odf-0.9.0-SNAPSHOT-jar-with-dependencies.jar
 Eclipse-BuddyPolicy: registered
+Automatic-Module-Name: com.sebulli.fakturama.common

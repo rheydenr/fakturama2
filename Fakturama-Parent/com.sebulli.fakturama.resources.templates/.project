@@ -25,4 +25,11 @@
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 		<nature>org.eclipse.pde.PluginNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>nl</name>
+			<type>2</type>
+			<location>c:/home/vagrant/projects/fakturama2/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.resources.templates/src/main/resources/nl</location>
+		</link>
+	</linkedResources>
 </projectDescription>

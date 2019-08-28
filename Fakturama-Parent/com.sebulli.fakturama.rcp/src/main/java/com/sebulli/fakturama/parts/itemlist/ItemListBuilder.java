@@ -25,6 +25,8 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -74,6 +76,9 @@ public class ItemListBuilder {
 
     @Inject
     protected VatsDAO vatDao;
+    
+    @Inject
+    private IDialogSettings settings;
 
     private Composite parent;
     private Document document;
@@ -125,6 +130,7 @@ public class ItemListBuilder {
 			    context.set(DocumentEditor.DOCUMENT_ID, document.getName());
 //			    context.set(ESelectionService.class, selectionService);
 			    SelectProductDialog dlg = ContextInjectionFactory.make(SelectProductDialog.class, context);
+	            dlg.setDialogBoundsSettings(getDialogSettings("SelectProductDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
 			    dlg.open();
 			    context.set(MPart.class, currentPart);
 
@@ -154,6 +160,7 @@ public class ItemListBuilder {
     			    context.set(DocumentEditor.DOCUMENT_ID, document.getName());
     			    context.set(ESelectionService.class, selectionService);
     			    SelectDeliveryNoteDialog dlg = ContextInjectionFactory.make(SelectDeliveryNoteDialog.class, context);
+                    dlg.setDialogBoundsSettings(getDialogSettings("SelectDeliveryNoteDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
     			    dlg.open();
 //                    MDialog dialog = (MDialog) modelService.find("fakturama.dialog.selectdeliverynotes", application);
 //                    dialog.setToBeRendered(true);
@@ -274,5 +281,17 @@ public class ItemListBuilder {
 		this.container = documentEditor;
 		return this;
 	}
+
+    /**
+     * @param section 
+     * @return 
+     * 
+     */
+    private IDialogSettings getDialogSettings(String section) {
+        if(settings.getSection(section) == null) {
+            settings.addNewSection(section);
+        }
+        return settings.getSection(section);
+    }
 
 }

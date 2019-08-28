@@ -391,11 +391,8 @@ public class VatEditor extends Editor<VAT> {
         // restore old category
         editorVat.setCategory(tmpKat);
 
-        UpdateValueStrategy vatCatModel2Target = new UpdateValueStrategy();
-        vatCatModel2Target.setConverter(new CategoryConverter<VATCategory>(VATCategory.class));
-        
-        UpdateValueStrategy target2VatcatModel = new UpdateValueStrategy();
-        target2VatcatModel.setConverter(new StringToCategoryConverter<VATCategory>(categories, VATCategory.class));
+        UpdateValueStrategy<VATCategory, String> vatCatModel2Target = UpdateValueStrategy.create(new CategoryConverter<VATCategory>(VATCategory.class));
+        UpdateValueStrategy<String, VATCategory> target2VatcatModel = UpdateValueStrategy.create(new StringToCategoryConverter<VATCategory>(categories, VATCategory.class));
         bindModelValue(editorVat, comboCategory, VAT_.category.getName(), target2VatcatModel, vatCatModel2Target);
     }
     

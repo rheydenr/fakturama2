@@ -17,7 +17,6 @@ package com.sebulli.fakturama.calculate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -51,8 +50,6 @@ public class AccountSummaryCalculator {
     @Inject
     private DocumentsDAO documentsDAO;
 
-    private HashMap<String,Integer> paymentIds = new HashMap<>();  
-	
 	// Set with all accounts
 	private SortedSet<VoucherCategory> accounts; 
 	

@@ -46,7 +46,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -966,7 +965,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         		natTable.getActiveCellEditor().close();
         	}
         	
-        	boolean isRemoved = getDocumentItemsListData().removeAll(selectedEntries);
+        	boolean isRemoved = documentItemsListData.removeAll(selectedEntries);
             if(isRemoved) {
             	renumberItems();
                 // Recalculate the total sum of the document if necessary
@@ -990,7 +989,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      * the 0% {@link VAT} (i.e, "no VAT" - there could be more than one entry for 0% {@link VAT}); else this parameter is <code>null</code>
      */
     public void setItemsNoVat(Boolean noVat, VAT dataSetVat) {
-        getDocumentItemsListData().forEach(item -> item.getDocumentItem().setNoVat(noVat));
+    	documentItemsListData.forEach(item -> item.getDocumentItem().setNoVat(noVat));
         this.noVatReference = dataSetVat;
     }
 
@@ -1001,25 +1000,23 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      *            The new item
      */
     public void addNewItem(DocumentItemDTO newItem) {
-//      newItem.setIntValueByKey("id", -(items.getDatasets().size() + 1));
-        getDocumentItemsListData().add(newItem);
-        renumberItems();
+    	newItem.getDocumentItem().setPosNr(documentItemsListData.size() + 1);
+    	documentItemsListData.add(newItem);
         getContainer().setDirty(true);
-        ILayerCommand scrollToLastPositionCommand = new SelectRowsCommand(gridListLayer.getGridLayer(), 1, newItem.getDocumentItem().getPosNr(), false, false);
-		natTable.doCommand(scrollToLastPositionCommand);
     }
 
     /**
      * Renumber all items
      */
     public void renumberItems() {
-        
         int no = 1;
-        for (DocumentItemDTO documentItemDTO : documentItemsListData) {
+        for (int i = 0; i < documentItemsListData.size(); i++) {
+        	DocumentItemDTO documentItemDTO = documentItemsListData.get(i);
         	if(documentItemDTO.getDocumentItem().getDeleted()) {
         		continue;
         	}
-            documentItemDTO.getDocumentItem().setPosNr(no++);
+            int rowPositionByIndex = getGridLayer().getBodyLayerStack().getRowReorderLayer().getRowPositionByIndex(i);
+            getGridLayer().getBodyDataProvider().getRowObject(rowPositionByIndex).getDocumentItem().setPosNr(no++);
         }
     }
     
@@ -1028,7 +1025,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      */
     public void refresh() {
     	natTable.refresh();
-    	
     }
 
     class DocumentItemTableConfiguration extends AbstractRegistryConfiguration {
@@ -1079,7 +1075,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
             TextCellEditor textCellEditor = new TextCellEditor(true, true);
             textCellEditor.setErrorDecorationEnabled(true);
             textCellEditor.setDecorationPositionOverride(SWT.LEFT | SWT.TOP);
-			NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale());
+			NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale().toLocale());
 			numberInstance.setMaximumFractionDigits(10);
 			DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter(true);
 			doubleDisplayConverter.setNumberFormat(numberInstance);

@@ -13,7 +13,7 @@ import com.sebulli.fakturama.model.ItemListTypeCategory;
 /**
  *
  */
-public class CategoryConverter<T extends AbstractCategory> extends Converter {
+public class CategoryConverter<T extends AbstractCategory> extends Converter<T, String> {
 
     protected Messages msg;
     
@@ -33,10 +33,10 @@ public class CategoryConverter<T extends AbstractCategory> extends Converter {
      * @see org.eclipse.core.databinding.conversion.IConverter#convert(java.lang.Object)
      */
     @Override
-    public Object convert(Object fromObject) {
+    public String convert(AbstractCategory fromObject) {
         String result = null;
         if(type.equals(getFromType())) {
-            result = CommonConverter.getCategoryName((AbstractCategory) fromObject, "");
+            result = CommonConverter.getCategoryName(fromObject, "");
             if(type.getSimpleName().equals(ItemListTypeCategory.class.getSimpleName())) {
                 // special case, it's a key here.
                 result = msg.getMessageFromKey(result);

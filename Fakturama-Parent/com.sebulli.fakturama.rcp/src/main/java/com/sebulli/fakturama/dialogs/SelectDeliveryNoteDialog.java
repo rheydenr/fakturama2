@@ -48,6 +48,7 @@ import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
  * 
  */
 public class SelectDeliveryNoteDialog extends AbstractSelectionDialog<Delivery> {
+    protected static final Point DEFAULT_DIALOG_SIZE = new Point(800, 550);
 
 	@Inject
 	@Translation
@@ -144,7 +145,6 @@ public class SelectDeliveryNoteDialog extends AbstractSelectionDialog<Delivery> 
         super.okPressed();
     }
 
-
 	/**
 	 * Set the initial size of the dialogs in pixel
 	 * 
@@ -152,7 +152,10 @@ public class SelectDeliveryNoteDialog extends AbstractSelectionDialog<Delivery> 
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(800, 550);
+        Point initalSize = super.getInitialSize();
+        if (initalSize != null && (initalSize.x < DEFAULT_DIALOG_SIZE.x || initalSize.y < DEFAULT_DIALOG_SIZE.y)) {
+            initalSize = DEFAULT_DIALOG_SIZE;
+        }
+        return initalSize;
 	}
-
 }

@@ -32,10 +32,11 @@ import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.Binding;
@@ -57,6 +58,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -125,8 +128,6 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.Creditor;
-import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Document_;
@@ -228,6 +229,9 @@ public class DocumentEditor extends Editor<Document> {
 	
 	@Inject
 	private INumberFormatterService numberFormatterService;
+	
+	@Inject
+	private IDialogSettings settings;
 
 	// SWT components of the editor
 	private Composite top;
@@ -516,7 +520,8 @@ public class DocumentEditor extends Editor<Document> {
 		// Show a warning if the entered address is not similar to the address
 		// of the document which is set by the address ID.
 		if (displayAddress.getCustomerNumber() != null && addressModified) {
-			if (StringUtils.getJaroWinklerDistance(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
+			JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
+			if (jaroWinklerDistance.apply(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
 				MessageDialog.openWarning(top.getShell(),
 
 				//T: Title of the dialog that appears if the document is assigned to  an other address.
@@ -729,13 +734,12 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
 		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
 
-		UpdateValueStrategy strategy = new UpdateValueStrategy();
-		strategy.setBeforeSetValidator(new IValidator() {
+		UpdateValueStrategy<IStatus, Date> strategy = new UpdateValueStrategy<IStatus, Date>();
+		strategy.setBeforeSetValidator(new IValidator<Date>() {
 
 		    @Override
-		    public IStatus validate(Object value) {
-		    	if(value == null || dtVestingPeriodEnd.getSelection() == null) return ValidationStatus.ok();
-		        Date vestingPeriodStart = (Date) value;
+		    public IStatus validate(Date vestingPeriodStart) {
+		    	if(vestingPeriodStart == null || dtVestingPeriodEnd.getSelection() == null) return ValidationStatus.ok();
 		        if(vestingPeriodStart.after(dtVestingPeriodEnd.getSelection())) {
 		        	return ValidationStatus.error("Startdatum liegt nach dem Endedatum!");
 		        } else {
@@ -776,8 +780,8 @@ public class DocumentEditor extends Editor<Document> {
 			if(spDueDays != null && !spDueDays.isDisposed()) {
 				// value is set by dueDays variable, not directly by binding
 				bindModelValue(document, spDueDays, Document_.dueDays.getName(), 
-						new UpdateValueStrategy(),
-						new UpdateValueStrategy());
+						new UpdateValueStrategy<Spinner, Integer>(),
+						new UpdateValueStrategy<Integer, Spinner>());
 				spDueDays.setSelection(document.getDueDays());
 			}
 			
@@ -822,11 +826,8 @@ public class DocumentEditor extends Editor<Document> {
         comboViewerPayment.setInput(allPayments);
         document.setPayment(tmpPayment);
         
-        UpdateValueStrategy paymentModel2Target = new UpdateValueStrategy();
-        paymentModel2Target.setConverter(new EntityConverter<Payment>(Payment.class));
-        
-        UpdateValueStrategy target2PaymentModel = new UpdateValueStrategy();
-        target2PaymentModel.setConverter(new StringToEntityConverter<Payment>(allPayments, Payment.class));
+        UpdateValueStrategy<Payment, String> paymentModel2Target = UpdateValueStrategy.create(new EntityConverter<Payment>(Payment.class));
+        UpdateValueStrategy<String, Payment> target2PaymentModel = UpdateValueStrategy.create(new StringToEntityConverter<Payment>(allPayments, Payment.class));
         // Set the combo
         bindModelValue(document, comboViewerPayment.getCombo(), Document_.payment.getName(), target2PaymentModel, paymentModel2Target);
 	}
@@ -900,11 +901,8 @@ public class DocumentEditor extends Editor<Document> {
         }
         
         // Get the documents'shipping values.
-        UpdateValueStrategy shippingModel2Target = new UpdateValueStrategy();
-        shippingModel2Target.setConverter(new EntityConverter<Shipping>(Shipping.class));
-        
-        UpdateValueStrategy target2ShippingModel = new UpdateValueStrategy();
-        target2ShippingModel.setConverter(new StringToEntityConverter<Shipping>(allShippings, Shipping.class, true));
+        UpdateValueStrategy<Shipping, String> shippingModel2Target = UpdateValueStrategy.create(new EntityConverter<Shipping>(Shipping.class));
+        UpdateValueStrategy<String, Shipping> target2ShippingModel = UpdateValueStrategy.create(new StringToEntityConverter<Shipping>(allShippings, Shipping.class, true));
         // Set the combo
         bindModelValue(document, comboViewerShipping.getCombo(), Document_.shipping.getName(), target2ShippingModel, shippingModel2Target);
 	}
@@ -1347,7 +1345,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Do the calculation
 		// if - for what reason ever - the document shipping has no value, I've decided to set it to default shipping.
-		if(shipping == null && document.getShippingValue() == null && document.getAdditionalInfo().getShippingValue() == null) {
+		if(shipping == null && document.getShippingValue() == null) {
 			shipping = lookupDefaultShippingValue();
 		}
 		
@@ -1514,15 +1512,19 @@ public class DocumentEditor extends Editor<Document> {
 		MonetaryAmount currentShippingValue = useGross ? documentSummary.getShippingGross() : documentSummary.getShippingNet();
 		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, 
 				currentShippingValue.getNumber().doubleValue())) {
+		    document.getAdditionalInfo().setShippingDescription(shipping.getDescription());
+		    document.getAdditionalInfo().setShippingName(shipping.getName());
+		    document.getAdditionalInfo().setShippingVatValue(shipping.getShippingVat().getTaxValue());
+		    
+		    document.setShippingValue(newShippingValue);
 			document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
 		} else {
-			// no change occured, we can return and leave the values unchanged
+			// no change occurred, we can return and leave the values unchanged
 			return;
 		}
 
 		// Recalculate the sum
-//		shipping = newShippingValue;
-		document.setShippingValue(newShippingValue);
+		shipping = null;
 		document.setShipping(null);   // because we changed the Shipping value manually
 		
 		// now the document gets dirty
@@ -1701,7 +1703,7 @@ public class DocumentEditor extends Editor<Document> {
 					paidContainer.layout();
 					paidContainer.pack();
 				} else {
-					if(!warningDepositIcon.isDisposed()) {
+					if(warningDepositIcon != null && !warningDepositIcon.isDisposed()) {
 						warningDepositIcon.setVisible(false);
 						warningDepositText.setVisible(false);
 					}
@@ -1743,12 +1745,12 @@ public class DocumentEditor extends Editor<Document> {
         if (dtIssueDate != null && dtDate.getSelection() != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(dtDate.getSelection());
-            //	    LocalDate localDate = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-            //	    localDate.plusDays(spDueDays.getSelection());
-            //	    Date.from(localDate.???)
-            //		GregorianCalendar calendar = new GregorianCalendar(dtDate.getYear(), dtDate.getMonth(), dtDate.getDay());
-            calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
-            dtIssueDate.setSelection(calendar.getTime());
+			top.getParent().getDisplay().syncExec(() -> {
+			    if(!spDueDays.isDisposed()) {
+    				calendar.add(Calendar.DAY_OF_MONTH, spDueDays.getSelection());
+    				dtIssueDate.setSelection(calendar.getTime());
+			    }
+			});
         }
     }
 	
@@ -2218,17 +2220,17 @@ public class DocumentEditor extends Editor<Document> {
 			    context.set(DOCUMENT_ID, document.getName());
             	// save MPart
             	MPart myPart = context.get(MPart.class);
-
-		        // FIXME Workaround (quick & dirty), please use enums or an extra button
+                // FIXME Workaround (quick & dirty), please use enums or an extra button
+                SelectContactDialog<Contact> dlg = null;
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
-				    SelectContactDialog<Creditor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
-				    dlg.open();
+				    dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
 			    } else {
 			    	context.set("CONTACT_TYPE", "DEBITOR");
-			    	SelectContactDialog<Debitor> dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
-			    	dlg.open();
+			    	dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
 			    }
+			    dlg.setDialogBoundsSettings(getDialogSettings("SelectContactDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
+			    dlg.open();
 			    context.set(MPart.class, myPart);
 			    // the result is set via event DialogSelection/Contact
 			}
@@ -2379,6 +2381,7 @@ public class DocumentEditor extends Editor<Document> {
 			    context.set(DocumentEditor.DOCUMENT_ID, document.getName());
 			    context.set(ESelectionService.class, selectionService);
 			    SelectTextDialog dlg = ContextInjectionFactory.make(SelectTextDialog.class, context);
+	            dlg.setDialogBoundsSettings(getDialogSettings("SelectTextDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
 			    dlg.open();
                 // handling of adding a new list item is done via event handling in DocumentEditor
 			}
@@ -2510,6 +2513,9 @@ public class DocumentEditor extends Editor<Document> {
 		// Add buttons, depending on the document type
 		switch (documentType) {
 		case OFFER:
+            createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
+                    tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
+                    , createCommandParams(DocumentType.CONFIRMATION));
 	        createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOrderName,
 	                tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
 	                , createCommandParams(DocumentType.ORDER));
@@ -3202,5 +3208,17 @@ public class DocumentEditor extends Editor<Document> {
     @Override
     protected Class<Document> getModelClass() {
         return Document.class;
+    }
+
+    /**
+     * @param section 
+     * @return 
+     * 
+     */
+    private IDialogSettings getDialogSettings(String section) {
+        if(settings.getSection(section) == null) {
+            settings.addNewSection(section);
+        }
+        return settings.getSection(section);
     }
 }

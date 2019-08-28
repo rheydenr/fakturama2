@@ -6,9 +6,9 @@ import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
+import org.eclipse.nebula.widgets.nattable.extension.glazedlists.DetailGlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractIndexLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
@@ -30,14 +30,14 @@ import ca.odell.glazedlists.TransformedList;
  * 
  * @param <T>
  */
-public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
+public class BodyLayerStack<T extends IEntity> extends AbstractIndexLayerTransform {
 
     private ListDataProvider<T> bodyDataProvider;
     private DataLayer bodyDataLayer;
     private final SelectionLayer selectionLayer;
     private SortedList<T> sortedList;
     private RowReorderLayer rowReorderLayer;
-    private GlazedListsEventLayer<T> glazedListsEventLayer;
+    private DetailGlazedListsEventLayer<T> glazedListsEventLayer;
 	private ViewportLayer viewportLayer;
 
     public BodyLayerStack(EventList<T> eventList, IColumnPropertyAccessor<T> columnPropertyAccessor) {
@@ -54,7 +54,6 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
 
         //wrapping of the list to show into GlazedLists
         //see http://publicobject.com/glazedlists/ for further information
-        //        EventList<T> eventList = GlazedLists.eventList(values);
         TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
         //use the SortedList constructor with 'null' for the Comparator because the Comparator
@@ -66,7 +65,7 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
 
 //        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
 
-        glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, sortedList);
+        glazedListsEventLayer = new DetailGlazedListsEventLayer<T>(bodyDataLayer, sortedList);
         
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
@@ -126,7 +125,7 @@ public class BodyLayerStack<T extends IEntity> extends AbstractLayerTransform {
     /**
      * @return the glazedListsEventLayer
      */
-    public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
+    public DetailGlazedListsEventLayer<T> getGlazedListsEventLayer() {
         return glazedListsEventLayer;
     }
 

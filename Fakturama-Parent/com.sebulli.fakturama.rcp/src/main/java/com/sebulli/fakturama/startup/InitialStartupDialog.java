@@ -74,7 +74,6 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	 */
 	private ILogger log;
 	private Messages msg;
-	private Shell parent;
 
 	/** 
 	 * The plugin's preference store
@@ -102,7 +101,6 @@ public class InitialStartupDialog extends TitleAreaDialog {
 	public InitialStartupDialog(Shell parent,
 	        IEclipsePreferences preferences, ILogger log, Messages messages, String requestedWorkspace) {
 		super(parent);
-		this.parent = parent;
 		this.dirChecker = new DirectoryChecker(parent);
 		this.log = log;
 		this.preferences = preferences;
@@ -365,7 +363,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 			
 			// handle workdir and JDBC connection
 			if (workspace.isEmpty()) {
-				MessageDialog.openError(parent, msg.dialogMessageboxTitleError, msg.startFirstSelectWorkdirNoselection);
+				MessageDialog.openError(getParentShell(), msg.dialogMessageboxTitleError, msg.startFirstSelectWorkdirNoselection);
 				txtWorkdir.setFocus();
 			} else {
 				if(Files.notExists(Paths.get(workspace))) {
@@ -393,7 +391,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 				preferences.remove(Constants.GENERAL_WORKSPACE);
 				preferences.flush();
 				// restarting application
-				MessageDialog.openInformation(parent, msg.dialogMessageboxTitleInfo, msg.startFirstRestartmessage);
+				MessageDialog.openInformation(getParentShell(), msg.dialogMessageboxTitleInfo, msg.startFirstRestartmessage);
 				super.okPressed();
 			}
 		} catch (BackingStoreException | IOException e) {

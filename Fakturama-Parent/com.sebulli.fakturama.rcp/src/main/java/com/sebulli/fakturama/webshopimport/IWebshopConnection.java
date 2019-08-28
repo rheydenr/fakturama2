@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 

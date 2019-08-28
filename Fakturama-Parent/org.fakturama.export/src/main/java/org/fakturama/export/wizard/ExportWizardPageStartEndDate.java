@@ -14,7 +14,10 @@
 
 package org.fakturama.export.wizard;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Optional;
 
@@ -34,7 +37,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.export.ExportMessages;
-import org.fakturama.export.wizard.accounts.AccountSettingsPage;
 import org.fakturama.wizards.IFakturamaWizardService;
 
 /**
@@ -151,20 +153,20 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		// Start date
 		dtStartDate = new CDateTime(top, CDT.BORDER | CDT.DROP_DOWN);
 		dtStartDate.setFormat(CDT.DATE_MEDIUM);
-		dtStartDate.setSelection(Calendar.getInstance().getTime());
+		
+		Date currentDate = Date.from(LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+		dtStartDate.setSelection(currentDate);
+		
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).applyTo(dtStartDate);
 
 		dtStartDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				setPageComplete(canFlipToNextPage());
-				if(getNextPage().getNextPage() != null) {
-					((AccountSettingsPage)getNextPage().getNextPage()).getDtDate().setSelection(dtStartDate.getSelection());
-				}
 		}));
 		
 		// End date
 		dtEndDate = new CDateTime(top, CDT.BORDER | CDT.DROP_DOWN);
 		dtEndDate.setFormat(CDT.DATE_MEDIUM);
-		dtEndDate.setSelection(Calendar.getInstance().getTime());
+		dtEndDate.setSelection(currentDate);
 		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(150, SWT.DEFAULT).indent(20, 0).applyTo(dtEndDate);
 
 		dtEndDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 

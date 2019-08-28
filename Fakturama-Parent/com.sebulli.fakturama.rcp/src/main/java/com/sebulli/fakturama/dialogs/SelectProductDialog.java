@@ -51,7 +51,8 @@ import com.sebulli.fakturama.views.datatable.products.ProductListTable;
  * @author Gerd Bartelt
  */
 public class SelectProductDialog extends AbstractSelectionDialog<Product> {
-    
+    protected static final Point DEFAULT_DIALOG_SIZE = new Point(800, 550);
+
     @Inject
     @Translation
     protected Messages msg;
@@ -156,6 +157,10 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(800, 550);
+        Point initalSize = super.getInitialSize();
+        if (initalSize != null && (initalSize.x < DEFAULT_DIALOG_SIZE.x || initalSize.y < DEFAULT_DIALOG_SIZE.y)) {
+            initalSize = DEFAULT_DIALOG_SIZE;
+        }
+        return initalSize;
     }
 }

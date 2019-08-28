@@ -595,8 +595,7 @@ public class ProductEditor extends Editor<Product> {
 						SWT.BORDER | SWT.RIGHT);
 				methodName = String.format("getBlock%d", i+1);
 				priceObj = MethodUtils.invokeExactMethod(editorProduct, methodName);
-				textBlock[i].setText(Integer.toString((Integer) priceObj));
-//				textBlock[i].addKeyListener(textBlock[i].addKeyListener(new ReturnKeyAdapter(costPrice.getControl()));
+				textBlock[i].setText(Integer.toString(priceObj != null ? (Integer) priceObj : 0));
 				GridDataFactory.swtDefaults().hint(40, SWT.DEFAULT).applyTo(textBlock[i]);
 
 				// Create the net columns
@@ -888,11 +887,8 @@ public class ProductEditor extends Editor<Product> {
         comboViewer.setInput(allVATs);
         editorProduct.setVat(tmpVat);
 
-        UpdateValueStrategy vatModel2Target = new UpdateValueStrategy();
-        vatModel2Target.setConverter(new EntityConverter<VAT>(VAT.class));
-        
-        UpdateValueStrategy target2VatModel = new UpdateValueStrategy();
-        target2VatModel.setConverter(new StringToEntityConverter<VAT>(allVATs, VAT.class));
+        UpdateValueStrategy<VAT, String> vatModel2Target = UpdateValueStrategy.create(new EntityConverter<VAT>(VAT.class));
+        UpdateValueStrategy<String, VAT> target2VatModel = UpdateValueStrategy.create(new StringToEntityConverter<VAT>(allVATs, VAT.class));
 //		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboVat);
         bindModelValue(editorProduct, comboVat, Product_.vat.getName()/* + "." + VAT_.name.getName()*/,
                 target2VatModel, vatModel2Target);
@@ -926,11 +922,8 @@ public class ProductEditor extends Editor<Product> {
         });
         editorProduct.setCategories(tmpCat);
 
-        UpdateValueStrategy productCatModel2Target = new UpdateValueStrategy();
-        productCatModel2Target.setConverter(new CategoryConverter<ProductCategory>(ProductCategory.class));
-        
-        UpdateValueStrategy target2productCatModel = new UpdateValueStrategy();
-        target2productCatModel.setConverter(new StringToCategoryConverter<ProductCategory>(categories, ProductCategory.class));
+        UpdateValueStrategy<ProductCategory, String> productCatModel2Target = UpdateValueStrategy.create(new CategoryConverter<ProductCategory>(ProductCategory.class));
+        UpdateValueStrategy<String, ProductCategory> target2productCatModel = UpdateValueStrategy.create(new StringToCategoryConverter<ProductCategory>(categories, ProductCategory.class));
         bindModelValue(editorProduct, comboCategory, Product_.categories.getName(), target2productCatModel, productCatModel2Target);
     }
 

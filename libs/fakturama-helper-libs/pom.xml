@@ -2,12 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.rhe.helper</groupId>
   <artifactId>fakturama</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <name>Fakturama Helper Libs</name>
     <packaging>pom</packaging>
     <properties>
-        <tycho.version>1.2.0</tycho.version>
-        <tycho-extras.version>1.2.0</tycho-extras.version>
+        <tycho.version>1.4.0</tycho.version>
+        <tycho-extras.version>1.4.0</tycho-extras.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
@@ -147,7 +147,7 @@
                         <artifact>
                             <groupId>com.sebulli.fakturama</groupId>
                             <artifactId>org.fakturama.target</artifactId>
-                            <version>2.0.3-SNAPSHOT</version>
+                            <version>2.0.5-SNAPSHOT</version>
                         </artifact>
                     </target>
                 </configuration>

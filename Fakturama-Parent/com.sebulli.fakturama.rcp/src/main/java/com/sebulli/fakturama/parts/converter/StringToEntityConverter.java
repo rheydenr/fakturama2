@@ -26,7 +26,7 @@ import com.sebulli.fakturama.model.IEntity;
 /**
  * Converts a given String value (which represents an Entity name) to an {@link IEntity}.
  */
-public class StringToEntityConverter<T extends IEntity> extends Converter {
+public class StringToEntityConverter<T extends IEntity> extends Converter<String, T> {
 
     private final List<T> categories;
     private boolean isDescribable;
@@ -45,21 +45,20 @@ public class StringToEntityConverter<T extends IEntity> extends Converter {
      * @see org.eclipse.core.databinding.conversion.IConverter#convert(java.lang.Object)
      */
     @Override
-    public Object convert(Object fromObject) {
+    public T convert(String fromObject) {
         // in: "Umsatzsteuer"
         // out: VAT
         // TODO Look for a better approach! ==> ComboBoxLabelProvider??
-        String searchString = (String)fromObject;
         Optional<T> firstFound;
         if(!isDescribable) {
-            firstFound = categories.stream().filter(cat -> StringUtils.defaultString(cat.getName()).equals(searchString)).findFirst();
+            firstFound = categories.stream().filter(cat -> StringUtils.defaultString(cat.getName()).equals(fromObject)).findFirst();
 //        for (T category : categories) {
 //            if(category.getName().equals(searchString)) {
 //                return category;
 //            }
 //        }
         } else {
-            firstFound = categories.stream().filter(cat -> ((IDescribableEntity)cat).getDescription().equals(searchString)).findFirst();
+            firstFound = categories.stream().filter(cat -> ((IDescribableEntity)cat).getDescription().equals(fromObject)).findFirst();
         }
         return firstFound.orElse(null);
     }

@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -70,6 +69,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.DocumentsDAO;
@@ -771,7 +771,7 @@ public class OfficeDocument {
             pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
             Row newRow = Row.getInstance(newRowElement);
             // find all placeholders within row
-	        int cellCount = newRowElement.getChildElementCount();
+	        int cellCount = newRowElement.getChildNodes().getLength();
             for (int j = 0; j < cellCount; j++) {
                 // a template cell
                 Cell currentCell = newRow.getCellByIndex(j);

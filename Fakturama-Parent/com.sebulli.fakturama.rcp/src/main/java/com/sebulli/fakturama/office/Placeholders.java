@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.office;
 
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -23,7 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
@@ -37,6 +35,8 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.ibm.icu.text.NumberFormat;
+import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.i18n.ILocaleService;
@@ -259,7 +259,7 @@ public class Placeholders {
 			
 	};
 	
-	private static NumberFormat localizedNumberFormat = NumberFormat.getInstance(Locale.getDefault());
+	private static NumberFormat localizedNumberFormat = NumberFormat.getInstance(ULocale.getDefault());
 
     private ContactUtil contactUtil;
 	
@@ -749,7 +749,7 @@ public class Placeholders {
 		if (key.equals("SHIPPING.NET")) return numberFormatterService.formatCurrency(documentSummary.getShippingNet());
 		if (key.equals("SHIPPING.VAT")) return numberFormatterService.formatCurrency(documentSummary.getShippingVat());
 		if (key.equals("SHIPPING.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getShippingGross());
-//		if (key.equals("SHIPPING.NAME")) return document.getStringValueByKey("shippingname");
+		if (key.equals("SHIPPING.NAME")) return document.getShipping() != null ? document.getShipping().getName() : "";
 		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getDescription() : document.getAdditionalInfo().getShippingDescription();
 		if (key.equals("SHIPPING.VAT.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getShippingVat().getDescription() : "";
 		if (key.equals("DOCUMENT.DUNNING.LEVEL") && document.getBillingType() == BillingType.DUNNING) return ((Dunning)document).getDunningLevel().toString();
@@ -843,7 +843,7 @@ public class Placeholders {
     			if (key.equals("ADDRESS.ZIP")) return address.getZip();
     			if (key.equals("ADDRESS.CITY")) return address.getCity();
                 if (key.equals("ADDRESS.COUNTRY.CODE2")) return address.getCountryCode();
-                Optional<Locale> locale = localeUtil.findByCode(address.getCountryCode());
+                Optional<ULocale> locale = localeUtil.findByCode(address.getCountryCode());
                 if (key.equals("ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
                 if (key.equals("ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
 			}
@@ -901,7 +901,7 @@ public class Placeholders {
     			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
     			if (key.equals("DELIVERY.ADDRESS.ZIP")) return address.getZip();
     			if (key.equals("DELIVERY.ADDRESS.CITY")) return address.getCity();
-    			Optional<Locale> locale = localeUtil.findByCode(address.getCountryCode());
+    			Optional<ULocale> locale = localeUtil.findByCode(address.getCountryCode());
     			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
     			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : localeUtil.getDefaultLocale().getDisplayCountry();
    			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
@@ -922,7 +922,7 @@ public class Placeholders {
 			if (key2.equals("ADDRESS.CITY")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_CITY);
 			String country = contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_COUNTY);
 			if (key2.equals("ADDRESS.COUNTRY")) return country;
-            Optional<Locale> locale = localeUtil.findLocaleByDisplayCountry(country);
+            Optional<ULocale> locale = localeUtil.findLocaleByDisplayCountry(country);
 			if (key2.equals("ADDRESS.COUNTRY.CODE2")) {
 				return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
 			}
@@ -1094,7 +1094,7 @@ public class Placeholders {
 	private String getDiscountDueDate(Document document) {
 		LocalDateTime date = LocalDateTime.ofInstant(document.getDocumentDate().toInstant(), ZoneId.systemDefault());
 		date = date.plusDays(document.getPayment().getDiscountDays());
-		// if another Locale than the system's default Locale should be used then we
+		// if another ULocale than the system's default ULocale should be used then we
 		// have to write "DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(...))" here 
 		return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
 	}
