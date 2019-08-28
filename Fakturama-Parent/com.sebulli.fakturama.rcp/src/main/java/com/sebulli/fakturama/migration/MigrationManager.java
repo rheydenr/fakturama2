@@ -645,36 +645,29 @@ public class MigrationManager {
 						 */
 						// at first we try to interpret the address data
 						DocumentReceiver contact = modelFactory.createDocumentReceiver();
+						contact.setBillingType(BillingType.INVOICE);
 						// there is NO Customer No. since we extracted it from a plain String.
-						Address address = contactUtil.createAddressFromString(oldDocument.getAddress());
-						contact.getAddresses().add(address);
-						contact.setBillingType(billingType);
+						contact.setManualAddress(oldDocument.getAddress());
 						
 						// try to get the name
-						String name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME);
+						String name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_LASTNAME);
 						if(name.isEmpty()) {
 							name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_NAME);
 						}
 						contact.setName(name);
 						contact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME));
-//					document.getBillingContact().getAddress().setManualAddress(oldDocument.getAddress());
 						document.getReceiver().add(contact);
 						
 						DocumentReceiver deliveryContact = modelFactory.createDocumentReceiver();
-						Address deliveryAddress = contactUtil.createAddressFromString(oldDocument.getDeliveryaddress());
-						deliveryContact.getAddresses().add(deliveryAddress);
+						deliveryContact.setManualAddress(oldDocument.getDeliveryaddress());
 						deliveryContact.setBillingType(BillingType.DELIVERY);
 						String deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_LASTNAME);
 						if(deliveryName.isEmpty()) {
 							deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_NAME);
 						}
 						deliveryContact.setName(deliveryName);
-//					deliveryContact.setName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), "lastname"));
 						deliveryContact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_FIRSTNAME));
-//					if(!deliveryContact.isSameAs(contact)) {
-							document.getReceiver().add(deliveryContact);
-//					}
-//					document.getDeliveryContact().getAddress().setManualAddress(oldDocument.getDeliveryaddress());
+						document.getReceiver().add(deliveryContact);
 					} else {
 						// use the previous filled Contact hashmap
 						Long newContactIdDerivedFromOld = newContacts.get(oldDocument.getAddressid());

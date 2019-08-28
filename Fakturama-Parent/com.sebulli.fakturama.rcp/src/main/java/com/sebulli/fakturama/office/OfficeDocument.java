@@ -72,6 +72,7 @@ import org.w3c.dom.NodeList;
 import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
+import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
@@ -87,8 +88,6 @@ import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
-import com.sebulli.fakturama.model.DocumentReceiver;
-import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.office.FileOrganizer.PathOption;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -123,6 +122,9 @@ public class OfficeDocument {
     private DocumentsDAO documentsDAO;
     
 	@Inject
+	private DocumentReceiverDAO documentReceiverDao;
+
+	@Inject
 	private ILocaleService localeUtil;
     
 	@Inject
@@ -130,9 +132,6 @@ public class OfficeDocument {
 
     @Inject
     private IDateFormatterService dateFormatterService;
-    
-    @Inject
-    private IDocumentAddressManager addressManager;
 
     /**
      * Event Broker for sending update events to the list table
@@ -1324,8 +1323,7 @@ public class OfficeDocument {
     }
 
 	private void setUseSalesEquationTaxForDocument(Document document) {
-		DocumentReceiver billingAdress = addressManager.getBillingAdress(document);
-		this.useSET = document != null && billingAdress != null && BooleanUtils.isTrue(billingAdress.getUseSalesEqualizationTax());
+		this.useSET = documentReceiverDao.isSETEnabled(document);
 	}
 
     /**

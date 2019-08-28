@@ -37,6 +37,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.ULocale;
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.i18n.ILocaleService;
@@ -68,6 +69,10 @@ public class Placeholders {
 
     @Inject
     private IEclipseContext context;
+    
+	@Inject
+	private ContactsDAO contactsDAO;
+
 //
 //    @Inject
 //    private Logger log;
@@ -789,11 +794,7 @@ public class Placeholders {
 		
 		//setProperty("PAYMENT.NAME", document.getStringValueByKey("paymentname"));
 		if (key.equals("PAYMENT.DESCRIPTION")) {
-			if(document.getPayment() != null) {
-				return document.getPayment().getDescription();
-			} else {
-				return document.getAdditionalInfo().getPaymentDescription();
-			}
+			return document.getPayment() != null ? document.getPayment().getDescription() : document.getAdditionalInfo().getPaymentDescription();
 		}
 		if (key.equals("PAYMENT.PAID.VALUE")) return numberFormatterService.DoubleToFormatedPriceRound(document.getPaidValue());
 		if (key.equals("PAYMENT.PAID.DATE")) return dateFormatterService.getFormattedLocalizedDate(document.getPayDate());
@@ -830,8 +831,11 @@ public class Placeholders {
 			if (key.equals("ADDRESS.GREETING")) return contactUtil.getGreeting(contact);
 			if (key.equals("ADDRESS.TITLE")) return contact.getTitle();
 			if (key.equals("ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
-			if (key.equals("ADDRESS.BIRTHDAY")) {
-				return contact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(contact.getBirthday());
+			if (key.equals("ADDRESS.BIRTHDAY") && contact.getOriginContactId() != null) {
+				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
+				if(originContact != null) {
+					return originContact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(originContact.getBirthday());
+				}
 			}
 			if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
 			if (key.equals("ADDRESS.FIRSTANDLASTNAME")) return contactUtil.getFirstAndLastName(contact);
@@ -839,28 +843,30 @@ public class Placeholders {
 			if (key.equals("ADDRESS.LASTNAME")) return contact.getName();
 			if (key.equals("ADDRESS.COMPANY")) return contact.getCompany();
 
-//			Address address = contact.getAddress();
-//			if(address != null) {
-    			if (key.equals("ADDRESS.STREET")) return contact.getStreet();
-    			if (key.equals("ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
-    			if (key.equals("ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
-    			if (key.equals("ADDRESS.ZIP")) return contact.getZip();
-    			if (key.equals("ADDRESS.CITY")) return contact.getCity();
-                if (key.equals("ADDRESS.COUNTRY.CODE2")) return contact.getCountryCode();
-                Optional<ULocale> locale = localeUtil.findByCode(contact.getCountryCode());
-                if (key.equals("ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
-                if (key.equals("ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
-//			}
-			
-			BankAccount bankAccount = contact.getBankAccount();
-			if(bankAccount != null) {
-                if (key.equals("ADDRESS.BANK.ACCOUNT.HOLDER")) return bankAccount.getAccountHolder();
-    			if (key.equals("ADDRESS.BANK.ACCOUNT")) return bankAccount.getName();
-    			if (key.equals("ADDRESS.BANK.CODE")) return Optional.ofNullable(bankAccount.getBankCode()).orElse(Integer.valueOf(0)).toString();
-    			if (key.equals("ADDRESS.BANK.NAME")) return bankAccount.getBankName();
-    			if (key.equals("ADDRESS.BANK.IBAN")) return bankAccount.getIban();
-    			if (key.equals("ADDRESS.BANK.BIC")) return bankAccount.getBic();
-			}
+			if (key.equals("ADDRESS.STREET")) return contact.getStreet();
+			if (key.equals("ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
+			if (key.equals("ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
+			if (key.equals("ADDRESS.ZIP")) return contact.getZip();
+			if (key.equals("ADDRESS.CITY")) return contact.getCity();
+            if (key.equals("ADDRESS.COUNTRY.CODE2")) return contact.getCountryCode();
+            
+            Optional<ULocale> locale = localeUtil.findByCode(contact.getCountryCode());
+            if (key.equals("ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
+            if (key.equals("ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
+            if(contact.getOriginContactId() != null) {
+				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
+				if(originContact != null) {
+					BankAccount bankAccount = originContact.getBankAccount();
+					if(bankAccount != null) {
+		                if (key.equals("ADDRESS.BANK.ACCOUNT.HOLDER")) return bankAccount.getAccountHolder();
+		    			if (key.equals("ADDRESS.BANK.ACCOUNT")) return bankAccount.getName();
+		    			if (key.equals("ADDRESS.BANK.CODE")) return Optional.ofNullable(bankAccount.getBankCode()).orElse(Integer.valueOf(0)).toString();
+		    			if (key.equals("ADDRESS.BANK.NAME")) return bankAccount.getBankName();
+		    			if (key.equals("ADDRESS.BANK.IBAN")) return bankAccount.getIban();
+		    			if (key.equals("ADDRESS.BANK.BIC")) return bankAccount.getBic();
+					}
+				}
+            }
 			if (key.equals("ADDRESS.NR")) return contact.getCustomerNumber();
 			if (key.equals("ADDRESS.PHONE")) return contact.getPhone();
 			if (key.equals("ADDRESS.PHONE.PRE")) return getTelPrePost(contact.getPhone(), true);
@@ -873,12 +879,16 @@ public class Placeholders {
 			if (key.equals("ADDRESS.MOBILE.POST")) return getTelPrePost(contact.getMobile(), false);
 			if (key.equals("ADDRESS.SUPPLIER.NUMBER")) return contact.getSupplierNumber();
 			if (key.equals("ADDRESS.EMAIL")) return contact.getEmail();
-			if (key.equals("ADDRESS.WEBSITE")) return contact.getWebsite();
-			if (key.equals("ADDRESS.VATNR")) return contact.getVatNumber();
-			if (key.equals("ADDRESS.NOTE")) return contact.getNote();
-			if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(contact.getDiscount()).orElse(Double.valueOf(0)).toString();
+			
+            if(contact.getOriginContactId() != null) {
+				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
+				if (key.equals("ADDRESS.WEBSITE")) return originContact.getWebsite();
+				if (key.equals("ADDRESS.VATNR")) return originContact.getVatNumber();
+				if (key.equals("ADDRESS.NOTE")) return originContact.getNote();
+				if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(originContact.getDiscount()).orElse(Double.valueOf(0)).toString();
+				if (key.equals("ADDRESS.MANDATEREFERENCE")) return originContact.getMandateReference();
+            }
 			if (key.equals("ADDRESS.GLN")) return Optional.ofNullable(contact.getGln()).orElse(Long.valueOf(0)).toString();
-			if (key.equals("ADDRESS.MANDATEREFERENCE")) return contact.getMandateReference();
 			
 			// now switch to delivery contact, if any
 			if(deliveryAdress != null) {
@@ -890,26 +900,26 @@ public class Placeholders {
 			if (key.equals("DELIVERY.ADDRESS.GREETING")) return contactUtil.getGreeting(contact);
 			if (key.equals("DELIVERY.ADDRESS.TITLE")) return contact.getTitle();
 			if (key.equals("DELIVERY.ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
-			if (key.equals("DELIVERY.ADDRESS.BIRTHDAY")) {
-				return contact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(contact.getBirthday());
+			if (key.equals("DELIVERY.ADDRESS.BIRTHDAY") && contact.getOriginContactId() != null) {
+				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
+				if(originContact != null) {
+				return originContact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(originContact.getBirthday());
+				}
 			}
 			if (key.equals("DELIVERY.ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
 			if (key.equals("DELIVERY.ADDRESS.FIRSTNAME")) return contact.getFirstName();
 			if (key.equals("DELIVERY.ADDRESS.LASTNAME")) return contact.getName();
 			if (key.equals("DELIVERY.ADDRESS.COMPANY")) return contact.getCompany();
 
-//            address = contact.getAddress();
-//            if(address != null) {
-    			if (key.equals("DELIVERY.ADDRESS.STREET")) return contact.getStreet();
-    			if (key.equals("DELIVERY.ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
-    			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
-    			if (key.equals("DELIVERY.ADDRESS.ZIP")) return contact.getZip();
-    			if (key.equals("DELIVERY.ADDRESS.CITY")) return contact.getCity();
-    			locale = localeUtil.findByCode(contact.getCountryCode());
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : localeUtil.getDefaultLocale().getDisplayCountry();
-   			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
-//            }
+			if (key.equals("DELIVERY.ADDRESS.STREET")) return contact.getStreet();
+			if (key.equals("DELIVERY.ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
+			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
+			if (key.equals("DELIVERY.ADDRESS.ZIP")) return contact.getZip();
+			if (key.equals("DELIVERY.ADDRESS.CITY")) return contact.getCity();
+			locale = localeUtil.findByCode(contact.getCountryCode());
+			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
+			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : localeUtil.getDefaultLocale().getDisplayCountry();
+		    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
 		}
 		// There is no reference - Try to get the information from the address field
 		else {
@@ -1011,22 +1021,25 @@ public class Placeholders {
 	    censoredAccount = censorAccountNumber(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN));
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.IBAN.CENSORED>", censoredAccount);
 	    
-	    Contact contact = addressManager.getBillingAdress(document);
-        if(contact != null && contact.getBankAccount() != null) {
-    	    // debitor's bank account
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.ACCOUNT.HOLDER>", 
-    	            contact.getBankAccount().getAccountHolder());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN>", 
-    	            contact.getBankAccount().getIban());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.BIC>", 
-    	            contact.getBankAccount().getBic());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.NAME>", 
-    	            contact.getBankAccount().getBankName());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.MANDATREF>", 
-    	            contact.getMandateReference());
-    	    // Additional placeholder for censored bank account
-    	    censoredAccount = censorAccountNumber(contact.getBankAccount().getIban());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN.CENSORED>", censoredAccount);
+	    DocumentReceiver documentReceiver = addressManager.getBillingAdress(document);
+        if(documentReceiver != null && documentReceiver.getOriginContactId() != null) {
+        	Contact contact = contactsDAO.findById(documentReceiver.getOriginContactId());
+        	if(contact != null && contact.getBankAccount() != null) {
+	    	    // debitor's bank account
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.ACCOUNT.HOLDER>", 
+	    	            contact.getBankAccount().getAccountHolder());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN>", 
+	    	            contact.getBankAccount().getIban());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.BIC>", 
+	    	            contact.getBankAccount().getBic());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.NAME>", 
+	    	            contact.getBankAccount().getBankName());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.MANDATREF>", 
+	    	            contact.getMandateReference());
+	    	    // Additional placeholder for censored bank account
+	    	    censoredAccount = censorAccountNumber(contact.getBankAccount().getIban());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN.CENSORED>", censoredAccount);
+        	}
 	    }
 	    
 	    // placeholder for total sum

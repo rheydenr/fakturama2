@@ -16,6 +16,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.ibm.icu.util.ULocale;
+import com.sebulli.fakturama.dto.AddressDTO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -102,14 +103,8 @@ public class ContactUtil {
 	private IPreferenceStore eclipsePrefs;
     
     private FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
-
-	/**
-     * the name of the company (if any) and the name of the contact
-     * 
-     * @param contact the {@link Contact}
-     * @return the concatenated name of the company and the contact
-     */
-    public String getNameWithCompany(Contact contact) {
+    
+    private String getNameWithCompany(AddressDTO contact) {
         String line = "";
         String manualAddress = contact.getManualAddress();
         
@@ -132,8 +127,22 @@ public class ContactUtil {
         }
         return line;
     }
+
+	/**
+     * the name of the company (if any) and the name of the contact
+     * 
+     * @param contact the {@link Contact}
+     * @return the concatenated name of the company and the contact
+     */
+    public String getNameWithCompany(Contact contact) {
+    	return getNameWithCompany(createAddressDTO(contact));
+    }
     
-    public String getCompanyOrLastname(Contact contact) {
+    public String getNameWithCompany(DocumentReceiver contact) {
+    	return getNameWithCompany(createAddressDTO(contact));
+    }
+    
+    private String getCompanyOrLastname(AddressDTO contact) {
         String line = "";
         if (StringUtils.isNotBlank(contact.getCompany())) {
             line = DataUtils.getInstance().getSingleLine(contact.getCompany());
@@ -144,13 +153,39 @@ public class ContactUtil {
         }
         return line;
     }
-        
-    /**
-     * Get the first and the last name
-     * 
-     * @return First and last name
-     */
-    public String getFirstAndLastName(Contact contact) {
+    
+    public AddressDTO createAddressDTO(DocumentReceiver documentReceiver) {
+    	AddressDTO addressDTO = new AddressDTO()
+    			.withCompany(documentReceiver.getCompany())
+    			.withName(documentReceiver.getName())
+    			.withFirstName(documentReceiver.getFirstName())
+    			.withManualAddress(documentReceiver.getManualAddress())
+    			.withCustomerNumber(documentReceiver.getCustomerNumber())
+    			;
+    	
+    	return addressDTO;
+    }
+    
+    public AddressDTO createAddressDTO(Contact contact) {
+    	AddressDTO addressDTO = new AddressDTO()
+    			.withCompany(contact.getCompany())
+    			.withName(contact.getName())
+    			.withFirstName(contact.getFirstName())
+    			.withManualAddress(contact.getManualAddress())
+    			.withCustomerNumber(contact.getCustomerNumber())
+    			;
+    	return addressDTO;
+    }
+    
+    public String getCompanyOrLastname(Contact contact) {
+    	return getCompanyOrLastname(createAddressDTO(contact));
+    }
+    
+    public String getCompanyOrLastname(DocumentReceiver contact) {
+    	return getCompanyOrLastname(createAddressDTO(contact));
+    }
+    
+    private String getFirstAndLastName(AddressDTO contact) {
         String line = "";
         if (StringUtils.isNotBlank(contact.getFirstName())) {
             line += contact.getFirstName();
@@ -164,7 +199,20 @@ public class ContactUtil {
 
         return line;
     }
+        
+    /**
+     * Get the first and the last name
+     * 
+     * @return First and last name
+     */
+    public String getFirstAndLastName(Contact contact) {
+    	return getFirstAndLastName(createAddressDTO(contact));
+    }
 
+    public String getFirstAndLastName(DocumentReceiver contact) {
+    	return getFirstAndLastName(createAddressDTO(contact));
+    }
+    
     /**
      * Get the gender String
      * 
@@ -174,6 +222,10 @@ public class ContactUtil {
         return getSalutationString(contact.getGender());
     }
 
+    public String getGenderString(DocumentReceiver contact) {
+    	return getSalutationString(contact.getGender());
+    }
+    
     /**
      * Get the name with gender String
      * @return Gender and name as String

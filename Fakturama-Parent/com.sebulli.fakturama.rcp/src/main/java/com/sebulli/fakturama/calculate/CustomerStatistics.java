@@ -80,7 +80,7 @@ public class CustomerStatistics {
 	private String invoices = "";
 	
 	// The total volume
-	private Double total = 0.0;
+	private Double total = Double.valueOf(0.0);
 	
 	// Customer to test
 	private Contact contact = null;

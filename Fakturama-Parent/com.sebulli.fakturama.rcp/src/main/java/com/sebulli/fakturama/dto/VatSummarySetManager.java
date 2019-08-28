@@ -21,14 +21,13 @@ import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
-import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.DocumentReceiver;
-import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
@@ -39,7 +38,7 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
  */
 public class VatSummarySetManager {
 	@Inject
-	private IDocumentAddressManager addressManager;
+	private IEclipseContext context;
 	
 	private VatSummarySet vatSummarySet;
 
@@ -62,10 +61,7 @@ public class VatSummarySetManager {
 		MonetaryAmount deposit = Money.of(document.getPaidValue(), currencyCode);
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
-        DocumentReceiver billingAdress = addressManager.getBillingAdress(document);
-		boolean useSET = document != null && billingAdress != null && BooleanUtils.isTrue(billingAdress.getUseSalesEqualizationTax());
-		documentSummaryCalculator.setUseSET(useSET);
+		DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
 		documentSummaryCalculator.calculate(vatSummarySet, document.getItems(), 
 				document.getShipping() != null ? document.getShipping().getShippingValue() : Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,
 				document.getShipping() != null ? document.getShipping().getShippingVat() : null,
@@ -74,8 +70,6 @@ public class VatSummarySetManager {
 				document.getNoVatReference(),
  			    scaleFactor, document.getNetGross(), deposit);
 	}
-	
-	
 	
 	/**
 	 * Getter for the VatSummarySet

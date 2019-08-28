@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Tree;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
-import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IEntity;
@@ -416,7 +415,7 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		
 		DocumentReceiver billingContact = selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isINVOICE()).findFirst().get();
 		DocumentReceiver deliveryContact = selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isDELIVERY()).findFirst().get();
-		Contact contact = selectedDocument.getBillingType().isDELIVERY() ? deliveryContact : billingContact;
+		DocumentReceiver contact = selectedDocument.getBillingType().isDELIVERY() ? deliveryContact : billingContact;
 		String name = selectedDocument.getAddressFirstLine(); 
 		contactItem.setContactId(contact.getId());
 		contactItem.setName(name);

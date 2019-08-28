@@ -32,7 +32,6 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -119,6 +118,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
+import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.Price;
@@ -131,7 +131,6 @@ import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DummyStringCategory;
-import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -177,8 +176,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	private INumberFormatterService numberFormatterService;
 	
 	@Inject
-	private IDocumentAddressManager addressManager;
-	
+	private DocumentReceiverDAO documentReceiverDao;
+
     // ID of this view
     public static final String ID = "fakturama.document.itemTable";
     
@@ -248,7 +247,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         this.container = container;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
-        this.useSET = document != null && addressManager.getBillingAdress(document) != null && BooleanUtils.isTrue(addressManager.getBillingAdress(document).getUseSalesEqualizationTax());
+        this.useSET = document != null && documentReceiverDao.isSETEnabled(document);
 //        // Get some settings from the preference store
 //        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
 //            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
@@ -1198,6 +1197,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                         }
                     }, 
                     DisplayMode.EDIT, PICTURE_CELL_LABEL);
+            
             // open dialog in a new window
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.OPEN_IN_DIALOG,
@@ -1333,7 +1333,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 			    configRegistry.registerConfigAttribute(
 			            CellConfigAttributes.CELL_STYLE,
 			            styleRightAligned,      
-			            DisplayMode.NORMAL, VAT_CELL_LABEL ); 
+			            DisplayMode.NORMAL, VAT_CELL_LABEL); 
 			    configRegistry.registerConfigAttribute( 
 			            CellConfigAttributes.CELL_PAINTER, 
 			            new ComboBoxPainter(), 

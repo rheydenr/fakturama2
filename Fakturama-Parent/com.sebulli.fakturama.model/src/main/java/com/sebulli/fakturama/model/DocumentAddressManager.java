@@ -46,33 +46,34 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		documentReceiver.setCountryCode(addressFromContact.getCountryCode());
 
 		// copy fields from contact
+		documentReceiver.setOriginContactId(contact.getId());
 		documentReceiver.setCustomerNumber(contact.getCustomerNumber());
 		documentReceiver.setTitle(contact.getTitle());
 		documentReceiver.setFirstName(contact.getFirstName());
 		documentReceiver.setName(contact.getName());
 		documentReceiver.setGender(contact.getGender());
 		documentReceiver.setCompany(contact.getCompany());
-		documentReceiver.setBirthday(contact.getBirthday());
+//		documentReceiver.setBirthday(contact.getBirthday());
 
 		documentReceiver.setEmail(contact.getEmail());
 		documentReceiver.setMobile(contact.getPhone());
 		documentReceiver.setPhone(contact.getPhone());
 		documentReceiver.setFax(contact.getFax());
 
-		documentReceiver.setDiscount(contact.getDiscount());
-		documentReceiver.setNote(contact.getNote());
-		documentReceiver.setPayment(contact.getPayment());
-		documentReceiver.setReliability(contact.getReliability());
-		documentReceiver.setUseNetGross(contact.getUseNetGross());
-		documentReceiver.setVatNumber(contact.getVatNumber());
-		documentReceiver.setWebsite(contact.getWebsite());
-		documentReceiver.setWebshopName(contact.getWebshopName());
+//		documentReceiver.setDiscount(contact.getDiscount());
+//		documentReceiver.setNote(contact.getNote());
+//		documentReceiver.setPayment(contact.getPayment());
+//		documentReceiver.setReliability(contact.getReliability());
+//		documentReceiver.setUseNetGross(contact.getUseNetGross());
+//		documentReceiver.setVatNumber(contact.getVatNumber());
+//		documentReceiver.setWebsite(contact.getWebsite());
+//		documentReceiver.setWebshopName(contact.getWebshopName());
 
 		documentReceiver.setSupplierNumber(contact.getSupplierNumber());
-		documentReceiver.setMandateReference(contact.getMandateReference());
+//		documentReceiver.setMandateReference(contact.getMandateReference());
 		documentReceiver.setGln(contact.getGln());
-		documentReceiver.setBankAccount(contact.getBankAccount());
-		documentReceiver.setUseSalesEqualizationTax(contact.getUseSalesEqualizationTax());
+//		documentReceiver.setBankAccount(contact.getBankAccount());
+//		documentReceiver.setUseSalesEqualizationTax(contact.getUseSalesEqualizationTax());
 
 		return documentReceiver;
 	}
@@ -103,5 +104,13 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		Optional<DocumentReceiver> documentReceiver = document.getReceiver().stream()
 				.filter(rcv -> rcv == null || rcv.getBillingType().compareTo(billingType) == 0).findFirst();
 		return documentReceiver.orElse(null);
+	}
+
+	@Override
+	public Document addReceiverToDocument(Document document, DocumentReceiver documentReceiver) {
+		Optional<DocumentReceiver> existingReceiver = document.getReceiver().stream().filter(r -> r.getBillingType().compareTo(documentReceiver.getBillingType()) == 0).findAny();
+		existingReceiver.ifPresent(e -> document.getReceiver().remove(e));
+		document.getReceiver().add(documentReceiver);
+		return document;
 	}
 }
