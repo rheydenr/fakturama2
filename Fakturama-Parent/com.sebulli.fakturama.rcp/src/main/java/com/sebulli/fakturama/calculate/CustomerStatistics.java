@@ -31,8 +31,10 @@ import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -52,12 +54,18 @@ public class CustomerStatistics {
     
     @Inject
     private IEclipseContext context;
+    
+    @Inject
+    private ContactsDAO contactsDAO;
 
 	/**
      * @param contact the contact to set
      */
-    public void setContact(Contact contact) {
-        this.contact = contact;
+    public void setContact(DocumentReceiver documentReceiver) {
+		if(documentReceiver.getOriginContactId() != null) {
+			Contact contact = contactsDAO.findById(documentReceiver.getOriginContactId());
+			this.contact = contact;
+		}
     }
 
     /**
@@ -94,8 +102,8 @@ public class CustomerStatistics {
 	 * @param 
 	 * 		contactID of the customer
 	 */
-	public CustomerStatistics (Contact contact) {
-		this(contact, null);
+	public CustomerStatistics (DocumentReceiver documentReceiver) {
+		this(documentReceiver, null);
 	}
 	
 	/**
@@ -108,6 +116,14 @@ public class CustomerStatistics {
 	 */
 	public CustomerStatistics (Contact contact, String address) {
 		this.contact = contact;
+		this.address = address;
+	}
+	
+	public CustomerStatistics (DocumentReceiver documentReceiver, String address) {
+		if(documentReceiver.getOriginContactId() != null) {
+			Contact contact = contactsDAO.findById(documentReceiver.getOriginContactId());
+			this.contact = contact;
+		}
 		this.address = address;
 	}
 	

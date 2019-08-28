@@ -39,5 +39,4 @@ public interface IDocumentAddressManager {
 	 * @return {@link Document} with the new {@link DocumentReceiver}
 	 */
 	Document addReceiverToDocument(Document document, DocumentReceiver documentReceiver);
-
 }

@@ -65,7 +65,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 //		documentReceiver.setPayment(contact.getPayment());
 //		documentReceiver.setReliability(contact.getReliability());
 //		documentReceiver.setUseNetGross(contact.getUseNetGross());
-//		documentReceiver.setVatNumber(contact.getVatNumber());
+		documentReceiver.setVatNumber(contact.getVatNumber());
 //		documentReceiver.setWebsite(contact.getWebsite());
 //		documentReceiver.setWebshopName(contact.getWebshopName());
 

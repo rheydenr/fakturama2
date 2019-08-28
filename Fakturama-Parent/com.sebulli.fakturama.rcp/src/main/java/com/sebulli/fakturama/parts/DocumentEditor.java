@@ -16,6 +16,7 @@ package com.sebulli.fakturama.parts;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
@@ -169,6 +170,7 @@ import com.sebulli.fakturama.views.datatable.texts.TextListTable;
  */
 public class DocumentEditor extends Editor<Document> {
 
+	private static final String TAB_IDENTIFIER_ADDRESS = "ADDRESS_FOR_BILLING_TAB";
 	public static final String DOCUMENT_RECALCULATE = "DOCUMENT.RECALCULATE";
 	public static final String PARAM_SILENT_MODE = "org.fakturama.documenteditor.silentmode";
 	
@@ -554,12 +556,11 @@ public class DocumentEditor extends Editor<Document> {
     	 * - if an address has changed, replace it in the document's DocumentReceivers list
     	 */
     	
-    	
-    	
 		// Test, if the txtAddress field was modified
 		// and add the content of the txtAddress to the document's receivers
 		boolean addressModified = !DataUtils.getInstance().MultiLineStringsAreEqual(
-				contactUtil.getAddressAsString(addressManager.getBillingAdress(document)), txtAddress.getText());
+				contactUtil.getAddressAsString(addressManager.getBillingAdress(document)), 
+				((Text)lookupAddressTabForBillingType(document.getBillingType()).getControl()).getText());
 		
 	   /* if the address was modified but the documentReceiver has a customer number then we have
 		* a manually changed contact. In this case we have to remove the customerNumber and set the manualAddress.
@@ -1211,7 +1212,7 @@ public class DocumentEditor extends Editor<Document> {
 			shipping = lookupDefaultShippingValue();
 		}
 		
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(document,
+		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(
 				defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX));
         if(document.getShipping() == null) {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
@@ -1656,8 +1657,13 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// set the Contact as DocumentReceiver in the currently active address tab
 		selectedAddresses.put(document.getBillingType(), contact);
-		// FIXME select the correct address tab!
-		txtAddress.setText(contactUtil.getAddressAsString(addressManager.getAdressForBillingType(document, document.getBillingType())));
+
+		// select the correct address tab
+		CTabItem addressTab = lookupAddressTabForBillingType(document.getBillingType());
+		if(addressTab != null) {
+			((Text)addressTab.getControl()).setText(
+					contactUtil.getAddressAsString(addressManager.getAdressForBillingType(document, document.getBillingType())));
+		}
 		
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
@@ -1683,6 +1689,11 @@ public class DocumentEditor extends Editor<Document> {
 //		setDirty(true);
 	}
 	
+	private CTabItem lookupAddressTabForBillingType(BillingType billingType) {
+		java.util.Optional<CTabItem> addressTab = Arrays.stream(addressAndIconComposite.getItems()).filter(t -> t.getData(TAB_IDENTIFIER_ADDRESS).equals(billingType)).findFirst();
+		return addressTab.orElse(null);
+	}
+
 	/**
 	 * Use this payment and update the duedays
 	 * 
@@ -2318,7 +2329,7 @@ DocumentType documentType = getDocumentType();
 	private void createAddressTabItem(DocumentReceiver mainReceiver) {
 		Text currentAddress;
 		CTabItem item = new CTabItem(addressAndIconComposite, SWT.NONE);
-		item.setData(mainReceiver);
+		item.setData(TAB_IDENTIFIER_ADDRESS, mainReceiver.getBillingType());
 		item.setText(mainReceiver.getBillingType().getName());
 
 		// The address field
@@ -2328,6 +2339,7 @@ DocumentType documentType = getDocumentType();
 			showHideWarningIcon();
 		});
 
+		currentAddress.setData("ADDRESS_CONTROL");
 		item.setToolTipText("'ne Adresse ");
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(currentAddress);
 		item.setControl(currentAddress);
@@ -2752,10 +2764,11 @@ DocumentType documentType = getDocumentType();
 
                 // we can't use the Selection Service!!!  :-(
 //                Contact contact = (Contact) selectionService.getSelection();
+                // this selected contact is from now on the main receiver for this document
+                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(contact, document.getBillingType());
+                document = addressManager.addReceiverToDocument(document, documentReceiver);
                 setAddress(contact);
                 // If a Contact is selected the manualAddress field has to be set to null!
-//                document.getBillingContact().getAddress().setManualAddress(null);
-//                document.setBillingContact(contact);
                 isChanged = true;
                 break;
             case "Product":
