@@ -15,7 +15,6 @@
 package org.fakturama.export.wizard.contacts;
 
 
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -99,6 +98,10 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.commonFieldZipcode);
 		setCellTextInBold(row, col++, msg.commonFieldCity);
 		setCellTextInBold(row, col++, msg.commonFieldCountry);
+		setCellTextInBold(row, col++, msg.exporterDataTelephone);
+		setCellTextInBold(row, col++, msg.exporterDataTelefax);
+		setCellTextInBold(row, col++, msg.exporterDataMobile);
+		setCellTextInBold(row, col++, msg.exporterDataEmail);
 		setCellTextInBold(row, col++, msg.commonFieldGender + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldTitle + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldFirstname + deliveryAddress);
@@ -108,9 +111,11 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.commonFieldZipcode + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldCity + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldCountry + deliveryAddress);
+		setCellTextInBold(row, col++, msg.exporterDataTelephone + deliveryAddress);
+		setCellTextInBold(row, col++, msg.exporterDataTelefax + deliveryAddress);
+		setCellTextInBold(row, col++, msg.exporterDataMobile + deliveryAddress);
+		setCellTextInBold(row, col++, msg.exporterDataEmail + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldAccountholder);
-		setCellTextInBold(row, col++, msg.commonFieldAccount);
-		setCellTextInBold(row, col++, msg.editorContactFieldBankcodeName);
 		setCellTextInBold(row, col++, msg.editorContactFieldBankName);
 		setCellTextInBold(row, col++, msg.exporterDataIban);
 		setCellTextInBold(row, col++, msg.exporterDataBic);
@@ -118,10 +123,6 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.commonFieldDate);
 		setCellTextInBold(row, col++, msg.editorContactFieldPaymentName);
 		setCellTextInBold(row, col++, msg.editorContactFieldReliabilityName);
-		setCellTextInBold(row, col++, msg.exporterDataTelephone);
-		setCellTextInBold(row, col++, msg.exporterDataTelefax);
-		setCellTextInBold(row, col++, msg.exporterDataMobile);
-		setCellTextInBold(row, col++, msg.exporterDataEmail);
 		setCellTextInBold(row, col++, msg.exporterDataWebsite);
 		setCellTextInBold(row, col++, msg.exporterDataVatno);
 		setCellTextInBold(row, col++, msg.exporterDataVatnoValid);
@@ -188,8 +189,6 @@ public class AddressListExport extends OOCalcExporter {
 			
 			if(contact.getBankAccount() != null) {
 				setCellText(row, col++, contact.getBankAccount().getAccountHolder());
-				setCellText(row, col++, contact.getBankAccount().getName());
-				setCellText(row, col++, contact.getBankAccount().getBankCode() != null ? contact.getBankAccount().getBankCode().toString() : "");
 				setCellText(row, col++, contact.getBankAccount().getBankName());
 				setCellText(row, col++, contact.getBankAccount().getIban());
 				setCellText(row, col++, contact.getBankAccount().getBic());
@@ -198,7 +197,10 @@ public class AddressListExport extends OOCalcExporter {
 			}
 			
 			setCellText(row, col++, contact.getNote());
-			setCellText(row, col++, DateFormat.getDateInstance().format(contact.getDateAdded()));
+			Calendar cal = Calendar.getInstance();
+			cal.clear();
+			cal.setTime(contact.getDateAdded());
+			setCellValueAsDate(row, col++, cal);
 			
 			if(contact.getPayment() != null) {
 				setCellText(row, col++, contact.getPayment().getDescription());
@@ -214,10 +216,14 @@ public class AddressListExport extends OOCalcExporter {
 			
 			setCellText(row, col++, contact.getWebsite());
 			setCellText(row, col++, contact.getVatNumber());
-			setCellValueAsBoolean(row, col++, contact.getVatNumberValid());
+			if(contact.getVatNumber().isEmpty()) {
+				col++;
+			} else {
+				setCellValueAsBoolean(row, col++, contact.getVatNumberValid());
+			}
 			setCellValueAsPercent(row, col++, contact.getDiscount());
 			if(contact.getBirthday() != null) {
-				Calendar cal = Calendar.getInstance();
+				cal.clear();
 				cal.setTime(contact.getBirthday());
 				setCellValueAsDate(row, col++, cal);
 			} else {
