@@ -36,7 +36,6 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -219,6 +218,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     private ContactUtil contactUtil;
     private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
 
+	private UpdateValueStrategy<IStatus, String> emailValidationStrategy = new UpdateValueStrategy<IStatus, String>();
+
 	/**
 	 * Saves the contents of this part
 	 * 
@@ -371,6 +372,17 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	@PostConstruct
 	public void init(Composite parent) {
 	    contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+	    
+		emailValidationStrategy.setBeforeSetValidator((String emailAddress) -> {
+			if (StringUtils.isBlank(emailAddress) || EmailValidator.getInstance().isValid(emailAddress)) {
+				return ValidationStatus.ok();
+			} else {
+				return ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
+			}
+		});
+	    
+	    
+	    
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(getEditorIconURI());
@@ -965,30 +977,34 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		plusButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Composite addressGroup = new Composite(addressTabFolder, SWT.NONE);
-				GridLayoutFactory.swtDefaults().numColumns(3).applyTo(addressGroup);
-				GridDataFactory.fillDefaults().grab(true, true).applyTo(addressGroup);
-
 				CTabItem newAddressTab = createAddressTabForBillingType("address #" + (addressTabFolder.getItemCount() + 1),
-						invisible, addressGroup, countryNames, salutationList);
+						invisible, createAddressPanel(), countryNames, salutationList);
 //				newAddressTab.setShowClose(true);
-				// TODO binding!!!
+				bindAddressWidgetForIndex(newAddressTab, addressTabFolder.getItemCount() - 1);
 				
 				addressTabFolder.setSelection(newAddressTab);
 			}
 		});
 		addressTabFolder.setTopRight(plusButton);
 
+		// create an inner tab for each BillingType
+		CTabItem addressTab = createAddressTabForBillingType("main address", invisible, createAddressPanel(), countryNames, salutationList);
+		addressTabFolder.setSelection(addressTab);
+		if(editorContact.getAddresses().size() > 1) {
+			for (int i = 1; i < editorContact.getAddresses().size(); i++) {
+				createAddressTabForBillingType("address #" + i, invisible, createAddressPanel(), countryNames, salutationList);
+			}
+		}
+	    
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(addressTabFolder);
+		addressTabFolder.setFocus();
+	}
+
+	private Composite createAddressPanel() {
 		Composite addressGroup = new Composite(addressTabFolder, SWT.NONE);
 		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(addressGroup);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(addressGroup);
-		
-		// create an inner tab for each BillingType
-		CTabItem mainAddressTab = createAddressTabForBillingType("main address", invisible, addressGroup, countryNames, salutationList);
-		
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(addressTabFolder);
-		addressTabFolder.setSelection(mainAddressTab);
-		addressTabFolder.setFocus();
+		return addressGroup;
 	}
 
 	private CTabItem createAddressTabForBillingType(String name, Composite invisible, Composite addressGroup, Map<String, String> countryNames,
@@ -1150,39 +1166,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtCompany, Contact_.company.getName(), 64);
 		bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
 		
-		UpdateValueStrategy<IStatus, String> strategy = new UpdateValueStrategy<IStatus, String>();
-		strategy.setBeforeSetValidator(new IValidator<String>() {
-
-		    @Override
-		    public IStatus validate(String emailAddress) {
-		        if(StringUtils.isBlank(emailAddress) || EmailValidator.getInstance().isValid(emailAddress)) {
-		        	return ValidationStatus.ok();
-		        } else {
-		        	return ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
-		        }
-		    }
-		});
-		
 		CTabItem[] items = addressTabFolder.getItems();
 		for (int i = 0; i < items.length; i++) {
 			CTabItem addressTabItem = items[i];
-		    Address currentAddress = getOrCreateAddressByIndexFromContact(i);
-		    
-		    bindModelValue(currentAddress, addressTabWidgets.get(i).getLocalConsultant(), Address_.localConsultant.getName(), 64);
-		    bindModelValue(currentAddress, addressTabWidgets.get(i).getStreet(), Address_.street.getName(), 64);
-		    bindModelValue(currentAddress, addressTabWidgets.get(i).getZip(), Address_.zip.getName(), 16);
-		    bindModelValue(currentAddress, addressTabWidgets.get(i).getCity(), Address_.city.getName(), 32);
-		    bindModelValue(currentAddress, addressTabWidgets.get(i).getCityAddon(), Address_.cityAddon.getName(), 32);
-		    bindModelValue(currentAddress, addressTabWidgets.get(i).getCountryCombo(), Address_.countryCode.getName());
-
-		    bindListWidget(currentAddress, addressTabWidgets.get(i).getContactTypeWidget(), Address_.contactTypes, addressTabItem);
-			
-			Binding binding = bindModelValue(currentAddress, addressTabWidgets.get(i).getEmail(), Address_.email.getName(), 64, strategy, null);
-			ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
-			
-			bindModelValue(currentAddress, addressTabWidgets.get(i).getPhone(), Address_.phone.getName(), 32);
-			bindModelValue(currentAddress, addressTabWidgets.get(i).getFax(), Address_.fax.getName(), 32);
-			bindModelValue(currentAddress, addressTabWidgets.get(i).getMobile(), Address_.mobile.getName(), 32);
+			bindAddressWidgetForIndex(addressTabItem, i);
 		}
 		
 		bindModelValue(editorContact, txtAccountHolder, Contact_.bankAccount.getName() +"." +BankAccount_.accountHolder.getName(), 64);
@@ -1211,6 +1198,26 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		
 		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
+
+	protected void bindAddressWidgetForIndex(CTabItem addressTabItem, int index) {
+	    Address currentAddress = getOrCreateAddressByIndexFromContact(index);
+	    
+	    bindModelValue(currentAddress, addressTabWidgets.get(index).getLocalConsultant(), Address_.localConsultant.getName(), 64);
+	    bindModelValue(currentAddress, addressTabWidgets.get(index).getStreet(), Address_.street.getName(), 64);
+	    bindModelValue(currentAddress, addressTabWidgets.get(index).getZip(), Address_.zip.getName(), 16);
+	    bindModelValue(currentAddress, addressTabWidgets.get(index).getCity(), Address_.city.getName(), 32);
+	    bindModelValue(currentAddress, addressTabWidgets.get(index).getCityAddon(), Address_.cityAddon.getName(), 32);
+	    bindModelValue(currentAddress, addressTabWidgets.get(index).getCountryCombo(), Address_.countryCode.getName());
+
+	    bindListWidget(currentAddress, addressTabWidgets.get(index).getContactTypeWidget(), Address_.contactTypes, addressTabItem);
+		
+		Binding binding = bindModelValue(currentAddress, addressTabWidgets.get(index).getEmail(), Address_.email.getName(), 64, emailValidationStrategy, null);
+		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
+		
+		bindModelValue(currentAddress, addressTabWidgets.get(index).getPhone(), Address_.phone.getName(), 32);
+		bindModelValue(currentAddress, addressTabWidgets.get(index).getFax(), Address_.fax.getName(), 32);
+		bindModelValue(currentAddress, addressTabWidgets.get(index).getMobile(), Address_.mobile.getName(), 32);
+	}
 
 	@SuppressWarnings("unchecked")
 	private <E extends IEntity> void bindListWidget(E listEntity, Control currentWidget,

@@ -3,8 +3,10 @@
  */
 package com.sebulli.fakturama.views.datatable.contacts;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -49,6 +51,7 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.parts.DebitorEditor;
@@ -232,12 +235,15 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
                 case ZIP:
                 	if(!rowObject.getAddresses().isEmpty()) {
-                		return rowObject.getAddresses().get(0).getZip();
+                		// display only the first address's values
+                		Optional<Address> firstAddress = getFirstAddress(rowObject);
+						return firstAddress.isPresent() ? firstAddress.get().getZip() : "";
                 	}
                 	break;
                 case CITY:
                 	if(!rowObject.getAddresses().isEmpty()) {
-                		return rowObject.getAddresses().get(0).getCity();
+                		Optional<Address> firstAddress = getFirstAddress(rowObject);
+						return firstAddress.isPresent() ? firstAddress.get().getCity() : "";
                 	}
                 	break;
                 case COMPANY:
@@ -251,7 +257,11 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                 return null;
             }
 
-            public void setDataValue(Contact rowObject, int columnIndex, Object newValue) {
+            private Optional<Address> getFirstAddress(T rowObject) {
+            	return rowObject.getAddresses().stream().min(Comparator.comparingLong(Address::getId));
+			}
+
+			public void setDataValue(Contact rowObject, int columnIndex, Object newValue) {
                 throw new UnsupportedOperationException("you can't change a value in list view!");
             }
 
