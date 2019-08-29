@@ -45,7 +45,6 @@ public class LocaleUtil implements ILocaleService {
      * @return a {@link LocaleUtil} instance
      */
     @SuppressWarnings("restriction")
-    @PostConstruct
 	public void getInstance() {
     	String lang = (Activator.getContext() == null ? System.getProperty(EclipseStarter.PROP_NL) : 
             Activator.getContext().getProperty(EclipseStarter.PROP_NL));

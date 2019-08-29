@@ -29,6 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
+import com.ibm.icu.text.SimpleDateFormat;
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.model.Address;
@@ -56,7 +58,7 @@ public class VcardExport {
     @Inject
     private IDocumentAddressManager addressManager;
 
-//    private SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
+    private SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
 
 	// Buffered writer for the output stream
 	private BufferedWriter bos  = null;
@@ -191,21 +193,32 @@ public class VcardExport {
 				
 				// Export one VCARD
 				writeVCard("BEGIN:","VCARD");
-				writeVCard("VERSION:","3.0");
+				writeVCard("VERSION:","2.1");
 				writeVCard("N:", contact.getName(),
 						contact.getFirstName());
 				writeVCard("FN:", contactUtil.getNameWithCompany(contact));
+				switch (contact.getGender()) {
+				case 1:
+					writeVCard("GENDER:", "M");
+					break;
+				case 2:
+					writeVCard("GENDER:", "F");
+					break;
+				default:
+					break;
+				}
+				
 				// doesn't work :-( ... at least not with Thunderbird
-//				if(contact.getBirthday() != null) {
-//					writeVCard("BDAY:", sdf.format(contact.getBirthday()));
-//				}
+				if(contact.getBirthday() != null) {
+					writeVCard("BDAY:", sdf.format(contact.getBirthday()));
+				}
 				Address address = addressManager.getAddressFromContact(contact,ContactType.BILLING);
 				if(address != null
 						&& (StringUtils.isNotBlank(contact.getCompany()) 
 								|| StringUtils.isNotBlank(address.getStreet()) 
 								|| StringUtils.isNotBlank(address.getCity())
 					)) {
-					writeVCard("ADR;TYPE=home:",
+					writeVCard("ADR;WORK;PREF:",
 							"",
 							contact.getCompany(),
 							address.getStreet(),
@@ -216,14 +229,19 @@ public class VcardExport {
 							   ? localeUtil.findByCode(address.getCountryCode()).get().getDisplayCountry()
 							   : ""
 							);
-					writeVCard("TEL;TYPE=HOME,WORK,VOICE:",address.getPhone());
-					writeVCard("TEL;TYPE=HOME,WORK,FAX:",address.getFax());
-					writeVCard("TEL;TYPE=HOME,WORK,CELL:",address.getMobile());
-					writeVCard("EMAIL;TYPE=internet:",address.getEmail());
+					writeVCard("TEL;WORK;VOICE:",address.getPhone());
+					writeVCard("TEL;FAX:",address.getFax());
+					writeVCard("TEL;CELL;VOICE:",address.getMobile());
+					writeVCard("EMAIL;internet:",address.getEmail());
 				}
 				
 				address = addressManager.getAddressFromContact(contact, ContactType.DELIVERY);
 				if(address != null) {
+					String countryCode = address.getCountryCode();
+					String displayCountry = "";
+					if(countryCode != null) {
+						displayCountry = localeUtil.findByCode(countryCode).orElse(localeUtil.getDefaultLocale()).getDisplayCountry();
+					}
 					if(StringUtils.isNotBlank(contact.getCompany()) 
 							|| StringUtils.isNotBlank(address.getStreet()) 
 							|| StringUtils.isNotBlank(address.getCity())) {	
@@ -233,29 +251,30 @@ public class VcardExport {
 								address.getStreet(),
 								address.getCity(),
 								"",
-								address.getZip(),
-								localeUtil.findByCode(address.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry()
+								StringUtils.defaultString(address.getZip()),
+								displayCountry
 								);
+						writeVCard("ORG:", contact.getCompany());
 					}
 					writeVCard("ADR;TYPE=other:",
-							contactUtil.getNameWithCompany(contact),
-							contact.getCompany(),
-							address.getStreet(),
-							address.getCity(),
+							StringUtils.defaultString(address.getCityAddon()),
+							StringUtils.defaultString(contact.getCompany()),
+							StringUtils.defaultString(address.getStreet()),
+							StringUtils.defaultString(address.getCity()),
 							"",
-							address.getZip(),
-							localeUtil.findByCode(address.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry()
+							StringUtils.defaultString(address.getZip()),
+							displayCountry
 							);
-					writeVCard("TEL;TYPE=HOME,WORK,VOICE:",address.getPhone());
-					writeVCard("TEL;TYPE=HOME,WORK,FAX:",address.getFax());
-					writeVCard("TEL;TYPE=HOME,WORK,CELL:",address.getMobile());
-					writeVCard("EMAIL;TYPE=internet:",address.getEmail());
+					writeVCard("TEL;HOME;VOICE:",address.getPhone());
+					writeVCard("TEL;WORK;FAX:",address.getFax());
+					writeVCard("TEL;CELL;VOICE:",address.getMobile());
+					writeVCard("EMAIL;internet:",address.getEmail());
 				}
 				
-				writeVCard("URL:",contact.getWebsite());
+				writeVCard("URL;WORK:",contact.getWebsite());
 
 				writeVCard("NOTE:",contact.getNote());
-				writeVCard("CATEGORIES:", contact.getCategories() != null ? contact.getCategories().getName() : "");
+				writeVCard("CATEGORIES:", contact.getCategories() != null ? CommonConverter.getCategoryName(contact.getCategories(), "/") : "");
 				
 				writeVCard("END:","VCARD");
 			}
