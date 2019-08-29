@@ -31,6 +31,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.wizards.ExporterHelper;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
@@ -99,6 +100,10 @@ public class AddressExport {
 					"\"zip\";"+
 					"\"city\";"+
 					"\"country\";"+
+					"\"phone\";"+
+					"\"fax\";"+
+					"\"mobile\";"+
+					"\"email\";"+
 
 					"\"delivery_gender\";"+
 					"\"delivery_title\";"+
@@ -109,10 +114,12 @@ public class AddressExport {
 					"\"delivery_zip\";"+
 					"\"delivery_city\";"+
 					"\"delivery_country\";"+
+					"\"delivery_phone\";"+
+					"\"delivery_fax\";"+
+					"\"delivery_mobile\";"+
+					"\"delivery_email\";"+
 					
-					"\"account_holder\";"+
-					"\"account\";"+
-					"\"bank_code\";"+
+					"\"bank_holder\";"+
 					"\"bank_name\";"+
 					"\"iban\";"+
 					"\"bic\";"+
@@ -123,10 +130,6 @@ public class AddressExport {
 					"\"date_added\";"+
 					"\"payment\";"+
 					"\"reliability\";"+
-					"\"phone\";"+
-					"\"fax\";"+
-					"\"mobile\";"+
-					"\"email\";"+
 					"\"website\";"+
 					"\"vatnr\";"+
 					"\"vatnrvalid\";"+
@@ -144,7 +147,9 @@ public class AddressExport {
 				StringBuffer stringBuffer = new StringBuffer();
 				stringBuffer.append(contact.getId()).append(";");
 				if(contact.getCategories() != null) {
-					stringBuffer.append(ExporterHelper.inQuotes(contact.getCategories().getName()));
+					stringBuffer.append(ExporterHelper.inQuotes(CommonConverter.getCategoryName(contact.getCategories(), "/")));
+				} else {
+					stringBuffer.append(";");
 				}
 				stringBuffer.append(";")
 					.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(contact.getGender()))).append(";")
@@ -189,13 +194,11 @@ public class AddressExport {
 				
 				if(contact.getBankAccount() != null) {
 					stringBuffer.append(ExporterHelper.inQuotes(contact.getBankAccount().getAccountHolder())).append(";")
-					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getName())).append(";")
-					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getBankCode() != null ? Integer.toString(contact.getBankAccount().getBankCode()) : "")).append(";")
 					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getBankName())).append(";")
 					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getIban())).append(";")
 					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getBic())).append(";");
 				} else {
-					stringBuffer.append(";;;;;;");
+					stringBuffer.append(";;;;");
 				}
 				
 				stringBuffer.append(ExporterHelper.inQuotes(contact.getCustomerNumber())).append(";")
