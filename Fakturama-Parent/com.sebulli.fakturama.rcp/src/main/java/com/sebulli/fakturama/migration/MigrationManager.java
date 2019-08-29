@@ -940,14 +940,10 @@ public class MigrationManager {
 					 */
 					contact.setDeleted(oldContact.isDeleted());
 					contact.setDiscount(oldContact.getDiscount());
-					contact.setEmail(oldContact.getEmail());
-					contact.setFax(oldContact.getFax());
-					contact.setMobile(oldContact.getMobile());
 					contact.setNote(oldContact.getNote());
 					if(oldContact.getPayment() > -1) {
 					    contact.setPayment(paymentsDAO.findById(newPayments.get(oldContact.getPayment())));
 					}
-					contact.setPhone(oldContact.getPhone());
 					contact.setReliability(ReliabilityType.get(oldContact.getReliability()));
 					contact.setSupplierNumber(oldContact.getSuppliernumber());
 					contact.setUseNetGross(Integer.valueOf(oldContact.getUseNetGross()).shortValue());
@@ -1019,7 +1015,11 @@ public class MigrationManager {
 		address.setCity(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryCity(), oldContact.getCity()));
 		address.setZip(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryZip(), oldContact.getZip()));
 		address.setValidFrom(new Date());
-		
+		address.setPhone(oldContact.getPhone());
+		address.setEmail(oldContact.getEmail());
+		address.setFax(oldContact.getFax());
+		address.setMobile(oldContact.getMobile());
+	
 		// we don't have a CountryCode table :-(, therefore we have to look up in ULocale classes
 		String country = getDeliveryConsideredValue(billingtype, oldContact.getDeliveryCountry(), oldContact.getCountry());
 		if(country.equalsIgnoreCase("deu")) {

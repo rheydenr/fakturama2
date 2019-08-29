@@ -216,6 +216,10 @@ public class VcardExport {
 							   ? localeUtil.findByCode(address.getCountryCode()).get().getDisplayCountry()
 							   : ""
 							);
+					writeVCard("TEL;TYPE=HOME,WORK,VOICE:",address.getPhone());
+					writeVCard("TEL;TYPE=HOME,WORK,FAX:",address.getFax());
+					writeVCard("TEL;TYPE=HOME,WORK,CELL:",address.getMobile());
+					writeVCard("EMAIL;TYPE=internet:",address.getEmail());
 				}
 				
 				address = addressManager.getAddressFromContact(contact, ContactType.DELIVERY);
@@ -242,12 +246,12 @@ public class VcardExport {
 							address.getZip(),
 							localeUtil.findByCode(address.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry()
 							);
+					writeVCard("TEL;TYPE=HOME,WORK,VOICE:",address.getPhone());
+					writeVCard("TEL;TYPE=HOME,WORK,FAX:",address.getFax());
+					writeVCard("TEL;TYPE=HOME,WORK,CELL:",address.getMobile());
+					writeVCard("EMAIL;TYPE=internet:",address.getEmail());
 				}
 				
-				writeVCard("TEL;TYPE=HOME,WORK,VOICE:",contact.getPhone());
-				writeVCard("TEL;TYPE=HOME,WORK,FAX:",contact.getFax());
-				writeVCard("TEL;TYPE=HOME,WORK,CELL:",contact.getMobile());
-				writeVCard("EMAIL;TYPE=internet:",contact.getEmail());
 				writeVCard("URL:",contact.getWebsite());
 
 				writeVCard("NOTE:",contact.getNote());

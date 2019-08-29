@@ -581,8 +581,6 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         contactItem.setFirstName(contact.getFirstname());
         contactItem.setName(contact.getLastname());
         contactItem.setCompany(contact.getCompany());
-        contactItem.setPhone(contact.getPhone());
-        contactItem.setEmail(contact.getEmail());
         contactItem.setWebshopName(contact.getWebshopName());
         contactItem.setVatNumber(contact.getVatno());
 		contactItem.setValidFrom(today);
@@ -592,6 +590,8 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         address.setZip(contact.getZip());
         address.setCity(contact.getCity());
         address.setValidFrom(today);
+        address.setPhone(contact.getPhone());
+        address.setEmail(contact.getEmail());
         address.getContactTypes().add(com.sebulli.fakturama.model.ContactType.BILLING);
         String countryCode = localeUtil.findCodeByDisplayCountry(contact.getCountry(), lang);
         address.setCountryCode(countryCode);

@@ -246,6 +246,10 @@ public class ContactsCsvImporter {
 					address.setValidFrom(Calendar.getInstance().getTime());
 					address.setStreet(prop.getProperty("street"));
 					address.setCity(prop.getProperty("city"));
+					address.setPhone(prop.getProperty("phone"));
+					address.setFax(prop.getProperty("fax"));
+					address.setMobile(prop.getProperty("mobile"));
+					address.setEmail(prop.getProperty("email"));
 //					address.setCountryCode(prop.getProperty("country")); TODO get correct country code!
 					testContact.getAddresses().add(address);
 
@@ -265,6 +269,10 @@ public class ContactsCsvImporter {
 					deliveryAddress.setStreet(prop.getProperty("delivery_street"));
 					deliveryAddress.setZip(prop.getProperty("delivery_zip"));
 					deliveryAddress.setCity(prop.getProperty("delivery_city"));
+					deliveryAddress.setPhone(prop.getProperty("delivery_phone"));
+					deliveryAddress.setFax(prop.getProperty("delivery_fax"));
+					deliveryAddress.setMobile(prop.getProperty("delivery_mobile"));
+					deliveryAddress.setEmail(prop.getProperty("delivery_email"));
 //					deliveryAddress.setCountryCode(prop.getProperty("delivery_country")); // FIXME set correct country code!!!!
 					deliveryContact.getAddresses().add(deliveryAddress);
 
@@ -292,10 +300,6 @@ public class ContactsCsvImporter {
 					}
 					testContact.setReliability(ReliabilityType.getByName(prop.getProperty("reliability")));
 
-					testContact.setPhone(prop.getProperty("phone"));
-					testContact.setFax(prop.getProperty("fax"));
-					testContact.setMobile(prop.getProperty("mobile"));
-					testContact.setEmail(prop.getProperty("email"));
 					testContact.setWebsite(prop.getProperty("website"));
 					testContact.setVatNumber(prop.getProperty("vatnr"));
 					testContact.setVatNumberValid(BooleanUtils.toBooleanObject(prop.getProperty("vatnrvalid")));

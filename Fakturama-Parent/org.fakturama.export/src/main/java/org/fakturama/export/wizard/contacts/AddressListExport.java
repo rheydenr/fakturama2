@@ -159,8 +159,12 @@ public class AddressListExport extends OOCalcExporter {
 				setCellText(row, col++, billingAddress.getZip());
 				setCellText(row, col++, billingAddress.getCity());
 				setCellText(row, col++, localeUtil.findByCode(billingAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
+				setCellText(row, col++, billingAddress.getPhone());
+				setCellText(row, col++, billingAddress.getFax());
+				setCellText(row, col++, billingAddress.getMobile());
+				setCellText(row, col++, billingAddress.getEmail());
 			} else {
-				col += 4;
+				col += 8;
 			}
 			
 			setCellText(row, col++, contactUtil.getSalutationString(contact.getGender()));
@@ -174,8 +178,12 @@ public class AddressListExport extends OOCalcExporter {
 				setCellText(row, col++, deliveryContact.getZip());
 				setCellText(row, col++, deliveryContact.getCity());
 				setCellText(row, col++, localeUtil.findByCode(deliveryContact.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
+				setCellText(row, col++, deliveryContact.getPhone());
+				setCellText(row, col++, deliveryContact.getFax());
+				setCellText(row, col++, deliveryContact.getMobile());
+				setCellText(row, col++, deliveryContact.getEmail());
 			} else {
-				col += 4;
+				col += 8;
 			}
 			
 			if(contact.getBankAccount() != null) {
@@ -204,10 +212,6 @@ public class AddressListExport extends OOCalcExporter {
 				col++;
 			}
 			
-			setCellText(row, col++, contact.getPhone());
-			setCellText(row, col++, contact.getFax());
-			setCellText(row, col++, contact.getMobile());
-			setCellText(row, col++, contact.getEmail());
 			setCellText(row, col++, contact.getWebsite());
 			setCellText(row, col++, contact.getVatNumber());
 			setCellValueAsBoolean(row, col++, contact.getVatNumberValid());

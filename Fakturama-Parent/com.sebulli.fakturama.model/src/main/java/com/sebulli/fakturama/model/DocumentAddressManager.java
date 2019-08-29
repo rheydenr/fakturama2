@@ -44,6 +44,10 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		documentReceiver.setCity(addressFromContact.getCity());
 		documentReceiver.setZip(addressFromContact.getZip());
 		documentReceiver.setCountryCode(addressFromContact.getCountryCode());
+		documentReceiver.setEmail(addressFromContact.getEmail());
+		documentReceiver.setMobile(addressFromContact.getMobile());
+		documentReceiver.setPhone(addressFromContact.getPhone());
+		documentReceiver.setFax(addressFromContact.getFax());
 
 		// copy fields from contact
 		documentReceiver.setOriginContactId(contact.getId());
@@ -54,12 +58,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		documentReceiver.setGender(contact.getGender());
 		documentReceiver.setCompany(contact.getCompany());
 //		documentReceiver.setBirthday(contact.getBirthday());
-
-		documentReceiver.setEmail(contact.getEmail());
-		documentReceiver.setMobile(contact.getPhone());
-		documentReceiver.setPhone(contact.getPhone());
-		documentReceiver.setFax(contact.getFax());
-
+		
 //		documentReceiver.setDiscount(contact.getDiscount());
 //		documentReceiver.setNote(contact.getNote());
 //		documentReceiver.setPayment(contact.getPayment());
@@ -70,7 +69,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 //		documentReceiver.setWebshopName(contact.getWebshopName());
 
 		documentReceiver.setSupplierNumber(contact.getSupplierNumber());
-//		documentReceiver.setMandateReference(contact.getMandateReference());
+		documentReceiver.setMandateReference(contact.getMandateReference());
 		documentReceiver.setGln(contact.getGln());
 //		documentReceiver.setBankAccount(contact.getBankAccount());
 //		documentReceiver.setUseSalesEqualizationTax(contact.getUseSalesEqualizationTax());

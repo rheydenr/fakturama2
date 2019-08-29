@@ -158,9 +158,13 @@ public class AddressExport {
 						stringBuffer.append(ExporterHelper.inQuotes(billingAddress.getStreet())).append(";")
 						   .append(ExporterHelper.inQuotes(billingAddress.getZip())).append(";")
 						   .append(ExporterHelper.inQuotes(billingAddress.getCity())).append(";")
-						   .append(ExporterHelper.inQuotes(localeUtil.findByCode(billingAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
+						   .append(ExporterHelper.inQuotes(localeUtil.findByCode(billingAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getPhone())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getFax())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getMobile())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getEmail())).append(";");
 				} else {
-					stringBuffer.append(";;;;");
+					stringBuffer.append(";;;;;;;;");
 				}
 		
 				
@@ -174,9 +178,13 @@ public class AddressExport {
 					stringBuffer.append(ExporterHelper.inQuotes(deliveryAddress.getStreet())).append(";")
 					   .append(ExporterHelper.inQuotes(deliveryAddress.getZip())).append(";")
 					   .append(ExporterHelper.inQuotes(deliveryAddress.getCity())).append(";")
-					   .append(ExporterHelper.inQuotes(localeUtil.findByCode(deliveryAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
+					   .append(ExporterHelper.inQuotes(localeUtil.findByCode(deliveryAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getPhone())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getFax())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getMobile())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getEmail())).append(";");
 				} else {
-					stringBuffer.append(";;;;");
+					stringBuffer.append(";;;;;;;;");
 				}
 				
 				if(contact.getBankAccount() != null) {
@@ -204,11 +212,7 @@ public class AddressExport {
 				}
 				stringBuffer.append(";");
 				
-				stringBuffer.append(ExporterHelper.inQuotes(contact.getPhone())).append(";")
-				   .append(ExporterHelper.inQuotes(contact.getFax())).append(";")
-				   .append(ExporterHelper.inQuotes(contact.getMobile())).append(";")
-				   .append(ExporterHelper.inQuotes(contact.getEmail())).append(";")
-				   .append(ExporterHelper.inQuotes(contact.getWebsite())).append(";")
+				stringBuffer.append(ExporterHelper.inQuotes(contact.getWebsite())).append(";")
 				   .append(ExporterHelper.inQuotes(contact.getVatNumber())).append(";")
 				   .append(BooleanUtils.isTrue(contact.getVatNumberValid())).append(";")
 				   .append(ExporterHelper.inQuotes(numberFormatterService.DoubleToDecimalFormatedValue(contact.getDiscount(), "0.00"))).append(";");
