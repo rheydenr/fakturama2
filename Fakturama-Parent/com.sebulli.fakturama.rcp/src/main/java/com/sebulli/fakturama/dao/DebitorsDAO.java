@@ -1,13 +1,13 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
@@ -18,14 +18,14 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
-import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.HintValues;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 
+import com.sebulli.fakturama.dialogs.TreeItem;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
+import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Debitor_;
 
@@ -34,27 +34,27 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
     
     @Override
     protected Set<Predicate> getRestrictions(Debitor object, CriteriaBuilder cb, Root<Debitor> root) {
-    	throw new RuntimeException("HIER BITTE NOCHMAL NACHSEHEN!!!");
-//        /* Customer number, first
-//         * name, name and ZIP are compared. Customer number is only compared, if it
-//         * is set.
-//         */
-//        Set<Predicate> restrictions = new HashSet<>();
-//        // Compare customer number, only if it is set.
-//        if(StringUtils.isNotBlank(object.getCustomerNumber())) {
-//            restrictions.add(cb.equal(root.get(Debitor_.customerNumber), object.getCustomerNumber()));
-//        }
-//        // if the value is not set (null), then we use the empty String for comparison. 
-//        // Then we get no result (which is correct).
-//        restrictions.add(cb.equal(root.get(Debitor_.firstName), StringUtils.defaultString(object.getFirstName())));
-//        restrictions.add(cb.equal(root.get(Debitor_.name), StringUtils.defaultString(object.getName())));
+        /* Customer number, first
+         * name, name and ZIP are compared. Customer number is only compared, if it
+         * is set.
+         */
+        Set<Predicate> restrictions = new HashSet<>();
+        // Compare customer number, only if it is set.
+        if(StringUtils.isNotBlank(object.getCustomerNumber())) {
+            restrictions.add(cb.equal(root.get(Debitor_.customerNumber), object.getCustomerNumber()));
+        }
+        // if the value is not set (null), then we use the empty String for comparison. 
+        // Then we get no result (which is correct).
+        restrictions.add(cb.equal(root.get(Debitor_.firstName), StringUtils.defaultString(object.getFirstName())));
+        restrictions.add(cb.equal(root.get(Debitor_.name), StringUtils.defaultString(object.getName())));
+//    	TODO HIER BITTE NOCHMAL NACHSEHEN!!!
 //        if (object.getAddress() != null) {
 //            restrictions.add(cb.equal(root.get(Debitor_.address).get(Address_.zip), StringUtils.defaultString(object.getAddress().getZip())));
 //        } else {
 //            // set to an undefined value so we get no result (then the contact is not found in the database)
 //            restrictions.add(cb.equal(root.get(Debitor_.address).get(Address_.zip), "-1"));
 //        }
-//        return restrictions;
+        return restrictions;
     }
     
     @Override
@@ -78,6 +78,76 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
         debitor.fetch(Debitor_.categories);
         return q.getResultList();
     }
+    
+    /**
+     * Finds all {@link DebitorAddress}es for a given {@link ContactType}. This is used for
+     * selection of a certain {@link Contact} in the DocumentEditor's address field.
+     * If a {@link Debitor} has only one address then this one is used.
+     * If a {@link Debitor} has more than one address and many of them matches the given {@link ContactType},
+     * all of these matching {@link Debitor}s are returned.
+     * @param contactType 
+     * 
+     * @return List of {@link DebitorAddress}es for a certain {@link ContactType}.
+     */
+	public List<TreeItem<DebitorAddress>> findForTreeListView(ContactType contactType) {
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Debitor> query = cb.createQuery(getEntityClass());
+		Root<Debitor> debitorQuery = query.from(getEntityClass());
+		query.select(debitorQuery)
+				.where(cb.and(debitorQuery.get(Debitor_.customerNumber).isNotNull(), cb.not(debitorQuery.get(Debitor_.deleted))));
+		TypedQuery<Debitor> q = getEntityManager().createQuery(query);
+		q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+//        q.setHint(QueryHints.REFRESH, HintValues.TRUE); 
+		q.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+		debitorQuery.fetch(Debitor_.categories);
+		debitorQuery.fetch(Debitor_.addresses).fetch(Address_.contactTypes);
+		List<Debitor> debitorsFromDb = q.getResultList();
+
+		// filter all Debitors with matching addresses
+		debitorsFromDb.parallelStream()
+				.filter(d -> d.getAddresses().size() == 1 || d.getAddresses().parallelStream()
+						.filter(a -> a.getContactTypes().contains(contactType)).findAny().isPresent())
+				.sorted(Comparator.comparing(Debitor::getCustomerNumber)).collect(Collectors.toList());
+
+		List<TreeItem<DebitorAddress>> resultList = new ArrayList<TreeItem<DebitorAddress>>();
+		
+		/*
+		 * Create a list of DebitorAddresses. This is done by creating at least one
+		 * entry (for the main address) and some child entries for other matching addresses.
+		 */
+		
+		for (Debitor debitor : debitorsFromDb) {
+			List<Address> addresses = debitor.getAddresses();
+			TreeItem<DebitorAddress> treeItemDebitorAddress;
+			if (addresses.size() >= 1) {
+				// create the first entry for a debitor
+				treeItemDebitorAddress = createDebitorTreeItem(debitor, addresses.get(0));
+				if(addresses.size() > 1) {
+					// if more than one address exists create child entries
+					for (Address adr : addresses.subList(1, addresses.size() - 1)) {
+						treeItemDebitorAddress.add(createDebitorTreeItem(debitor, adr));
+					}
+				}
+				resultList.add(treeItemDebitorAddress);
+			}
+		}
+
+		return resultList;
+	}    
+    
+/*
+
+   Müller | Fritz | Bahnhofstraße 3 | 05885 | Friesland      => ContactType.INVOICE
+v  Meyer  | Johannes 
+     --   | ---   | Hauptstraße 4  | 08554 | Adorf           => ContactType.INVOICE
+     --   | ---   | Carolastraße 3 | 18554 | Bedorf          => ContactType.INVOICE, ContactType.DELIVERY
+   Emsland | Jaqueline | Karlstraße 9 | 82282 | Rühmkirchen  => ContactType.INVOICE
+
+ */
+ 	
+	private TreeItem<DebitorAddress> createDebitorTreeItem(Debitor debitor2, Address adr) {
+		return new TreeItem<DebitorAddress>(new DebitorAddress(debitor2, adr));
+	}    
     
     public Debitor findByDebitorNumber(String debNo) {
         Debitor result = null;

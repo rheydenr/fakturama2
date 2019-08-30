@@ -112,8 +112,8 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
-import com.sebulli.fakturama.dialogs.SelectContactDialog;
 import com.sebulli.fakturama.dialogs.SelectTextDialog;
+import com.sebulli.fakturama.dialogs.SelectTreeContactDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -2063,6 +2063,7 @@ public class DocumentEditor extends Editor<Document> {
 		selectAddressButton.addMouseListener(new MouseAdapter() {
 
 			// Open the address dialog if the icon is clicked.
+			@SuppressWarnings("unchecked")
 			public void mouseDown(MouseEvent e) {
 			    /*
 			     * This code searches for the dialog part in the Application model
@@ -2083,13 +2084,14 @@ public class DocumentEditor extends Editor<Document> {
             	// save MPart
             	MPart myPart = context.get(MPart.class);
                 // FIXME Workaround (quick & dirty), please use enums or an extra button
-                SelectContactDialog<Contact> dlg = null;
+            	SelectTreeContactDialog<Contact> dlg = null;
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
-				    dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
+				    dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    } else {
 			    	context.set("CONTACT_TYPE", "DEBITOR");
-			    	dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
+			    	context.set("ADDRESS_TYPE", document.getBillingType());
+			    	dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    }
 			    dlg.setDialogBoundsSettings(getDialogSettings("SelectContactDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
 			    dlg.open();
