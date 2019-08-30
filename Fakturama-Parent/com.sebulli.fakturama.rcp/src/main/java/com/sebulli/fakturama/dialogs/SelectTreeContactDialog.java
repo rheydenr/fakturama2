@@ -86,7 +86,7 @@ public class SelectTreeContactDialog<T extends Contact> extends AbstractSelectio
         part.getProperties().put(Constants.PROPERTY_CONTACTS_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
         context.set(MPart.class, part);
         // FIXME Workaround (quick & dirty), please use enums
-        if(StringUtils.equals((String) context.get("CONTACT_TYPE"), "CREDITOR")) {
+        if(StringUtils.equals((String) context.get("CONTACT_TYPE"), "DEBITOR")) {
         	contactListTable = (DebitorTreeListTable) ContextInjectionFactory.make(DebitorTreeListTable.class, context);
 //        } else {
 //        	contactListTable = (ContactListTable<T>) ContextInjectionFactory.make(DebitorListTable.class, context);

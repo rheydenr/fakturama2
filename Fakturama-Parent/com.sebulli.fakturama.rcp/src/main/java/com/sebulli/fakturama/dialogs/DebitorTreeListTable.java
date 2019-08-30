@@ -16,22 +16,33 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.swt.widgets.Composite;
 
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.dao.DebitorsDAO;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.ContactType;
+import com.sebulli.fakturama.model.Debitor;
+import com.sebulli.fakturama.parts.DebitorEditor;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.TreeList;
+import ca.odell.glazedlists.matchers.MatcherEditor;
 
-public class DebitorTreeListTable {
+public class DebitorTreeListTable extends ContactTreeListTable<TreeItem<DebitorAddress>, Debitor>{
     
     @Inject
     private IEclipseContext context;
 
 	@Inject
 	private DebitorsDAO debitorDAO;
+	
+
+    @Override
+    protected EventList<TreeItem<DebitorAddress>> getListData(boolean forceRead) {
+        return GlazedLists
+				.eventList(debitorDAO.findForTreeListView(null));
+    }
 
 	@PostConstruct
 	public void createComposite(Composite parent) {
@@ -81,4 +92,33 @@ public class DebitorTreeListTable {
 		dataLayer.setColumnWidthPercentageByPosition(0, 50);
 		dataLayer.setColumnWidthPercentageByPosition(1, 50);
 	}
+	
+
+    @Override
+    protected AbstractDAO<Debitor> getEntityDAO() {
+        return debitorDAO;
+    }
+    
+    @Override
+    protected String getEditorId() {
+    	return DebitorEditor.ID;
+    }
+    
+    @Override
+    protected Class<Debitor> getEntityClass() {
+    	return Debitor.class;
+    }
+    
+    @Override
+    protected String getEditorTypeId() {
+        return DebitorEditor.EDITOR_ID;
+    }
+
+	@Override
+	protected MatcherEditor<TreeItem<DebitorAddress>> createTextWidgetMatcherEditor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }

@@ -9,7 +9,8 @@ import com.sebulli.fakturama.model.ContactType;
 public class DebitorAddress {
 	private String customerNumber, name, firstName, zipCode, city, company;
 	private List<ContactType> contactType;
-	private long contactId, addressid;
+	private long contactId;
+	private Address address;
 
 	public DebitorAddress(Contact contact, Address address) {
 		this.customerNumber = contact.getCustomerNumber();
@@ -20,7 +21,7 @@ public class DebitorAddress {
 		this.company = contact.getCompany();
 		this.contactType = address.getContactTypes();
 		this.contactId = contact.getId();
-		this.addressid = address.getId();
+		this.address = address;
 	}
 
 	public String getCustomerNumber() {
@@ -87,11 +88,11 @@ public class DebitorAddress {
 		this.contactId = contactId;
 	}
 
-	public long getAddressid() {
-		return addressid;
+	public Address getAddress() {
+		return address;
 	}
 
-	public void setAddressid(long addressid) {
-		this.addressid = addressid;
+	public void setAddress(Address address) {
+		this.address = address;
 	}
 }

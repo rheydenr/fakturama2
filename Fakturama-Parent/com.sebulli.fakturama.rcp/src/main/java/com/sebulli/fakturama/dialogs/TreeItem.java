@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.sebulli.fakturama.model.Contact;
-
 public class TreeItem<T> implements Iterable<TreeItem<T>> {
 	
 	private List<TreeItem<T>> children = new ArrayList<>();
 	private TreeItem<T> parent;
 	private T item;
+	private Class<T> myClass;
 	
+	@SuppressWarnings("unchecked")
 	public TreeItem(T item) {
 		this.item = item;
+		this.myClass = (Class<T>) item.getClass();
 	}
 	
 	public T getItem() {
@@ -50,5 +51,9 @@ public class TreeItem<T> implements Iterable<TreeItem<T>> {
 	@Override
 	public String toString() {
 		return String.valueOf(getItem());
+	}
+	
+	public Class<T> getClassType() {
+		return myClass;
 	}
 }

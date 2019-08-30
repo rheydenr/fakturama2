@@ -109,7 +109,7 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
 						.filter(a -> a.getContactTypes().contains(contactType)).findAny().isPresent())
 				.sorted(Comparator.comparing(Debitor::getCustomerNumber)).collect(Collectors.toList());
 
-		List<TreeItem<DebitorAddress>> resultList = new ArrayList<TreeItem<DebitorAddress>>();
+		List<TreeItem<DebitorAddress>> treeItems = new ArrayList<>();
 		
 		/*
 		 * Create a list of DebitorAddresses. This is done by creating at least one
@@ -118,21 +118,22 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
 		
 		for (Debitor debitor : debitorsFromDb) {
 			List<Address> addresses = debitor.getAddresses();
-			TreeItem<DebitorAddress> treeItemDebitorAddress;
+			TreeItem<DebitorAddress> javaTodo; //treeItemDebitorAddress
 			if (addresses.size() >= 1) {
 				// create the first entry for a debitor
-				treeItemDebitorAddress = createDebitorTreeItem(debitor, addresses.get(0));
+				javaTodo = createDebitorTreeItem(debitor, addresses.get(0));
 				if(addresses.size() > 1) {
 					// if more than one address exists create child entries
-					for (Address adr : addresses.subList(1, addresses.size() - 1)) {
-						treeItemDebitorAddress.add(createDebitorTreeItem(debitor, adr));
+					for (Address adr : addresses.subList(1, addresses.size())) {
+						javaTodo.add(createDebitorTreeItem(debitor, adr));
 					}
 				}
-				resultList.add(treeItemDebitorAddress);
+				treeItems.add(javaTodo);
+				javaTodo.forEach(treeItems::add);
 			}
 		}
 
-		return resultList;
+		return treeItems;
 	}    
     
 /*
