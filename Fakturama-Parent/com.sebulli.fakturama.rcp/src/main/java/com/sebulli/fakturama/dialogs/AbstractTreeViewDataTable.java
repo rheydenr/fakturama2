@@ -20,10 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -38,23 +36,23 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
-import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
-import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.SortStatePersistor;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
+import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -70,20 +68,15 @@ import org.eclipse.swt.widgets.Label;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.dao.AbstractDAO;
-import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.AbstractCategory;
-import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.IEntity;
-import com.sebulli.fakturama.parts.DocumentEditor;
-import com.sebulli.fakturama.parts.Editor;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.parts.widget.search.TextSearchControl;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
@@ -94,7 +87,7 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  * @author Gerd Bartelt
  * 
  */
-public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IEntity, C extends AbstractCategory> {
+public abstract class AbstractTreeViewDataTable<K extends DebitorAddress, C extends AbstractCategory> {
 
     public static final String ROOT_NODE_NAME = "all";
 
@@ -169,15 +162,10 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
 	    // Create the top composite
 		top = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(2).applyTo(top);
-//		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).applyTo(top);
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, contextHelpId);
         
-        // Create the tree viewer
-        topicTreeViewer = createCategoryTreeViewer(top); 
-//		GridDataFactory.swtDefaults().hint(10, -1).applyTo(topicTreeViewer.getTree());
-
         Composite searchAndTableComposite = top;
         if(useFilter) {
         // Create the composite that contains the search field and the table
@@ -197,14 +185,14 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
             
             @Override
             public void widgetDisposed(DisposeEvent e) {
-                onStop(natTable);
+//                onStop(natTable);
             }
         });
         
         // call hook for post configure steps, if any
         postConfigureNatTable(natTable);
 
-        onStart(natTable);  // as late as possible! Otherwise sorting doesn't work! (don't ask why!)
+//        onStart(natTable);  // as late as possible! Otherwise sorting doesn't work! (don't ask why!)
 
 		// Workaround
 		// At startup the browser editor is the active part of the workbench.
@@ -336,36 +324,6 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
 	
 	abstract protected TopicTreeViewer<C> createCategoryTreeViewer(Composite top);
 	abstract protected String getPopupId();
-	
-//    /**
-//     * Change the toolbar buttons (add/delete) so that they match the current viewed document types
-//     * or categories. I.e., if invoices are shown then the "add"-button creates a new invoice etc.
-//     * 
-//     * @param treeObject current {@link TreeObject}
-//     */
-//    public void changeToolbarItem(TreeObject treeObject) {
-//        MToolBar toolbar = getMToolBar();
-//        if(toolbar != null) {
-//            for (MToolBarElement tbElem : toolbar.getChildren()) {
-//                if (tbElem.getElementId().contentEquals(getToolbarAddItemCommandId())) {
-//                    HandledToolItemImpl toolItem = (HandledToolItemImpl) tbElem;
-//                    ParameterizedCommand wbCommand = toolItem.getWbCommand();
-//                    @SuppressWarnings("unchecked")
-//                    Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
-//                    parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getFullPathName(true));
-//                    if (wbCommand != null) {
-//                        wbCommand = ParameterizedCommand.generateCommand(wbCommand.getCommand(), parameterMap);
-//                    } else {
-//                        // during the initialization phase the command is null, therefore we have to create a 
-//                        // new command
-//                        parameterMap.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
-//                        wbCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, parameterMap);
-//                    }
-//                    toolItem.setWbCommand(wbCommand);
-//                }
-//            }
-//        }
-//    }
 
     /**
      * The Command id for creating a new item (used in MToolBar).
@@ -392,7 +350,7 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
      * @param gridLayer
      */
 	@Deprecated
-    protected void hookDoubleClickCommand(final NatTable nattable, final EntityGridListLayer<K> gridLayer) {
+    protected void hookDoubleClickCommand(final NatTable nattable, final DataLayer bodyDataLayer) {
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 
@@ -401,9 +359,9 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
                 //get the row position for the click in the NatTable
                 int rowPos = natTable.getRowPositionByY(event.y);
                 //transform the NatTable row position to the row position of the body layer stack
-                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyDataLayer);
                 // extract the selected Object
-                K selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                TreeItem<DebitorAddress> selectedObject = ((ListDataProvider<TreeItem<DebitorAddress>>) bodyDataLayer.getDataProvider()).getRowObject(bodyRowPos);
 //                log.debug("Selected Object: " + selectedObject.getName());
                 // Call the corresponding editor. The editor is set
                 // in the variable "editor", which is used as a parameter
@@ -411,18 +369,18 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
                 // in E4 we create a new Part (or use an existing one with the same ID)
                 // from PartDescriptor
                 Map<String, Object> params = new HashMap<>();
-                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
+//                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
                 params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
-                if(selectedObject instanceof Document) {
-                    params.put(CallEditor.PARAM_CATEGORY, ((Document)selectedObject).getBillingType().getName());
-                }
+//                if(selectedObject instanceof TreeItem) {
+//                    params.put(CallEditor.PARAM_CATEGORY, ((K)selectedObject).getBillingType().getName());
+//                }
                 ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                 handlerService.executeHandler(parameterizedCommand);
             }
         });
     }
     
-    protected void hookDoubleClickCommand2(final NatTable nattable, final EntityGridListLayer<K> gridLayer) {
+    protected void hookDoubleClickCommand2(final NatTable nattable, final DataLayer bodyDataLayer) {
         // Add a double click listener
         nattable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
 
@@ -431,9 +389,9 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
                 //get the row position for the click in the NatTable
                 int rowPos = natTable.getRowPositionByY(event.y);
                 //transform the NatTable row position to the row position of the body layer stack
-                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyDataLayer);
                 // extract the selected Object
-                K selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                K selectedObject = ((ListDataProvider<K>) bodyDataLayer.getDataProvider()).getRowObject(bodyRowPos);
 //                log.debug("Selected Object: " + selectedObject.getName());
                 // Call the corresponding editor. The editor is set
                 // in the variable "editor", which is used as a parameter
@@ -441,7 +399,7 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
                 // in E4 we create a new Part (or use an existing one with the same ID)
                 // from PartDescriptor
                 Map<String, Object> params = new HashMap<>();
-                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
+                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getAddress().getId()));
                 params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
                 params.putAll(getAdditionalParameters());
                 ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
@@ -466,14 +424,14 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
      * 
      * @return selected rows in a list table
      */
-    public T[] getSelectedObjects() { return null; }
+    public K[] getSelectedObjects() { return null; }
     
     /**
      * Returns the actually marked document in a table. Can be overwritten. May return <code>null</code>!
      * 
      * @return selected row in a list table
      */
-    public T getSelectedObject() { return null;}
+    public K getSelectedObject() { return null;}
     
     /**
      * Component for the Search field and the item table
@@ -566,103 +524,14 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
 	 */
 	abstract public void setCategoryFilter(String filter, TreeObjectType treeObjectType);
 	
-	/**
-	 * Set the transaction filter
-	 * 
-	 * @param filter
-	 *            The new filter string
-	 */
-	public void setTransactionFilter(long filter, TreeObject treeObject) {
-	    // per default this method does nothing
-	}
-
-	/**
-	 * Set the contact filter
-	 * 
-	 * @param filter
-	 *            The new filter string
-	 */
-	public void setContactFilter(long filter) {
-	    // per default this method does nothing
-	}
-	
     /**
      * controls if the header label for the list view should be shown
      * 
      * @return the headerLabelEnabled
      */
 	abstract protected boolean isHeaderLabelEnabled();
-	abstract protected EntityGridListLayer<K> getGridLayer();
+	abstract protected TreeLayer getGridLayer();
 	protected abstract Class<K> getEntityClass();
-	
-//	/**
-//	 * Deletes the selected entry (or entries, if multiple selection is enabled) from the items table).
-//	 */
-//	public void removeSelectedEntry() {
-//        @SuppressWarnings("unchecked")
-//		List<T> selection = (List<T>)selectionService.getSelection();
-//        if(selection == null || selection.isEmpty()) {
-//        	return;
-//        }
-//		int selectedEntries = selection.size();
-//		boolean confirmation = false;
-//		/*
-//		 * If you switch between views the selection still remains and the ESelectionService
-//		 * doesn't clear it's selection. Therefore we have to prove at least the first element 
-//		 * of the selected list for it's class type.
-//		 */
-//		if(selectedEntries > 0 && getEntityClass().isInstance(selection.get(0))) {
-//			if(selectedEntries > 1) {
-//				confirmation = MessageDialog.openConfirm(top.getShell(), msg.dialogDeletedatasetTitle, 
-//                        MessageFormat.format("Do you REALLY want to kill {0} entries?", selectedEntries));
-//                if(!confirmation) return;
-//			}
-//			for (T objToDelete : selection) {
-//                try {
-//                	/*
-//                	 * If deletion was not confirmed yet (e.g., if we've only one entry to delete),
-//                	 * here's the time to ask for it. 
-//                	 */
-//                	if(!confirmation) {
-//	                    confirmation = MessageDialog.openConfirm(top.getShell(), msg.dialogDeletedatasetTitle, 
-//	                          MessageFormat.format(msg.dialogDeletedatasetMessage, objToDelete.getName()));
-//                	}
-//                    if(confirmation) {  // only kill if confirmed
-//                    	handleAfterConfirmation(objToDelete);
-//                    	
-//                        // refresh object from database
-//                        objToDelete = getEntityDAO().findById(objToDelete.getId(), true);
-//                        // Instead of deleting it completely from the database the element is just marked
-//                        // as deleted. So a document which still refers to this element would not cause an error.
-//                        objToDelete.setDeleted(Boolean.TRUE);
-//                        
-//                        objToDelete = getEntityDAO().update(objToDelete);
-//                        
-//                        // if an editor with this object is open we have to close it forcibly
-//                        Map<String, Object> params = new HashMap<>();
-//                        params.put(DocumentEditor.DOCUMENT_ID, objToDelete.getName());
-//                        evtBroker.post(getEditorTypeId() + "/forceClose", params);
-//                    }
-//                }
-//                catch (FakturamaStoringException e) {
-//                    log.error(e, "can't save the current Entity: " + objToDelete.toString());
-//                }
-//                
-//                /*
-//                 * TODO as long as the categories aren't fully implemented (multiple categories per entity)
-//                 * we use this workaround for deleting the empty categories. If we later on change the structure
-//                 * of the entities we have to change this into a comprehensive form (i.e., use interface DescribableEntity
-//                 * with category attribute).  
-//                 */
-//                handleAfterDeletion(objToDelete);
-//    
-//                // Refresh the corresponding table view
-//                evtBroker.post(getEditorTypeId(), Editor.UPDATE_EVENT);
-//			}
-//        } else {
-//            log.debug("no rows selected!");
-//        }
-//	}
 
 	/**
 	 * Hook for handling objects after the deletion is confirmed by user.
@@ -680,9 +549,7 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
 		// empty per default
     }
 
-
-	abstract protected AbstractDAO<K> getEntityDAO();
-
+	abstract protected AbstractDAO<? extends Contact> getEntityDAO();
 
     /**
      * @return
@@ -701,7 +568,6 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
         return selectionStyle;
     }
 
-
 	/**
 	 * @return the eclipsePrefs
 	 */
@@ -712,7 +578,6 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
 		return eclipsePrefs;
 	}
 
-
 	/**
 	 * @param eclipsePrefs the eclipsePrefs to set
 	 */
@@ -720,7 +585,6 @@ public abstract class AbstractTreeViewDataTable<T extends TreeItem, K extends IE
 		this.eclipsePrefs = eclipsePrefs;
 	}
 
-	
 	public TextSearchControl getSearchControl() {
 		return searchText;
 	}

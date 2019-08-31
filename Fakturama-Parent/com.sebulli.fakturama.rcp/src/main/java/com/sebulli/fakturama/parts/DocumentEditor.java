@@ -112,6 +112,7 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
+import com.sebulli.fakturama.dialogs.ContactTreeListTable;
 import com.sebulli.fakturama.dialogs.SelectTextDialog;
 import com.sebulli.fakturama.dialogs.SelectTreeContactDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
@@ -126,6 +127,7 @@ import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.misc.OrderState;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
@@ -291,7 +293,7 @@ public class DocumentEditor extends Editor<Document> {
 	/*
 	 * Map for selected contacts (used for comparing and detecting changed addresses).
 	 */
-	private Map<BillingType, Contact> selectedAddresses = new HashMap<BillingType, Contact>();
+	private Map<BillingType, Address> selectedAddresses = new HashMap<BillingType, Address>();
 	
 	private int netgross = DocumentSummary.ROUND_NOTSPECIFIED;
 
@@ -1033,7 +1035,7 @@ public class DocumentEditor extends Editor<Document> {
      * Helper method to fill the lookup hash map with all the selected contacts (for addresses resulting in DocumentReceivers).
      */
     private void fillSelectedAddresses() {
-    	document.getReceiver().forEach(rcv -> selectedAddresses.put(rcv.getBillingType(), contactDAO.findById(rcv.getOriginContactId())));
+    	document.getReceiver().forEach(rcv -> selectedAddresses.put(rcv.getBillingType(), contactDAO.findByAddressId(rcv.getAddressId())));
 	}
 
 	/**
@@ -1283,14 +1285,15 @@ public class DocumentEditor extends Editor<Document> {
         }
 		
 		// Use the customers settings instead, if they are set
-		if (selectedAddresses.containsKey(BillingType.INVOICE) && address_changed) {
+        Address addr = selectedAddresses.get(BillingType.INVOICE);
+		if (addr != null && address_changed) {
 			// useNetGross can be null (from database!)
-			if (selectedAddresses.get(BillingType.INVOICE).getUseNetGross() != null 
-					&& selectedAddresses.get(BillingType.INVOICE).getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
+			if (addr.getContact().getUseNetGross() != null 
+					&& addr.getContact().getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
 				useGross = false;
 				netgross = DocumentSummary.ROUND_NET_VALUES;
-			} else if (selectedAddresses.get(BillingType.INVOICE) == null 
-					|| selectedAddresses.get(BillingType.INVOICE).getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
+			} else if (addr == null 
+					|| addr.getContact().getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 			}
@@ -1653,10 +1656,10 @@ public class DocumentEditor extends Editor<Document> {
 	 * @param contact
 	 * 		The contact
 	 */
-	private void setAddress(Contact contact) {
-		
+	private void setAddress(Address address) {
+		Contact contact = address.getContact();
 		// set the Contact as DocumentReceiver in the currently active address tab
-		selectedAddresses.put(document.getBillingType(), contact);
+		selectedAddresses.put(document.getBillingType(), address);
 
 		// select the correct address tab
 		CTabItem addressTab = lookupAddressTabForBillingType(document.getBillingType());
@@ -2084,7 +2087,7 @@ public class DocumentEditor extends Editor<Document> {
             	// save MPart
             	MPart myPart = context.get(MPart.class);
                 // FIXME Workaround (quick & dirty), please use enums or an extra button
-            	SelectTreeContactDialog<Contact> dlg = null;
+            	SelectTreeContactDialog<Address> dlg = null;
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
 				    dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
@@ -2761,15 +2764,20 @@ DocumentType documentType = getDocumentType();
 
             switch (subTopic) {
             case "Contact":
-                Long contactId = (Long) event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
-                Contact contact = contactDAO.findById(contactId, true);
+                Long addressId = (Long) event.getProperty(ContactTreeListTable.SELECTED_ADDRESS_ID);
+                
+                Address address = contactDAO.findByAddressId(addressId);
+                if(address == null) {
+                	log.error("Something weird happened. Selected Address couldn't be found in your database.");
+                	return;
+                }
 
                 // we can't use the Selection Service!!!  :-(
 //                Contact contact = (Contact) selectionService.getSelection();
                 // this selected contact is from now on the main receiver for this document
-                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(contact, document.getBillingType());
+                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(address.getContact(), document.getBillingType());
                 document = addressManager.addReceiverToDocument(document, documentReceiver);
-                setAddress(contact);
+                setAddress(address);
                 // If a Contact is selected the manualAddress field has to be set to null!
                 isChanged = true;
                 break;

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class TreeItem<T> implements Iterable<TreeItem<T>> {
+import org.eclipse.core.runtime.IAdaptable;
+
+public class TreeItem<T> implements Iterable<TreeItem<T>>, IAdaptable {
 	
 	private List<TreeItem<T>> children = new ArrayList<>();
 	private TreeItem<T> parent;
@@ -55,5 +57,10 @@ public class TreeItem<T> implements Iterable<TreeItem<T>> {
 	
 	public Class<T> getClassType() {
 		return myClass;
+	}
+
+	@Override
+	public <T> T getAdapter(Class<T> adapter) {
+		return null;
 	}
 }

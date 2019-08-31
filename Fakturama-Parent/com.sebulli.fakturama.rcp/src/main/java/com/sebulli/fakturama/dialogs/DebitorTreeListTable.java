@@ -1,98 +1,73 @@
 package com.sebulli.fakturama.dialogs;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.nebula.widgets.nattable.NatTable;
-import org.eclipse.nebula.widgets.nattable.data.ExtendedReflectiveColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
-import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
-import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
-import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.core.databinding.beans.BeanProperties;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.dao.DebitorsDAO;
-import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.parts.DebitorEditor;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.TreeList;
 import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
-public class DebitorTreeListTable extends ContactTreeListTable<TreeItem<DebitorAddress>, Debitor>{
-    
-    @Inject
-    private IEclipseContext context;
+public class DebitorTreeListTable extends ContactTreeListTable<DebitorAddress>{
+
+    // ID of this view
+    public static final String ID = "fakturama.views.debitorTreeTable";
+
+    private static final String POPUP_ID = "com.sebulli.fakturama.debitorlist.popup";
+    public static final String SELECTED_DEDITOR_ID = "fakturama.debitorlist.selecteddebitorid";
 
 	@Inject
 	private DebitorsDAO debitorDAO;
 	
-
     @Override
-    protected EventList<TreeItem<DebitorAddress>> getListData(boolean forceRead) {
-        return GlazedLists
-				.eventList(debitorDAO.findForTreeListView(null));
+    public String getTableId() {
+        return ID;
+    }
+    
+    @Override
+    protected String getEditorTypeId() {
+        return DebitorEditor.EDITOR_ID;
+    }
+    
+    protected String getPopupId() {
+        return POPUP_ID;
     }
 
-	@PostConstruct
-	public void createComposite(Composite parent) {
-		// Properties of the DebitorAddress items inside the TreeItems
-		String[] propertyNames = { "item.name", "item.firstName" };
-
-		IColumnPropertyAccessor<TreeItem<DebitorAddress>> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<TreeItem<DebitorAddress>>(
-				propertyNames);
-		
-		BillingType currentBillingType = (BillingType) context.get("ADDRESS_TYPE");
-		ContactType contactType;
-		switch (currentBillingType) {
-		case INVOICE:
-			contactType = ContactType.BILLING;
-			break;
-		case DELIVERY:
-			contactType = ContactType.DELIVERY;
-			break;
-		default:
-			contactType = ContactType.BILLING;
-			break;
-		}
-
-		EventList<TreeItem<DebitorAddress>> eventList = GlazedLists
+    @Override
+    protected EventList<DebitorAddress> getListData(ContactType contactType) {
+        return GlazedLists
 				.eventList(debitorDAO.findForTreeListView(contactType));
-		TreeList<TreeItem<DebitorAddress>> treeList = new TreeList<TreeItem<DebitorAddress>>(eventList,
-				new TreeItemFormat(), TreeList.nodesStartExpanded());
-		ListDataProvider<TreeItem<DebitorAddress>> dataProvider = new ListDataProvider<>(treeList,
-				columnPropertyAccessor);
-		DataLayer dataLayer = new DataLayer(dataProvider);
-		setColumWidthPercentage(dataLayer);
+    }
 
-		GlazedListTreeData<TreeItem<DebitorAddress>> glazedListTreeData = new GlazedListTreeData<>(treeList);
-		GlazedListTreeRowModel<TreeItem<DebitorAddress>> glazedListTreeRowModel = new GlazedListTreeRowModel<>(
-				glazedListTreeData);
-
-		TreeLayer treeLayer = new TreeLayer(dataLayer, glazedListTreeRowModel);
-		treeLayer.setRegionName(GridRegion.BODY);
-
-		new NatTable(parent, treeLayer, true);
-
-		GridLayoutFactory.fillDefaults().generateLayout(parent);
+	@Override
+	protected MatcherEditor<DebitorAddress> createTextWidgetMatcherEditor() {
+        /*
+        searchColumns[0] = "nr";
+        searchColumns[1] = "firstname";
+        searchColumns[2] = "name";
+        searchColumns[3] = "company";
+        searchColumns[4] = "zip";
+        searchColumns[5] = "city";
+ */
+		ContactTreeListFilterator contactTreeListFilterator = new ContactTreeListFilterator(
+				BeanProperties.value(DebitorAddress.class, "customerNumber"),
+				BeanProperties.value(DebitorAddress.class, "firstName"),
+				BeanProperties.value(DebitorAddress.class, "name"),
+				BeanProperties.value(DebitorAddress.class, "company"),
+				BeanProperties.value(DebitorAddress.class, "zipCode"),
+				BeanProperties.value(DebitorAddress.class, "city")
+				);
+        return new TextWidgetMatcherEditor<DebitorAddress>(searchText.getTextControl(), 
+        		contactTreeListFilterator);
 	}
-
-	private void setColumWidthPercentage(DataLayer dataLayer) {
-		dataLayer.setColumnPercentageSizing(true);
-		dataLayer.setColumnWidthPercentageByPosition(0, 50);
-		dataLayer.setColumnWidthPercentageByPosition(1, 50);
-	}
-	
 
     @Override
     protected AbstractDAO<Debitor> getEntityDAO() {
@@ -105,20 +80,7 @@ public class DebitorTreeListTable extends ContactTreeListTable<TreeItem<DebitorA
     }
     
     @Override
-    protected Class<Debitor> getEntityClass() {
-    	return Debitor.class;
+    protected Class<DebitorAddress> getEntityClass() {
+    	return DebitorAddress.class;
     }
-    
-    @Override
-    protected String getEditorTypeId() {
-        return DebitorEditor.EDITOR_ID;
-    }
-
-	@Override
-	protected MatcherEditor<TreeItem<DebitorAddress>> createTextWidgetMatcherEditor() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 }

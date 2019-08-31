@@ -3,7 +3,10 @@
  */
 package com.sebulli.fakturama.dialogs;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -27,8 +30,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
+import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
@@ -36,7 +41,7 @@ import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 /**
  *
  */
-public class SelectTreeContactDialog<T extends Contact> extends AbstractSelectionDialog<T> {
+public class SelectTreeContactDialog<T extends Address> extends AbstractSelectionDialog<T> {
     protected static final Point DEFAULT_DIALOG_SIZE = new Point(800, 550);
 
     protected String editor = "";
@@ -104,15 +109,18 @@ public class SelectTreeContactDialog<T extends Contact> extends AbstractSelectio
      */
     @Override
     protected void okPressed() {
-//        if (contactListTable.getSelectedObject() != null) {
-//            Map<String, Object> eventParams = new HashMap<>();
-//            eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
-//            eventParams.put(DebitorTreeListTable.SELECTED_CONTACT_ID, Long.valueOf(contactListTable.getSelectedObject().getId()));
-//            setResult(contactListTable.getSelectedObject());
-//            // inform the DocumentEditor (or any other Editor) about the selection
-//            evtBroker.post("DialogSelection/Contact", eventParams);
-//            // TODO Unterscheidung zw. Billing / Delivery! siehe Altcode
-//        }
+        if (contactListTable.getSelectedObject() != null) {
+            Map<String, Object> eventParams = new HashMap<>();
+            eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
+            eventParams.put(DebitorTreeListTable.SELECTED_ADDRESS_ID, Long.valueOf(contactListTable.getSelectedObject().getAddress().getId()));
+            
+            Collection<T> tmpList = new ArrayList<>();
+            tmpList.add((T) contactListTable.getSelectedObject().getAddress());
+            setResult(tmpList);
+            // inform the DocumentEditor (or any other Editor) about the selection
+            evtBroker.post("DialogSelection/Contact", eventParams);
+            // TODO Unterscheidung zw. Billing / Delivery! siehe Altcode
+        }
         super.okPressed();
     }
 
@@ -126,14 +134,16 @@ public class SelectTreeContactDialog<T extends Contact> extends AbstractSelectio
     @Inject
     @org.eclipse.e4.core.di.annotations.Optional
     protected void handleDialogDoubleClickClose(@UIEventTopic("DialogAction/CloseContact") Event event) {
-//        if (event != null) {
-//            if (contactListTable.getSelectedObject() != null) {
-//                // only for convenience, the result is already set by NatTable on double click and send to the 
-//                // DocumentEditor.
-//                setResult(contactListTable.getSelectedObject());
-//            }
-//            super.okPressed();
-//        }
+        if (event != null) {
+            if (contactListTable.getSelectedObject() != null) {
+                // only for convenience, the result is already set by NatTable on double click and send to the 
+                // DocumentEditor.
+                Collection<T> tmpList = new ArrayList<>();
+                tmpList.add((T) contactListTable.getSelectedObject().getAddress());
+                setResult(tmpList);
+            }
+            super.okPressed();
+        }
     }
 
     /**

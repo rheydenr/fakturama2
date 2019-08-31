@@ -89,7 +89,7 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
      * 
      * @return List of {@link DebitorAddress}es for a certain {@link ContactType}.
      */
-	public List<TreeItem<DebitorAddress>> findForTreeListView(ContactType contactType) {
+	public List<DebitorAddress> findForTreeListView(ContactType contactType) {
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<Debitor> query = cb.createQuery(getEntityClass());
 		Root<Debitor> debitorQuery = query.from(getEntityClass());
@@ -109,7 +109,7 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
 						.filter(a -> a.getContactTypes().contains(contactType)).findAny().isPresent())
 				.sorted(Comparator.comparing(Debitor::getCustomerNumber)).collect(Collectors.toList());
 
-		List<TreeItem<DebitorAddress>> treeItems = new ArrayList<>();
+		List<DebitorAddress> treeItems = new ArrayList<>();
 		
 		/*
 		 * Create a list of DebitorAddresses. This is done by creating at least one
@@ -118,18 +118,18 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
 		
 		for (Debitor debitor : debitorsFromDb) {
 			List<Address> addresses = debitor.getAddresses();
-			TreeItem<DebitorAddress> javaTodo; //treeItemDebitorAddress
+			DebitorAddress javaTodo; //treeItemDebitorAddress
 			if (addresses.size() >= 1) {
 				// create the first entry for a debitor
 				javaTodo = createDebitorTreeItem(debitor, addresses.get(0));
 				if(addresses.size() > 1) {
 					// if more than one address exists create child entries
 					for (Address adr : addresses.subList(1, addresses.size())) {
-						javaTodo.add(createDebitorTreeItem(debitor, adr));
+						treeItems.add(createDebitorTreeItem(debitor, adr));
 					}
 				}
 				treeItems.add(javaTodo);
-				javaTodo.forEach(treeItems::add);
+//				javaTodo.forEach(treeItems::add);
 			}
 		}
 
@@ -146,8 +146,8 @@ v  Meyer  | Johannes
 
  */
  	
-	private TreeItem<DebitorAddress> createDebitorTreeItem(Debitor debitor2, Address adr) {
-		return new TreeItem<DebitorAddress>(new DebitorAddress(debitor2, adr));
+	private DebitorAddress createDebitorTreeItem(Debitor debitor2, Address adr) {
+		return new DebitorAddress(debitor2, adr);
 	}    
     
     public Debitor findByDebitorNumber(String debNo) {
