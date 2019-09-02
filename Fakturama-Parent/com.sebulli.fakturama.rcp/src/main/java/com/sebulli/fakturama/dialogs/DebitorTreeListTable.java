@@ -49,14 +49,6 @@ public class DebitorTreeListTable extends ContactTreeListTable<DebitorAddress>{
 
 	@Override
 	protected MatcherEditor<DebitorAddress> createTextWidgetMatcherEditor() {
-        /*
-        searchColumns[0] = "nr";
-        searchColumns[1] = "firstname";
-        searchColumns[2] = "name";
-        searchColumns[3] = "company";
-        searchColumns[4] = "zip";
-        searchColumns[5] = "city";
- */
 		ContactTreeListFilterator contactTreeListFilterator = new ContactTreeListFilterator(
 				BeanProperties.value(DebitorAddress.class, "customerNumber"),
 				BeanProperties.value(DebitorAddress.class, "firstName"),

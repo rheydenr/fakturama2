@@ -413,17 +413,15 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		if (contactItem == null || selectedDocument == null)
 			return;
 		
-		DocumentReceiver billingContact = selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isINVOICE()).findFirst().get();
-		DocumentReceiver deliveryContact = selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isDELIVERY()).findFirst().get();
-		DocumentReceiver contact = selectedDocument.getBillingType().isDELIVERY() ? deliveryContact : billingContact;
+		Optional<DocumentReceiver> billingContact = selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isINVOICE()).findFirst();
+		Optional<DocumentReceiver> deliveryContact = selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isDELIVERY()).findFirst();
+		Optional<DocumentReceiver> contact = selectedDocument.getBillingType().isDELIVERY() ? deliveryContact : billingContact;
 		String name = selectedDocument.getAddressFirstLine(); 
-		contactItem.setContactId(contact.getId());
+		contactItem.setContactId(contact.get().getId());
 		contactItem.setName(name);
 		internalTreeViewer.refresh();
 	}
 	
-	
-
 	/**
 	 * Sets the input of the tree
 	 * 

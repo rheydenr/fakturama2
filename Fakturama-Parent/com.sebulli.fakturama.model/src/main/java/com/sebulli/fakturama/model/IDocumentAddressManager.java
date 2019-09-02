@@ -8,11 +8,11 @@ public interface IDocumentAddressManager {
 	 * Create a new {@link DocumentReceiver} from a {@link Contact} for a given {@link BillingType}.
 	 * Nearly all fields are copied from {@link Contact} except <code>manualAddress</code>.
 	 * 
-	 * @param contact the {@link Contact} to copy
+	 * @param address the {@link Contact} to copy
 	 * @param billingType {@link BillingType} of {@link DocumentReceiver}
 	 * @return {@link DocumentReceiver}
 	 */
-	DocumentReceiver createDocumentReceiverFromContact(Contact contact, BillingType billingType);
+	DocumentReceiver createDocumentReceiverFromContact(Address address, BillingType billingType);
 
 	Address getAddressFromContact(Contact contact, ContactType contactType);
 
@@ -39,4 +39,13 @@ public interface IDocumentAddressManager {
 	 * @return {@link Document} with the new {@link DocumentReceiver}
 	 */
 	Document addReceiverToDocument(Document document, DocumentReceiver documentReceiver);
+
+	/**
+	 * Creates a {@link DocumentReceiver} for a given {@link Contact} and {@link BillingType}.
+	 * 
+	 * @param contact {@link Contact} for this {@link DocumentReceiver}
+	 * @param billingType {@link BillingType} for this {@link DocumentReceiver}
+	 * @return {@link DocumentReceiver}
+	 */
+	DocumentReceiver createDocumentReceiverForBillingType(Contact contact, BillingType billingType);
 }

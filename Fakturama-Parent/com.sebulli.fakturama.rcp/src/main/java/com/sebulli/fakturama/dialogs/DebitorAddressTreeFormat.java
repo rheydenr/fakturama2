@@ -8,12 +8,12 @@ import com.sebulli.fakturama.dao.DebitorAddress;
 
 import ca.odell.glazedlists.TreeList;
 
-public class DebitorAddressTreeFormat implements TreeList.Format<DebitorAddress> {
+public class DebitorAddressTreeFormat<K extends DebitorAddress> implements TreeList.Format<K> {
 
-    private Map<String, DebitorAddress> parentMapping = new HashMap<>();
+    private Map<String, K> parentMapping = new HashMap<>();
 
     @Override
-    public void getPath(List<DebitorAddress> path, DebitorAddress element) {
+    public void getPath(List<K> path, K element) {
         if (this.parentMapping.get(element.getCustomerNumber()) != null) {
             path.add(this.parentMapping.get(element.getCustomerNumber()));
         } else {
@@ -29,12 +29,12 @@ public class DebitorAddressTreeFormat implements TreeList.Format<DebitorAddress>
      *         <code>false</code> if it is always a leaf node.
      */
     @Override
-    public boolean allowsChildren(DebitorAddress element) {
+    public boolean allowsChildren(K element) {
         return true;
     }
 
     @Override
-    public Comparator<? super DebitorAddress> getComparator(int depth) {
+    public Comparator<? super K> getComparator(int depth) {
         return (o1, o2) -> o1.getCustomerNumber().compareTo(o2.getCustomerNumber());
     }
 }

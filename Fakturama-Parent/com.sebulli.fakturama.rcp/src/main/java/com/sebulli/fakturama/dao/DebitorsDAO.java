@@ -21,7 +21,6 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
-import com.sebulli.fakturama.dialogs.TreeItem;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;

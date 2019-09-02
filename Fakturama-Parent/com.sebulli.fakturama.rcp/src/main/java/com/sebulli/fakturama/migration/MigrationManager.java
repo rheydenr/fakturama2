@@ -807,7 +807,7 @@ public class MigrationManager {
 
 
 	private Document addReceiverToDocument(Document document, Contact contact, BillingType billingType) {
-    	DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(contact, billingType);
+    	DocumentReceiver documentReceiver = addressManager.createDocumentReceiverForBillingType(contact, billingType);
     	document.getReceiver().add(documentReceiver);
     	if(documentReceiver != null) {
     		document.getReceiver().add(documentReceiver);

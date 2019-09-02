@@ -45,7 +45,6 @@ import com.sebulli.fakturama.model.Credit;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Delivery_;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.DocumentReceiver_;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
@@ -189,7 +188,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
      * @return String[] of visible Documents properties
      */
     public String[] getVisibleProperties() {
-        return new String[] { Document_.name.getName(), Document_.receiver + "." + "addressfirstline", 
+        return new String[] { Document_.name.getName(), Document_.addressFirstLine.getName(), 
                 Document_.documentDate.getName(), Document_.totalValue.getName() };
     }
 

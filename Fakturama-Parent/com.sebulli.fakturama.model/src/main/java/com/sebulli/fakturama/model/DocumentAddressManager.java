@@ -34,23 +34,29 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 	 * @return {@link DocumentReceiver}
 	 */
 	@Override
-	public DocumentReceiver createDocumentReceiverFromContact(Contact contact, BillingType billingType) {
+	public DocumentReceiver createDocumentReceiverFromContact(Address address, BillingType billingType) {
+		Contact contact = address.getContact();
+		return createDocumentReceiver(contact, address, billingType);
+	}
+	
+	private DocumentReceiver createDocumentReceiver(Contact contact, Address address, BillingType billingType) {
 		DocumentReceiver documentReceiver = modelFactory.createDocumentReceiver();
 		documentReceiver.setBillingType(billingType);
 
 		// copy address data
-		Address addressFromContact = getAddressFromContact(contact, billingType.isINVOICE() ? ContactType.BILLING : ContactType.DELIVERY);
-		documentReceiver.setStreet(addressFromContact.getStreet());
-		documentReceiver.setCity(addressFromContact.getCity());
-		documentReceiver.setZip(addressFromContact.getZip());
-		documentReceiver.setCountryCode(addressFromContact.getCountryCode());
-		documentReceiver.setEmail(addressFromContact.getEmail());
-		documentReceiver.setMobile(addressFromContact.getMobile());
-		documentReceiver.setPhone(addressFromContact.getPhone());
-		documentReceiver.setFax(addressFromContact.getFax());
+		documentReceiver.setStreet(address.getStreet());
+		documentReceiver.setCity(address.getCity());
+		documentReceiver.setZip(address.getZip());
+		documentReceiver.setCountryCode(address.getCountryCode());
+		documentReceiver.setEmail(address.getEmail());
+		documentReceiver.setMobile(address.getMobile());
+		documentReceiver.setPhone(address.getPhone());
+		documentReceiver.setFax(address.getFax());
+		documentReceiver.setConsultant(address.getLocalConsultant());
 
 		// copy fields from contact
 		documentReceiver.setOriginContactId(contact.getId());
+		documentReceiver.setAddressId(address.getId());
 		documentReceiver.setCustomerNumber(contact.getCustomerNumber());
 		documentReceiver.setTitle(contact.getTitle());
 		documentReceiver.setFirstName(contact.getFirstName());
@@ -75,6 +81,13 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 //		documentReceiver.setUseSalesEqualizationTax(contact.getUseSalesEqualizationTax());
 
 		return documentReceiver;
+	}
+
+	@Override
+	public DocumentReceiver createDocumentReceiverForBillingType(Contact contact, BillingType billingType) {
+		Address addressFromContact = getAddressFromContact(contact, billingType.isINVOICE() ? ContactType.BILLING : ContactType.DELIVERY);
+		// copy address data
+		return createDocumentReceiver(contact, addressFromContact, billingType);
 	}
 
 	@Override

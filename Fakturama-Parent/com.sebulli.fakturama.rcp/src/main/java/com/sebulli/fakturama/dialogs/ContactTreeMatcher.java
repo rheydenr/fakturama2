@@ -12,22 +12,22 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.views.datatable.contacts;
+package com.sebulli.fakturama.dialogs;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.sebulli.fakturama.converter.CommonConverter;
-import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 import ca.odell.glazedlists.matchers.Matcher;
 
 /**
- * {@link Matcher} class for filtering the Contact list entries. The {@link ContactMatcher} checks if
+ * {@link Matcher} class for filtering the Contact list entries. The {@link ContactTreeMatcher} checks if
  * an item has the selected category (selected from tree viewer).
  *
  */
-final public class ContactMatcher implements Matcher<Contact> {
+final public class ContactTreeMatcher<K extends DebitorAddress> implements Matcher<K> {
     final String contactCategoryName;
     final boolean isRootNode;
     private final String rootNodeName;
@@ -39,17 +39,17 @@ final public class ContactMatcher implements Matcher<Contact> {
      * @param treeObjectType the selected {@link TreeObjectType}
      * @param rootNodeName the name of the root node (needed for building the complete category path of an item) 
      */
-    public ContactMatcher(String pContactCategoryName, TreeObjectType treeObjectType, String rootNodeName) {
+    public ContactTreeMatcher(String pContactCategoryName, TreeObjectType treeObjectType, String rootNodeName) {
         this.contactCategoryName = (treeObjectType == TreeObjectType.LEAF_NODE) ? pContactCategoryName : StringUtils.appendIfMissing(pContactCategoryName, "/");
         this.isRootNode = treeObjectType == TreeObjectType.ALL_NODE || treeObjectType == TreeObjectType.ROOT_NODE;
         this.rootNodeName = "/" + rootNodeName + "/";
     }
 
     @Override
-    public boolean matches(Contact item) {
+    public boolean matches(K item) {
         boolean found = false;
         if(!isRootNode) {
-            String fullCategoryName = CommonConverter.getCategoryName(item.getCategories(), rootNodeName);
+            String fullCategoryName = CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
             found = fullCategoryName.startsWith(contactCategoryName);
         }
         return isRootNode || found;

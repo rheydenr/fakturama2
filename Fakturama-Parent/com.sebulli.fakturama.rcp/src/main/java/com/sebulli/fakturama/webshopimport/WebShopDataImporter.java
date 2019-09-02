@@ -629,7 +629,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
             contactItem = contactsDAO.update(contactItem);
         }
     
-        DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(contactItem, BillingType.INVOICE);
+        DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(address, BillingType.INVOICE);
 		dataSetDocument.getReceiver().add(documentReceiver );
 //            dataSetDocument.setAddress(contactItem.getAddress(false)); // included in contact
 //            dataSetDocument.setDeliveryaddress(deliveryContact); // included in contact
@@ -1082,7 +1082,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	private String getStringFromInputStream(InputStream is) {
         String line = "";
         try {
-            line = IOUtils.toString(is);
+            line = IOUtils.toString(is, "UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -4,15 +4,18 @@ import java.util.List;
 
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.ContactType;
 
 public class DebitorAddress {
+	ContactCategory category;
 	private String customerNumber, name, firstName, zipCode, city, company;
 	private List<ContactType> contactType;
 	private long contactId;
 	private Address address;
 
 	public DebitorAddress(Contact contact, Address address) {
+		this.category = contact.getCategories();
 		this.customerNumber = contact.getCustomerNumber();
 		this.name = contact.getName();
 		this.firstName = contact.getFirstName();
@@ -95,4 +98,9 @@ public class DebitorAddress {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
+
+	public ContactCategory getCategory() {
+		return category;
+	}
+
 }

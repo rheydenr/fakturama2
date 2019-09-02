@@ -3,25 +3,40 @@
  */
 package com.sebulli.fakturama.dialogs;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Comparator;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -34,14 +49,11 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
-import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDateDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeData;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.tree.GlazedListTreeRowModel;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
-import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
@@ -55,12 +67,15 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
-import org.eclipse.nebula.widgets.nattable.painter.cell.CheckBoxPainter;
-import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
+import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
+import org.eclipse.nebula.widgets.nattable.sort.SortStatePersistor;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
+import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
@@ -73,18 +88,24 @@ import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 
+import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.DebitorAddress;
-import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
@@ -92,10 +113,9 @@ import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
-import com.sebulli.fakturama.views.datatable.GlazedListsColumnHeaderLayerStack;
+import com.sebulli.fakturama.parts.widget.search.TextSearchControl;
 import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListDescriptor;
-import com.sebulli.fakturama.views.datatable.contacts.ContactMatcher;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
@@ -115,7 +135,11 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * @param <A>
  * 
  */
-public abstract class ContactTreeListTable<K extends DebitorAddress> extends AbstractTreeViewDataTable<K, ContactCategory> {
+@SuppressWarnings("unchecked")
+public abstract class ContactTreeListTable<K extends DebitorAddress> {
+    @Inject
+	private IPreferenceStore eclipsePrefs;
+
     @Inject
     protected UISynchronize sync;
     
@@ -124,16 +148,52 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
     
     @Inject
     protected ESelectionService selectionService;
-//    ListDataProvider<K> bodyDataProvider;
     
+    @Inject
+    protected ILogger log;
+
+    @Inject
+    @Translation
+    protected Messages msg;
+
+    @Inject
+    protected EHandlerService handlerService;
+
+    @Inject
+    protected ECommandService commandService;
+    
+    /**
+     * Event Broker for sending update events from the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
+
+    @Inject
+    protected EMenuService menuService;
+
+	//The top composite
+	protected Composite top;
+	
+	protected TableColumnLayout tableColumnLayout;
+
+	// Filter the table 
+	protected Label filterLabel;
+	
+	/**
+	 * a new sophisticated search control which displays a magnifying glass and an eraser icon.
+	 * This is the default under Linux and Mac OS, but not under Windows. Here we have a nice
+	 * widget for all platforms.
+	 */
+	protected TextSearchControl searchText;
+
     // ID of this view
     public static final String ID = "fakturama.views.contactTreeTable";
 
     private static final String POPUP_ID = "com.sebulli.fakturama.contactlist.popup";
-    public static final String SELECTED_CONTACT_ID = "fakturama.contactlist.selectedcontactid";
-	public static final String SELECTED_ADDRESS_ID = "fakturama.treecontactlist.selectedcontactid";
+    public static final String SELECTED_CONTACT_ID = "fakturama.treecontactlist.selectedcontactid";
+	public static final String SELECTED_ADDRESS_ID = "fakturama.treecontactlist.selectedaddressid";
 
-    protected EventList<DebitorAddress> contactListData;
+    protected EventList<K> contactListData;
     protected EventList<ContactCategory> categories;
     
     @Inject
@@ -145,20 +205,53 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
     private ContactType contactType;
 
     private TreeLayer gridLayer;
-    
+
+	// The topic tree viewer displays the categories of the UniDataSets
+	protected TopicTreeViewer<ContactCategory> topicTreeViewer;
+
+	// The standard UniDataSet
+	protected String stdPropertyKey = null;
+	
+	protected NatTable natTable;
+
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
-    protected FilterList<DebitorAddress> treeFilteredIssues;
+    protected FilterList<K> treeFilteredIssues;
 
-	private ContactMatcher currentFilter;
+	private ContactTreeMatcher<K> currentFilter;
 
-//	protected DataLayer bodyDataLayer;
-
-	private TreeBodyLayerStack<DebitorAddress> bodyLayerStack;
+	private TreeBodyLayerStack bodyLayerStack;
 
 	@PostConstruct
 	public Control createPartControl(Composite parent, MPart listTablePart) {
-		createPartControl(parent, Contact.class, true, ID);
+	    // Create the top composite
+		top = new Composite(parent, SWT.NONE);
+		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(2).applyTo(top);
+
+		// Add context help reference 
+//		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, contextHelpId);
+        
+        Composite searchAndTableComposite = top;
+        // Create the composite that contains the search field and the table
+			searchAndTableComposite = createSearchAndTableComposite(top);
+        natTable = createListTable(searchAndTableComposite);
+        
+        addCustomStyling(natTable);
+        
+        natTable.addDisposeListener(new DisposeListener() {
+            
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+            onStop(natTable);
+            }
+        });
+        
+        // call hook for post configure steps, if any
+        postConfigureNatTable(natTable);
+
+        onStart(natTable);  // as late as possible! Otherwise sorting doesn't work! (don't ask why!)
+       
+//        natTable.setTheme(new ModernNatTableThemeConfiguration());
 
 		this.listTablePart = listTablePart;
 		// if another click handler is set we use it
@@ -175,10 +268,96 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
 		return top;
 	}
 
+    /**
+     * Component for the Search field and the item table
+     * 
+     * @param parent the parent {@link Composite} of this Component
+     * @return {@link Composite}
+     */
+    private Composite createSearchAndTableComposite(Composite parent) {
+        Composite searchAndTableComposite = new Composite(parent, SWT.NONE);
+        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(1).applyTo(searchAndTableComposite);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(searchAndTableComposite);
+
+        // Create the composite that contains the search field and the toolbar
+        Composite searchAndToolbarComposite = new Composite(searchAndTableComposite, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(3).applyTo(searchAndToolbarComposite);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(searchAndToolbarComposite);
+
+        // The toolbar is created via Application model (Application.e4xmi)
+        
+        filterLabel = new Label(searchAndToolbarComposite, SWT.NONE);
+        FontData[] fD = filterLabel.getFont().getFontData();
+        fD[0].setHeight(20);
+        Font font = new Font(null, fD[0]);
+        filterLabel.setFont(font);
+        font.dispose();
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.CENTER).applyTo(filterLabel);
+
+        // The search composite
+        Composite searchComposite = new Composite(searchAndToolbarComposite, SWT.NONE);
+        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(searchComposite);
+        GridDataFactory.fillDefaults().grab(true, true).align(SWT.END, SWT.CENTER).applyTo(searchComposite);
+
+        // Search label an search field
+        Label searchLabel = new Label(searchComposite, SWT.NONE);
+        searchLabel.setText(msg.commonLabelSearchfield);
+        GridDataFactory.swtDefaults().applyTo(searchLabel);
+        
+        searchText = new TextSearchControl(searchComposite, false, msg);
+
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).hint(150, -1).applyTo(searchText);
+        return searchAndTableComposite;
+    }
+
+    /**
+     * We have to style the table a little bit...
+     * 
+     * @param natTable the {@link NatTable} to style
+     */
+    private void addCustomStyling(NatTable natTable) {
+        DefaultSelectionStyleConfiguration selectionStyle = createDefaultSelectionStyle();
+
+        // Add all style configurations to NatTable
+        natTable.addConfiguration(selectionStyle);
+    }
+
+    /**
+     * @return
+     */
+    protected DefaultSelectionStyleConfiguration createDefaultSelectionStyle() {
+        // NOTE: Getting the colors and fonts from the GUIHelper ensures that
+        // they are disposed properly (required by SWT)
+        // Setup selection styling
+        DefaultSelectionStyleConfiguration selectionStyle = new DefaultSelectionStyleConfiguration();
+   //     selectionStyle.selectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL));
+        selectionStyle.selectionBgColor = GUIHelper.getColor(217, 232, 251);
+        selectionStyle.selectionFgColor = GUIHelper.COLOR_BLACK;
+        selectionStyle.anchorBorderStyle = new BorderStyle(1, GUIHelper.COLOR_DARK_GRAY, LineStyleEnum.SOLID);
+        selectionStyle.anchorBgColor = GUIHelper.getColor(217, 232, 251);
+        selectionStyle.selectedHeaderBgColor = GUIHelper.getColor(169, 212, 235);
+        return selectionStyle;
+    }
+
+	public TextSearchControl getSearchControl() {
+		return searchText;
+	}
+
+	protected String createRootNodeDescriptor(String filter) {
+		String rootNode = ""; 
+		String[] splittedString = filter.split("/");
+		if(splittedString.length > 1) {
+			rootNode = splittedString[1];
+		}
+		return rootNode;
+	}
+
 	private void setColumWidthPercentage(DataLayer dataLayer) {
 		dataLayer.setColumnPercentageSizing(true);
-//		dataLayer.setColumnWidthPercentageByPosition(0, 50);
-//		dataLayer.setColumnWidthPercentageByPosition(1, 50);
+//    dataLayer.setColumnWidthPercentageByPosition(0, 5);
+//    dataLayer.setColumnWidthPercentageByPosition(1, 15);
+//    dataLayer.setColumnWidthPercentageByPosition(2, 75);
+//    dataLayer.setColumnWidthPercentageByPosition(3, 5);
 	}
 
     private void hookDoubleClickCommand(final NatTable nattable, final TreeLayer gridLayer, String commandId) {
@@ -202,8 +381,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
                 //get the row position for the click in the NatTable
                 int rowPos = natTable.getRowPositionByY(event.y);
                 //transform the NatTable row position to the row position of the body layer stack
-//                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
-//                selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack.treeLayer);
+                selectedObject = ((ListDataProvider<K>) bodyLayerStack.getBodyDataProvider()).getRowObject(bodyRowPos);
                 // Call the corresponding editor. The editor is set
                 // in the variable "editor", which is used as a parameter
                 // when calling the editor command.
@@ -242,7 +421,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
         });
     }
     
-    @Override
     public K getSelectedObject() {
         return selectedObject;
     }
@@ -252,7 +430,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
         hookDoubleClickCommand(nattable, gridLayer, null);
     }
     
-    @Override
     protected void postConfigureNatTable(NatTable natTable) {
         //as the autoconfiguration of the NatTable is turned off, we have to add the 
         //DefaultNatTableStyleConfiguration and the ConfigRegistry manually 
@@ -273,11 +450,11 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
         natTable.configure();
     }
 
-    protected IColumnPropertyAccessor<DebitorAddress> createColumnPropertyAccessor(String[] propertyNames) {
-        final IColumnPropertyAccessor<DebitorAddress> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<DebitorAddress>(propertyNames);
-        IColumnPropertyAccessor<DebitorAddress> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<DebitorAddress>() {
+    protected IColumnPropertyAccessor<K> createColumnPropertyAccessor(String[] propertyNames) {
+        final IColumnPropertyAccessor<K> columnPropertyAccessor = new ExtendedReflectiveColumnPropertyAccessor<K>(propertyNames);
+        IColumnPropertyAccessor<K> derivedColumnPropertyAccessor = new IColumnPropertyAccessor<K>() {
 
-            public Object getDataValue(DebitorAddress rowObject, int columnIndex) {
+            public Object getDataValue(K rowObject, int columnIndex) {
                 ContactListDescriptor descriptor = ContactListDescriptor.getDescriptorFromColumn(columnIndex);
                 // For the address always the first entry is displayed (if any)
                 switch (descriptor) {
@@ -298,7 +475,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
                 return null;
             }
 
-			public void setDataValue(DebitorAddress rowObject, int columnIndex, Object newValue) {
+			public void setDataValue(K rowObject, int columnIndex, Object newValue) {
                 throw new UnsupportedOperationException("you can't change a value in list view!");
             }
 
@@ -318,12 +495,14 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
         return derivedColumnPropertyAccessor;
     }
 
-    /* (non-Javadoc)
-     * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#createListTable(org.eclipse.swt.widgets.Composite)
-     */
-    @Override
-    protected NatTable createListTable(Composite searchAndTableComposite) {
-		
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#
+	 * createListTable(org.eclipse.swt.widgets.Composite)
+	 */
+	protected NatTable createListTable(Composite searchAndTableComposite) {
+
 		BillingType currentBillingType = (BillingType) context.get("ADDRESS_TYPE");
 		ContactType contactType;
 		switch (currentBillingType) {
@@ -337,119 +516,97 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
 			contactType = ContactType.BILLING;
 			break;
 		}
- 
-    	// fill the underlying data source (GlazedList)
-        contactListData = getListData(contactType);
-		
+
+		// fill the underlying data source (GlazedList)
+		contactListData = getListData(contactType);
+
 		// Properties of the DebitorAddress items inside the TreeItems
 		String[] propertyNames = ContactListDescriptor.getContactPropertyNames();
 
-        final IColumnPropertyAccessor<DebitorAddress> columnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
+		final IColumnPropertyAccessor<K> columnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
 
-        bodyLayerStack = new TreeBodyLayerStack<>(
-				contactListData,
-		        columnPropertyAccessor, new DebitorAddressTreeFormat());
-       
-      //2. build the column header layer
-      IDataProvider columnHeaderDataProvider =
-          new ListViewColumnHeaderDataProvider<DebitorAddress>(propertyNames, columnPropertyAccessor);
-      DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-      ILayer columnHeaderLayer =
-              new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
+		bodyLayerStack = new TreeBodyLayerStack(contactListData, columnPropertyAccessor,
+				new DebitorAddressTreeFormat<K>());
 
-      // build the row header layer
-      IDataProvider rowHeaderDataProvider =
-              new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
-      DataLayer rowHeaderDataLayer =
-              new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-      ILayer rowHeaderLayer =
-              new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
+		// 2. build the column header layer
+		IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<K>(propertyNames,
+				columnPropertyAccessor);
+		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack,
+				bodyLayerStack.getSelectionLayer());
 
-      // build the corner layer
-      IDataProvider cornerDataProvider =
-              new DefaultCornerDataProvider(columnHeaderDataProvider, rowHeaderDataProvider);
-      DataLayer cornerDataLayer =
-              new DataLayer(cornerDataProvider);
-      ILayer cornerLayer =
-              new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
-        
+		// build the row header layer
+		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
+		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
+		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack,
+				bodyLayerStack.getSelectionLayer());
 
-      // build the grid layer
-      GridLayer gridLayer =
-              new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
+		// build the corner layer
+		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider,
+				rowHeaderDataProvider);
+		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
-      // turn the auto configuration off as we want to add our header menu
-      // configuration
-      final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer, false);
-        
+		// build the grid layer
+		GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
-      // as the autoconfiguration of the NatTable is turned off, we have to
-      // add the DefaultNatTableStyleConfiguration and the ConfigRegistry
-      // manually
-      natTable.setConfigRegistry(configRegistry);
-      natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+		// turn the auto configuration off as we want to add our header menu
+		// configuration
+		final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer, false);
 
-      // adds the key bindings that allows pressing space bar to
-      // expand/collapse tree nodes
-      natTable.addConfiguration(
-              new TreeLayerExpandCollapseKeyBindings(
-                      bodyLayerStack.getTreeLayer(),
-                      bodyLayerStack.getSelectionLayer()));
+		// as the autoconfiguration of the NatTable is turned off, we have to
+		// add the DefaultNatTableStyleConfiguration and the ConfigRegistry
+		// manually
+		natTable.setConfigRegistry(configRegistry);
+		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+		natTable.setBackground(GUIHelper.COLOR_WHITE);
 
-      natTable.configure();
+		// adds the key bindings that allows pressing space bar to
+		// expand/collapse tree nodes
+		natTable.addConfiguration(new TreeLayerExpandCollapseKeyBindings(bodyLayerStack.getTreeLayer(),
+				bodyLayerStack.getSelectionLayer()));
 
-      GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+		natTable.configure();
 
-        // matcher input Search text field 
-        final MatcherEditor<DebitorAddress> textMatcherEditor = createTextWidgetMatcherEditor();
-        
-        // Filtered list for Search text field filter
-        final FilterList<DebitorAddress> textFilteredIssues = new FilterList<DebitorAddress>(contactListData, textMatcherEditor);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
-        // build the list for the tree-filtered values (i.e., the value list which is affected by
-        // tree selection)
-        treeFilteredIssues = new FilterList<DebitorAddress>(textFilteredIssues);
+		// matcher input Search text field
+		final MatcherEditor<K> textMatcherEditor = createTextWidgetMatcherEditor();
 
-        //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<DebitorAddress> selectionModel = new RowSelectionModel<DebitorAddress>(bodyLayerStack.getSelectionLayer(), 
-        		(IRowDataProvider<DebitorAddress>) bodyLayerStack.bodyDataProvider, new IRowIdAccessor<DebitorAddress>() {
+		// Filtered list for Search text field filter
+		final FilterList<K> textFilteredIssues = new FilterList<K>(contactListData, textMatcherEditor);
 
-			@Override
-			public Serializable getRowId(DebitorAddress rowObject) {
-				return rowObject.getAddress().getId();
-			}
-		}, false);
-        bodyLayerStack.getSelectionLayer().setSelectionModel(selectionModel);
-        // Select complete rows
-        bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration< DebitorAddress >());
+		// build the list for the tree-filtered values (i.e., the value list which is
+		// affected by
+		// tree selection)
+		treeFilteredIssues = new FilterList<K>(textFilteredIssues);
+		setColumWidthPercentage(bodyLayerStack.bodyDataLayer);
 
-//        //build the grid layer
-//        setGridLayer(treeLayer);
-////        DataLayer tableDataLayer = getGridLayer().getBodyDataLayer();
-//        bodyDataLayer.setColumnPercentageSizing(true);
-////        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-////        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
-////        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
-////        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
-////
-////        final NatTable natTable = new NatTable(searchAndTableComposite/*, 
-////                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, getGridLayer().getGridLayer(), false);
-//		final NatTable natTable = new NatTable(searchAndTableComposite, treeLayer, false);
-//        natTable.setBackground(GUIHelper.COLOR_WHITE);
-//        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-//        natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
-////        
-        return natTable;
-    }
+		// use a RowSelectionModel that will perform row selections and is able to
+		// identify a row via unique ID
+		RowSelectionModel<K> selectionModel = new RowSelectionModel<K>(bodyLayerStack.getSelectionLayer(),
+				(IRowDataProvider<K>) bodyLayerStack.bodyDataProvider, new IRowIdAccessor<K>() {
 
-    protected abstract MatcherEditor<DebitorAddress> createTextWidgetMatcherEditor();
+					@Override
+					public Serializable getRowId(K rowObject) {
+						return rowObject.getAddress().getId();
+					}
+				}, false);
+		bodyLayerStack.getSelectionLayer().setSelectionModel(selectionModel);
+		// Select complete rows
+		bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration<K>());
+		return natTable;
+	}
 
-    protected abstract EventList<DebitorAddress> getListData(ContactType contactType);
+    protected abstract MatcherEditor<K> createTextWidgetMatcherEditor();
+    protected abstract String getEditorTypeId();
+    protected abstract EventList<K> getListData(ContactType contactType);
+	protected abstract Class<K> getEntityClass();
+	protected abstract AbstractDAO<? extends Contact> getEntityDAO();
 
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#getTableId()
      */
-    @Override
     public String getTableId() {
         return ID;
     }
@@ -457,7 +614,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#getEditorId()
      */
-    @Override
     protected String getEditorId() {
         return DebitorEditor.ID;
     }
@@ -465,7 +621,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#createCategoryTreeViewer(org.eclipse.swt.widgets.Composite)
      */
-    @Override
     protected TopicTreeViewer<ContactCategory> createCategoryTreeViewer(Composite top) {
         topicTreeViewer = new TopicTreeViewer<ContactCategory>(top, msg, false, true);
 //    	topicTreeViewer = (TopicTreeViewer<ContactCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
@@ -488,19 +643,79 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#setCategoryFilter(java.lang.String, com.sebulli.fakturama.views.datatable.vats.TreeObjectType)
      */
-    @Override
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        currentFilter = new ContactMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
-//		treeFilteredIssues.setMatcher(currentFilter);
+        currentFilter = new ContactTreeMatcher<>(filter, treeObjectType, createRootNodeDescriptor(filter));
+		treeFilteredIssues.setMatcher(currentFilter);
     }
 
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#isHeaderLabelEnabled()
      */
-    @Override
     protected boolean isHeaderLabelEnabled() {
         return false;
     }
+    
+	/**
+	 * Loads the table settings (layout and such stuff) from a properties file.
+	 * @param natTable
+	 */
+    public void onStart(NatTable natTable) {
+        Properties properties = new Properties();
+        String requestedWorkspace = getEclipsePrefs().getString(Constants.GENERAL_WORKSPACE);
+        Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
+
+        try (InputStream propertiesInputStream = Files.newInputStream(propertiesFile);) {
+            properties.load(propertiesInputStream);
+            log.debug("Loading NatTable state from " + Constants.VIEWTABLE_PREFERENCES_FILE);
+            properties.load(Files.newInputStream(propertiesFile, StandardOpenOption.READ));
+            natTable.loadState(getTableId(), properties);
+        } catch (IOException e) {
+            // No file found, oh well, move along
+            log.warn(Constants.VIEWTABLE_PREFERENCES_FILE + " not found, skipping load");
+        }
+    }
+	
+    /**
+     * Before Nattable is disposed, all the settings for this table are stored in a properties file.
+     * 
+     * @param natTable
+     */
+    public void onStop(NatTable natTable) {
+        Properties properties = new Properties();
+        String requestedWorkspace = getEclipsePrefs().getString(Constants.GENERAL_WORKSPACE);
+        Path propertiesFile = Paths.get(requestedWorkspace, Constants.VIEWTABLE_PREFERENCES_FILE);
+        if(Files.notExists(propertiesFile)) {
+            try {
+                Files.createFile(propertiesFile);
+            } catch (IOException ioex) {
+                log.error(ioex, Constants.VIEWTABLE_PREFERENCES_FILE + " could not be created.");
+            }
+        }
+        try (InputStream propertiesInputStream = Files.newInputStream(propertiesFile);) {
+            properties.load(propertiesInputStream);
+            natTable.saveState(getTableId(), properties);
+            
+            // removing superfluous entries (i.e., count of rows)
+            final Iterator<Object> mapIter = properties.keySet().iterator();
+            String[] prefixes = new String[]{
+            		getTableId() + "." + GridRegion.BODY + RowReorderLayer.PERSISTENCE_KEY_ROW_INDEX_ORDER,
+            		getTableId() + "." + GridRegion.COLUMN_HEADER + SortStatePersistor.PERSISTENCE_KEY_SORTING_STATE,
+            	};
+            String elem;
+			while (mapIter.hasNext()) {
+				elem = (String) mapIter.next();
+				if (StringUtils.containsAny(elem, prefixes)) {
+					mapIter.remove();
+				}
+			}
+            
+            log.info("Saving NatTable state to " + Constants.VIEWTABLE_PREFERENCES_FILE);
+            properties.store(Files.newOutputStream(propertiesFile, StandardOpenOption.CREATE), "NatTable state");
+        } catch (IOException ioex) {
+            log.error(ioex, Constants.VIEWTABLE_PREFERENCES_FILE + " could not be written.");
+        }
+    }
+	
 
     /**
      * @return the gridLayer
@@ -532,12 +747,10 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
         return POPUP_ID;
     }
 
-    @Override
     protected String getToolbarAddItemCommandId() {
         return CommandIds.LISTTOOLBAR_ADD_CONTACT;
     }
 
-    @Override
     protected MToolBar getMToolBar() {
         return listTablePart.getToolbar();
     }
@@ -563,53 +776,55 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
 		this.configRegistry = configRegistry;
 	}
 	
-	
-	
-	
-	
+	/**
+	 * @return the eclipsePrefs
+	 */
+	protected IPreferenceStore getEclipsePrefs() {
+		if(eclipsePrefs == null) {
+			eclipsePrefs = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+		}
+		return eclipsePrefs;
+	}
 
     /**
      * Always encapsulate the body layer stack in an AbstractLayerTransform to
      * ensure that the index transformations are performed in later commands.
      *
-     * @param <T>
+     * @param <K>
      */
-    class TreeBodyLayerStack<T> extends AbstractLayerTransform {
+    private class TreeBodyLayerStack extends AbstractLayerTransform {
 
-        private final TreeList<T> treeList;
-
+        private final TreeList<K> treeList;
         private final IDataProvider bodyDataProvider;
-
         private final SelectionLayer selectionLayer;
-
         private final TreeLayer treeLayer;
+		private DataLayer bodyDataLayer;
 
-        @SuppressWarnings("unchecked")
-        public TreeBodyLayerStack(List<T> values,
-                IColumnPropertyAccessor<T> columnPropertyAccessor,
-                TreeList.Format<T> treeFormat) {
+        public TreeBodyLayerStack(List<K> values,
+                IColumnPropertyAccessor<K> columnPropertyAccessor,
+                TreeList.Format<K> treeFormat) {
             // wrapping of the list to show into GlazedLists
             // see http://publicobject.com/glazedlists/ for further information
-            EventList<T> eventList = GlazedLists.eventList(values);
-            TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+            EventList<K> eventList = GlazedLists.eventList(values);
+            TransformedList<K, K> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator will be set by configuration
-            SortedList<T> sortedList = new SortedList<>(rowObjectsGlazedList, null);
+            SortedList<K> sortedList = new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the TreeList
-            this.treeList = new TreeList<T>(sortedList, treeFormat, TreeList.NODES_START_EXPANDED);
+            this.treeList = new TreeList<K>(sortedList, treeFormat, TreeList.NODES_START_EXPANDED);
 
-            this.bodyDataProvider = new ListDataProvider<T>(this.treeList, columnPropertyAccessor);
-            DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
+            this.bodyDataProvider = new ListDataProvider<K>(this.treeList, columnPropertyAccessor);
+            bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
             // simply apply labels for every column by index
             bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
             // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<T> glazedListsEventLayer = new GlazedListsEventLayer<>(bodyDataLayer, this.treeList);
+            GlazedListsEventLayer<K> glazedListsEventLayer = new GlazedListsEventLayer<>(bodyDataLayer, this.treeList);
 
-            GlazedListTreeData<T> treeData = new GlazedListTreeData<>(this.treeList);
-            ITreeRowModel<T> treeRowModel = new GlazedListTreeRowModel<>(treeData);
+            GlazedListTreeData<K> treeData = new GlazedListTreeData<>(this.treeList);
+            ITreeRowModel<K> treeRowModel = new GlazedListTreeRowModel<>(treeData);
 
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
@@ -627,36 +842,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> extends Abs
             return this.treeLayer;
         }
 
-        public TreeList<T> getTreeList() {
-            return this.treeList;
-        }
-
         public IDataProvider getBodyDataProvider() {
             return this.bodyDataProvider;
         }
-    }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    }	
 }

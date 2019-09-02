@@ -689,9 +689,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 		// empty per default
     }
 
-
 	abstract protected AbstractDAO<T> getEntityDAO();
-
 
     /**
      * @return

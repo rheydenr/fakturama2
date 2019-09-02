@@ -6,7 +6,6 @@ package com.sebulli.fakturama.dialogs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -30,13 +29,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
-import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address;
-import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.parts.DocumentEditor;
-import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 
 /**
  *
@@ -98,7 +94,7 @@ public class SelectTreeContactDialog<T extends Address> extends AbstractSelectio
         }
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
-//    	contactListTable.getSearchControl().getTextControl().setFocus();
+    	contactListTable.getSearchControl().getTextControl().setFocus();
 
         return top;
     }
@@ -107,7 +103,8 @@ public class SelectTreeContactDialog<T extends Address> extends AbstractSelectio
      * After this the dialog closes. The Event is caught by the {@link DocumentEditor} which will use it as
      * billing or delivery address.
      */
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     protected void okPressed() {
         if (contactListTable.getSelectedObject() != null) {
             Map<String, Object> eventParams = new HashMap<>();
@@ -131,7 +128,8 @@ public class SelectTreeContactDialog<T extends Address> extends AbstractSelectio
      *  
      * @param event
      */
-    @Inject
+    @SuppressWarnings("unchecked")
+	@Inject
     @org.eclipse.e4.core.di.annotations.Optional
     protected void handleDialogDoubleClickClose(@UIEventTopic("DialogAction/CloseContact") Event event) {
         if (event != null) {
