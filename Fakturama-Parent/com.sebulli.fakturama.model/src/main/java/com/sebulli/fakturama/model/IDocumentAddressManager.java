@@ -30,7 +30,7 @@ public interface IDocumentAddressManager {
 	DocumentReceiver getAdressForBillingType(Document document, BillingType billingType);
 
 	/**
-	 * Add (or replace an exxisting) {@link DocumentReceiver} to a {@link Document}. This
+	 * Add (or replace an existing) {@link DocumentReceiver} to a {@link Document}. This
 	 * method is a replacement for the simple {@link Set#add(Object)} method since The {@link DocumentReceiver}'s
 	 * <code>equals()</code> method can't be overwritten. Therefore we have to take an extra helper method.
 	 * 
@@ -38,7 +38,7 @@ public interface IDocumentAddressManager {
 	 * @param documentReceiver new {@link DocumentReceiver}
 	 * @return {@link Document} with the new {@link DocumentReceiver}
 	 */
-	Document addReceiverToDocument(Document document, DocumentReceiver documentReceiver);
+	Document addOrReplaceReceiverToDocument(Document document, DocumentReceiver documentReceiver);
 
 	/**
 	 * Creates a {@link DocumentReceiver} for a given {@link Contact} and {@link BillingType}.

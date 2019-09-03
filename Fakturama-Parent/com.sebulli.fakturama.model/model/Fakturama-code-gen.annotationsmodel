@@ -569,7 +569,10 @@
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//DocumentReceiver"/>
-      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="The receiver's information for a certain document." documentation="The receiver's information for a certain document."/>
+      <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="The receiver's information for a certain document." documentation="The receiver's information for a certain document." serializable="true">
+        <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
+        <classImplements>java.io.Serializable</classImplements>
+      </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
           <entityListeners>

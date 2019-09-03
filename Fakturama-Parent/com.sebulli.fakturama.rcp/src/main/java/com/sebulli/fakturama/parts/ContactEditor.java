@@ -1202,26 +1202,27 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	protected void bindAddressWidgetForIndex(CTabItem addressTabItem, int index) {
 	    Address currentAddress = getOrCreateAddressByIndexFromContact(index);
 	    
-	    bindModelValue(currentAddress, addressTabWidgets.get(index).getLocalConsultant(), Address_.localConsultant.getName(), 64);
-	    bindModelValue(currentAddress, addressTabWidgets.get(index).getStreet(), Address_.street.getName(), 64);
-	    bindModelValue(currentAddress, addressTabWidgets.get(index).getZip(), Address_.zip.getName(), 16);
-	    bindModelValue(currentAddress, addressTabWidgets.get(index).getCity(), Address_.city.getName(), 32);
-	    bindModelValue(currentAddress, addressTabWidgets.get(index).getCityAddon(), Address_.cityAddon.getName(), 32);
-	    bindModelValue(currentAddress, addressTabWidgets.get(index).getCountryCombo(), Address_.countryCode.getName());
+	    AddressTabWidget currentAddressTabWidget = addressTabWidgets.get(index);
+		bindModelValue(currentAddress, currentAddressTabWidget.getLocalConsultant(), Address_.localConsultant.getName(), 64);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getStreet(), Address_.street.getName(), 64);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getZip(), Address_.zip.getName(), 16);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getCity(), Address_.city.getName(), 32);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getCityAddon(), Address_.cityAddon.getName(), 32);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getCountryCombo(), Address_.countryCode.getName());
 
-	    bindListWidget(currentAddress, addressTabWidgets.get(index).getContactTypeWidget(), Address_.contactTypes, addressTabItem);
+	    bindListWidget(currentAddress, currentAddressTabWidget.getContactTypeWidget(), Address_.contactTypes);
 		
-		Binding binding = bindModelValue(currentAddress, addressTabWidgets.get(index).getEmail(), Address_.email.getName(), 64, emailValidationStrategy, null);
+		Binding binding = bindModelValue(currentAddress, currentAddressTabWidget.getEmail(), Address_.email.getName(), 64, emailValidationStrategy, null);
 		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
 		
-		bindModelValue(currentAddress, addressTabWidgets.get(index).getPhone(), Address_.phone.getName(), 32);
-		bindModelValue(currentAddress, addressTabWidgets.get(index).getFax(), Address_.fax.getName(), 32);
-		bindModelValue(currentAddress, addressTabWidgets.get(index).getMobile(), Address_.mobile.getName(), 32);
+		bindModelValue(currentAddress, currentAddressTabWidget.getPhone(), Address_.phone.getName(), 32);
+		bindModelValue(currentAddress, currentAddressTabWidget.getFax(), Address_.fax.getName(), 32);
+		bindModelValue(currentAddress, currentAddressTabWidget.getMobile(), Address_.mobile.getName(), 32);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <E extends IEntity> void bindListWidget(E listEntity, Control currentWidget,
-			ListAttribute<E, ContactType> property, CTabItem cTabItem) {
+			ListAttribute<E, ContactType> property) {
 
 		if (currentWidget instanceof MultiChoice) {
 			bindModelList(listEntity, ContactType.class, (MultiChoice<ContactType>) currentWidget, property.getName(),

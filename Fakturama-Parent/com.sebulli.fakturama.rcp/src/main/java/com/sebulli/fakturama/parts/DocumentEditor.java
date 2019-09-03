@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -37,10 +38,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.Binding;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateListStrategy;
+import org.eclipse.core.databinding.UpdateSetStrategy;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.IBeanListProperty;
+import org.eclipse.core.databinding.beans.IBeanSetProperty;
+import org.eclipse.core.databinding.beans.PojoProperties;
+import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.set.IObservableSet;
+import org.eclipse.core.databinding.observable.set.SetChangeEvent;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.property.set.SimpleSetProperty;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -58,6 +73,10 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.databinding.swt.ISWTObservableList;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
+import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -73,6 +92,7 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
+import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -130,9 +150,11 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.DocumentReceiver_;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
@@ -148,6 +170,8 @@ import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
 import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
 import com.sebulli.fakturama.parts.itemlist.ItemListBuilder;
+import com.sebulli.fakturama.parts.widget.CTabFolderWidgetObservableSet;
+import com.sebulli.fakturama.parts.widget.CTabFolderWidgetProperty;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
 import com.sebulli.fakturama.parts.widget.contentprovider.HashMapContentProvider;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
@@ -159,7 +183,6 @@ import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentItemUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.products.ProductListTable;
 import com.sebulli.fakturama.views.datatable.texts.TextListTable;
@@ -187,6 +210,7 @@ public class DocumentEditor extends Editor<Document> {
 	public static final String DOCUMENT_ID = "com.sebulli.fakturama.editors.document.id";
     
     private static final String TOOLITEM_COMMAND = "toolitem_command";
+	private static final String ORIGIN_RECEIVER = "ORIGIN_RECEIVER";
 
     @Inject
     protected EHandlerService handlerService;
@@ -229,9 +253,6 @@ public class DocumentEditor extends Editor<Document> {
     @Inject
     private TextsDAO textsDAO; 
     
-    @Inject
-    private DocumentReceiverDAO documentReceiverDAO;
-    
 	@Inject
 	private ILocaleService localeUtil;
 	
@@ -254,7 +275,7 @@ public class DocumentEditor extends Editor<Document> {
 	private Text txtConsultant;
 	
 	private CTabFolder addressAndIconComposite;
-	private Text txtAddress;
+//	private Text txtAddress;
 	
 	private ComboViewer comboViewerNoVat;
 	private ComboViewer comboNetGross;
@@ -371,7 +392,6 @@ public class DocumentEditor extends Editor<Document> {
 					MessageFormat.format(msg.editorDocumentErrorDocnumberNotnextfree, getNextNr()) + "\n" + 
 					//T: Text of the dialog that appears if the number is not valid.
 					msg.editorContactHintSeepreferences);
-//					throw new RuntimeException(msg.editorDocumentErrorDocnumberNotnextfree);
 					return Boolean.FALSE;
 				}
 			}
@@ -393,9 +413,7 @@ public class DocumentEditor extends Editor<Document> {
 			document.setOrderDate(dtOrderDate.getSelection());
 		}
 
-	    String addressById = "";
-
-	    checkForChangedAddressesAndUpdateReceivers();
+	    checkForChangedAddresses();
 
 		if (StringUtils.isNotBlank(newPaymentDescription)) {
 			document.getAdditionalInfo().setPaymentDescription(newPaymentDescription);
@@ -498,20 +516,6 @@ public class DocumentEditor extends Editor<Document> {
 			document.setItems(items);
 		}
 
-		// Set the "addressfirstline" value to the first line of the
-		// contact address
-		DocumentReceiver mainReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
-		if (mainReceiver.getCustomerNumber() != null) {
-			document.setAddressFirstLine(contactUtil.getNameWithCompany(mainReceiver));
-		}
-		else {
-			String s = DataUtils.getInstance().removeCR(txtAddress.getText());
-			
-			// Remove the "\n" if it was a "\n" as line break.
-			s = s.split("\n")[0];
-			document.setAddressFirstLine(s);
-		}
-
 		// Mark the (modified) document as "not printed"
 		if (wasDirty) {
 			document.setPrinted(false);
@@ -550,64 +554,28 @@ public class DocumentEditor extends Editor<Document> {
     /**
      * Checks the address field(s) for changed entries.
      */
-    private void checkForChangedAddressesAndUpdateReceivers() {
-    	
-    	/*
-    	 * TODO:
-    	 * - iterate through all tabItems from addresses Tabfolder and check for changed addresses
-    	 * - if an address has changed, replace it in the document's DocumentReceivers list
-    	 */
-    	
-		// Test, if the txtAddress field was modified
-		// and add the content of the txtAddress to the document's receivers
-		boolean addressModified = !DataUtils.getInstance().MultiLineStringsAreEqual(
-				contactUtil.getAddressAsString(addressManager.getBillingAdress(document)), 
-				((Text)lookupAddressTabForBillingType(document.getBillingType()).getControl()).getText());
-		
-	   /* if the address was modified but the documentReceiver has a customer number then we have
-		* a manually changed contact. In this case we have to remove the customerNumber and set the manualAddress.
-		* But wait... the Id of the old entry and the new entry have to be the same.
-		* Else it could be a newly selected contact from the contact list.
-		*/
-		// TODO check if FAK-276 is working! 
-		DocumentReceiver billingContact = addressManager.getBillingAdress(document);
-//		if(addressModified && (displayAddress.getCustomerNumber() != null && billingContact.getId() == displayAddress.getId()
-//		       || displayAddress.getCustomerNumber() == null)) {
-//			// before we change an address we have to check for delivery addresses and save it...
-//			
-//			/*
-//			 * If we don't have a delivery address but the billing contact does have an (alternative) delivery address 
-//			 * then we use its address.
-//			 */
-//			if(!selectedAddresses.containsKey(BillingType.DELIVERY) && selectedAddresses.get(BillingType.INVOICE) != null 
-//					&& selectedAddresses.get(BillingType.INVOICE).getAddresses()
-//			.stream().filter(adr -> adr.getBillingTypes().contains(BillingType.DELIVERY)).findFirst().get() != null) {
-//				document.setDeliveryContact(document.getBillingContact().getAlternateContacts());
-//			}
-//		    displayAddress = modelFactory.createDocumentReceiver();
-//		    displayAddress.setManualAddress(txtAddress.getText());
-//		    try {
-//                displayAddress = documentReceiverDAO.save(displayAddress);
-//            } catch (FakturamaStoringException e) {
-//                log.error(e);
-//            }
-//		}
-//
-//		// Show a warning if the entered address is not similar to the address
-//		// of the document which is set by the address ID.
-//		if (displayAddress.getCustomerNumber() != null && addressModified) {
-//			JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
-//			if (jaroWinklerDistance.apply(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
-//				MessageDialog.openWarning(top.getShell(),
-//
-//				//T: Title of the dialog that appears if the document is assigned to  an other address.
-//				msg.editorDocumentErrorWrongcontactTitle,
-//				
-//				//T: Text of the dialog that appears if the document is assigned to  an other address.
-//				MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressById));
-////				return;
-//			}
-//		}
+	private void checkForChangedAddresses() {
+
+		// Show a warning if the entered address is not similar to the address
+		// of the document which is set by the address ID.
+		for (CTabItem tabItem : addressAndIconComposite.getItems()) {
+			DocumentReceiver displayAddress = (DocumentReceiver) tabItem.getData(ORIGIN_RECEIVER);
+			if (displayAddress.getCustomerNumber() != null) {
+				JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
+				String addressAsString = contactUtil.getAddressAsString(displayAddress);
+				if (jaroWinklerDistance.apply(addressAsString,
+						DataUtils.getInstance().removeCR(((Text)tabItem.getControl()).getText())) < 0.75) {
+					MessageDialog.openWarning(top.getShell(),
+							// T: Title of the dialog that appears if the document is assigned to an other
+							// address.
+							msg.editorDocumentErrorWrongcontactTitle,
+
+							// T: Text of the dialog that appears if the document is assigned to an other
+							// address.
+							MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressAsString));
+				}
+			}
+		}
 	}
 
 	@Override
@@ -622,8 +590,7 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, comboNetGross, Document_.netGross.getName());
 		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
 		
-//		DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
-//		bindModelValue(mainTypeReceiver, txtConsultant, DocumentReceiver_.consultant.getName(), 250);
+		bindAddresses();
 		
 		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
 		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
@@ -689,6 +656,123 @@ public class DocumentEditor extends Editor<Document> {
 		part.getTransientData().remove(BIND_MODE_INDICATOR);
         
     }
+
+//	@SuppressWarnings("unchecked")
+	private void bindAddresses() {
+		UpdateSetStrategy<CTabItem, DocumentReceiver> targetToModel = new UpdateSetStrategy<>();
+		targetToModel.setConverter(new IConverter<CTabItem, DocumentReceiver>() {
+
+			@Override
+			public Object getFromType() {
+				return CTabItem.class;
+			}
+
+			@Override
+			public Object getToType() {
+				return DocumentReceiver.class;
+			}
+
+			@Override
+			public DocumentReceiver convert(CTabItem fromObject) {
+				DocumentReceiver originReceiver = (DocumentReceiver) fromObject.getData(ORIGIN_RECEIVER);
+				if(originReceiver == null) {
+					// should not occur
+					throw new RuntimeException("can't get DocumentReceiver from current CTabItem.");
+				}
+				Text currentText = (Text) fromObject.getControl();
+				// If this method is called it means that the current address was changed.
+				// Test, if the txtAddress field was modified
+				boolean addressModified = !DataUtils.getInstance().MultiLineStringsAreEqual(
+						contactUtil.getAddressAsString(addressManager.getBillingAdress(document)), 
+						currentText.getText());
+				
+			   /* if the address was modified but the documentReceiver has a customer number then we have
+				* a manually changed contact. In this case we have to remove the customerNumber and set the manualAddress.
+				* But wait... the Id of the old entry and the new entry have to be the same.
+				* Else it could be a newly selected contact from the contact list.
+				*/
+				// TODO check if FAK-276 is working! 
+				
+				// manually changed ==> update current DocumentReceiver (set manualAddress)
+				// newly selected DocumentReceiver ==> delete the old one and add the new one
+				// TODO
+				
+				// Set the "addressfirstline" value to the first line of the
+				// contact address
+				if (originReceiver.getCustomerNumber() != null) {
+					document.setAddressFirstLine(contactUtil.getNameWithCompany(originReceiver));
+				}
+				else {
+					String s = DataUtils.getInstance().removeCR(currentText.getText());
+					
+					// Remove the "\n" if it was a "\n" as line break.
+					s = s.split("\n")[0];
+					document.setAddressFirstLine(s);
+				}
+		
+				return originReceiver;
+			}
+		});
+		
+		UpdateSetStrategy<DocumentReceiver, CTabItem> modelToTarget = new UpdateSetStrategy<>();
+		modelToTarget.setConverter(new IConverter<DocumentReceiver, CTabItem>() {
+
+			@Override
+			public Object getFromType() {
+				return DocumentReceiver.class;
+			}
+
+			@Override
+			public Object getToType() {
+				return CTabItem.class;
+			}
+
+			@Override
+			public CTabItem convert(DocumentReceiver fromObject) {
+				CTabItem addressTabItem = createAddressTabItem(fromObject);
+				return addressTabItem;
+			}
+		});
+		
+			DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
+				// the first document's receiver is the main receiver. That consultant field is
+				// bound to documents consultant field.
+				bindModelValue(mainTypeReceiver, txtConsultant, DocumentReceiver_.consultant.getName(), 250);
+				
+			/*
+			 * The UpdateValueStrategy is for displaying a DocumentReceiver's address in an address tab.
+			 * Since the address tab only contains a plain Text field, the values from DocumentReceiver has to be converted. 
+			 * Furthermore, the value in the Text field can be overwritten. In this case, the values from DocumentReceiver
+			 * has to be cleared an the manualAddress field has to be set.
+			 */
+			bindModelSet(document, DocumentReceiver.class, addressAndIconComposite, Document_.receiver.getName(), 
+					targetToModel, modelToTarget);
+//			
+//			
+//	
+//	  				
+//			Binding retval = null;
+//			IBeanSetProperty setProperty = BeanProperties.set(Document.class, 
+//					Document_.receiver.getName(), DocumentReceiver.class);
+//			IObservableSet<CTabItem> uiWidget = null;
+//			IObservableSet<DocumentReceiver> modelSet = (IObservableSet<DocumentReceiver>)setProperty.observe(document);
+//			if(addressAndIconComposite instanceof CTabFolder) {
+//				uiWidget = new CTabFolderWidgetObservableSet<CTabItem>(addressAndIconComposite, CTabItem.class);
+//				uiWidget.addSetChangeListener((SetChangeEvent<? extends CTabItem> event) -> {
+//					if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+//						setDirty(true);
+//					}
+//				});
+//			}
+//
+//			if (modelToTarget != null || targetToModel != null) {
+//				retval = getCtx().bindSet(uiWidget, modelSet, targetToModel, modelToTarget);
+//			} else {
+//				retval = getCtx().bindSet(uiWidget, modelSet);
+//			}
+		
+//		}
+	}
 
 	private void fillAndBindPaymentCombo() {
 		Payment tmpPayment = document.getPayment();
@@ -1629,9 +1713,9 @@ public class DocumentEditor extends Editor<Document> {
     	
     	// FIXME implement!
 
-//        // Check, whether the delivery address is the same as the billing address
-//        boolean hasDifferentDeliveryAddress;
-//
+        // Check, whether the delivery address is the same as the billing address
+        boolean hasDifferentDeliveryAddress;
+
 //        if (document.getBillingType().isDELIVERY) {
 //            hasDifferentDeliveryAddress = !DataUtils.getInstance().MultiLineStringsAreEqual(addressString, txtAddress.getText());
 //            // see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=188271
@@ -1652,21 +1736,22 @@ public class DocumentEditor extends Editor<Document> {
 	
 	/**
 	 * Fill the address label with a contact 
+	 * @param address 
 	 * 
 	 * @param contact
 	 * 		The contact
 	 */
-	private void setAddress(Address address) {
+	private void setAddress(Address address, DocumentReceiver documentReceiver) {
 		Contact contact = address.getContact();
-		// set the Contact as DocumentReceiver in the currently active address tab
+		// set the DocumentReceiver in the currently active address tab
 		selectedAddresses.put(document.getBillingType(), address);
 
 		// select the correct address tab
-		CTabItem addressTab = lookupAddressTabForBillingType(document.getBillingType());
-		if(addressTab != null) {
-			((Text)addressTab.getControl()).setText(
-					contactUtil.getAddressAsString(addressManager.getAdressForBillingType(document, document.getBillingType())));
-		}
+		java.util.Optional<CTabItem> addressTab = lookupAddressTabForBillingType(documentReceiver.getBillingType());
+		addressTab.ifPresent(tab ->
+			((Text)tab.getControl()).setText(
+					contactUtil.getAddressAsString(documentReceiver))
+		);
 		
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
@@ -1692,9 +1777,8 @@ public class DocumentEditor extends Editor<Document> {
 //		setDirty(true);
 	}
 	
-	private CTabItem lookupAddressTabForBillingType(BillingType billingType) {
-		java.util.Optional<CTabItem> addressTab = Arrays.stream(addressAndIconComposite.getItems()).filter(t -> t.getData(TAB_IDENTIFIER_ADDRESS).equals(billingType)).findFirst();
-		return addressTab.orElse(null);
+	private java.util.Optional<CTabItem> lookupAddressTabForBillingType(BillingType billingType) {
+		return  Arrays.stream(addressAndIconComposite.getItems()).filter(t -> t.getData(TAB_IDENTIFIER_ADDRESS).equals(billingType)).findFirst();
 	}
 
 	/**
@@ -2088,15 +2172,15 @@ public class DocumentEditor extends Editor<Document> {
             	MPart myPart = context.get(MPart.class);
                 // FIXME Workaround (quick & dirty), please use enums or an extra button
             	SelectTreeContactDialog<Address> dlg = null;
+		    	context.set("ADDRESS_TYPE", document.getBillingType());
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
 				    dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    } else {
 			    	context.set("CONTACT_TYPE", "DEBITOR");
-			    	context.set("ADDRESS_TYPE", document.getBillingType());
 			    	dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    }
-			    dlg.setDialogBoundsSettings(getDialogSettings("SelectContactDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
+			    dlg.setDialogBoundsSettings(getDialogSettings("SelectTreeContactDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
 			    dlg.open();
 			    context.set(MPart.class, myPart);
 			    // the result is set via event DialogSelection/Contact
@@ -2145,31 +2229,14 @@ public class DocumentEditor extends Editor<Document> {
 		// Composite that contains the addresses
 		addressAndIconComposite = new CTabFolder(top, SWT.NONE);
 		
-		// always add the receiver for the current document type at the first position!
-		DocumentReceiver mainReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
-		if(mainReceiver == null) {
-			mainReceiver = modelFactory.createDocumentReceiver();
-			mainReceiver.setBillingType(document.getBillingType());
-			document.getReceiver().add(mainReceiver);
-		}
-		createAddressTabItem(mainReceiver);
-		
-		// add a CTabItem for each address (DocumentReceiver)
-		for (DocumentReceiver documentReceiver : document.getReceiver()) {
-			if(documentReceiver.equals(mainReceiver)) continue;
-			createAddressTabItem(documentReceiver);
-		}
+		// address tab items will be created by data binding, here only the container is created
+		createOrGetMainReceiver();
 		GridDataFactory.fillDefaults().minSize(100, 80).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(addressAndIconComposite);
-		addressAndIconComposite.setSelection(0);
-
-		// Add the attention sign if the delivery address is not equal to the billing address
-		// TODO => Perhaps only at the tab title; meanwhile it isn't necessary
-//		differentDeliveryAddressIcon = new Label(addressAndIconComposite, SWT.NONE);
-//		differentDeliveryAddressIcon.setImage(Icon.ICON_WARNING.getImage(IconSize.ToolbarIconSize));
+//		addressAndIconComposite.setSelection(0);
 		
-		showHideWarningIcon();
+//		showHideWarningIcon();
 
-DocumentType documentType = getDocumentType();
+		DocumentType documentType = getDocumentType();
 		/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
 		// Add the item table, if the document is one with items.
 		if (documentType.hasItems()) {
@@ -2271,16 +2338,6 @@ DocumentType documentType = getDocumentType();
 			GridDataFactory.defaultsFor(txtMessage3).minSize(80, 50).applyTo(txtMessage3);
 //			GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage3);
 		}
-		
-		// Set the tab order
-		if (documentType.hasInvoiceReference())
-			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtInvoiceRef);
-		else if (documentType.hasPrice())
-			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), comboViewerNoVat.getControl());
-		else if (documentType.hasItems())
-			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), itemListTable.getNatTable());
-		else
-			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtMessage);
 
 		// Depending on if the document has price values.
 		if (!documentType.hasPrice()) {
@@ -2329,25 +2386,69 @@ DocumentType documentType = getDocumentType();
 		}
 		
 		bindModel();
+		
+		// Set the tab order
+		if (documentType.hasInvoiceReference())
+			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtInvoiceRef);
+		else if (documentType.hasPrice())
+			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), comboViewerNoVat.getControl());
+		else if (documentType.hasItems())
+			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), itemListTable.getNatTable());
+		else
+			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtMessage);
 	}
 
-	private void createAddressTabItem(DocumentReceiver mainReceiver) {
+	private DocumentReceiver createOrGetMainReceiver() {
+		// always add the receiver for the current document type at the first position
+		DocumentReceiver mainReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
+		if(mainReceiver == null) {
+			mainReceiver = modelFactory.createDocumentReceiver();
+			mainReceiver.setBillingType(document.getBillingType());
+			document.getReceiver().add(mainReceiver);
+		}
+		
+//		createAddressTabItem(mainReceiver);
+		
+//		// add a CTabItem for each address (DocumentReceiver)
+//		for (DocumentReceiver documentReceiver : document.getReceiver()) {
+//			if(documentReceiver.equals(mainReceiver)) continue;
+//			createAddressTabItem(documentReceiver);
+//		}
+		
+		return mainReceiver;
+	}
+
+	/**
+	 * Create a single tab for a {@link DocumentReceiver}. For recognizing a changed
+	 * address the origin {@link DocumentReceiver} is stored in data field.
+	 * 
+	 * @param mainReceiver the {@link DocumentReceiver} to set
+	 */
+	final private CTabItem createAddressTabItem(DocumentReceiver mainReceiver) {
 		Text currentAddress;
 		CTabItem item = new CTabItem(addressAndIconComposite, SWT.NONE);
-		item.setData(TAB_IDENTIFIER_ADDRESS, mainReceiver.getBillingType());
+		item.setData(TAB_IDENTIFIER_ADDRESS, mainReceiver);
 		item.setText(mainReceiver.getBillingType().getName());
 
 		// The address field
 		currentAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		currentAddress.addModifyListener(e -> {
-			setDirty(true);
-			showHideWarningIcon();
+
+        	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+                getMDirtyablePart().setDirty(true);
+        	}
+            showHideWarningIcon();
 		});
 
-		currentAddress.setData("ADDRESS_CONTROL");
+		currentAddress.setData(ORIGIN_RECEIVER, mainReceiver);
 		item.setToolTipText("'ne Adresse ");
+		
+		currentAddress.setText(
+				contactUtil.getAddressAsString(mainReceiver));
+		
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(currentAddress);
 		item.setControl(currentAddress);
+		return item;
 	}
 
 	private int getNumberOfMessageFields() {
@@ -2747,7 +2848,7 @@ DocumentType documentType = getDocumentType();
     protected void handleDialogSelection(@UIEventTopic("DialogSelection/*") Event event) {
         if (event != null) {
             // the event has already all given params in it since we created them as Map
-            String targetDocumentName= (String) event.getProperty(DOCUMENT_ID);
+            String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
             // at first we have to check if the message is for us
             if(!StringUtils.equals(targetDocumentName, document.getName())) {
                 // silently ignore this event if it's not for this document
@@ -2768,17 +2869,21 @@ DocumentType documentType = getDocumentType();
                 
                 Address address = contactDAO.findByAddressId(addressId);
                 if(address == null) {
-                	log.error("Something weird happened. Selected Address couldn't be found in your database.");
+                	log.error(String.format("Something weird happened. Selected Address with ID %ld couldn't be found in your database.", addressId));
                 	return;
                 }
 
                 // we can't use the Selection Service!!!  :-(
 //                Contact contact = (Contact) selectionService.getSelection();
                 // this selected contact is from now on the main receiver for this document
-                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(address.getContact(), document.getBillingType());
-                document = addressManager.addReceiverToDocument(document, documentReceiver);
-                setAddress(address);
-                // If a Contact is selected the manualAddress field has to be set to null!
+                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(address, document.getBillingType());
+                
+                /*
+                 * If a Contact is selected as DocumentReceiver it has to be added to the current Document. But if another
+                 * {@link DocumentReceiver} for the same {@link BillingType} exists it has to be replaced.
+                 */
+                document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver); 
+                setAddress(address, documentReceiver);
                 isChanged = true;
                 break;
             case "Product":
@@ -2977,8 +3082,8 @@ DocumentType documentType = getDocumentType();
 	 */
 	@Focus
 	public void setFocus() {
-		if(txtAddress != null) 
-			txtAddress.setFocus();
+		if(addressAndIconComposite != null) 
+			addressAndIconComposite.setFocus();
 	}
 
 	/**

@@ -21,14 +21,20 @@ import javax.inject.Inject;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateListStrategy;
+import org.eclipse.core.databinding.UpdateSetStrategy;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.IBeanListProperty;
+import org.eclipse.core.databinding.beans.IBeanSetProperty;
 import org.eclipse.core.databinding.beans.IBeanValueProperty;
 import org.eclipse.core.databinding.observable.list.IListChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ListChangeEvent;
+import org.eclipse.core.databinding.observable.set.IObservableSet;
+import org.eclipse.core.databinding.observable.set.SetChangeEvent;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.property.set.SimpleSetProperty;
+import org.eclipse.core.internal.databinding.property.set.SimplePropertyObservableSet;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -52,6 +58,8 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.FormattedTextObservableValue;
 import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -71,9 +79,13 @@ import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.ContactType;
+import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.parts.widget.CTabFolderWidgetObservableSet;
 import com.sebulli.fakturama.parts.widget.MultiChoiceWidgetObservableList;
 
 /**
@@ -352,25 +364,15 @@ public abstract class Editor<T extends IEntity> {
 	protected <E extends IEntity> Binding bindModelList(E target, Object elementType, final Control source,
 			String property, UpdateListStrategy<String, E> targetToModel, UpdateListStrategy<E, String> modelToTarget) {
 		Binding retval = null;
-		IBeanListProperty listProperty = BeanProperties.list(target.getClass(), property, ContactType.class);
+		IBeanListProperty listProperty = BeanProperties.list(target.getClass(), property, elementType.getClass());
 		IObservableList<String> uiWidget = null;
 		IObservableList<E> modelList = (IObservableList<E>)listProperty.observe(target);
 		if (source instanceof MultiChoice) {
 			uiWidget = new MultiChoiceWidgetObservableList<>((MultiChoice) source, elementType);
-			uiWidget.addListChangeListener(new IListChangeListener<String>() {
-
-				@Override
-				public void handleListChange(ListChangeEvent<? extends String> event) {
-		        	if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null 
-					/*
-					 * && (((MultiChoice)source).getSelectedIndex() !=
-					 * ((MultiChoice)e.getSource()).getSelectedIndex() ||
-					 * ((MultiChoice)e.getSource()).getSelectedIndex() == -1)
-					 */) {
-			    getMDirtyablePart().setDirty(true);
-			}
+			uiWidget.addListChangeListener((ListChangeEvent<? extends String> event) -> {
+				if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+					getMDirtyablePart().setDirty(true);
 				}
-				
 			});
 		}
 
@@ -382,7 +384,34 @@ public abstract class Editor<T extends IEntity> {
 
 		return retval;
 	}
-    
+   	
+	@SuppressWarnings({ "unchecked" })
+	protected <D extends IEntity, S extends IEntity> Binding bindModelSet(D target, Class<S> elementType,
+			final Control source, String property, UpdateSetStrategy<CTabItem, S> targetToModel,
+			UpdateSetStrategy<S, CTabItem> modelToTarget) {
+
+		Binding retval = null;
+		IBeanSetProperty setProperty = BeanProperties.set(target.getClass(), property, elementType);
+		IObservableSet<CTabItem> uiWidget = null;
+		IObservableSet<S> modelSet = (IObservableSet<S>) setProperty.observe(target);
+		if (source instanceof CTabFolder) {
+			uiWidget = new CTabFolderWidgetObservableSet<CTabItem>(source, CTabItem.class);
+			uiWidget.addSetChangeListener((SetChangeEvent<? extends CTabItem> event) -> {
+				if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+					getMDirtyablePart().setDirty(true);
+				}
+			});
+		}
+
+		if (targetToModel != null || modelToTarget != null) {
+			retval = getCtx().bindSet(uiWidget, modelSet, targetToModel, modelToTarget);
+		} else {
+			retval = getCtx().bindSet(uiWidget, modelSet);
+		}
+
+		return retval;
+	}
+   
    	@SuppressWarnings("unchecked")
 	protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
