@@ -326,7 +326,7 @@ public class ContactUtil {
 	 * @return Complete address
      */
 	public String getAddressAsString(DocumentReceiver contact) {
-		return getAddressAsString(contact, null,"\n");
+		return getAddressAsString(contact, contact.getManualAddress(),"\n");
 	}
 	
 //    /**
@@ -353,7 +353,8 @@ public class ContactUtil {
 	public String getAddressAsString(final DocumentReceiver address, String manualAddress, String separator) {
 		String addressFormat = "";
 		String addressString = "";
-		    if(address == null) {
+			// manualAddress has precedence over regular entries
+		    if(address == null || address.getManualAddress() != null) {
 		        // if a manual address is set we use it
 		    	addressString = manualAddress;
 		    } else {

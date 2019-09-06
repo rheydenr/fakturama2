@@ -21,20 +21,13 @@ import javax.inject.Inject;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateListStrategy;
-import org.eclipse.core.databinding.UpdateSetStrategy;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.IBeanListProperty;
-import org.eclipse.core.databinding.beans.IBeanSetProperty;
 import org.eclipse.core.databinding.beans.IBeanValueProperty;
-import org.eclipse.core.databinding.observable.list.IListChangeListener;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ListChangeEvent;
-import org.eclipse.core.databinding.observable.set.IObservableSet;
-import org.eclipse.core.databinding.observable.set.SetChangeEvent;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.databinding.property.set.SimpleSetProperty;
-import org.eclipse.core.internal.databinding.property.set.SimplePropertyObservableSet;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -43,7 +36,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -59,7 +52,6 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedTextObservableValue;
 import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -78,14 +70,13 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
-import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IEntity;
-import com.sebulli.fakturama.parts.widget.CTabFolderWidgetObservableSet;
+import com.sebulli.fakturama.parts.widget.CTabItemSelectionProperty;
 import com.sebulli.fakturama.parts.widget.MultiChoiceWidgetObservableList;
 
 /**
@@ -385,50 +376,77 @@ public abstract class Editor<T extends IEntity> {
 		return retval;
 	}
    	
-	@SuppressWarnings({ "unchecked" })
-	protected <D extends IEntity, S extends IEntity> Binding bindModelSet(D target, Class<S> elementType,
-			final Control source, String property, UpdateSetStrategy<CTabItem, S> targetToModel,
-			UpdateSetStrategy<S, CTabItem> modelToTarget) {
-
+   	
+   	/**
+   	 * 
+   	 * @param <E> Master entity
+   	 * @param <D> detail entity (type of the list entry)
+   	 * @param target
+   	 * @param detailEntity
+   	 * @param cTabFolder
+   	 * @param property
+   	 * @return
+   	 */
+   	protected <E extends IEntity, D extends IEntity> Binding bindModelSetFromCTabFolder(E target, D detailEntity, CTabFolder cTabFolder, String property) {
 		Binding retval = null;
-		IBeanSetProperty setProperty = BeanProperties.set(target.getClass(), property, elementType);
-		IObservableSet<CTabItem> uiWidget = null;
-		IObservableSet<S> modelSet = (IObservableSet<S>) setProperty.observe(target);
-		if (source instanceof CTabFolder) {
-			uiWidget = new CTabFolderWidgetObservableSet<CTabItem>(source, CTabItem.class);
-			uiWidget.addSetChangeListener((SetChangeEvent<? extends CTabItem> event) -> {
-				if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
-					getMDirtyablePart().setDirty(true);
-				}
-			});
-		}
-
-		if (targetToModel != null || modelToTarget != null) {
-			retval = getCtx().bindSet(uiWidget, modelSet, targetToModel, modelToTarget);
-		} else {
-			retval = getCtx().bindSet(uiWidget, modelSet);
-		}
-
+		new CTabItemSelectionProperty().observe(cTabFolder);
+		IBeanListProperty<Document, DocumentReceiver> nameProperty = BeanProperties.list(Document_.receiver.getName());
+		//nameProperty.observeDetail(target);
+		
+		
 		return retval;
-	}
+   	}
+   	
+   	
+   	
+//	@SuppressWarnings({ "unchecked" })
+//	protected <D extends IEntity, S extends IEntity> Binding bindModelSet(D target, Class<S> elementType,
+//			final CTabFolder source, String property, UpdateSetStrategy<CTabItem, S> targetToModel,
+//			UpdateSetStrategy<S, CTabItem> modelToTarget) {
+//
+//		Binding retval = null;
+//		IBeanSetProperty setProperty = BeanProperties.set(target.getClass(), property, elementType);
+//		IObservableSet<CTabItem> uiWidget = null;
+////		new CTabItemSelectionProperty<D>().observe(source);
+//		IObservableSet<S> modelSet = (IObservableSet<S>) setProperty.observe(target);
+//		if (source instanceof CTabFolder) {
+//			uiWidget = new CTabFolderWidgetObservableList<>(source, CTabItem.class);
+//			uiWidget.addSetChangeListener((SetChangeEvent<? extends CTabItem> event) -> {
+//				if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+//					getMDirtyablePart().setDirty(true);
+//				}
+//			});
+//		}
+//
+//		if (targetToModel != null || modelToTarget != null) {
+//			retval = getCtx().bindSet(uiWidget, modelSet, targetToModel, modelToTarget);
+//		} else {
+//			retval = getCtx().bindSet(uiWidget, modelSet);
+//		}
+//
+//		return retval;
+//	}
    
-   	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
-
 // TODO using chained properties
 //        BeanProperties.value(target.getClass(), property).value(property).value(property).observe(source);
 
         IObservableValue<E> model = nameProperty.observe(target);
         Binding retval = null;
         
-        IObservableValue<E> uiWidget;
+        IObservableValue uiWidget;
         /*
          * ATTENTION! Dont't be attempted to put the Listener code in this if statement.
          * Otherwise you get ALWAYS a dirty editor!
          */
-        if(source instanceof Combo || source instanceof Button || source instanceof Spinner) {
-            uiWidget = WidgetProperties.selection().observe(source);
+        if(source instanceof Combo) {
+            uiWidget = WidgetProperties.comboSelection().observe((Combo) source);
+        } else if (source instanceof Button) {
+            uiWidget = WidgetProperties.buttonSelection().observe((Button) source);
+        } else if (source instanceof Spinner) {
+            uiWidget = WidgetProperties.spinnerSelection().observe((Spinner) source);
         } else if(source instanceof CDateTime) {
             uiWidget = new CDateTimeObservableValue((CDateTime) source);
         } else {
@@ -467,7 +485,9 @@ public abstract class Editor<T extends IEntity> {
         return retval;
     }
 	
-    protected <E extends IEntity> Binding bindModelValue(E target, Text source, String property, int limit, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+	protected <E extends IEntity> Binding bindModelValue(E target, Text source, String property, int limit,
+			UpdateValueStrategy/* <? extends Widget,E> */  targetToModel,
+			UpdateValueStrategy/* <E,? extends Widget> */ modelToTarget) {
     	Binding binding = null;
         if (limit > 0) {
             source.setTextLimit(limit);
@@ -539,7 +559,7 @@ public abstract class Editor<T extends IEntity> {
 	/**
      * @return the ctx
      */
-    public DataBindingContext getCtx() {
+    protected DataBindingContext getCtx() {
         return ctx;
     }
 
