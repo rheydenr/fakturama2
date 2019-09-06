@@ -12,7 +12,7 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.dialogs;
+package com.sebulli.fakturama.parts.widget.contacttree;
 
 import org.apache.commons.lang3.StringUtils;
 

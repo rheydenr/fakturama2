@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -42,20 +41,9 @@ import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.Binding;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.UpdateListStrategy;
 import org.eclipse.core.databinding.UpdateSetStrategy;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.beans.IBeanListProperty;
-import org.eclipse.core.databinding.beans.IBeanSetProperty;
-import org.eclipse.core.databinding.beans.PojoProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.databinding.observable.list.IObservableList;
-import org.eclipse.core.databinding.observable.set.IObservableSet;
-import org.eclipse.core.databinding.observable.set.SetChangeEvent;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.databinding.property.set.SimpleSetProperty;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -73,10 +61,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
-import org.eclipse.jface.databinding.swt.ISWTObservableList;
-import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -92,7 +76,6 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
-import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -125,14 +108,12 @@ import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.calculate.CustomerStatistics;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
-import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
-import com.sebulli.fakturama.dialogs.ContactTreeListTable;
 import com.sebulli.fakturama.dialogs.SelectTextDialog;
 import com.sebulli.fakturama.dialogs.SelectTreeContactDialog;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
@@ -150,7 +131,6 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
@@ -170,8 +150,7 @@ import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
 import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
 import com.sebulli.fakturama.parts.itemlist.ItemListBuilder;
-import com.sebulli.fakturama.parts.widget.CTabFolderWidgetObservableSet;
-import com.sebulli.fakturama.parts.widget.CTabFolderWidgetProperty;
+import com.sebulli.fakturama.parts.widget.contacttree.ContactTreeListTable;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
 import com.sebulli.fakturama.parts.widget.contentprovider.HashMapContentProvider;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
@@ -657,8 +636,13 @@ public class DocumentEditor extends Editor<Document> {
         
     }
 
-//	@SuppressWarnings("unchecked")
 	private void bindAddresses() {
+		/*
+		 * The UpdateValueStrategy is for displaying a DocumentReceiver's address in an address tab.
+		 * Since the address tab only contains a plain Text field, the values from DocumentReceiver has to be converted. 
+		 * Furthermore, the value in the Text field can be overwritten. In this case, the values from DocumentReceiver
+		 * has to be cleared an the manualAddress field has to be set.
+		 */
 		UpdateSetStrategy<CTabItem, DocumentReceiver> targetToModel = new UpdateSetStrategy<>();
 		targetToModel.setConverter(new IConverter<CTabItem, DocumentReceiver>() {
 
@@ -680,37 +664,42 @@ public class DocumentEditor extends Editor<Document> {
 					throw new RuntimeException("can't get DocumentReceiver from current CTabItem.");
 				}
 				Text currentText = (Text) fromObject.getControl();
-				// If this method is called it means that the current address was changed.
 				// Test, if the txtAddress field was modified
+				// "modified" means that the content of the text field differs from the address from current DocumentReceiver
 				boolean addressModified = !DataUtils.getInstance().MultiLineStringsAreEqual(
-						contactUtil.getAddressAsString(addressManager.getBillingAdress(document)), 
+						contactUtil.getAddressAsString(addressManager.getAdressForBillingType(document, document.getBillingType())), 
 						currentText.getText());
 				
-			   /* if the address was modified but the documentReceiver has a customer number then we have
-				* a manually changed contact. In this case we have to remove the customerNumber and set the manualAddress.
-				* But wait... the Id of the old entry and the new entry have to be the same.
-				* Else it could be a newly selected contact from the contact list.
-				*/
 				// TODO check if FAK-276 is working! 
 				
-				// manually changed ==> update current DocumentReceiver (set manualAddress)
-				// newly selected DocumentReceiver ==> delete the old one and add the new one
-				// TODO
-				
-				// Set the "addressfirstline" value to the first line of the
+				/*
+				 * possible cases:
+				 * 
+				 * Document | Adresse alt        | Adresse neu        | Aktion
+				 * neu      | --                 | Adr. aus Kontakten | neuer DocumentReceiver mit dieser Adresse
+				 * neu      | --                 | manuelle Adr.      | neuer DocumentReceiver mit dieser Adresse
+				 * vorh.    | Adr. aus Kontakten | Adr. aus Kontakten | DocumentReceiver mit neuer Adresse füllen, manualAddress null setzen
+				 * vorh.    | manuelle Eingabe   | Adr. aus Kontakten | DocumentReceiver mit neuer Adresse füllen, manualAddress null setzen
+				 * vorh.    | Adr. aus Kontakten | manuelle Eingabe 1)| DocumentReceiver leeren, manualAddress setzen
+				 * vorh.    | manuelle Eingabe   | manuelle Eingabe   | DocumentReceiver leeren, manualAddress setzen
+				 * 
+				 * 1) "manuelle Eingabe" kann hier auch heißen, daß die bestehende Adresse einfach geändert wurde.
+				 */
+
+				// Set the "addressFirstLine" value to the first line of the
 				// contact address
-				if (originReceiver.getCustomerNumber() != null) {
-					document.setAddressFirstLine(contactUtil.getNameWithCompany(originReceiver));
-				}
-				else {
-					String s = DataUtils.getInstance().removeCR(currentText.getText());
-					
-					// Remove the "\n" if it was a "\n" as line break.
-					s = s.split("\n")[0];
-					document.setAddressFirstLine(s);
-				}
+				String addressFirstLine = originReceiver.getCustomerNumber() != null ? contactUtil.getNameWithCompany(originReceiver) : createAddressFirstLineFromString(currentText);
+				document.setAddressFirstLine(addressFirstLine);
 		
 				return originReceiver;
+			}
+
+			private String createAddressFirstLineFromString(Text currentText) {
+				String s = DataUtils.getInstance().removeCR(currentText.getText());
+				
+				// Remove the "\n" if it was a "\n" as line break.
+				s = s.split("\n")[0];
+				return s;
 			}
 		});
 		
@@ -734,44 +723,13 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		});
 		
-			DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
-				// the first document's receiver is the main receiver. That consultant field is
-				// bound to documents consultant field.
-				bindModelValue(mainTypeReceiver, txtConsultant, DocumentReceiver_.consultant.getName(), 250);
-				
-			/*
-			 * The UpdateValueStrategy is for displaying a DocumentReceiver's address in an address tab.
-			 * Since the address tab only contains a plain Text field, the values from DocumentReceiver has to be converted. 
-			 * Furthermore, the value in the Text field can be overwritten. In this case, the values from DocumentReceiver
-			 * has to be cleared an the manualAddress field has to be set.
-			 */
-			bindModelSet(document, DocumentReceiver.class, addressAndIconComposite, Document_.receiver.getName(), 
-					targetToModel, modelToTarget);
-//			
-//			
-//	
-//	  				
-//			Binding retval = null;
-//			IBeanSetProperty setProperty = BeanProperties.set(Document.class, 
-//					Document_.receiver.getName(), DocumentReceiver.class);
-//			IObservableSet<CTabItem> uiWidget = null;
-//			IObservableSet<DocumentReceiver> modelSet = (IObservableSet<DocumentReceiver>)setProperty.observe(document);
-//			if(addressAndIconComposite instanceof CTabFolder) {
-//				uiWidget = new CTabFolderWidgetObservableSet<CTabItem>(addressAndIconComposite, CTabItem.class);
-//				uiWidget.addSetChangeListener((SetChangeEvent<? extends CTabItem> event) -> {
-//					if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
-//						setDirty(true);
-//					}
-//				});
-//			}
-//
-//			if (modelToTarget != null || targetToModel != null) {
-//				retval = getCtx().bindSet(uiWidget, modelSet, targetToModel, modelToTarget);
-//			} else {
-//				retval = getCtx().bindSet(uiWidget, modelSet);
-//			}
-		
-//		}
+		DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
+		// the first document's receiver is the main receiver. That consultant field is
+		// bound to documents consultant field.
+		bindModelValue(mainTypeReceiver, txtConsultant, DocumentReceiver_.consultant.getName(), 250);
+			
+		bindModelSet(document, DocumentReceiver.class, addressAndIconComposite, Document_.receiver.getName(), 
+				targetToModel, modelToTarget);
 	}
 
 	private void fillAndBindPaymentCombo() {
@@ -2154,9 +2112,9 @@ public class DocumentEditor extends Editor<Document> {
 			public void mouseDown(MouseEvent e) {
 			    /*
 			     * This code searches for the dialog part in the Application model
-			     * and opens it. The content of this dialog is taken from ContactListTable.
+			     * and opens it. The content of this dialog is taken from ContactTreeListTable.
 			     * The part in the Application model has an additional context entry
-			     * "fakturama.datatable.contacts.clickhandler" which is for the ContactListTable
+			     * "fakturama.datatable.contacts.clickhandler" which is for the ContactTreeListTable
 			     * part to decide which action should be taken on double click.
 			     * Once an entry is selected the address (or, more specific, the Contact object id)
 			     * is posted via EventBroker. There the handleDialogSelection method comes on stage.
@@ -2288,7 +2246,6 @@ public class DocumentEditor extends Editor<Document> {
 //                dialog.setOnTop(true);
 //                dialog.getTransientData().put(DOCUMENT_ID, document.getName());
 //                modelService.bringToTop(dialog);
-				
                 
                 selectedMessageField = txtMessage;
 
@@ -2314,29 +2271,23 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Add a multi line text field for the message.
 		txtMessage = new Text(messageFieldsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-//		txtMessage.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage()));
 		txtMessage.setToolTipText(messageLabel.getToolTipText());
 		
 		GridDataFactory.defaultsFor(txtMessage).minSize(80, 50).applyTo(txtMessage);
-//		GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage);
 
 		if (noOfMessageFields >= 2) {
 			// Add a multi line text field for the message.
 			txtMessage2 = new Text(messageFieldsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-//			txtMessage2.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage2()));
 			
 			GridDataFactory.defaultsFor(txtMessage2).minSize(80, 50).applyTo(txtMessage2);
 			txtMessage2.setToolTipText(messageLabel.getToolTipText());
-//			GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage2);
 		}
 		if (noOfMessageFields >= 3) {
 			// Add a multi line text field for the message.
 			txtMessage3 = new Text(messageFieldsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-//			txtMessage3.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage3()));
 			txtMessage3.setToolTipText(messageLabel.getToolTipText());
 			
 			GridDataFactory.defaultsFor(txtMessage3).minSize(80, 50).applyTo(txtMessage3);
-//			GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage3);
 		}
 
 		// Depending on if the document has price values.
@@ -2349,15 +2300,9 @@ public class DocumentEditor extends Editor<Document> {
 				GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(messageFieldsComposite);
 			}
 
-//			createTotalComposite(documentType.hasPrice());
-			
 			// Get the documents'shipping values.
 			shipping = document.getShipping();
-//			shippingVat = document.getShipping().getShippingVat();
-//			shippingAutoVat = document.getShippingAutoVat();
-//			shippingVatDescription = document.getShipping().getShippingVat().getDescription();
 
-//			calculate(Data.INSTANCE.getDocuments().getDatasetById(invoiceId));
 			calculate(true);
 		
 		} else {  // document *has* a price
@@ -2406,15 +2351,7 @@ public class DocumentEditor extends Editor<Document> {
 			mainReceiver.setBillingType(document.getBillingType());
 			document.getReceiver().add(mainReceiver);
 		}
-		
-//		createAddressTabItem(mainReceiver);
-		
-//		// add a CTabItem for each address (DocumentReceiver)
-//		for (DocumentReceiver documentReceiver : document.getReceiver()) {
-//			if(documentReceiver.equals(mainReceiver)) continue;
-//			createAddressTabItem(documentReceiver);
-//		}
-		
+
 		return mainReceiver;
 	}
 
@@ -2980,9 +2917,6 @@ public class DocumentEditor extends Editor<Document> {
 		    }
 		    itemListTable.addNewItem(new DocumentItemDTO(newItem));
 		}
-
-		//          if (newItem!= null)
-		//              tableViewerItems.reveal(newItem);
 		setDirty(true);
 		calculate();
 	} 

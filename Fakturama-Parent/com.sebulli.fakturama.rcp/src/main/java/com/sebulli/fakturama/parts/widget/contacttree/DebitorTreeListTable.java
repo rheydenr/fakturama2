@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.dialogs;
+package com.sebulli.fakturama.parts.widget.contacttree;
 
 import javax.inject.Inject;
 
