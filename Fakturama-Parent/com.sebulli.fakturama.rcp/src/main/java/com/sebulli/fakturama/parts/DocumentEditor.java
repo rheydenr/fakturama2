@@ -1779,9 +1779,8 @@ public class DocumentEditor extends Editor<Document> {
 	                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(alternateAddress.get(), billingTypeToCheck);
 	                document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver); 
 	                java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(billingTypeToCheck);
-	                if(addressTabForAlternativeAddress.isPresent()) {
-	                	setAddressInTab(addressTabForAlternativeAddress.get(), documentReceiver);
-	                }
+	                CTabItem currenCTabItem = addressTabForAlternativeAddress.orElse(createAddressTabItem(documentReceiver));
+                	setAddressInTab(currenCTabItem, documentReceiver);
 				}
 			}
 		}
