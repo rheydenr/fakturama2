@@ -22,7 +22,9 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Address;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
@@ -329,6 +331,27 @@ public class ContactUtil {
      */
 	public String getAddressAsString(DocumentReceiver contact) {
 		return getAddressAsString(contact, contact.getManualAddress(),"\n");
+	}
+	
+	/**
+	 * Conerts a {@link BillingType} into a {@link ContactType}. Note that the return value can be <code>null</code>!
+	 * @param billingType the {@link BillingType} to convert
+	 * @return {@link ContactType}
+	 */
+	public ContactType convertToContacType(BillingType billingType) {
+		ContactType contactType;
+		switch (billingType) {
+		case DELIVERY:
+			contactType = ContactType.DELIVERY;
+			break;
+		case INVOICE:
+			contactType = ContactType.BILLING;
+			break;
+		default:
+			contactType = null;
+			break;
+		}
+		return contactType;
 	}
 	
 //    /**

@@ -134,6 +134,7 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
@@ -1730,13 +1731,9 @@ public class DocumentEditor extends Editor<Document> {
 
 		// select the correct address tab
 		CTabItem addressTab = addressAndIconComposite.getSelection();
-		if(addressTab != null) {
-			Text currenCTabItem = (Text)addressTab.getControl();
-			currenCTabItem.setData(ORIGIN_RECEIVER, documentReceiver);
-			currenCTabItem.setText(
-					contactUtil.getAddressAsString(documentReceiver));
-		}
-		
+		setAddressInTab(addressTab, documentReceiver);
+		addOtherAddressesIfNotExisting(contact);
+
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
         	document.setItemsRebate(contact.getDiscount());
@@ -1759,6 +1756,37 @@ public class DocumentEditor extends Editor<Document> {
 		updateUseGross(true);
 	}
 	
+	private void setAddressInTab(CTabItem addressTab, DocumentReceiver documentReceiver) {
+		if(addressTab != null) {
+			Text currenCTabItem = (Text)addressTab.getControl();
+			currenCTabItem.setData(ORIGIN_RECEIVER, documentReceiver);
+			currenCTabItem.setText(
+					contactUtil.getAddressAsString(documentReceiver));
+		}
+	}
+
+	/** If current document is an invoice or a delivery and there's 
+	* no according address we add the appropriate address from that contact
+	 * @param contact currently selected {@link Contact}
+	*/
+	private void addOtherAddressesIfNotExisting(Contact contact) {
+		if(document.getBillingType().isINVOICE() || document.getBillingType().isDELIVERY()) {
+			BillingType billingTypeToCheck = document.getBillingType().isINVOICE() ? BillingType.DELIVERY : BillingType.INVOICE;
+			ContactType contactType = contactUtil.convertToContacType(billingTypeToCheck);
+			if(contactType != null && !selectedAddresses.containsKey(billingTypeToCheck)) {
+				java.util.Optional<Address> alternateAddress = contact.getAddresses().parallelStream().filter(a -> a.getContactTypes().contains(contactType)).findAny();
+				if(alternateAddress.isPresent()) {
+	                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(alternateAddress.get(), billingTypeToCheck);
+	                document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver); 
+	                java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(billingTypeToCheck);
+	                if(addressTabForAlternativeAddress.isPresent()) {
+	                	setAddressInTab(addressTabForAlternativeAddress.get(), documentReceiver);
+	                }
+				}
+			}
+		}
+	}
+
 	private java.util.Optional<CTabItem> lookupAddressTabForBillingType(BillingType billingType) {
 		return  Arrays.stream(addressAndIconComposite.getItems()).filter(t -> t.getData(ADDRESS_TAB_BILLINGTYPE).equals(billingType)).findFirst();
 	}
