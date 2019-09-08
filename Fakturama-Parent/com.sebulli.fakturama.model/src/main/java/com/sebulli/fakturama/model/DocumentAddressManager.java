@@ -56,7 +56,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 
 		// copy fields from contact
 		documentReceiver.setOriginContactId(contact.getId());
-		documentReceiver.setAddressId(address.getId());
+		documentReceiver.setOriginAddressId(address.getId());
 		documentReceiver.setCustomerNumber(contact.getCustomerNumber());
 		documentReceiver.setTitle(contact.getTitle());
 		documentReceiver.setFirstName(contact.getFirstName());

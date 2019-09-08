@@ -1105,7 +1105,7 @@ public class DocumentEditor extends Editor<Document> {
      * Helper method to fill the lookup hash map with all the selected contacts (for addresses resulting in DocumentReceivers).
      */
     private void fillSelectedAddresses() {
-    	document.getReceiver().forEach(rcv -> selectedAddresses.put(rcv.getBillingType(), contactDAO.findByAddressId(rcv.getAddressId())));
+    	document.getReceiver().forEach(rcv -> selectedAddresses.put(rcv.getBillingType(), contactDAO.findByAddressId(rcv.getOriginAddressId())));
 	}
 
 	/**
