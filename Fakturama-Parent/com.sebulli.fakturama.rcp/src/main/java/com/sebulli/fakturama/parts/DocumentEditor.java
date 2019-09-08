@@ -580,7 +580,7 @@ public class DocumentEditor extends Editor<Document> {
 		DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
 		
 		// the first document's receiver is the main receiver. That consultant field is
-		// bound to documents consultant field.
+		// bound to document's consultant field.
 		bindModelValue(mainTypeReceiver, txtConsultant, DocumentReceiver_.consultant.getName(), 250);
 		
 		CTabItem[] items = addressAndIconComposite.getItems();
@@ -705,14 +705,15 @@ public class DocumentEditor extends Editor<Document> {
 				 * 
 				 * 1) "manuelle Eingabe" kann hier auch heißen, daß die bestehende Adresse einfach geändert wurde.
 				 */
-					// Set the "addressFirstLine" value to the first line of the
-					// contact address
-					String addressFirstLine = originReceiver.getCustomerNumber() != null
-							? contactUtil.getNameWithCompany(originReceiver)
-							: createAddressFirstLineFromString(currentAddressTabWidget);
-					document.setAddressFirstLine(addressFirstLine);
 					setDirty(true);
 				}
+				// Set the "addressFirstLine" value to the first line of the
+				// contact address (in case of setting a new address from selection
+				// the addressFirstLine property wouldn't be updated).
+				String addressFirstLine = originReceiver.getCustomerNumber() != null
+						? contactUtil.getNameWithCompany(originReceiver)
+						: createAddressFirstLineFromString(currentAddressTabWidget);
+				document.setAddressFirstLine(addressFirstLine);
 			} else {
 				// if in bind mode, fill address Text widget with DocumentReceiver's value
 				observedText.setValue(contactUtil.getAddressAsString(originReceiver));

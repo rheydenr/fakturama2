@@ -412,11 +412,11 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	public void setContactFromDocument(Document selectedDocument) {
 		if (contactItem == null || selectedDocument == null)
 			return;
-		
-		Optional<DocumentReceiver> billingContact = selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isINVOICE()).findFirst();
-		Optional<DocumentReceiver> deliveryContact = selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isDELIVERY()).findFirst();
-		Optional<DocumentReceiver> contact = selectedDocument.getBillingType().isDELIVERY() ? deliveryContact : billingContact;
-		String name = selectedDocument.getAddressFirstLine(); 
+
+		Optional<DocumentReceiver> contact = selectedDocument.getBillingType().isDELIVERY()
+				? selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isDELIVERY()).findFirst()
+				: selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isINVOICE()).findFirst();
+		String name = selectedDocument.getAddressFirstLine();
 		contactItem.setContactId(contact.get().getId());
 		contactItem.setName(name);
 		internalTreeViewer.refresh();
