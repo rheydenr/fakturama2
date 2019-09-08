@@ -574,7 +574,7 @@
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Reference to the original Contact object. This field only holds an ID because it's only a &quot;remember my root&quot;."/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//DocumentReceiver/addressId"/>
+        <eAttribute href="Fakturama.ecore#//DocumentReceiver/originAddressId"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Reference to the original Address object. This field only holds an ID because it's only a &quot;remember my root&quot;."/>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>

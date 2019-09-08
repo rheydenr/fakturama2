@@ -1765,22 +1765,29 @@ public class DocumentEditor extends Editor<Document> {
 		}
 	}
 
-	/** If current document is an invoice or a delivery and there's 
-	* no according address we add the appropriate address from that contact
+	/**
+	 * If current document is an invoice or a delivery note and there's no according
+	 * address we add the appropriate address from that contact.
+	 * 
 	 * @param contact currently selected {@link Contact}
-	*/
+	 */
 	private void addOtherAddressesIfNotExisting(Contact contact) {
-		if(document.getBillingType().isINVOICE() || document.getBillingType().isDELIVERY()) {
-			BillingType billingTypeToCheck = document.getBillingType().isINVOICE() ? BillingType.DELIVERY : BillingType.INVOICE;
+		if (document.getBillingType().isINVOICE() || document.getBillingType().isDELIVERY()) {
+			BillingType billingTypeToCheck = document.getBillingType().isINVOICE() ? BillingType.DELIVERY
+					: BillingType.INVOICE;
 			ContactType contactType = contactUtil.convertToContacType(billingTypeToCheck);
-			if(contactType != null && !selectedAddresses.containsKey(billingTypeToCheck)) {
-				java.util.Optional<Address> alternateAddress = contact.getAddresses().parallelStream().filter(a -> a.getContactTypes().contains(contactType)).findAny();
-				if(alternateAddress.isPresent()) {
-	                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(alternateAddress.get(), billingTypeToCheck);
-	                document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver); 
-	                java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(billingTypeToCheck);
-	                CTabItem currenCTabItem = addressTabForAlternativeAddress.orElse(createAddressTabItem(documentReceiver));
-                	setAddressInTab(currenCTabItem, documentReceiver);
+			if (contactType != null && !selectedAddresses.containsKey(billingTypeToCheck)) {
+				java.util.Optional<Address> alternateAddress = contact.getAddresses().parallelStream()
+						.filter(a -> a.getContactTypes().contains(contactType)).findAny();
+				if (alternateAddress.isPresent()) {
+					DocumentReceiver documentReceiver = addressManager
+							.createDocumentReceiverFromContact(alternateAddress.get(), billingTypeToCheck);
+					document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver);
+					java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(
+							billingTypeToCheck);
+					CTabItem currenCTabItem = addressTabForAlternativeAddress
+							.orElse(createAddressTabItem(documentReceiver));
+					setAddressInTab(currenCTabItem, documentReceiver);
 				}
 			}
 		}
