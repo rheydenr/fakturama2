@@ -219,11 +219,13 @@ public class ContactUtil {
      * @return Gender as String
      */
     public String getGenderString(Contact contact) {
-        return getSalutationString(contact.getGender());
+    	Integer value = contact.getGender() == null ? Integer.valueOf(0) : contact.getGender();
+    	return getSalutationString(value);
     }
 
     public String getGenderString(DocumentReceiver contact) {
-    	return getSalutationString(contact.getGender());
+    	Integer value = contact.getGender() == null ? Integer.valueOf(0) : contact.getGender();
+    	return getSalutationString(value);
     }
     
     /**

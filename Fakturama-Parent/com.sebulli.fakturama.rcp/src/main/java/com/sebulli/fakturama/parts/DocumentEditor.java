@@ -43,6 +43,7 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.observable.sideeffect.ISideEffectFactory;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -60,6 +61,9 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
+import org.eclipse.jface.databinding.swt.WidgetSideEffects;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -81,11 +85,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
@@ -558,10 +559,10 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		}
 		
-		// clear all receivers and add all receivers from current address tabfolder 
-		document.getReceiver().clear();
-		document.setReceiver(Arrays.stream(addressAndIconComposite.getItems())
-				.map(a -> (DocumentReceiver) a.getControl().getData(ORIGIN_RECEIVER)).collect(Collectors.toList()));
+//		// clear all receivers and add all receivers from current address tabfolder 
+//		document.getReceiver().clear();
+//		document.setReceiver(Arrays.stream(addressAndIconComposite.getItems())
+//				.map(a -> (DocumentReceiver) a.getControl().getData(ORIGIN_RECEIVER)).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -577,6 +578,7 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
 		
 		DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
+		
 		// the first document's receiver is the main receiver. That consultant field is
 		// bound to documents consultant field.
 		bindModelValue(mainTypeReceiver, txtConsultant, DocumentReceiver_.consultant.getName(), 250);
@@ -651,62 +653,44 @@ public class DocumentEditor extends Editor<Document> {
         
     }
 
+	/**
+	 * This is the "manual" implementation of the UpdateValueStrategy, since it
+	 * seems not to be possible for updating a list of receivers which are displayed
+	 * in a CTabFolder widget. The UpdateValueStrategy is for displaying a
+	 * DocumentReceiver's address in an address tab. Since the address tab only
+	 * contains a plain Text field, the values from DocumentReceiver has to be
+	 * converted. Furthermore, the value in the Text field can be overwritten. In
+	 * this case, the values from DocumentReceiver has to be cleared an the
+	 * manualAddress field has to be set.
+	 */
 	private void bindAddressWidgetForIndex(int index) {
-		final DocumentReceiver currentAddress = getOrCreateAddressByIndexFromContact(index);
 		final Text currentAddressTabWidget = txtAddresses.get(index);
-		currentAddressTabWidget.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
-					setDirty(true);
-				}
+		ISideEffectFactory sideEffectFactory = WidgetSideEffects.createFactory(currentAddressTabWidget);
+		ISWTObservableValue<String> observedText = WidgetProperties.text(SWT.FocusOut).observe(currentAddressTabWidget);
+		// react on changes inside the Text widget (which contains the String
+		// representation of an address)
+		sideEffectFactory.create(observedText::getValue, addressString -> {
+			DocumentReceiver originReceiver = (DocumentReceiver) currentAddressTabWidget.getData(ORIGIN_RECEIVER);
+			if (originReceiver == null) {
+				// should not occur
+				throw new RuntimeException("can't get DocumentReceiver from current CTabItem.");
 			}
-		});
-
-		/*
-		 * This is the "manual" implementation of the UpdateValueStrategy, since it seems not to be possible for updating a list of receivers which are displayed an CTabFolder widget.
-		 * The UpdateValueStrategy is for displaying a DocumentReceiver's address in an address tab.
-		 * Since the address tab only contains a plain Text field, the values from DocumentReceiver has to be converted. 
-		 * Furthermore, the value in the Text field can be overwritten. In this case, the values from DocumentReceiver
-		 * has to be cleared an the manualAddress field has to be set.
-		 */
-		currentAddressTabWidget.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				// update from model
-				((MPart) getMDirtyablePart()).getTransientData().put(BIND_MODE_INDICATOR, true);
-				currentAddressTabWidget.setText(contactUtil.getAddressAsString(currentAddress));
-				// a formerly selected address has now no meaning, since it is (potentially) changed.
-				// therefore the DocumentReceiver has to get a manualAddress.
-				currentAddress.setCustomerNumber(null);
-				((MPart) getMDirtyablePart()).getTransientData().remove(BIND_MODE_INDICATOR);
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				// update to model (set mode to "bind mode" for not setting it dirty)
-				((MPart) getMDirtyablePart()).getTransientData().put(BIND_MODE_INDICATOR, true);
-				DocumentReceiver originReceiver = (DocumentReceiver) currentAddressTabWidget.getData(ORIGIN_RECEIVER);
-				if(originReceiver == null) {
-					// should not occur
-					throw new RuntimeException("can't get DocumentReceiver from current CTabItem.");
-				}
-				// Test, if the txtAddress field was modified
-				// "modified" means that the content of the text field differs from the address from current DocumentReceiver
+			if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+				// only if not in bind mode
+				
+				// Test if the txtAddress field was modified
+				// ("modified" means that the content of the text field differs from the address
+				// from current DocumentReceiver)
 				boolean addressModified = !DataUtils.getInstance().MultiLineStringsAreEqual(
-						contactUtil.getAddressAsString(addressManager.getAdressForBillingType(document, document.getBillingType())), 
-						currentAddressTabWidget.getText());
+						contactUtil.getAddressAsString(
+								originReceiver),
+						observedText.getValue());
 				// TODO check if FAK-276 is working!
-
+	
 				if (addressModified) {
-					if (currentAddress.getCustomerNumber() == null) {
-						// DocumentReceiver was changed manually (see focusGained above)
-						originReceiver = clearAddressFields(originReceiver);
-						originReceiver.setManualAddress(currentAddressTabWidget.getText());
-					}					
-					
-					
+					// DocumentReceiver was changed manually
+					originReceiver = clearAddressFields(originReceiver);
+					originReceiver.setManualAddress(observedText.getValue());
 				
 				/*
 				 * possible cases:
@@ -727,43 +711,38 @@ public class DocumentEditor extends Editor<Document> {
 							? contactUtil.getNameWithCompany(originReceiver)
 							: createAddressFirstLineFromString(currentAddressTabWidget);
 					document.setAddressFirstLine(addressFirstLine);
+					setDirty(true);
 				}
-				((MPart) getMDirtyablePart()).getTransientData().remove(BIND_MODE_INDICATOR);
-			}
-
-			/**
-			 * Clear all fields of a DocumentReceiver.
-			 * 
-			 * @param originReceiver
-			 */
-			private DocumentReceiver clearAddressFields(DocumentReceiver originReceiver) {
-				originReceiver.setCompany(null);
-				originReceiver.setStreet(null);
-				originReceiver.setCityAddon(null);
-				originReceiver.setCity(null);
-				originReceiver.setZip(null);
-				originReceiver.setCountryCode(null);
-				originReceiver.setManualAddress(null);
-				originReceiver.setTitle(null);
-				originReceiver.setFirstName(null);
-				return originReceiver;
+			} else {
+				// if in bind mode, fill address Text widget with DocumentReceiver's value
+				observedText.setValue(contactUtil.getAddressAsString(originReceiver));
 			}
 		});
-		
-//		
-//		IBeanListProperty<Document, DocumentReceiver> receivers = BeanProperties.list(Document.class, Document_.receiver.getName(), DocumentReceiver.class);
-//		IObservableList<DocumentReceiver> observedReceivers = receivers.observe(document);
-//		IObservableList<CTabItem> uiWidget = new CTabFolderWidgetObservableList<>(addressAndIconComposite, DocumentReceiver.class);
-////		getCtx().bindList(uiWidget, observedReceivers, targetToModel, modelToTarget);
-//		bindModelValue(currentAddress, currentAddressTabWidget, DocumentReceiver_.name.getName(), 64, null/*targetToModel*/, modelToTarget);
+	}
+
+	/**
+	 * Clear all fields of a DocumentReceiver.
+	 * 
+	 * @param originReceiver
+	 */
+	final private DocumentReceiver clearAddressFields(DocumentReceiver originReceiver) {
+		originReceiver.setCompany(null);
+		originReceiver.setStreet(null);
+		originReceiver.setCityAddon(null);
+		originReceiver.setCity(null);
+		originReceiver.setZip(null);
+		originReceiver.setCountryCode(null);
+		originReceiver.setManualAddress(null);
+		originReceiver.setTitle(null);
+		originReceiver.setFirstName(null);
+		return originReceiver;
 	}
 
 	private String createAddressFirstLineFromString(Text currentText) {
 		String s = DataUtils.getInstance().removeCR(currentText.getText());
 		
 		// Remove the "\n" if it was a "\n" as line break.
-		s = s.split("\n")[0];
-		return s;
+		return s.split("\n")[0];
 	}
 	
 	protected DocumentReceiver getOrCreateAddressByIndexFromContact(int i) {
@@ -1737,7 +1716,7 @@ public class DocumentEditor extends Editor<Document> {
     }
 	
 	/**
-	 * Fill the address label with a contact 
+	 * Fill the address {@link CTabItem} with a contact 
 	 * @param address 
 	 * 
 	 * @param contact
@@ -1749,12 +1728,13 @@ public class DocumentEditor extends Editor<Document> {
 		selectedAddresses.put(document.getBillingType(), address);
 
 		// select the correct address tab
-		java.util.Optional<CTabItem> addressTab = lookupAddressTabForBillingType(documentReceiver.getBillingType());
-		addressTab.ifPresent(tab -> {
-			((Text)tab.getControl()).setText(
+		CTabItem addressTab = addressAndIconComposite.getSelection();
+		if(addressTab != null) {
+			Text currenCTabItem = (Text)addressTab.getControl();
+			currenCTabItem.setData(ORIGIN_RECEIVER, documentReceiver);
+			currenCTabItem.setText(
 					contactUtil.getAddressAsString(documentReceiver));
 		}
-		);
 		
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
@@ -1776,8 +1756,6 @@ public class DocumentEditor extends Editor<Document> {
 		showHideWarningIcon();
 		addressAndIconComposite.layout(true);
 		updateUseGross(true);
-		
-//		setDirty(true);
 	}
 	
 	private java.util.Optional<CTabItem> lookupAddressTabForBillingType(BillingType billingType) {

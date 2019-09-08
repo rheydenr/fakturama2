@@ -21,6 +21,7 @@
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="" name="parent" getter="getParent" defaultValue="null" setter="setParent" validJavaMemberName="parent" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.0/@eClassAnnotations.0" generateSafeManyAccess="false" generateBidirectionalAssociationSupport="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <manyToOne>
+            <joinColumn name="FK_PARENT_CATEGORY"/>
             <cascade>
               <cascadePersist/>
               <cascadeMerge/>
@@ -199,22 +200,6 @@
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="The localConsultant holds information about someone who is responsible at the given address."/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//Contact/email"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="email" getter="getEmail" defaultValue="null" setter="setEmail" validJavaMemberName="email" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//Contact/mobile"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="mobile" getter="getMobile" defaultValue="null" setter="setMobile" validJavaMemberName="mobile" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//Contact/phone"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="phone" getter="getPhone" defaultValue="null" setter="setPhone" validJavaMemberName="phone" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//Contact/fax"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="fax" getter="getFax" defaultValue="null" setter="setFax" validJavaMemberName="fax" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.6/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Address/contactTypes"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="Denotes what kind of address it is (i.e., an address for billing, for delivery etc). If no ContactType is set this address is valid for all types."/>
       </annotatedEStructuralFeatures>
@@ -237,7 +222,7 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Contact/addresses"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="All addresses which belongs to this contact."/>
-        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation" description="WARNING: Don't try to set a Join Column Property in Annotation Model!!! There's a bug in Texo which generates two identical annotations for this."/>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/customerNumber"/>
@@ -562,7 +547,7 @@
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="The receivers of this document." validJavaMemberName="receiver" useList="true"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
           <oneToMany>
-            <joinColumn name="FK_DOCUMENTRECEIVER"/>
+            <joinColumn name="FK_DOCUMENT"/>
           </oneToMany>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
@@ -817,6 +802,9 @@
       </eClassAnnotations>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//ItemAccountType/category"/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
+          <joinColumn name="FK_CATEGORY"/>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">

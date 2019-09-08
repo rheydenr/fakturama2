@@ -397,43 +397,7 @@ public abstract class Editor<T extends IEntity> {
 		return retval;
    	}
    	
-   	
-   	
-//	@SuppressWarnings({ "unchecked" })
-//	protected <D extends IEntity, S extends IEntity> Binding bindModelSet(D target, Class<S> elementType,
-//			final CTabFolder source, String property, UpdateSetStrategy<CTabItem, S> targetToModel,
-//			UpdateSetStrategy<S, CTabItem> modelToTarget) {
-//
-//		Binding retval = null;
-//		IBeanSetProperty setProperty = BeanProperties.set(target.getClass(), property, elementType);
-//		IObservableSet<CTabItem> uiWidget = null;
-////		new CTabItemSelectionProperty<D>().observe(source);
-//		IObservableSet<S> modelSet = (IObservableSet<S>) setProperty.observe(target);
-//		if (source instanceof CTabFolder) {
-//			uiWidget = new CTabFolderWidgetObservableList<>(source, CTabItem.class);
-//			uiWidget.addSetChangeListener((SetChangeEvent<? extends CTabItem> event) -> {
-//				if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
-//					getMDirtyablePart().setDirty(true);
-//				}
-//			});
-//		}
-//
-//		if (targetToModel != null || modelToTarget != null) {
-//			retval = getCtx().bindSet(uiWidget, modelSet, targetToModel, modelToTarget);
-//		} else {
-//			retval = getCtx().bindSet(uiWidget, modelSet);
-//		}
-//
-//		return retval;
-//	}
-   
-	@SuppressWarnings("rawtypes")
-	protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
-        IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
-// TODO using chained properties
-//        BeanProperties.value(target.getClass(), property).value(property).value(property).observe(source);
-
-        IObservableValue<E> model = nameProperty.observe(target);
+   	protected <E extends IEntity> Binding bindObservableValue(IObservableValue<E> model, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         Binding retval = null;
         
         IObservableValue uiWidget;
@@ -483,6 +447,21 @@ public abstract class Editor<T extends IEntity> {
         }
         
         return retval;
+	}
+ 
+	@SuppressWarnings("rawtypes")
+	protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+        IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
+// TODO using chained properties
+//        BeanProperties.value(target.getClass(), property).value(property).value(property).observe(source);
+
+        IObservableValue<E> model;
+        if(target instanceof IObservableValue) {
+        	model = (IObservableValue<E>) target;
+        } else {
+        	model = nameProperty.observe(target);
+        }
+        return bindObservableValue(model, source, property, targetToModel, modelToTarget);
     }
 	
 	protected <E extends IEntity> Binding bindModelValue(E target, Text source, String property, int limit,
