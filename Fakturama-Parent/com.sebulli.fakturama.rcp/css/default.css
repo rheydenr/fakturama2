@@ -37,6 +37,10 @@ Shell {
     color: #BBBBBB;
 } */
 
+.MPartStack {
+  swt-simple: false;
+}
+
 .headerSectionContainer {
 	background-color: gradient #575757 #101010 100%;
 }

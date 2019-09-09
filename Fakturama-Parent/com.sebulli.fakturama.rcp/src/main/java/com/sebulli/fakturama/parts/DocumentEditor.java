@@ -546,7 +546,8 @@ public class DocumentEditor extends Editor<Document> {
 			if (displayAddress.getCustomerNumber() != null) {
 				JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
 				String addressAsString = contactUtil.getAddressAsString(displayAddress);
-				if (jaroWinklerDistance.apply(addressAsString,
+//				DataUtils.getInstance().MultiLineStringsAreEqual(addressAsString,((Text)tabItem.getControl()).getText())
+				if (jaroWinklerDistance.apply(DataUtils.getInstance().removeCR(addressAsString),
 						DataUtils.getInstance().removeCR(((Text)tabItem.getControl()).getText())) < 0.75) {
 					MessageDialog.openWarning(top.getShell(),
 							// T: Title of the dialog that appears if the document is assigned to an other
