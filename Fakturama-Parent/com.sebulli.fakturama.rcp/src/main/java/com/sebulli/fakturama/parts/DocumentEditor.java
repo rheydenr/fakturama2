@@ -2244,6 +2244,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Composite that contains the addresses
 		addressAndIconComposite = new CTabFolder(top, SWT.NONE);
+		addressAndIconComposite.setSimple(false);
 		// create main document receiver
 		DocumentReceiver mainReceiver = createOrGetMainReceiver();
 		CTabItem addressTab = createAddressTabItem(mainReceiver);

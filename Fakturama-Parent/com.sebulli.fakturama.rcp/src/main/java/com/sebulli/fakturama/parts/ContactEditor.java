@@ -86,8 +86,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.Event;
 
@@ -150,7 +148,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	// SWT widgets of the editor
     private Composite top;
 
-    private TabFolder tabFolder;
+    private CTabFolder tabFolder;
     private CTabFolder addressTabFolder;
     private List<AddressTabWidget> addressTabWidgets = new ArrayList<>();
     
@@ -520,11 +518,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// Create the address tab
 		Composite tabAddress;
+			tabFolder = new CTabFolder(top, SWT.NONE);
+			tabFolder.setSimple(false);
 		if (useBank || useMisc || useNote) {
-			tabFolder = new TabFolder(top, SWT.NONE);
 			GridDataFactory.fillDefaults().grab(true, true).applyTo(tabFolder);
 
-			TabItem item1 = new TabItem(tabFolder, SWT.NONE);
+			CTabItem item1 = new CTabItem(tabFolder, SWT.NONE);
 			//T: Label in the contact editor
 			item1.setText(msg.editorContactLabelAddress);
 			tabAddress = new Composite(tabFolder, SWT.NONE);
@@ -538,7 +537,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Create the bank tab
 		Composite tabBank;
 		if (useBank) {
-			TabItem item3 = new TabItem(tabFolder, SWT.NONE);
+			CTabItem item3 = new CTabItem(tabFolder, SWT.NONE);
 			//T: Label in the contact editor
 			item3.setText(msg.editorContactLabelBankaccount);
 			tabBank = new Composite(tabFolder, SWT.NONE);
@@ -555,7 +554,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Create the miscellaneous tab
 		Composite tabMisc;
 		if (useMisc) {
-			TabItem item4 = new TabItem(tabFolder, SWT.NONE);
+			CTabItem item4 = new CTabItem(tabFolder, SWT.NONE);
 			//T: Label in the contact editor
 			item4.setText(msg.commandNavigationMisc);
 			tabMisc = new Composite(tabFolder, SWT.NONE);
@@ -567,10 +566,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(tabMisc);
 
 		// Create to note tab
-		TabItem item5 = null;
+		CTabItem item5 = null;
 		Composite tabNote;
 		if (useNote) {
-			item5 = new TabItem(tabFolder, SWT.NONE);
+			item5 = new CTabItem(tabFolder, SWT.NONE);
 			//T: Label in the contact editor
 			item5.setText(msg.editorContactLabelNotice);
 			tabNote = new Composite(tabFolder, SWT.NONE);
@@ -580,6 +579,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			tabNote = new Composite(invisible, SWT.NONE);
 		}
 		tabNote.setLayout(new FillLayout());
+		tabFolder.setSelection(0);
 
 		// Group: address
 		createAddressGroup(invisible, tabAddress);
@@ -966,6 +966,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		addressTabFolder = new CTabFolder(twoPanelLayout, SWT.NONE);
 		addressTabFolder.setHighlightEnabled(true);
+		addressTabFolder.setSimple(false);
 		addressTabFolder.setBackground(new Color[] {
 				Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW),
 				Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW),
