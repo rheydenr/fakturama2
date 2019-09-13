@@ -194,6 +194,7 @@ public class DocumentEditor extends Editor<Document> {
     
     private static final String TOOLITEM_COMMAND = "toolitem_command";
 	private static final String ORIGIN_RECEIVER = "ORIGIN_RECEIVER";
+	private static final String CURRENT_RECEIVER = "CURRENT_RECEIVER";
 
     @Inject
     protected EHandlerService handlerService;
@@ -531,6 +532,7 @@ public class DocumentEditor extends Editor<Document> {
         
         // reset dirty flag
         setDirty(false);
+        ((MPart)getMDirtyablePart()).getProperties().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
         return Boolean.TRUE;
 	}
     
@@ -541,30 +543,21 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Show a warning if the entered address is not similar to the address
 		// of the document which is set by the address ID.
+		JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
 		for (CTabItem tabItem : addressAndIconComposite.getItems()) {
-			DocumentReceiver displayAddress = (DocumentReceiver) tabItem.getControl().getData(ORIGIN_RECEIVER);
-			if (displayAddress.getCustomerNumber() != null) {
-				JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
-				String addressAsString = contactUtil.getAddressAsString(displayAddress);
-//				DataUtils.getInstance().MultiLineStringsAreEqual(addressAsString,((Text)tabItem.getControl()).getText())
-				if (jaroWinklerDistance.apply(DataUtils.getInstance().removeCR(addressAsString),
-						DataUtils.getInstance().removeCR(((Text)tabItem.getControl()).getText())) < 0.75) {
-					MessageDialog.openWarning(top.getShell(),
-							// T: Title of the dialog that appears if the document is assigned to an other
-							// address.
-							msg.editorDocumentErrorWrongcontactTitle,
+			String addressAsString = (String) tabItem.getControl().getData(ORIGIN_RECEIVER);
+			if (!addressAsString.isEmpty() && jaroWinklerDistance.apply(DataUtils.getInstance().removeCR(addressAsString),
+					DataUtils.getInstance().removeCR(((Text) tabItem.getControl()).getText())) < 0.75) {
+				MessageDialog.openWarning(top.getShell(),
+						// T: Title of the dialog that appears if the document is assigned to an other
+						// address.
+						msg.editorDocumentErrorWrongcontactTitle,
 
-							// T: Text of the dialog that appears if the document is assigned to an other
-							// address.
-							MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressAsString));
-				}
+						// T: Text of the dialog that appears if the document is assigned to an other
+						// address.
+						MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressAsString));
 			}
 		}
-		
-//		// clear all receivers and add all receivers from current address tabfolder 
-//		document.getReceiver().clear();
-//		document.setReceiver(Arrays.stream(addressAndIconComposite.getItems())
-//				.map(a -> (DocumentReceiver) a.getControl().getData(ORIGIN_RECEIVER)).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -663,7 +656,9 @@ public class DocumentEditor extends Editor<Document> {
 	 * contains a plain Text field, the values from DocumentReceiver has to be
 	 * converted. Furthermore, the value in the Text field can be overwritten. In
 	 * this case, the values from DocumentReceiver has to be cleared an the
-	 * manualAddress field has to be set.
+	 * manualAddress field has to be set. For comparing the original Documentreceiver's 
+	 * address with the currently selected (or entered) one it is stored in the data 
+	 * field of the text widget.
 	 */
 	private void bindAddressWidgetForIndex(int index) {
 		final Text currentAddressTabWidget = txtAddresses.get(index);
@@ -672,7 +667,7 @@ public class DocumentEditor extends Editor<Document> {
 		// react on changes inside the Text widget (which contains the String
 		// representation of an address)
 		sideEffectFactory.create(observedText::getValue, addressString -> {
-			DocumentReceiver originReceiver = (DocumentReceiver) currentAddressTabWidget.getData(ORIGIN_RECEIVER);
+			DocumentReceiver originReceiver = (DocumentReceiver) currentAddressTabWidget.getData(CURRENT_RECEIVER);
 			if (originReceiver == null) {
 				// should not occur
 				throw new RuntimeException("can't get DocumentReceiver from current CTabItem.");
@@ -682,10 +677,9 @@ public class DocumentEditor extends Editor<Document> {
 				
 				// Test if the txtAddress field was modified
 				// ("modified" means that the content of the text field differs from the address
-				// from current DocumentReceiver)
+				// from current DocumentReceiver and was manually(!) changed)
 				boolean addressModified = !DataUtils.getInstance().MultiLineStringsAreEqual(
-						contactUtil.getAddressAsString(
-								originReceiver),
+						(String) currentAddressTabWidget.getData(ORIGIN_RECEIVER),
 						observedText.getValue());
 				// TODO check if FAK-276 is working!
 	
@@ -698,12 +692,12 @@ public class DocumentEditor extends Editor<Document> {
 				 * possible cases:
 				 * 
 				 * Document | Adresse alt        | Adresse neu        | Aktion
-				 * neu      | --                 | Adr. aus Kontakten | neuer DocumentReceiver mit dieser Adresse
-				 * neu      | --                 | manuelle Adr.      | neuer DocumentReceiver mit dieser Adresse
-				 * vorh.    | Adr. aus Kontakten | Adr. aus Kontakten | DocumentReceiver mit neuer Adresse füllen, manualAddress null setzen
-				 * vorh.    | manuelle Eingabe   | Adr. aus Kontakten | DocumentReceiver mit neuer Adresse füllen, manualAddress null setzen
-				 * vorh.    | Adr. aus Kontakten | manuelle Eingabe 1)| DocumentReceiver leeren, manualAddress setzen
-				 * vorh.    | manuelle Eingabe   | manuelle Eingabe   | DocumentReceiver leeren, manualAddress setzen
+				 * neu      | --                 | Adr. aus Kontakten | neuer DocumentReceiver mit dieser Adresse  (v) ==> firstLine wird nicht angezeigt
+				 * neu      | --                 | manuelle Adr.      | neuer DocumentReceiver mit dieser Adresse  (v)
+				 * vorh.    | Adr. aus Kontakten | Adr. aus Kontakten | DocumentReceiver mit neuer Adresse füllen, manualAddress null setzen  (v) ==> firstLine wird nicht angezeigt
+				 * vorh.    | manuelle Eingabe   | Adr. aus Kontakten | DocumentReceiver mit neuer Adresse füllen, manualAddress null setzen  (v)
+				 * vorh.    | Adr. aus Kontakten | manuelle Eingabe 1)| DocumentReceiver leeren, manualAddress setzen  (v)
+				 * vorh.    | manuelle Eingabe   | manuelle Eingabe   | DocumentReceiver leeren, manualAddress setzen  (v)
 				 * 
 				 * 1) "manuelle Eingabe" kann hier auch heißen, daß die bestehende Adresse einfach geändert wurde.
 				 */
@@ -738,14 +732,15 @@ public class DocumentEditor extends Editor<Document> {
 		originReceiver.setManualAddress(null);
 		originReceiver.setTitle(null);
 		originReceiver.setFirstName(null);
+		originReceiver.setCustomerNumber(null);
 		return originReceiver;
 	}
 
 	private String createAddressFirstLineFromString(Text currentText) {
-		String s = DataUtils.getInstance().removeCR(currentText.getText());
+		String s = currentText.getText();
 		
 		// Remove the "\n" if it was a "\n" as line break.
-		return s.split("\n")[0];
+		return s.split(System.lineSeparator())[0];
 	}
 	
 	protected DocumentReceiver getOrCreateAddressByIndexFromContact(int i) {
@@ -1758,11 +1753,12 @@ public class DocumentEditor extends Editor<Document> {
 	}
 	
 	private void setAddressInTab(CTabItem addressTab, DocumentReceiver documentReceiver) {
-		if(addressTab != null) {
-			Text currenCTabItem = (Text)addressTab.getControl();
-			currenCTabItem.setData(ORIGIN_RECEIVER, documentReceiver);
-			currenCTabItem.setText(
-					contactUtil.getAddressAsString(documentReceiver));
+		if (addressTab != null) {
+			Text currenCTabItem = (Text) addressTab.getControl();
+			String addressAsString = contactUtil.getAddressAsString(documentReceiver);
+			currenCTabItem.setData(ORIGIN_RECEIVER, addressAsString);
+			currenCTabItem.setData(CURRENT_RECEIVER, documentReceiver);
+			currenCTabItem.setText(addressAsString);
 		}
 	}
 
@@ -2441,19 +2437,11 @@ public class DocumentEditor extends Editor<Document> {
 
 		// The address field
 		Text currentAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-//		currentAddress.addModifyListener(e -> {
-//
-//        	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
-//                getMDirtyablePart().setDirty(true);
-//        	}
-//            showHideWarningIcon();
-//		});
 
-		currentAddress.setData(ORIGIN_RECEIVER, documentReceiver);
+		// initially both objects are equal
+		currentAddress.setData(ORIGIN_RECEIVER, contactUtil.getAddressAsString(documentReceiver));
+		currentAddress.setData(CURRENT_RECEIVER, documentReceiver);
 		addressTabItem.setToolTipText("'ne Adresse ");
-		
-//		currentAddress.setText(
-//				contactUtil.getAddressAsString(documentReceiver));
 		
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(currentAddress);
 		addressTabItem.setControl(currentAddress);

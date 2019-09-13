@@ -169,6 +169,8 @@ public class ContactsDAO extends AbstractDAO<Contact> {
 	}
 
 	public Address findByAddressId(Long addressId) {
+		if(addressId != null) {
 		return getEntityManager().find(Address.class, addressId);
+		} else return null;
 	}	
 }

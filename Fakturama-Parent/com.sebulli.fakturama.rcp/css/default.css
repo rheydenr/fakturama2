@@ -1,3 +1,5 @@
+/* @import url("platform:/plugin/org.eclipse.ui.themes/css/e4-basestyle.css"); */
+
 /* .Button { border: 3px solid red } */
 
 /* Identifies only those SWT Text elements
@@ -19,6 +21,10 @@ Combo:focused {
 
 SashForm {
   background-color: #c1d5ef;
+}
+
+CTabFolder {
+	swt-simple: false;
 }
 
 /* background uses a gradient

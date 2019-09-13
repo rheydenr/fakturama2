@@ -19,7 +19,6 @@ import org.eclipse.e4.ui.model.application.commands.MCommand;
 import org.eclipse.e4.ui.model.application.commands.MHandler;
 import org.eclipse.e4.ui.model.application.commands.MHandlerContainer;
 import org.eclipse.e4.ui.model.application.ui.MContext;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -27,7 +26,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
 /**
  * Process the additions and removals of handlers on the model
@@ -35,7 +33,6 @@ import org.osgi.service.event.EventHandler;
 public class HandlerProcessingAddon {
 	private MApplication application;
 	private EModelService modelService;
-        private EventHandler testHandler;
 	
 	/**
 	 * Do initial check of handlers and their context upon creation
@@ -60,42 +57,19 @@ public class HandlerProcessingAddon {
         	// (since we have the progress already on splash screen)
         	progressMonitorDialog.setOpenOnRun(false);
 			progressMonitorDialog.run(true, false, op);
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+		} catch (InvocationTargetException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-		testHandler = new EventHandler() {
-			
-			@Override
-			public void handleEvent(Event event) {
-				Object part = event.getProperty(UIEvents.EventTags.ELEMENT);
-				boolean tbr =(Boolean) event.getProperty(UIEvents.EventTags.NEW_VALUE);
-				if (part instanceof MPart){
-					System.out.println("Part "+((MPart)part).getElementId()+" is "+(!tbr?"NOT":"")+" visible");
-				}
-			}
-		};
-		eventBroker.subscribe(UIEvents.UIElement.TOPIC_TOBERENDERED, testHandler);
-    	
-
-        
 	}
 
 	protected void initialize(IProgressMonitor pMonitor) {
 		List<MHandlerContainer> findElements = modelService.findElements(application, null,
 				MHandlerContainer.class, null);
-//		pMonitor.beginTask("initialize application", IProgressMonitor.UNKNOWN);
-//		int i = 1;
 		for (MHandlerContainer mHandlerContainer : findElements) {
-//			pMonitor.worked(i++);
 			if (mHandlerContainer instanceof MContext) {
 				MContext mContext = (MContext) mHandlerContainer;
 				IEclipseContext context = mContext.getContext();
-//				context.getParent().get(IPreferenceStore.class)
 				if (context != null) {
 					for (MHandler mHandler : mHandlerContainer.getHandlers()) {
 						processActiveHandler(mHandler, context);

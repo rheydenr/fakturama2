@@ -74,7 +74,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -82,7 +81,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -967,11 +965,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		addressTabFolder = new CTabFolder(twoPanelLayout, SWT.NONE);
 		addressTabFolder.setHighlightEnabled(true);
 		addressTabFolder.setSimple(false);
-		addressTabFolder.setBackground(new Color[] {
-				Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW),
-				Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW),
-		        Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW)
-		        }, new int[] { 50, 100 });
 		Button plusButton = new Button(addressTabFolder, SWT.NONE);
 		plusButton.setText("+");
 		plusButton.setToolTipText("add a new address for this contact");
