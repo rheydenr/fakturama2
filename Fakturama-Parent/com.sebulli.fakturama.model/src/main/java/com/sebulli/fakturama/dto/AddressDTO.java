@@ -1,5 +1,7 @@
 package com.sebulli.fakturama.dto;
 
+import com.sebulli.fakturama.model.Address;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.DocumentReceiver;
 
 public class AddressDTO {
@@ -34,6 +36,22 @@ public class AddressDTO {
 			;
     	return addressDTO;
     }
+    
+	public static AddressDTO from(Contact contact, Address specificAddress) {
+		AddressDTO addressDTO = new AddressDTO().withCompany(contact.getCompany()) //
+				.withName(contact.getName()) //
+				.withFirstName(contact.getFirstName()) //
+				.withCustomerNumber(contact.getCustomerNumber()) //
+				.withGender(contact.getGender()); //
+		if (specificAddress != null) {
+			addressDTO = addressDTO.withAddressId(specificAddress.getId())
+					.withCountryCode(specificAddress.getCountryCode()) //
+					.withStreet(specificAddress.getStreet()) //
+					.withCity(specificAddress.getCity()) //
+					.withZip(specificAddress.getZip());
+		}
+		return addressDTO;
+	}
 
 	public void setCustomerNumber(String customerNumber) {
 		this.customerNumber = customerNumber;

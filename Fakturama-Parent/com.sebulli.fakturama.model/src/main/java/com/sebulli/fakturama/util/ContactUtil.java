@@ -137,7 +137,7 @@ public class ContactUtil {
      * @return the concatenated name of the company and the contact
      */
     public String getNameWithCompany(Contact contact) {
-    	return getNameWithCompany(createAddressDTO(contact));
+    	return getNameWithCompany(AddressDTO.from(contact, null));
     }
     
     public String getNameWithCompany(DocumentReceiver documentReceiver) {
@@ -156,19 +156,8 @@ public class ContactUtil {
         return line;
     }
     
-    public AddressDTO createAddressDTO(Contact contact) {
-    	AddressDTO addressDTO = new AddressDTO()
-    			.withCompany(contact.getCompany())
-    			.withName(contact.getName())
-    			.withFirstName(contact.getFirstName())
-    			.withManualAddress(contact.getManualAddress())
-    			.withCustomerNumber(contact.getCustomerNumber())
-    			;
-    	return addressDTO;
-    }
-    
     public String getCompanyOrLastname(Contact contact) {
-    	return getCompanyOrLastname(createAddressDTO(contact));
+    	return getCompanyOrLastname(AddressDTO.from(contact, null));
     }
     
     public String getCompanyOrLastname(DocumentReceiver documentReceiver) {
@@ -196,7 +185,7 @@ public class ContactUtil {
      * @return First and last name
      */
     public String getFirstAndLastName(Contact contact) {
-    	return getFirstAndLastName(createAddressDTO(contact));
+    	return getFirstAndLastName(AddressDTO.from(contact, null));
     }
 
     public String getFirstAndLastName(DocumentReceiver documentReceiver) {
