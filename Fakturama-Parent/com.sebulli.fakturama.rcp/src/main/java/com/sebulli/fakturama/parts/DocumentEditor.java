@@ -119,6 +119,7 @@ import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dialogs.SelectTextDialog;
 import com.sebulli.fakturama.dialogs.SelectTreeContactDialog;
+import com.sebulli.fakturama.dto.AddressDTO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -543,10 +544,15 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Show a warning if the entered address is not similar to the address
 		// of the document which is set by the address ID.
+		// Compare only if current address is from the same origin as the stored adress.
+		// (Else the user has selected another address from Contact list.)
 		JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
 		for (CTabItem tabItem : addressAndIconComposite.getItems()) {
-			String addressAsString = (String) tabItem.getControl().getData(ORIGIN_RECEIVER);
-			if (!addressAsString.isEmpty() && jaroWinklerDistance.apply(DataUtils.getInstance().removeCR(addressAsString),
+			AddressDTO addressDTO = (AddressDTO) tabItem.getControl().getData(ORIGIN_RECEIVER);
+			DocumentReceiver documentReceiver = (DocumentReceiver) tabItem.getControl().getData(CURRENT_RECEIVER);
+			String addressAsString = contactUtil.getAddressAsString(addressDTO, System.lineSeparator());
+			if (addressDTO != null && addressDTO.getAddressId() == documentReceiver.getOriginAddressId() 
+					&& jaroWinklerDistance.apply(DataUtils.getInstance().removeCR(addressAsString),
 					DataUtils.getInstance().removeCR(((Text) tabItem.getControl()).getText())) < 0.75) {
 				MessageDialog.openWarning(top.getShell(),
 						// T: Title of the dialog that appears if the document is assigned to an other
@@ -667,8 +673,8 @@ public class DocumentEditor extends Editor<Document> {
 		// react on changes inside the Text widget (which contains the String
 		// representation of an address)
 		sideEffectFactory.create(observedText::getValue, addressString -> {
-			DocumentReceiver originReceiver = (DocumentReceiver) currentAddressTabWidget.getData(CURRENT_RECEIVER);
-			if (originReceiver == null) {
+			DocumentReceiver currentReceiver = (DocumentReceiver) currentAddressTabWidget.getData(CURRENT_RECEIVER);
+			if (currentReceiver == null) {
 				// should not occur
 				throw new RuntimeException("can't get DocumentReceiver from current CTabItem.");
 			}
@@ -679,14 +685,14 @@ public class DocumentEditor extends Editor<Document> {
 				// ("modified" means that the content of the text field differs from the address
 				// from current DocumentReceiver and was manually(!) changed)
 				boolean addressModified = !DataUtils.getInstance().MultiLineStringsAreEqual(
-						(String) currentAddressTabWidget.getData(ORIGIN_RECEIVER),
+						contactUtil.getAddressAsString(currentReceiver),
 						observedText.getValue());
 				// TODO check if FAK-276 is working!
 	
 				if (addressModified) {
 					// DocumentReceiver was changed manually
-					originReceiver = clearAddressFields(originReceiver);
-					originReceiver.setManualAddress(observedText.getValue());
+					currentReceiver = clearAddressFields(currentReceiver);
+					currentReceiver.setManualAddress(observedText.getValue());
 				
 				/*
 				 * possible cases:
@@ -706,13 +712,13 @@ public class DocumentEditor extends Editor<Document> {
 				// Set the "addressFirstLine" value to the first line of the
 				// contact address (in case of setting a new address from selection
 				// the addressFirstLine property wouldn't be updated).
-				String addressFirstLine = originReceiver.getCustomerNumber() != null
-						? contactUtil.getNameWithCompany(originReceiver)
+				String addressFirstLine = currentReceiver.getCustomerNumber() != null
+						? contactUtil.getNameWithCompany(currentReceiver)
 						: createAddressFirstLineFromString(currentAddressTabWidget);
 				document.setAddressFirstLine(addressFirstLine);
 			} else {
 				// if in bind mode, fill address Text widget with DocumentReceiver's value
-				observedText.setValue(contactUtil.getAddressAsString(originReceiver));
+				observedText.setValue(contactUtil.getAddressAsString(currentReceiver));
 			}
 		});
 	}
@@ -1756,7 +1762,6 @@ public class DocumentEditor extends Editor<Document> {
 		if (addressTab != null) {
 			Text currenCTabItem = (Text) addressTab.getControl();
 			String addressAsString = contactUtil.getAddressAsString(documentReceiver);
-			currenCTabItem.setData(ORIGIN_RECEIVER, addressAsString);
 			currenCTabItem.setData(CURRENT_RECEIVER, documentReceiver);
 			currenCTabItem.setText(addressAsString);
 		}
@@ -2439,7 +2444,7 @@ public class DocumentEditor extends Editor<Document> {
 		Text currentAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 
 		// initially both objects are equal
-		currentAddress.setData(ORIGIN_RECEIVER, contactUtil.getAddressAsString(documentReceiver));
+		currentAddress.setData(ORIGIN_RECEIVER, AddressDTO.from(documentReceiver));
 		currentAddress.setData(CURRENT_RECEIVER, documentReceiver);
 		addressTabItem.setToolTipText("'ne Adresse ");
 		

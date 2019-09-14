@@ -140,8 +140,8 @@ public class ContactUtil {
     	return getNameWithCompany(createAddressDTO(contact));
     }
     
-    public String getNameWithCompany(DocumentReceiver contact) {
-    	return getNameWithCompany(createAddressDTO(contact));
+    public String getNameWithCompany(DocumentReceiver documentReceiver) {
+    	return getNameWithCompany(AddressDTO.from(documentReceiver));
     }
     
     private String getCompanyOrLastname(AddressDTO contact) {
@@ -154,18 +154,6 @@ public class ContactUtil {
         	line = getDataFromAddressField(contact.getManualAddress(), KEY_NAME);
         }
         return line;
-    }
-    
-    public AddressDTO createAddressDTO(DocumentReceiver documentReceiver) {
-    	AddressDTO addressDTO = new AddressDTO()
-    			.withCompany(documentReceiver.getCompany())
-    			.withName(documentReceiver.getName())
-    			.withFirstName(documentReceiver.getFirstName())
-    			.withManualAddress(documentReceiver.getManualAddress())
-    			.withCustomerNumber(documentReceiver.getCustomerNumber())
-    			;
-    	
-    	return addressDTO;
     }
     
     public AddressDTO createAddressDTO(Contact contact) {
@@ -183,8 +171,8 @@ public class ContactUtil {
     	return getCompanyOrLastname(createAddressDTO(contact));
     }
     
-    public String getCompanyOrLastname(DocumentReceiver contact) {
-    	return getCompanyOrLastname(createAddressDTO(contact));
+    public String getCompanyOrLastname(DocumentReceiver documentReceiver) {
+    	return getCompanyOrLastname(AddressDTO.from(documentReceiver));
     }
     
     private String getFirstAndLastName(AddressDTO contact) {
@@ -211,8 +199,8 @@ public class ContactUtil {
     	return getFirstAndLastName(createAddressDTO(contact));
     }
 
-    public String getFirstAndLastName(DocumentReceiver contact) {
-    	return getFirstAndLastName(createAddressDTO(contact));
+    public String getFirstAndLastName(DocumentReceiver documentReceiver) {
+    	return getFirstAndLastName(AddressDTO.from(documentReceiver));
     }
     
     /**
@@ -220,13 +208,18 @@ public class ContactUtil {
      * 
      * @return Gender as String
      */
+    public String getGenderString(AddressDTO addressDTO) {
+    	Integer value = addressDTO.getGender() == null ? Integer.valueOf(0) : addressDTO.getGender();
+    	return getSalutationString(value);
+    }
+
     public String getGenderString(Contact contact) {
     	Integer value = contact.getGender() == null ? Integer.valueOf(0) : contact.getGender();
     	return getSalutationString(value);
     }
-
-    public String getGenderString(DocumentReceiver contact) {
-    	Integer value = contact.getGender() == null ? Integer.valueOf(0) : contact.getGender();
+    
+    public String getGenderString(DocumentReceiver documentReceiver) {
+    	Integer value = documentReceiver.getGender() == null ? Integer.valueOf(0) : documentReceiver.getGender();
     	return getSalutationString(value);
     }
     
@@ -329,12 +322,12 @@ public class ContactUtil {
 	 * @param contact the {@link DocumentReceiver} to use
 	 * @return Complete address
      */
-	public String getAddressAsString(DocumentReceiver contact) {
-		return getAddressAsString(contact, contact.getManualAddress(),"\n");
+	public String getAddressAsString(DocumentReceiver documentReceiver) {
+		return getAddressAsString(documentReceiver, "\n");
 	}
 	
 	/**
-	 * Conerts a {@link BillingType} into a {@link ContactType}. Note that the return value can be <code>null</code>!
+	 * Converts a {@link BillingType} into a {@link ContactType}. Note that the return value can be <code>null</code>!
 	 * @param billingType the {@link BillingType} to convert
 	 * @return {@link ContactType}
 	 */
@@ -353,73 +346,65 @@ public class ContactUtil {
 		}
 		return contactType;
 	}
-	
-//    /**
-//	 * Get the address as one String. Use a specified separator.
-//	 *
-//	 * @param contact the {@link Contact} to use
-//	 * @param separator the separator
-//	 * 
-//	 * @return Complete address
-//	 */
-//	public String getAddressAsString(final Contact address, String separator) {
-//		return getAddressAsString(address, null, separator);
-//	}
 
+	public String getAddressAsString(final AddressDTO addressDTO, String separator) {
+		String addressFormat = "";
+		String addressString = "";
+		// Get the format string
+		addressFormat = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS);
+		
+		// Hide the following countries
+		String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
+		String[] hideCountries = hideCountriesString.split(",");
+		for (String hideCountry : hideCountries) {
+			String hiddenCountry = "";
+			if(hideCountry.length() <= 3) {
+    			Optional<ULocale> hiddenLocale = localeUtil.findByCode(hideCountry);
+				//if(hiddenLocale.isPresent()) {
+					hiddenCountry = hiddenLocale.orElse(ULocale.US).getISO3Country();
+				//}
+			}
+			
+			
+			if (addressDTO != null && (StringUtils.equalsIgnoreCase(addressDTO.getCountryCode(), hideCountry)
+			|| StringUtils.equalsIgnoreCase(localeUtil.findByCode(addressDTO.getCountryCode()).orElse(ULocale.US).getISO3Country(), hiddenCountry))) {
+				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
+				addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
+			}
+		}
+
+		// Get each line
+		String[] addressFormatLines = addressFormat.split("<br>");
+		for (String addressFormatLine : addressFormatLines) {
+			String formatedAddressLine = replaceFormatString(addressFormatLine, addressDTO);
+			String trimmedAddressLine = formatedAddressLine.trim();
+			if ((formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) 
+					&& !addressString.isEmpty()) {
+				addressString += separator;
+			}
+
+			addressString += trimmedAddressLine;
+		}
+		return addressString;
+	}
+	
     /**
 	 * Get the address as one String. Use a specified separator.
 	 *
 	 * @param contact the {@link Contact} to use
-	 * @param manualAddress manual address to use (if any, can be <code>null</code>)
 	 * @param separator the separator
 	 * 
 	 * @return Complete address
 	 */
-	public String getAddressAsString(final DocumentReceiver address, String manualAddress, String separator) {
-		String addressFormat = "";
+	public String getAddressAsString(final DocumentReceiver documentReceiver, String separator) {
 		String addressString = "";
-			// manualAddress has precedence over regular entries
-		    if(address == null || address.getManualAddress() != null) {
+		// manualAddress has precedence over regular entries
+		    if(documentReceiver == null || documentReceiver.getManualAddress() != null) {
 		        // if a manual address is set we use it
-		    	addressString = manualAddress;
+		    	addressString = documentReceiver.getManualAddress();
 		    } else {
 		        // else we build an address string from address fields
-		    	
-        		// Get the format string
-        		addressFormat = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS);
-        		
-        		// Hide the following countries
-        		String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
-        		String[] hideCountries = hideCountriesString.split(",");
-        		for (String hideCountry : hideCountries) {
-        			String hiddenCountry = "";
-        			if(hideCountry.length() <= 3) {
-	        			Optional<ULocale> hiddenLocale = localeUtil.findByCode(hideCountry);
-						//if(hiddenLocale.isPresent()) {
-							hiddenCountry = hiddenLocale.orElse(ULocale.US).getISO3Country();
-						//}
-        			}
-        			
-        			
-        			if (address != null && (StringUtils.equalsIgnoreCase(address.getCountryCode(), hideCountry)
-        			|| StringUtils.equalsIgnoreCase(localeUtil.findByCode(address.getCountryCode()).orElse(ULocale.US).getISO3Country(), hiddenCountry))) {
-        				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
-        				addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
-        			}
-        		}
-        
-        		// Get each line
-        		String[] addressFormatLines = addressFormat.split("<br>");
-        		for (String addressFormatLine : addressFormatLines) {
-        			String formatedAddressLine = replaceFormatString(addressFormatLine, address);
-        			String trimmedAddressLine = formatedAddressLine.trim();
-        			if ((formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) 
-        					&& !addressString.isEmpty()) {
-        				addressString += separator;
-        			}
-        
-        			addressString += trimmedAddressLine;
-        		}
+		    	return getAddressAsString(AddressDTO.from(documentReceiver), separator);
 		    }
 		
 		// return the complete address
@@ -687,7 +672,7 @@ public class ContactUtil {
 	 * @param contact the given {@link Contact}           
 	 * @return the formatted string.
 	 */
-	public String replaceFormatString(String formatString, DocumentReceiver contact) {
+	public String replaceFormatString(String formatString, AddressDTO contact) {
 		if(contact == null) {
 			return "";
 		}
@@ -752,7 +737,7 @@ public class ContactUtil {
 		}
 
 		// Replace the placeholders
-		greeting = replaceFormatString(greeting, contact);
+		greeting = replaceFormatString(greeting, AddressDTO.from(contact));
 
 		return greeting;
 	}
