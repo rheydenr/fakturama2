@@ -639,42 +639,22 @@ public class MigrationManager {
 			            break;
 			        }
 					if(oldDocument.getAddressid() < 0) {
-						/* manually edited address => store in the data container!
-						 * perhaps we have to check additionally if the address stored in document
-						 * is equal to the address stored in the database :-(
-						 */
-						// at first we try to interpret the address data
+						// manually edited address => store in the data container!
 						DocumentReceiver contact = modelFactory.createDocumentReceiver();
-						contact.setBillingType(BillingType.INVOICE);
+						contact.setBillingType(billingType);
 						// there is NO Customer No. since we extracted it from a plain String.
 						contact.setManualAddress(oldDocument.getAddress());
-						
-						// try to get the name
-						String name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_LASTNAME);
-						if(name.isEmpty()) {
-							name = contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_NAME);
-						}
-						contact.setName(name);
-						contact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getAddress(), ContactUtil.KEY_FIRSTNAME));
 						document.getReceiver().add(contact);
 						
 						DocumentReceiver deliveryContact = modelFactory.createDocumentReceiver();
 						deliveryContact.setManualAddress(oldDocument.getDeliveryaddress());
-						deliveryContact.setBillingType(BillingType.DELIVERY);
-						String deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_LASTNAME);
-						if(deliveryName.isEmpty()) {
-							deliveryName = contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_NAME);
-						}
-						deliveryContact.setName(deliveryName);
-						deliveryContact.setFirstName(contactUtil.getDataFromAddressField(oldDocument.getDeliveryaddress(), ContactUtil.KEY_FIRSTNAME));
+						deliveryContact.setBillingType(billingType);
 						document.getReceiver().add(deliveryContact);
 					} else {
-						// use the previous filled Contact hashmap
+						// use the previous filled Contact hashMap
 						Long newContactIdDerivedFromOld = newContacts.get(oldDocument.getAddressid());
 						if (newContactIdDerivedFromOld == null) {
 							migLogUser.warning(String.format("found a document (No. '%s') which has a contact (id='%d' [DB-ID!]) that is marked as deleted", oldDocument.getName(), oldDocument.getAddressid()));
-							OldContacts oldContact = oldDao.findContactById(oldDocument.getAddressid());
-							
 						} else {
 							Contact contact = contactDAO.findById(newContactIdDerivedFromOld);
 							if(contact != null) {
@@ -712,7 +692,7 @@ public class MigrationManager {
 							document.setNoVatReference(noVatRef);
 						}
 						
-						// since we now have a reference to a valid VAT we don't need the fields "novatdescription" and "novatname"
+						// since we now have a reference to a valid VAT we don't need the fields "noVatDescription" and "noVatName"
 					}
 					
 					// if either the ODT or the PDF field is filled we can assume that the document was ed.
