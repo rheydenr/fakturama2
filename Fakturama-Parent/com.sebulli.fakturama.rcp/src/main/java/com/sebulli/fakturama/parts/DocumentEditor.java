@@ -357,7 +357,7 @@ public class DocumentEditor extends Editor<Document> {
 		 *  	- deleted (is checked by the items string)
 		 *  	- shared (not modified by editor)
 		 */
-
+    	
 		boolean wasDirty = getMDirtyablePart().isDirty();
 
 		if (newDocument) {
