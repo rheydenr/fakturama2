@@ -75,10 +75,17 @@ public class VoucherSummarySetManager {
 	public void add(Voucher voucher, boolean useCategory, int itemNr) {
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
-        VoucherSummaryCalculator summary = ContextInjectionFactory.make(VoucherSummaryCalculator.class, ctx);
-        CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
-		summary.calculate(voucherSummarySet, itemNr > -1 ? voucher.getItems().stream().filter(item -> item.getPosNr().compareTo(itemNr) == 0).collect(Collectors.toList()) : voucher.getItems(), useCategory,
-		        Money.of(voucher.getPaidValue(), currencyCode), Money.of(voucher.getTotalValue(), currencyCode), BooleanUtils.toBoolean(voucher.getDiscounted()));
+		VoucherSummaryCalculator summary = ContextInjectionFactory.make(VoucherSummaryCalculator.class, ctx);
+		CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
+		summary.calculate(voucherSummarySet,
+				itemNr > -1 ? voucher.getItems().stream().filter(item -> item.getPosNr().compareTo(itemNr) == 0)
+						.collect(Collectors.toList()) : voucher.getItems(),
+				useCategory,
+				voucher.getPaidValue() != null ? Money.of(voucher.getPaidValue(), currencyCode)
+						: Money.zero(currencyCode),
+				voucher.getTotalValue() != null ? Money.of(voucher.getTotalValue(), currencyCode)
+						: Money.zero(currencyCode),
+				BooleanUtils.toBoolean(voucher.getDiscounted()));
 	}
 
 	/**

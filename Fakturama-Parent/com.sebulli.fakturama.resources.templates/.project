@@ -29,12 +29,7 @@
 		<link>
 			<name>nl</name>
 			<type>2</type>
-			<location>/home/vagrant/projects/fakturama2/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.resources.templates/src/main/resources/nl</location>
-		</link>
-		<link>
-			<name>target/nl</name>
-			<type>2</type>
-			<location>/home/vagrant/projects/fakturama2/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.resources.templates/src/main/resources/nl</location>
+			<location>c:/home/vagrant/projects/fakturama2/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.resources.templates/src/main/resources/nl</location>
 		</link>
 	</linkedResources>
 </projectDescription>

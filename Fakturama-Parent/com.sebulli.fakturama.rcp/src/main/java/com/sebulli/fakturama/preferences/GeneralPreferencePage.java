@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -122,7 +123,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         final Collator collator = Collator.getInstance(ULocale.getDefault());
         collator.setStrength(Collator.SECONDARY);
         List<Locale> currencyLocaleList = Arrays.stream(locales)
-                .filter(l -> l.getCountry().length() != 0)
+                .filter(l -> l.getCountry().length() == 2
+                && StringUtils.length(l.getLanguage()) < 3)
                 .sorted((o1, o2) -> collator.compare(o1.getDisplayCountry(),o2.getDisplayCountry()))
                 // distinguish different Locales by country AND language! 
                 .filter(distinctByKey(l -> l.getDisplayCountry() + l.getDisplayLanguage()))
@@ -148,8 +150,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         		CurrencySettingEnum.valueOf(super.getPreferenceStore().getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL))));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(example);
                 
-//        example.setSize(400, SWT.DEFAULT);
-
         cashCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, msg.preferencesGeneralCurrencyCashrounding, getFieldEditorParent());
         cashCheckbox.getDescriptionControl(getFieldEditorParent()).setToolTipText(msg.preferencesGeneralCurrencyCashroundingTooltip);
         String localeString = getPreferenceStore().getString(Constants.PREFERENCE_CURRENCY_LOCALE);

@@ -1640,7 +1640,7 @@ public class DocumentEditor extends Editor<Document> {
 					paidContainer.layout();
 					paidContainer.pack();
 				} else {
-					if(!warningDepositIcon.isDisposed()) {
+					if(warningDepositIcon != null && !warningDepositIcon.isDisposed()) {
 						warningDepositIcon.setVisible(false);
 						warningDepositText.setVisible(false);
 					}

@@ -465,7 +465,7 @@
             <tags>NoMove</tags>
             <menus xsi:type="menu:PopupMenu" xmi:id="_aPET8FM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.receiptVoucherlist.popup" label="receipt voucher list popup">
               <children xsi:type="menu:HandledMenuItem" xmi:id="_cSEtgFM1EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.receiptvoucherlist.popup.addentry" label="%main.menu.new.receiptvoucher" iconURI="icon://COMMAND_PLUS" tooltip="%command.new.receiptvoucher.tooltip" command="_A9gvoDtXEeOcltwCzP-ZbQ">
-                <parameters xmi:id="_ZfI2YFM2EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.parameter.73" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.receiptvoucherEditor"/>
+                <parameters xmi:id="_ZfI2YFM2EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.rcp.parameter.73" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.receiptVoucherEditor"/>
               </children>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_Q2iB0FM2EeWjKIo2lUnWdg" elementId="com.sebulli.fakturama.expenditurelist.popup.deleteentry" label="%main.menu.edit.delete.name" iconURI="icon://COMMAND_DELETE" tooltip="%main.menu.edit.delete.tooltip" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
             </menus>

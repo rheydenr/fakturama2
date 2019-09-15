@@ -171,7 +171,7 @@ Abhilfe: An die URL noch folgendes ranhängen: <code>?useSSL=false</code>.
 also z. B. 
 <programlisting>jdbc:mysql://rhehomesrv/fakturama?useSSL=false&#038;characterEncoding=utf8&#038;useUnicode=yes</programlisting>
 </para>
-<para>Als Alternative empfehlen wir den Einsatz ener verschlüsselten Verbindung. Wie diese einzurichten ist steht im HowTo-Dokument unter https://bitbucket.org/fakturamadev/fakturama-2/raw/develop/Fakturama-Parent/org.fakturama.help/howto/mysql/ssl4mysql.md</para>
+<para>Als Alternative empfehlen wir den Einsatz einer verschlüsselten Verbindung. Wie diese einzurichten ist steht im <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/develop/Fakturama-Parent/org.fakturama.help/howto/mysql/ssl4mysql.md">HowTo-Dokument</link>.</para>
 </answer>
 	</qandaentry>
 	
@@ -186,8 +186,8 @@ Die Frage kann dann mit den Zusatzhinweisen auch im Forum gepostet werden.
 
 <qandaentry><question><para>MySQL-DB ist im Netzwerk nicht erreichbar</para></question>
 <answer><para>
-siehe dazu <ulink url="https://forum.fakturama.info/read.php?9,10826,11823#msg-11823"/>.
-Wichtig ist hier, als bind-addr 0.0.0.0 anzugeben.</para></answer></qandaentry>
+siehe dazu den entsprechenden <link xl:href="https://forum.fakturama.info/read.php?9,10826,11823#msg-11823">Foreneintrag</link>.
+Wichtig ist hier, als <code>bind-addr</code> <code>0.0.0.0</code> anzugeben.</para></answer></qandaentry>
 	</qandadiv>
 	
 	<qandadiv>
@@ -198,7 +198,7 @@ Wichtig ist hier, als bind-addr 0.0.0.0 anzugeben.</para></answer></qandaentry>
 	</qandaentry>		
 	<qandaentry>
 	<question><para>Der Aufruf via Doppelklick bzw. Spotlight führt zur Fehlermeldung, dass das Programm scheinbar defekt ist.</para></question>
-	<answer><para>Da die Anwendung nicht signiert ist lehnt MacOS den start via Finder ab. Der Start über die Kommandozeile funktioniert allerdings. Deswegen kann man folgendes Script auf dem Desktop platzieren (Dateiendung <code>.sh</code> und diesem das Fakturama-Icon zuweisen:
+	<answer><para>Da die Anwendung nicht signiert ist lehnt MacOS den start via Finder ab. Der Start über die Kommandozeile funktioniert allerdings. Deswegen kann man folgendes Script auf dem Desktop platzieren (Dateiendung <code>.sh</code>) und diesem das Fakturama-Icon zuweisen:
 		<programlisting>
 		#!/bin/bash
 		/Applications/Fakturama2.app/Contents/MacOS/Fakturama

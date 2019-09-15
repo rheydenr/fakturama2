@@ -39,33 +39,35 @@ public class ImportOptions {
     
 	@Inject
     public ImportOptions(IDialogSettings settings) {
-	    IDialogSettings importSettings = settings.getSection(IMPORT_SETTING_OPTIONS);
-	    if(importSettings == null) {
-	        settings.addNewSection(IMPORT_SETTING_OPTIONS);
-	    }
-        if (importSettings.get(PICTURE_BASE_PATH) != null) {
-            basePath = importSettings.get(PICTURE_BASE_PATH);
-        }
-
-        if (importSettings.get(IMPORT_CSV_SEPARATOR) != null) {
-            separator = importSettings.get(IMPORT_CSV_SEPARATOR);
-        }
-
-        if (importSettings.get(IMPORT_CSV_QUOTECHAR) != null) {
-            quoteChar = importSettings.get(IMPORT_CSV_QUOTECHAR);
-        }
-
-        if (importSettings.get(IMPORT_CSV_FILENAME) != null) {
-            csvFile = importSettings.get(IMPORT_CSV_FILENAME);
-        }
-        
-        if (importSettings.get(IMPORT_CSV_UPDATEEXISTING) != null) {
-            updateExisting = importSettings.getBoolean(IMPORT_CSV_UPDATEEXISTING);
-        }
-        
-        if (settings.get(IMPORT_CSV_UPDATEWITHEMPTYVALUES) != null) {
-            updateWithEmptyValues = settings.getBoolean(IMPORT_CSV_UPDATEWITHEMPTYVALUES);
-        }
+		if(settings != null) {
+		    IDialogSettings importSettings = settings.getSection(IMPORT_SETTING_OPTIONS);
+		    if(importSettings == null) {
+		        settings.addNewSection(IMPORT_SETTING_OPTIONS);
+		    }
+	        if (importSettings.get(PICTURE_BASE_PATH) != null) {
+	            basePath = importSettings.get(PICTURE_BASE_PATH);
+	        }
+	
+	        if (importSettings.get(IMPORT_CSV_SEPARATOR) != null) {
+	            separator = importSettings.get(IMPORT_CSV_SEPARATOR);
+	        }
+	
+	        if (importSettings.get(IMPORT_CSV_QUOTECHAR) != null) {
+	            quoteChar = importSettings.get(IMPORT_CSV_QUOTECHAR);
+	        }
+	
+	        if (importSettings.get(IMPORT_CSV_FILENAME) != null) {
+	            csvFile = importSettings.get(IMPORT_CSV_FILENAME);
+	        }
+	        
+	        if (importSettings.get(IMPORT_CSV_UPDATEEXISTING) != null) {
+	            updateExisting = importSettings.getBoolean(IMPORT_CSV_UPDATEEXISTING);
+	        }
+	        
+	        if (settings.get(IMPORT_CSV_UPDATEWITHEMPTYVALUES) != null) {
+	            updateWithEmptyValues = settings.getBoolean(IMPORT_CSV_UPDATEWITHEMPTYVALUES);
+	        }
+		}
     }
 	/**
 	 * @return the updateExisting

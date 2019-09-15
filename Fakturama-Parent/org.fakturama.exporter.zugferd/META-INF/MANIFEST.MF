@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Fakturama ZUGFeRD-Exporter
 Bundle-SymbolicName: org.fakturama.exporter.zugferd;singleton:=true
-Bundle-Version: 2.0.5.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-ClassPath: .,
  lib/fontbox-2.0.14.jar,
  lib/pdfbox-2.0.14.jar,
