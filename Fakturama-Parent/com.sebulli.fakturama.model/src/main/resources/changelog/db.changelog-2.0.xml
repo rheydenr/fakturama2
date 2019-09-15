@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
     <changeSet author="rheydenr (generated)" id="1510081018595-1" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
         <createTable tableName="FKT_ADDRESS">
@@ -953,7 +953,7 @@
     <!--  remove orphaned voucher items -->
     <changeSet author="rheydenr" id="20190216-002" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
 	    <delete tableName="FKT_VOUCHERITEMS">
-	        <where>FK_VOUCHER is NULL</where>
+	        <where>FK_VOUCHER is NULL</where> 
 	    </delete>
     </changeSet>
     
@@ -988,4 +988,9 @@
 	    <dropColumn columnName="SHIPPINGVALUE"
             tableName="FKT_INDIVIDUALDOCUMENTINFO"/>
 	</changeSet>
+
+	<changeSet id="20190615-001" author="rheydenr">
+		<tagDatabase tag="version_2.0"/>
+	</changeSet>
+
 </databaseChangeLog>
