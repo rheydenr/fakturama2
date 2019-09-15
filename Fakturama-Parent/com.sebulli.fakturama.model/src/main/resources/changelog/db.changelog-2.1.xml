@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+
+<!--
+TODO:
+- drop all foreign key constraints
+- copy FKT.DOCUMENT:CONSULTANT into appropriate DOCUMENTRECEIVERs / CONTACTs
+- copy contacts and addresses into temporary tables
+- copy documents and items into temporary tables
+- rename old tables
+- rename temp tables
+- add necessary constraints
+-->
+
+<!-- changes for version 2.1 -->
+	<changeSet author="rheydenr" id="20190915-001">
+		<comment>Drop all foreign key constraints</comment>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ADDRESS"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ADDRESS_CONTACTTYPES"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_BANKACCOUNT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CATEGORY"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CEFACTCODE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CONFIRMATION"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CONTACT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CREDIT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DELIVERY"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DOCUMENT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DOCUMENTITEM"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DOCUMENTRECEIVER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DUNNING"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_INDIVIDUALDOCUMENTINFO"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_INVOICE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ITEMACCOUNTTYPE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_LETTER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_OFFER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ORDER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PAYMENT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PRODUCT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PRODUCTBLOCKPRICE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PRODUCTOPTIONS"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PROFORMA"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ROLE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_SHIPPING"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_TENANT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_TEXTMODULE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_USER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_USERPROPERTY"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_VAT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_VOUCHERITEMS"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_VOUCHERS"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_WEBSHOP"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_WEBSHOPSTATEMAPPING"/>
+	</changeSet>
+
+<changeSet author="rheydenr" id="20190915-003">
+		<comment>Drop not necessary indexes.</comment>
+		<dropIndex tableName="FKT_CATEGORY" indexName="FK_FKT_CATEGORY_ABSTRACTCATEGORY_PARENT"/>
+		
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_ADDRESS"/>
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_ALTERNATECONTACT"/>
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_DOCUMENT_FK_CONTACT"/>
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_DOCUMENT_FK_DELIVERYCONTACT"/>
+	</changeSet>
+
+
+
+	<changeSet author="rheydenr" id="20190915-004">
+		<comment>rename category columns (foreign key columns)</comment>
+		<renameColumn newColumnName="FK_PARENT_CATEGORY"
+				oldColumnName="ABSTRACTCATEGORY_PARENT"
+				remarks="parent category"
+				tableName="FKT_CATEGORY"/>
+		<renameColumn newColumnName="FK_CATEGORY"
+				oldColumnName="ITEMACCOUNTTYPE_CATEGORY"
+				remarks="parent category"
+				tableName="FKT_ITEMACCOUNTTYPE"/>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-005">
+		<comment>create temporary tables for new contact structure (will be dropped later on)</comment>
+		<createTable tableName="TMP_FKT_DOCUMENT">
+			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="DTYPE" type="VARCHAR(31)"/>
+			<column name="ADDRESSFIRSTLINE" type="VARCHAR(255)"/>
+			<column name="BILLINGTYPE" type="INT"/>
+			<column name="CUSTOMERREF" type="VARCHAR(255)"/>
+			<column name="DATEADDED" type="date"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BIT"/>
+			<column defaultValueBoolean="false" name="DEPOSIT" type="BIT"/>
+			<column name="DOCUMENTDATE" type="date"/>
+			<column name="DUEDAYS" type="INT"/>
+			<column name="ITEMSREBATE" type="DOUBLE"/>
+			<column name="MESSAGE" type="LONGTEXT"/>
+			<column name="MESSAGE2" type="LONGTEXT"/>
+			<column name="MESSAGE3" type="LONGTEXT"/>
+			<column name="MODIFIED" type="date"/>
+			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="NAME" type="VARCHAR(255)"/>
+			<column name="NETGROSS" type="INT"/>
+			<column name="ODTPATH" type="VARCHAR(255)"/>
+			<column name="ORDERDATE" type="date"/>
+			<column defaultValueBoolean="false" name="PAID" type="BIT"/>
+			<column name="PAIDVALUE" type="DOUBLE"/>
+			<column name="PAYDATE" type="date"/>
+			<column name="PDFPATH" type="VARCHAR(255)"/>
+			<column name="PRINTTEMPLATE" type="VARCHAR(255)"/>
+			<column defaultValueBoolean="false" name="PRINTED" type="BIT"/>
+			<column name="PROGRESS" type="INT"/>
+			<column name="SERVICEDATE" type="date"/>
+			<column name="SHIPPINGAUTOVAT" type="VARCHAR(255)"/>
+			<column name="SHIPPINGVALUE" type="DOUBLE"/>
+			<column name="TOTALVALUE" type="DOUBLE"/>
+			<column name="TRANSACTIONID" type="INT"/>
+			<column name="VALIDFROM" type="date"/>
+			<column name="VALIDTO" type="date"/>
+			<column name="VESTINGPERIODEND" type="date"/>
+			<column name="VESTINGPERIODSTART" type="date"/>
+			<column name="WEBSHOPDATE" type="date"/>
+			<column name="WEBSHOPID" type="VARCHAR(255)"/>
+			<column name="FK_INDIVIDUALINFO" type="BIGINT"/>
+			<column name="DOCUMENT_INVOICEREFERENCE" type="BIGINT"/>
+			<column name="FK_NOVATREF" type="BIGINT"/>
+			<column name="FK_PAYMENT" type="BIGINT"/>
+			<column name="FK_SHIPPING" type="BIGINT"/>
+			<column name="FK_SRCDOCUMENT" type="BIGINT"/>
+		</createTable>
+		<createTable tableName="TMP_FKT_DOCUMENTITEM">
+			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="DATEADDED" type="date"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BIT"/>
+			<column name="DESCRIPTION" type="LONGTEXT"/>
+			<column name="GTIN" type="BIGINT"/>
+			<column name="ITEMNUMBER" type="VARCHAR(255)"/>
+			<column name="ITEMREBATE" type="DOUBLE"/>
+			<column name="ITEMTYPE" type="VARCHAR(255)"/>
+			<column name="MODIFIED" type="date"/>
+			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="NAME" type="VARCHAR(255)"/>
+			<column defaultValueBoolean="false" name="NOVAT" type="BIT"/>
+			<column defaultValueBoolean="false" name="OPTIONAL" type="BIT"/>
+			<column name="PICTURE" type="LONGBLOB"/>
+			<column name="POSNR" type="INT"/>
+			<column name="PRICE" type="DOUBLE"/>
+			<column name="QUANTITY" type="DOUBLE"/>
+			<column name="QUANTITYUNIT" type="VARCHAR(255)"/>
+			<column name="TARA" type="DOUBLE"/>
+			<column name="VALIDFROM" type="date"/>
+			<column name="VALIDTO" type="date"/>
+			<column name="VESTINGPERIODEND" type="date"/>
+			<column name="VESTINGPERIODSTART" type="date"/>
+			<column name="WEIGHT" type="DOUBLE"/>
+			<column name="FK_VAT" type="BIGINT"/>
+			<column name="FK_PRODUCT" type="BIGINT"/>
+			<column name="FK_DOCUMENT" type="BIGINT"/>
+		</createTable>
+		<createTable tableName="FKT_DOCUMENTRECEIVER">
+			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="BILLINGTYPE" type="VARCHAR(255)"/>
+			<column name="CITY" type="VARCHAR(255)"/>
+			<column name="CITYADDON" type="VARCHAR(255)"/>
+			<column name="COMPANY" type="VARCHAR(255)"/>
+			<column name="CONSULTANT" type="VARCHAR(255)"/>
+			<column name="COUNTRYCODE" type="VARCHAR(255)"/>
+			<column name="CUSTOMERNUMBER" type="VARCHAR(255)"/>
+			<column name="DATEADDED" type="date"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BIT"/>
+			<column name="DESCRIPTION" type="LONGTEXT"/>
+			<column name="EMAIL" type="VARCHAR(255)"/>
+			<column name="FAX" type="VARCHAR(255)"/>
+			<column name="FIRSTNAME" type="VARCHAR(255)"/>
+			<column name="GENDER" type="INT"/>
+			<column name="GLN" type="BIGINT"/>
+			<column name="MANDATEREFERENCE" type="VARCHAR(255)"/>
+			<column name="MANUALADDRESS" type="VARCHAR(255)"/>
+			<column name="MOBILE" type="VARCHAR(255)"/>
+			<column name="MODIFIED" type="date"/>
+			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="NAME" type="VARCHAR(255)"/>
+			<column name="ORIGINADDRESSID" type="BIGINT"/>
+			<column name="ORIGINCONTACTID" type="BIGINT"/>
+			<column name="PHONE" type="VARCHAR(255)"/>
+			<column name="STREET" type="VARCHAR(255)"/>
+			<column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
+			<column name="TITLE" type="VARCHAR(255)"/>
+			<column name="VALIDFROM" type="date"/>
+			<column name="VALIDTO" type="date"/>
+			<column name="VATNUMBER" type="VARCHAR(255)"/>
+			<column name="ZIP" type="VARCHAR(255)"/>
+			<column name="FK_DOCUMENT" type="BIGINT"/>
+		</createTable>
+	</changeSet>
+
+	<changeSet author="rheydenreich (generated)" id="1568573739918-1">
+		<comment>create temporary tables for new contact structure (will be dropped later on)</comment>
+		<createTable tableName="TMP_FKT_CONTACT">
+			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="DTYPE" type="VARCHAR(31)"/>
+			<column name="BIRTHDAY" type="date"/>
+			<column name="COMPANY" type="VARCHAR(255)"/>
+			<column name="CUSTOMERNUMBER" type="VARCHAR(255)"/>
+			<column name="DATEADDED" type="date"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BIT"/>
+			<column name="DISCOUNT" type="DOUBLE"/>
+			<column name="FIRSTNAME" type="VARCHAR(255)"/>
+			<column name="GENDER" type="INT"/>
+			<column name="GLN" type="BIGINT"/>
+			<column name="MANDATEREFERENCE" type="VARCHAR(255)"/>
+			<column name="MODIFIED" type="date"/>
+			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="NAME" type="VARCHAR(255)"/>
+			<column name="NOTE" type="LONGTEXT"/>
+			<column name="RELIABILITY" type="VARCHAR(255)"/>
+			<column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
+			<column name="TITLE" type="VARCHAR(255)"/>
+			<column name="USENETGROSS" type="SMALLINT"/>
+			<column defaultValueBoolean="false" name="USESALESEQUALIZATIONTAX" type="BIT"/>
+			<column name="VALIDFROM" type="date"/>
+			<column name="VALIDTO" type="date"/>
+			<column name="VATNUMBER" type="VARCHAR(255)"/>
+			<column defaultValueBoolean="false" name="VATNUMBERVALID" type="BIT"/>
+			<column name="WEBSHOPNAME" type="VARCHAR(255)"/>
+			<column name="WEBSITE" type="VARCHAR(255)"/>
+			<column name="FK_BANKACCOUNT" type="BIGINT"/>
+			<column name="FK_CATEGORY" type="BIGINT"/>
+			<column name="FK_PAYMENT" type="BIGINT"/>
+		</createTable>
+		<createTable tableName="TMP_FKT_ADDRESS">
+			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="CITY" type="VARCHAR(255)"/>
+			<column name="CITYADDON" type="VARCHAR(255)"/>
+			<column name="COUNTRYCODE" type="VARCHAR(255)"/>
+			<column name="DATEADDED" type="date"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BIT"/>
+			<column name="EMAIL" type="VARCHAR(255)"/>
+			<column name="FAX" type="VARCHAR(255)"/>
+			<column name="LOCALCONSULTANT" type="VARCHAR(255)"/>
+			<column name="MOBILE" type="VARCHAR(255)"/>
+			<column name="MODIFIED" type="date"/>
+			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="NAME" type="VARCHAR(255)"/>
+			<column name="PHONE" type="VARCHAR(255)"/>
+			<column name="STREET" type="VARCHAR(255)"/>
+			<column name="VALIDFROM" type="date"/>
+			<column name="VALIDTO" type="date"/>
+			<column name="ZIP" type="VARCHAR(255)"/>
+			<column name="FK_CONTACT" type="BIGINT"/>
+			<column name="CONTACT_ADDRESSES" type="BIGINT"/>
+		</createTable>
+		<createTable tableName="FKT_ADDRESS_CONTACTTYPES">
+			<column name="ADDRESS_CONTACTTYPES" type="BIGINT"/>
+			<column name="T_ELEMENT" type="VARCHAR(255)"/>
+		</createTable>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-100">
+		<comment>Rename old tables and switch temporary tables to active tables.</comment>
+		<renameTable oldTableName="FKT_DOCUMENT" newTableName="OLD_FKT_DOCUMENT"/>
+		<renameTable oldTableName="FKT_DOCUMENTITEM" newTableName="OLD_FKT_DOCUMENTITEM"/>
+		<renameTable oldTableName="FKT_ADDRESS" newTableName="OLD_FKT_ADDRESS"/>
+		<renameTable oldTableName="FKT_CONTACT" newTableName="OLD_FKT_CONTACT"/>
+		<renameTable oldTableName="TMP_FKT_DOCUMENT" newTableName="FKT_DOCUMENT"/>
+		<renameTable oldTableName="TMP_FKT_DOCUMENTITEM" newTableName="FKT_DOCUMENTITEM"/>
+		<renameTable oldTableName="TMP_FKT_ADDRESS" newTableName="FKT_ADDRESS"/>
+		<renameTable oldTableName="TMP_FKT_CONTACT" newTableName="FKT_CONTACT"/>
+	</changeSet>
+
+</databaseChangeLog>
+
+    

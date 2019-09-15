@@ -14,6 +14,7 @@
  
 package com.sebulli.fakturama.dbservice.impl;
 
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -77,7 +78,8 @@ public class DbUpdateService implements IDbUpdateService {
 //				CatalogAndSchema cat = new CatalogAndSchema("", database.getDefaultSchemaName());
 //				database.dropDatabaseObjects(cat);
 //			}
-			this.getClass().getResourceAsStream("/changelog/db.changelog-master.xml");
+//			URL changelogMaster = FrameworkUtil.getBundle(this.getClass()).getResource("/changelog/db.changelog-master.xml");
+//			changelogMaster.openStream();
 			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
 					new OSGiResourceAccessor(context.getBundle()), database);
 //			liquibase.forceReleaseLocks();   // workaround!
@@ -124,7 +126,7 @@ public class DbUpdateService implements IDbUpdateService {
 			 */
 			if(dataSource.startsWith("jdbc:hsqldb:file") || dataSource.endsWith("fakdbneu")) {
 				allServiceReferences = context.getAllServiceReferences(IActivateDbServer.class.getName(), null);
-				if(allServiceReferences.length > 0) {
+				if(allServiceReferences != null && allServiceReferences.length > 0) {
 					ServiceReference<IActivateDbServer> serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
 					prop.put(PROP_HSQLFILEDB, eclipsePrefs.get(PROP_HSQLFILEDB, ""));
 					prop.put("encoding", "UTF-8");
