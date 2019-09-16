@@ -5,7 +5,7 @@ package com.sebulli.fakturama.views.datatable.contacts;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
@@ -89,13 +89,13 @@ public class CreditorListTable extends ContactListTable<Creditor> {
 		 */
 		return new TextWidgetMatcherEditor<Creditor>(searchText.getTextControl(),
 				new ContactListFilterator<Creditor>(
-						BeanProperties.value(Creditor_.class, Creditor_.customerNumber.getName()),
-						BeanProperties.value(Creditor_.class, Creditor_.firstName.getName()),
-						BeanProperties.value(Creditor_.class, Creditor_.name.getName()),
-						BeanProperties.value(Creditor_.class, Creditor_.company.getName()),
-						BeanProperties.list(Creditor_.class, Creditor_.addresses.getName(), Address.class)
+						BeanProperties.value(Creditor.class, Creditor_.customerNumber.getName()),
+						BeanProperties.value(Creditor.class, Creditor_.firstName.getName()),
+						BeanProperties.value(Creditor.class, Creditor_.name.getName()),
+						BeanProperties.value(Creditor.class, Creditor_.company.getName()),
+						BeanProperties.list(Creditor.class, Creditor_.addresses.getName(), Address.class)
 								.values(Address_.zip.getName()),
-						BeanProperties.list(Creditor_.class, Creditor_.addresses.getName(), Address.class)
+						BeanProperties.list(Creditor.class, Creditor_.addresses.getName(), Address.class)
 								.values(Address_.city.getName())));
 	}
 

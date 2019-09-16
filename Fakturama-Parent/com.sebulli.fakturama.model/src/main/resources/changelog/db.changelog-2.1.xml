@@ -699,11 +699,18 @@ TODO:
 
 	<changeSet author="rheydenr" id="20190915-055">
 		<sql>insert into FKT_ADDRESS_CONTACTTYPES (ADDRESS_CONTACTTYPES,
-			T_ELEMENT) select id, 'BILLING' from FKT_ADDRESS;
+			T_ELEMENT) select BILLING_ADDRESS_ID, 'BILLING' from TMP_CONTACTS_WITH_ADDRESSES;
 		</sql>
 	</changeSet>
 
 	<changeSet author="rheydenr" id="20190915-056">
+		<sql>insert into FKT_ADDRESS_CONTACTTYPES (ADDRESS_CONTACTTYPES,
+			T_ELEMENT) select DELIVERY_ADDRESS_ID, 'DELIVERY' from
+			TMP_CONTACTS_WITH_ADDRESSES where DELIVERY_CONTACT_ID is not null;
+		</sql>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-057">
 		<sql>insert into tmp_fkt_address(
 			ID
 			,CITY
@@ -749,13 +756,6 @@ TODO:
 			,BILLING_CONTACT_ID
 			from TMP_CONTACTS_WITH_ADDRESSES
 			where DELIVERY_CONTACT_ID is not null;
-		</sql>
-	</changeSet>
-
-	<changeSet author="rheydenr" id="20190915-057">
-		<sql>insert into FKT_ADDRESS_CONTACTTYPES (ADDRESS_CONTACTTYPES,
-			T_ELEMENT) select BILLING_CONTACT_ID, 'DELIVERY' from
-			TMP_CONTACTS_WITH_ADDRESSES where DELIVERY_CONTACT_ID is not null;
 		</sql>
 	</changeSet>
 

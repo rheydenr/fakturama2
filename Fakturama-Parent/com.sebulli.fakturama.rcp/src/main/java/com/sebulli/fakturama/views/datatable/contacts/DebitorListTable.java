@@ -5,7 +5,7 @@ package com.sebulli.fakturama.views.datatable.contacts;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
