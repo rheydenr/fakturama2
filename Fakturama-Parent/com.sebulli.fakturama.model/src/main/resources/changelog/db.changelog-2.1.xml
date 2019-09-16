@@ -61,6 +61,22 @@ TODO:
 		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_ALTERNATECONTACT"/>
 		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_DOCUMENT_FK_CONTACT"/>
 		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_DOCUMENT_FK_DELIVERYCONTACT"/>
+		
+		<!--  also drop other indexes because they have to be recreated -->
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_BANKACCOUNT"/>
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_CATEGORY"/>
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_PAYMENT"/>
+		
+		<dropIndex tableName="FKT_DOCUMENTITEM" indexName="FK_FKT_DOCUMENTITEM_FK_DOCUMENT"/>
+		<dropIndex tableName="FKT_DOCUMENTITEM" indexName="FK_FKT_DOCUMENTITEM_FK_PRODUCT"/>
+		<dropIndex tableName="FKT_DOCUMENTITEM" indexName="FK_FKT_DOCUMENTITEM_FK_VAT"/>
+		
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_DOCUMENT_INVOICEREFERENCE"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_INDIVIDUALINFO"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_NOVATREF"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_PAYMENT"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_SHIPPING"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT"/>
 	</changeSet>
 
 	<changeSet author="rheydenr" id="20190915-030">
@@ -800,7 +816,7 @@ TODO:
             <column name="FK_PARENT_CATEGORY"/>
         </createIndex>
     </changeSet>
-<!--    <changeSet author="rheydenreich (generated)" id="1568573739918-40">
+    <changeSet author="rheydenreich (generated)" id="1568573739918-40">
         <createIndex indexName="FK_FKT_CONTACT_FK_BANKACCOUNT" tableName="FKT_CONTACT">
             <column name="FK_BANKACCOUNT"/>
         </createIndex>
@@ -829,13 +845,13 @@ TODO:
         <createIndex indexName="FK_FKT_DOCUMENTITEM_FK_VAT" tableName="FKT_DOCUMENTITEM">
             <column name="FK_VAT"/>
         </createIndex>
-    </changeSet> -->
+    </changeSet>
     <changeSet author="rheydenreich (generated)" id="1568573739918-46">
         <createIndex indexName="FK_FKT_DOCUMENTRECEIVER_FK_DOCUMENT" tableName="FKT_DOCUMENTRECEIVER">
             <column name="FK_DOCUMENT"/>
         </createIndex>
     </changeSet>
-    <!-- <changeSet author="rheydenreich (generated)" id="1568573739918-47">
+    <changeSet author="rheydenreich (generated)" id="1568573739918-47">
         <createIndex indexName="FK_FKT_DOCUMENT_DOCUMENT_INVOICEREFERENCE" tableName="FKT_DOCUMENT">
             <column name="DOCUMENT_INVOICEREFERENCE"/>
         </createIndex>
@@ -864,92 +880,12 @@ TODO:
         <createIndex indexName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT" tableName="FKT_DOCUMENT">
             <column name="FK_SRCDOCUMENT"/>
         </createIndex>
-    </changeSet> -->
+    </changeSet>
     <changeSet author="rheydenreich (generated)" id="1568573739918-53">
         <createIndex indexName="FK_FKT_ITEMACCOUNTTYPE_FK_CATEGORY" tableName="FKT_ITEMACCOUNTTYPE">
             <column name="FK_CATEGORY"/>
         </createIndex>
     </changeSet>
-    <!-- <changeSet author="rheydenreich (generated)" id="1568573739918-54">
-        <createIndex indexName="FK_FKT_PAYMENT_FK_CATEGORY" tableName="FKT_PAYMENT">
-            <column name="FK_CATEGORY"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-55">
-        <createIndex indexName="FK_FKT_PRODUCTBLOCKPRICE_FK_PRODUCT" tableName="FKT_PRODUCTBLOCKPRICE">
-            <column name="FK_PRODUCT"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-56">
-        <createIndex indexName="FK_FKT_PRODUCTOPTIONS_FK_PRODUCT" tableName="FKT_PRODUCTOPTIONS">
-            <column name="FK_PRODUCT"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-57">
-        <createIndex indexName="FK_FKT_PRODUCT_FK_CATEGORY" tableName="FKT_PRODUCT">
-            <column name="FK_CATEGORY"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-58">
-        <createIndex indexName="FK_FKT_PRODUCT_FK_VAT" tableName="FKT_PRODUCT">
-            <column name="FK_VAT"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-59">
-        <createIndex indexName="FK_FKT_ROLE_FK_USER" tableName="FKT_ROLE">
-            <column name="FK_USER"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-60">
-        <createIndex indexName="FK_FKT_SHIPPING_FK_CATEGORY" tableName="FKT_SHIPPING">
-            <column name="FK_CATEGORY"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-61">
-        <createIndex indexName="FK_FKT_SHIPPING_FK_VAT" tableName="FKT_SHIPPING">
-            <column name="FK_VAT"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-62">
-        <createIndex indexName="FK_FKT_TEXTMODULE_FK_CATEGORY" tableName="FKT_TEXTMODULE">
-            <column name="FK_CATEGORY"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-63">
-        <createIndex indexName="FK_FKT_USER_FK_TENANT" tableName="FKT_USER">
-            <column name="FK_TENANT"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-64">
-        <createIndex indexName="FK_FKT_VAT_FK_CATEGORY" tableName="FKT_VAT">
-            <column name="FK_CATEGORY"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-65">
-        <createIndex indexName="FK_FKT_VOUCHERITEMS_FK_ACCOUNTTYPE" tableName="FKT_VOUCHERITEMS">
-            <column name="FK_ACCOUNTTYPE"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-66">
-        <createIndex indexName="FK_FKT_VOUCHERITEMS_FK_VAT" tableName="FKT_VOUCHERITEMS">
-            <column name="FK_VAT"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-67">
-        <createIndex indexName="FK_FKT_VOUCHERITEMS_FK_VOUCHER" tableName="FKT_VOUCHERITEMS">
-            <column name="FK_VOUCHER"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-68">
-        <createIndex indexName="FK_FKT_VOUCHERS_FK_CATEGORY" tableName="FKT_VOUCHERS">
-            <column name="FK_CATEGORY"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-69">
-        <createIndex indexName="FK_FKT_WEBSHOPSTATEMAPPING_FK_WEBSHOP" tableName="FKT_WEBSHOPSTATEMAPPING">
-            <column name="FK_WEBSHOP"/>
-        </createIndex>
-    </changeSet> -->
     <changeSet author="rheydenreich (generated)" id="1568573739918-70">
         <addForeignKeyConstraint baseColumnNames="ADDRESS_CONTACTTYPES" baseTableName="FKT_ADDRESS_CONTACTTYPES" constraintName="FK_FKT_ADDRESS_CONTACTTYPES_ADDRESS_CONTACTTYPES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_ADDRESS"/>
     </changeSet>
@@ -992,7 +928,7 @@ TODO:
     <changeSet author="rheydenreich (generated)" id="1568573739918-83">
         <addForeignKeyConstraint baseColumnNames="FK_DOCUMENT" baseTableName="FKT_DOCUMENTRECEIVER" constraintName="FK_FKT_DOCUMENTRECEIVER_FK_DOCUMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-<!--   <changeSet author="rheydenreich (generated)" id="1568573739918-84">
+   <changeSet author="rheydenreich (generated)" id="1568573739918-84">
         <addForeignKeyConstraint baseColumnNames="DOCUMENT_INVOICEREFERENCE" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_DOCUMENT_INVOICEREFERENCE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
     <changeSet author="rheydenreich (generated)" id="1568573739918-85">
@@ -1010,7 +946,7 @@ TODO:
     <changeSet author="rheydenreich (generated)" id="1568573739918-89">
         <addForeignKeyConstraint baseColumnNames="FK_SRCDOCUMENT" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
-    <changeSet author="rheydenreich (generated)" id="1568573739918-90">
+    <!-- <changeSet author="rheydenreich (generated)" id="1568573739918-90">
         <addForeignKeyConstraint baseColumnNames="DUNNING_PARENT_ID" baseTableName="FKT_DUNNING" constraintName="FK_FKT_DUNNING_DUNNING_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
     </changeSet>
     <changeSet author="rheydenreich (generated)" id="1568573739918-91">
