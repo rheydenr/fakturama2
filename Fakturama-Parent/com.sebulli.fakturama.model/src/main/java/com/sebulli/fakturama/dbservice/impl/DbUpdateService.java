@@ -14,7 +14,6 @@
  
 package com.sebulli.fakturama.dbservice.impl;
 
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -41,6 +40,7 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
+import liquibase.exception.ValidationFailedException;
 import liquibase.osgi.OSGiResourceAccessor;
 
 /**
@@ -52,6 +52,9 @@ public class DbUpdateService implements IDbUpdateService {
     private static final String PROP_HSQLFILEDB = "hsqlfiledb";
 	private Preferences eclipsePrefs;
 	private IActivateDbServer currentService;
+    
+//    @Inject
+//    protected ILogger log;
 
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.dbservice.IDbUpdateService#updateDatabase()
@@ -84,8 +87,11 @@ public class DbUpdateService implements IDbUpdateService {
 					new OSGiResourceAccessor(context.getBundle()), database);
 //			liquibase.forceReleaseLocks();   // workaround!
 			liquibase.update(new Contexts(), new LabelExpression());
+		} catch (ValidationFailedException exc) {
+    		System.err.println("Database has not the correct version! " + exc.getMessage());
+			retval = false;
 		} catch (LiquibaseException | SQLException | NullPointerException ex) {
-			ex.printStackTrace();
+			System.err.println(ex);
 			retval = false;
 		}
 		return retval;

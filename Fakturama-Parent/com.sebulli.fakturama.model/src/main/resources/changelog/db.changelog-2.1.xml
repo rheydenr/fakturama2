@@ -500,7 +500,6 @@ TODO:
 		</sql>
 	</changeSet>
 
-
 	<changeSet author="rheydenr" id="20190915-052">
 		<comment>update addresses (merge delivery contacts into existing billing contacts)</comment>
 		<sql>
@@ -782,7 +781,8 @@ TODO:
 	
 	<changeSet author="rheydenr" id="20190915-060">
 	<comment>Update document tables</comment>
-	<sql>insert into TMP_FKT_DOCUMENT (
+	<sql>
+	insert into TMP_FKT_DOCUMENT (
 		ADDRESSFIRSTLINE,
 		BILLINGTYPE,
 		CUSTOMERREF,
@@ -825,7 +825,7 @@ TODO:
 		VALIDTO,
 		VESTINGPERIODEND,
 		VESTINGPERIODSTART)
-		select ADDRESSFIRSTLINE,
+	select ADDRESSFIRSTLINE,
 		BILLINGTYPE,
 		CUSTOMERREF,DATEADDED,
 		DELETED,
@@ -866,364 +866,277 @@ TODO:
 		VALIDTO,
 		VESTINGPERIODEND,
 		VESTINGPERIODSTART
-		from FKT_DOCUMENT;</sql>
+	from FKT_DOCUMENT;</sql>
 	</changeSet>
 
 	<changeSet author="rheydenr" id="20190915-061">
 	<comment>Create DocumentReceivers</comment>
 	<sql><comment>DocumentReceivers (BILLING) for all documents except Delivery notes </comment>
-	INSERT INTO
-    FKT_DOCUMENTRECEIVER
-    (
-        BILLINGTYPE,
-        CITY,
-        CITYADDON,
-        COMPANY,
-        CONSULTANT,
-        COUNTRYCODE,
-        CUSTOMERNUMBER,
-        DATEADDED,
-        EMAIL,
-        FAX,
-        FIRSTNAME,
-        GENDER,
-        GLN,
-        MANDATEREFERENCE,
-        MANUALADDRESS,
-        MOBILE,
-        ORIGINADDRESSID,
-        ORIGINCONTACTID,
-        PHONE,
-        STREET,
-        SUPPLIERNUMBER,
-        TITLE,
-        VATNUMBER,
-        ZIP,
-        FK_DOCUMENT
-    )
-SELECT
-    d.billingtype,
-    BILLING_ADDRESS_CITY,
-    BILLING_ADDRESS_CITYADDON,
-    BILLING_CONTACT_COMPANY,
-    d.consultant,
-    BILLING_ADDRESS_COUNTRYCODE,
-    BILLING_CONTACT_CUSTOMERNUMBER,
-    CURRENT_TIMESTAMP,
-    BILLING_CONTACT_EMAIL,
-    BILLING_CONTACT_FAX,
-    BILLING_CONTACT_FIRSTNAME,
-    BILLING_CONTACT_GENDER,
-    BILLING_CONTACT_GLN,
-    BILLING_CONTACT_MANDATEREFERENCE,
-    BILLING_ADDRESS_MANUALADDRESS,
-    BILLING_CONTACT_MOBILE,
-    BILLING_ADDRESS_ID,
-    BILLING_CONTACT_ID,
-    BILLING_CONTACT_PHONE,
-    BILLING_ADDRESS_STREET,
-    BILLING_CONTACT_SUPPLIERNUMBER,
-    BILLING_CONTACT_TITLE,
-    BILLING_CONTACT_VATNUMBER,
-    BILLING_ADDRESS_ZIP,
-    d.id
-FROM
-    TMP_CONTACTS_WITH_ADDRESSES,
-    FKT_DOCUMENT d
-WHERE
-    d.fk_contact = billing_contact_id
-AND d.dtype != 'Delivery';</sql>
+		INSERT INTO FKT_DOCUMENTRECEIVER
+	    (
+	        BILLINGTYPE,
+	        CITY,
+	        CITYADDON,
+	        COMPANY,
+	        CONSULTANT,
+	        COUNTRYCODE,
+	        CUSTOMERNUMBER,
+	        DATEADDED,
+	        EMAIL,
+	        FAX,
+	        FIRSTNAME,
+	        GENDER,
+	        GLN,
+	        MANDATEREFERENCE,
+	        MANUALADDRESS,
+	        MOBILE,
+	        ORIGINADDRESSID,
+	        ORIGINCONTACTID,
+	        PHONE,
+	        STREET,
+	        SUPPLIERNUMBER,
+	        TITLE,
+	        VATNUMBER,
+	        ZIP,
+	        FK_DOCUMENT
+	    )
+		SELECT
+		    d.billingtype,
+		    BILLING_ADDRESS_CITY,
+		    BILLING_ADDRESS_CITYADDON,
+		    BILLING_CONTACT_COMPANY,
+		    d.consultant,
+		    BILLING_ADDRESS_COUNTRYCODE,
+		    BILLING_CONTACT_CUSTOMERNUMBER,
+		    CURRENT_TIMESTAMP,
+		    BILLING_CONTACT_EMAIL,
+		    BILLING_CONTACT_FAX,
+		    BILLING_CONTACT_FIRSTNAME,
+		    BILLING_CONTACT_GENDER,
+		    BILLING_CONTACT_GLN,
+		    BILLING_CONTACT_MANDATEREFERENCE,
+		    BILLING_ADDRESS_MANUALADDRESS,
+		    BILLING_CONTACT_MOBILE,
+		    BILLING_ADDRESS_ID,
+		    BILLING_CONTACT_ID,
+		    BILLING_CONTACT_PHONE,
+		    BILLING_ADDRESS_STREET,
+		    BILLING_CONTACT_SUPPLIERNUMBER,
+		    BILLING_CONTACT_TITLE,
+		    BILLING_CONTACT_VATNUMBER,
+		    BILLING_ADDRESS_ZIP,
+		    d.id
+		FROM
+		    TMP_CONTACTS_WITH_ADDRESSES,
+		    FKT_DOCUMENT d
+		WHERE
+		    d.fk_contact = billing_contact_id
+		AND d.dtype != 'Delivery';</sql>
 	</changeSet>
-
+	
 	<changeSet author="rheydenr" id="20190915-062">
 	<comment>Create DocumentReceivers</comment>
-	<sql><comment>DocumentReceivers (BILLING) for all documents except Delivery notes</comment>
-INSERT
-INTO
-    FKT_DOCUMENTRECEIVER
-    (
-        BILLINGTYPE,
-        CITY,
-        CITYADDON,
-        COMPANY,
-        CONSULTANT,
-        COUNTRYCODE,
-        CUSTOMERNUMBER,
-        DATEADDED,
-        EMAIL,
-        FAX,
-        FIRSTNAME,
-        GENDER,
-        GLN,
-        MANDATEREFERENCE,
-        MANUALADDRESS,
-        MOBILE,
-        ORIGINADDRESSID,
-        ORIGINCONTACTID,
-        PHONE,
-        STREET,
-        SUPPLIERNUMBER,
-        TITLE,
-        VATNUMBER,
-        ZIP,
-        FK_DOCUMENT
-    )
-SELECT
-    d.billingtype,
-    BILLING_ADDRESS_CITY,
-    BILLING_ADDRESS_CITYADDON,
-    BILLING_CONTACT_COMPANY,
-    d.consultant,
-    BILLING_ADDRESS_COUNTRYCODE,
-    BILLING_CONTACT_CUSTOMERNUMBER,
-    CURRENT_TIMESTAMP,
-    BILLING_CONTACT_EMAIL,
-    BILLING_CONTACT_FAX,
-    BILLING_CONTACT_FIRSTNAME,
-    BILLING_CONTACT_GENDER,
-    BILLING_CONTACT_GLN,
-    BILLING_CONTACT_MANDATEREFERENCE,
-    BILLING_ADDRESS_MANUALADDRESS,
-    BILLING_CONTACT_MOBILE,
-    BILLING_ADDRESS_ID,
-    BILLING_CONTACT_ID,
-    BILLING_CONTACT_PHONE,
-    BILLING_ADDRESS_STREET,
-    BILLING_CONTACT_SUPPLIERNUMBER,
-    BILLING_CONTACT_TITLE,
-    BILLING_CONTACT_VATNUMBER,
-    BILLING_ADDRESS_ZIP,
-    d.id
-FROM
-    TMP_CONTACTS_WITH_ADDRESSES,
-    FKT_DOCUMENT d
-WHERE
-    d.fk_contact = billing_contact_id
-AND d.dtype != 'Delivery';</sql>
-	</changeSet>
-	
-	
-	<changeSet author="rheydenr" id="20190915-063">
-	<comment>Create DocumentReceivers</comment>
 	<sql><comment>DocumentReceivers (delivery address) for all documents except Delivery notes</comment>
-	INSERT
-INTO
-    FKT_DOCUMENTRECEIVER
-    (
-        BILLINGTYPE,
-        CITY,
-        CITYADDON,
-        COMPANY,
-        CONSULTANT,
-        COUNTRYCODE,
-        CUSTOMERNUMBER,
-        DATEADDED,
-        EMAIL,
-        FAX,
-        FIRSTNAME,
-        GENDER,
-        GLN,
-        MANDATEREFERENCE,
-        MANUALADDRESS,
-        MOBILE,
-        ORIGINADDRESSID,
-        ORIGINCONTACTID,
-        PHONE,
-        STREET,
-        SUPPLIERNUMBER,
-        TITLE,
-        VATNUMBER,
-        ZIP,
-        FK_DOCUMENT
-    )
-SELECT
-    '5',
-    DELIVERY_ADDRESS_CITY,
-    DELIVERY_ADDRESS_CITYADDON,
-    DELIVERY_CONTACT_COMPANY,
-    d.consultant,
-    DELIVERY_ADDRESS_COUNTRYCODE,
-    DELIVERY_CONTACT_CUSTOMERNUMBER,
-    CURRENT_TIMESTAMP,
-    DELIVERY_CONTACT_EMAIL,
-    DELIVERY_CONTACT_FAX,
-    DELIVERY_CONTACT_FIRSTNAME,
-    DELIVERY_CONTACT_GENDER,
-    DELIVERY_CONTACT_GLN,
-    DELIVERY_CONTACT_MANDATEREFERENCE,
-    DELIVERY_ADDRESS_MANUALADDRESS,
-    DELIVERY_CONTACT_MOBILE,
-    DELIVERY_ADDRESS_ID,
-    DELIVERY_CONTACT_ID,
-    DELIVERY_CONTACT_PHONE,
-    DELIVERY_ADDRESS_STREET,
-    DELIVERY_CONTACT_SUPPLIERNUMBER,
-    DELIVERY_CONTACT_TITLE,
-    DELIVERY_CONTACT_VATNUMBER,
-    DELIVERY_ADDRESS_ZIP,
-    d.id
-FROM
-    TMP_CONTACTS_WITH_ADDRESSES
-JOIN
-    FKT_DOCUMENT d
-ON
-    (
-        d.fk_contact = billing_contact_id)
-AND d.dtype != 'Delivery'
-AND delivery_contact_id IS NOT NULL;
+		INSERT INTO FKT_DOCUMENTRECEIVER
+		    (
+		        BILLINGTYPE,
+		        CITY,
+		        CITYADDON,
+		        COMPANY,
+		        CONSULTANT,
+		        COUNTRYCODE,
+		        CUSTOMERNUMBER,
+		        DATEADDED,
+		        EMAIL,
+		        FAX,
+		        FIRSTNAME,
+		        GENDER,
+		        GLN,
+		        MANDATEREFERENCE,
+		        MANUALADDRESS,
+		        MOBILE,
+		        ORIGINADDRESSID,
+		        ORIGINCONTACTID,
+		        PHONE,
+		        STREET,
+		        SUPPLIERNUMBER,
+		        TITLE,
+		        VATNUMBER,
+		        ZIP,
+		        FK_DOCUMENT
+		    )
+		SELECT
+		    '5',
+		    DELIVERY_ADDRESS_CITY,
+		    DELIVERY_ADDRESS_CITYADDON,
+		    DELIVERY_CONTACT_COMPANY,
+		    d.consultant,
+		    DELIVERY_ADDRESS_COUNTRYCODE,
+		    DELIVERY_CONTACT_CUSTOMERNUMBER,
+		    CURRENT_TIMESTAMP,
+		    DELIVERY_CONTACT_EMAIL,
+		    DELIVERY_CONTACT_FAX,
+		    DELIVERY_CONTACT_FIRSTNAME,
+		    DELIVERY_CONTACT_GENDER,
+		    DELIVERY_CONTACT_GLN,
+		    DELIVERY_CONTACT_MANDATEREFERENCE,
+		    DELIVERY_ADDRESS_MANUALADDRESS,
+		    DELIVERY_CONTACT_MOBILE,
+		    DELIVERY_ADDRESS_ID,
+		    DELIVERY_CONTACT_ID,
+		    DELIVERY_CONTACT_PHONE,
+		    DELIVERY_ADDRESS_STREET,
+		    DELIVERY_CONTACT_SUPPLIERNUMBER,
+		    DELIVERY_CONTACT_TITLE,
+		    DELIVERY_CONTACT_VATNUMBER,
+		    DELIVERY_ADDRESS_ZIP,
+		    d.id
+		FROM TMP_CONTACTS_WITH_ADDRESSES
+		JOIN FKT_DOCUMENT d
+		ON (d.fk_contact = billing_contact_id)
+		AND d.dtype != 'Delivery'
+		AND delivery_contact_id IS NOT NULL;
 	</sql>
 	</changeSet>
 	
-	<changeSet author="rheydenr" id="20190915-064">
+	<changeSet author="rheydenr" id="20190915-063">
 	<comment>Create DocumentReceivers</comment>
 	<sql><comment>DocumentReceivers (DELIVERY) for all Delivery notes documents </comment>
-	INSERT
-INTO
-    FKT_DOCUMENTRECEIVER
-    (
-        BILLINGTYPE,
-        CITY,
-        CITYADDON,
-        COMPANY,
-        CONSULTANT,
-        COUNTRYCODE,
-        CUSTOMERNUMBER,
-        DATEADDED,
-        EMAIL,
-        FAX,
-        FIRSTNAME,
-        GENDER,
-        GLN,
-        MANDATEREFERENCE,
-        MANUALADDRESS,
-        MOBILE,
-        ORIGINADDRESSID,
-        ORIGINCONTACTID,
-        PHONE,
-        STREET,
-        SUPPLIERNUMBER,
-        TITLE,
-        VATNUMBER,
-        ZIP,
-        FK_DOCUMENT
-    )
-SELECT
-    d.billingtype,
-    BILLING_ADDRESS_CITY,
-    BILLING_ADDRESS_CITYADDON,
-    BILLING_CONTACT_COMPANY,
-    d.consultant,
-    BILLING_ADDRESS_COUNTRYCODE,
-    BILLING_CONTACT_CUSTOMERNUMBER,
-    CURRENT_TIMESTAMP,
-    BILLING_CONTACT_EMAIL,
-    BILLING_CONTACT_FAX,
-    BILLING_CONTACT_FIRSTNAME,
-    BILLING_CONTACT_GENDER,
-    BILLING_CONTACT_GLN,
-    BILLING_CONTACT_MANDATEREFERENCE,
-    BILLING_ADDRESS_MANUALADDRESS,
-    BILLING_CONTACT_MOBILE,
-    BILLING_ADDRESS_ID,
-    BILLING_CONTACT_ID,
-    BILLING_CONTACT_PHONE,
-    BILLING_ADDRESS_STREET,
-    BILLING_CONTACT_SUPPLIERNUMBER,
-    BILLING_CONTACT_TITLE,
-    BILLING_CONTACT_VATNUMBER,
-    BILLING_ADDRESS_ZIP,
-    d.id
-FROM
-    TMP_CONTACTS_WITH_ADDRESSES,
-    FKT_DOCUMENT d
-WHERE
-    d.fk_contact = billing_contact_id
-AND d.dtype = 'Delivery';
+		INSERT INTO FKT_DOCUMENTRECEIVER
+		    (
+		        BILLINGTYPE,
+		        CITY,
+		        CITYADDON,
+		        COMPANY,
+		        CONSULTANT,
+		        COUNTRYCODE,
+		        CUSTOMERNUMBER,
+		        DATEADDED,
+		        EMAIL,
+		        FAX,
+		        FIRSTNAME,
+		        GENDER,
+		        GLN,
+		        MANDATEREFERENCE,
+		        MANUALADDRESS,
+		        MOBILE,
+		        ORIGINADDRESSID,
+		        ORIGINCONTACTID,
+		        PHONE,
+		        STREET,
+		        SUPPLIERNUMBER,
+		        TITLE,
+		        VATNUMBER,
+		        ZIP,
+		        FK_DOCUMENT
+		    )
+		SELECT
+		    d.billingtype,
+		    BILLING_ADDRESS_CITY,
+		    BILLING_ADDRESS_CITYADDON,
+		    BILLING_CONTACT_COMPANY,
+		    d.consultant,
+		    BILLING_ADDRESS_COUNTRYCODE,
+		    BILLING_CONTACT_CUSTOMERNUMBER,
+		    CURRENT_TIMESTAMP,
+		    BILLING_CONTACT_EMAIL,
+		    BILLING_CONTACT_FAX,
+		    BILLING_CONTACT_FIRSTNAME,
+		    BILLING_CONTACT_GENDER,
+		    BILLING_CONTACT_GLN,
+		    BILLING_CONTACT_MANDATEREFERENCE,
+		    BILLING_ADDRESS_MANUALADDRESS,
+		    BILLING_CONTACT_MOBILE,
+		    BILLING_ADDRESS_ID,
+		    BILLING_CONTACT_ID,
+		    BILLING_CONTACT_PHONE,
+		    BILLING_ADDRESS_STREET,
+		    BILLING_CONTACT_SUPPLIERNUMBER,
+		    BILLING_CONTACT_TITLE,
+		    BILLING_CONTACT_VATNUMBER,
+		    BILLING_ADDRESS_ZIP,
+		    d.id
+		FROM
+		    TMP_CONTACTS_WITH_ADDRESSES,
+		    FKT_DOCUMENT d
+		WHERE
+		    d.fk_contact = billing_contact_id
+		AND d.dtype = 'Delivery';
 	</sql>
 	</changeSet>
 	
 	<changeSet author="rheydenr" id="20190915-065">
 	<comment>Create DocumentReceivers</comment>
 	<sql><comment>DocumentReceivers (billing address) for all Delivery notes documents</comment>
-	INSERT
-INTO
-    FKT_DOCUMENTRECEIVER
-    (
-        BILLINGTYPE,
-        CITY,
-        CITYADDON,
-        COMPANY,
-        CONSULTANT,
-        COUNTRYCODE,
-        CUSTOMERNUMBER,
-        DATEADDED,
-        EMAIL,
-        FAX,
-        FIRSTNAME,
-        GENDER,
-        GLN,
-        MANDATEREFERENCE,
-        MANUALADDRESS,
-        MOBILE,
-        ORIGINADDRESSID,
-        ORIGINCONTACTID,
-        PHONE,
-        STREET,
-        SUPPLIERNUMBER,
-        TITLE,
-        VATNUMBER,
-        ZIP,
-        FK_DOCUMENT
-    )
-SELECT
-    '5',
-    DELIVERY_ADDRESS_CITY,
-    DELIVERY_ADDRESS_CITYADDON,
-    DELIVERY_CONTACT_COMPANY,
-    d.consultant,
-    DELIVERY_ADDRESS_COUNTRYCODE,
-    DELIVERY_CONTACT_CUSTOMERNUMBER,
-    CURRENT_TIMESTAMP,
-    DELIVERY_CONTACT_EMAIL,
-    DELIVERY_CONTACT_FAX,
-    DELIVERY_CONTACT_FIRSTNAME,
-    DELIVERY_CONTACT_GENDER,
-    DELIVERY_CONTACT_GLN,
-    DELIVERY_CONTACT_MANDATEREFERENCE,
-    DELIVERY_ADDRESS_MANUALADDRESS,
-    DELIVERY_CONTACT_MOBILE,
-    DELIVERY_ADDRESS_ID,
-    DELIVERY_CONTACT_ID,
-    DELIVERY_CONTACT_PHONE,
-    DELIVERY_ADDRESS_STREET,
-    DELIVERY_CONTACT_SUPPLIERNUMBER,
-    DELIVERY_CONTACT_TITLE,
-    DELIVERY_CONTACT_VATNUMBER,
-    DELIVERY_ADDRESS_ZIP,
-    d.id
-FROM
-    TMP_CONTACTS_WITH_ADDRESSES
-JOIN
-    FKT_DOCUMENT d
-ON
-    (
-        d.fk_contact = billing_contact_id)
-AND d.dtype = 'Delivery'
-AND delivery_contact_id IS NOT NULL;
+		INSERT INTO FKT_DOCUMENTRECEIVER
+		    (
+		        BILLINGTYPE,
+		        CITY,
+		        CITYADDON,
+		        COMPANY,
+		        CONSULTANT,
+		        COUNTRYCODE,
+		        CUSTOMERNUMBER,
+		        DATEADDED,
+		        EMAIL,
+		        FAX,
+		        FIRSTNAME,
+		        GENDER,
+		        GLN,
+		        MANDATEREFERENCE,
+		        MANUALADDRESS,
+		        MOBILE,
+		        ORIGINADDRESSID,
+		        ORIGINCONTACTID,
+		        PHONE,
+		        STREET,
+		        SUPPLIERNUMBER,
+		        TITLE,
+		        VATNUMBER,
+		        ZIP,
+		        FK_DOCUMENT
+		    )
+		SELECT
+		    '6',
+		    DELIVERY_ADDRESS_CITY,
+		    DELIVERY_ADDRESS_CITYADDON,
+		    DELIVERY_CONTACT_COMPANY,
+		    d.consultant,
+		    DELIVERY_ADDRESS_COUNTRYCODE,
+		    DELIVERY_CONTACT_CUSTOMERNUMBER,
+		    CURRENT_TIMESTAMP,
+		    DELIVERY_CONTACT_EMAIL,
+		    DELIVERY_CONTACT_FAX,
+		    DELIVERY_CONTACT_FIRSTNAME,
+		    DELIVERY_CONTACT_GENDER,
+		    DELIVERY_CONTACT_GLN,
+		    DELIVERY_CONTACT_MANDATEREFERENCE,
+		    DELIVERY_ADDRESS_MANUALADDRESS,
+		    DELIVERY_CONTACT_MOBILE,
+		    DELIVERY_ADDRESS_ID,
+		    DELIVERY_CONTACT_ID,
+		    DELIVERY_CONTACT_PHONE,
+		    DELIVERY_ADDRESS_STREET,
+		    DELIVERY_CONTACT_SUPPLIERNUMBER,
+		    DELIVERY_CONTACT_TITLE,
+		    DELIVERY_CONTACT_VATNUMBER,
+		    DELIVERY_ADDRESS_ZIP,
+		    d.id
+		FROM TMP_CONTACTS_WITH_ADDRESSES
+		JOIN FKT_DOCUMENT d
+		ON (d.fk_contact = billing_contact_id)
+		AND d.dtype = 'Delivery'
+		AND delivery_contact_id IS NOT NULL;
 	</sql>
 	</changeSet>
 
 	
 	<changeSet author="rheydenr" id="20190915-070">
 		<comment>Rename old tables, delete not necessary temp tables and switch temporary tables to active tables.</comment>
-<!--		<renameTable oldTableName="FKT_DOCUMENT"
-			newTableName="OLD_FKT_DOCUMENT" />  -->
 		<renameTable oldTableName="FKT_ADDRESS"
 			newTableName="OLD_FKT_ADDRESS" />
 		<renameTable oldTableName="FKT_CONTACT"
 			newTableName="OLD_FKT_CONTACT" />
-<!-- 		<renameTable oldTableName="TMP_FKT_DOCUMENT"
-			newTableName="FKT_DOCUMENT" /> -->
 		<renameTable oldTableName="TMP_FKT_ADDRESS"
 			newTableName="FKT_ADDRESS" />
 		<renameTable oldTableName="TMP_FKT_CONTACT"

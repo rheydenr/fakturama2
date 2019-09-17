@@ -156,9 +156,9 @@ public class LifecycleManager {
 
         	splashService.setMessage("checking database...");
         	
-        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
+        	boolean dbupdate = dbUpdateService.updateDatabase();
         	if(!dbupdate) {
-        		log.error(null, "couldn't create or update database!");
+        		log.error("couldn't create or update database!");
         		System.exit(1);
         	}
         	
