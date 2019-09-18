@@ -138,7 +138,7 @@ TODO:
 	</changeSet>
 
 	<changeSet author="rheydenr" id="20190915-050">
-		<comment>create temporary tables for new contact structure (will be dropped later on)</comment>
+		<comment>create tables for new contact structure (will be renamed later on)</comment>
 		<createTable tableName="TMP_FKT_DOCUMENT">
 			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
 				<constraints primaryKey="true"/>
@@ -379,78 +379,75 @@ TODO:
 		<comment>Copy data from old tables into new tables.</comment>
 		<sql>
 			<comment>insert data from old contacts table into temporary table
-(at first only for billing addresses)
+                     (at first only for billing addresses)
 			</comment>
-				INSERT
-				INTO
-				    TMP_CONTACTS_WITH_ADDRESSES
-				    (
-				        BILLING_ADDRESS_ID ,
-				        BILLING_ADDRESS_CITY ,
-				        BILLING_ADDRESS_CITYADDON ,
-				        BILLING_ADDRESS_COUNTRYCODE ,
-				        BILLING_ADDRESS_DATEADDED ,
-				        BILLING_ADDRESS_DELETED ,
-				        BILLING_ADDRESS_MANUALADDRESS ,
-				        BILLING_ADDRESS_MODIFIED ,
-				        BILLING_ADDRESS_MODIFIEDBY ,
-				        BILLING_ADDRESS_NAME ,
-				        BILLING_ADDRESS_STREET ,
-				        BILLING_ADDRESS_VALIDFROM ,
-				        BILLING_ADDRESS_VALIDTO ,
-				        BILLING_ADDRESS_ZIP,
-				        BILLING_CONTACT_ID,
-				        BILLING_CONTACT_DTYPE,
-				        BILLING_CONTACT_BIRTHDAY,
-				        BILLING_CONTACT_COMPANY,
-				        BILLING_CONTACT_CONTACTTYPE,
-				        BILLING_CONTACT_CUSTOMERNUMBER,
-				        BILLING_CONTACT_DATEADDED,
-				        BILLING_CONTACT_DELETED,
-				        BILLING_CONTACT_DISCOUNT,
-				        BILLING_CONTACT_EMAIL,
-				        BILLING_CONTACT_FAX,
-				        BILLING_CONTACT_FIRSTNAME,
-				        BILLING_CONTACT_GENDER,
-				        BILLING_CONTACT_GLN,
-				        BILLING_CONTACT_MANDATEREFERENCE,
-				        BILLING_CONTACT_MOBILE,
-				        BILLING_CONTACT_MODIFIED,
-				        BILLING_CONTACT_MODIFIEDBY,
-				        BILLING_CONTACT_NAME,
-				        BILLING_CONTACT_NOTE,
-				        BILLING_CONTACT_PHONE,
-				        BILLING_CONTACT_RELIABILITY,
-				        BILLING_CONTACT_SUPPLIERNUMBER,
-				        BILLING_CONTACT_TITLE,
-				        BILLING_CONTACT_USENETGROSS,
-				        BILLING_CONTACT_USESALESEQUALIZATIONTAX,
-				        BILLING_CONTACT_VALIDFROM,
-				        BILLING_CONTACT_VALIDTO,
-				        BILLING_CONTACT_VATNUMBER,
-				        BILLING_CONTACT_VATNUMBERVALID,
-				        BILLING_CONTACT_WEBSHOPNAME,
-				        BILLING_CONTACT_WEBSITE,
-				        BILLING_CONTACT_FK_ADDRESS,
-				        BILLING_CONTACT_FK_ALTERNATECONTACT,
-				        BILLING_CONTACT_FK_BANKACCOUNT,
-				        BILLING_CONTACT_FK_CATEGORY,
-				        BILLING_CONTACT_FK_PAYMENT
+				INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
+				    (BILLING_ADDRESS_ID,
+			        BILLING_ADDRESS_CITY,
+			        BILLING_ADDRESS_CITYADDON,
+			        BILLING_ADDRESS_COUNTRYCODE,
+			        BILLING_ADDRESS_DATEADDED,
+			        BILLING_ADDRESS_DELETED,
+			        BILLING_ADDRESS_MANUALADDRESS,
+			        BILLING_ADDRESS_MODIFIED,
+			        BILLING_ADDRESS_MODIFIEDBY,
+			        BILLING_ADDRESS_NAME,
+			        BILLING_ADDRESS_STREET,
+			        BILLING_ADDRESS_VALIDFROM,
+			        BILLING_ADDRESS_VALIDTO,
+			        BILLING_ADDRESS_ZIP,
+			        BILLING_CONTACT_ID,
+			        BILLING_CONTACT_DTYPE,
+			        BILLING_CONTACT_BIRTHDAY,
+			        BILLING_CONTACT_COMPANY,
+			        BILLING_CONTACT_CONTACTTYPE,
+			        BILLING_CONTACT_CUSTOMERNUMBER,
+			        BILLING_CONTACT_DATEADDED,
+			        BILLING_CONTACT_DELETED,
+			        BILLING_CONTACT_DISCOUNT,
+			        BILLING_CONTACT_EMAIL,
+			        BILLING_CONTACT_FAX,
+			        BILLING_CONTACT_FIRSTNAME,
+			        BILLING_CONTACT_GENDER,
+			        BILLING_CONTACT_GLN,
+			        BILLING_CONTACT_MANDATEREFERENCE,
+			        BILLING_CONTACT_MOBILE,
+			        BILLING_CONTACT_MODIFIED,
+			        BILLING_CONTACT_MODIFIEDBY,
+			        BILLING_CONTACT_NAME,
+			        BILLING_CONTACT_NOTE,
+			        BILLING_CONTACT_PHONE,
+			        BILLING_CONTACT_RELIABILITY,
+			        BILLING_CONTACT_SUPPLIERNUMBER,
+			        BILLING_CONTACT_TITLE,
+			        BILLING_CONTACT_USENETGROSS,
+			        BILLING_CONTACT_USESALESEQUALIZATIONTAX,
+			        BILLING_CONTACT_VALIDFROM,
+			        BILLING_CONTACT_VALIDTO,
+			        BILLING_CONTACT_VATNUMBER,
+			        BILLING_CONTACT_VATNUMBERVALID,
+			        BILLING_CONTACT_WEBSHOPNAME,
+			        BILLING_CONTACT_WEBSITE,
+			        BILLING_CONTACT_FK_ADDRESS,
+			        BILLING_CONTACT_FK_ALTERNATECONTACT,
+			        BILLING_CONTACT_FK_BANKACCOUNT,
+			        BILLING_CONTACT_FK_CATEGORY,
+			        BILLING_CONTACT_FK_PAYMENT
 				    )
 				SELECT
-				    a1.ID ,
-				    a1.CITY ,
-				    a1.CITYADDON ,
-				    a1.COUNTRYCODE ,
-				    a1.DATEADDED ,
-				    a1.DELETED ,
-				    a1.MANUALADDRESS ,
-				    a1.MODIFIED ,
-				    a1.MODIFIEDBY ,
-				    a1.NAME ,
-				    a1.STREET ,
-				    a1.VALIDFROM ,
-				    a1.VALIDTO ,
+				    a1.ID,
+				    a1.CITY,
+				    a1.CITYADDON,
+				    a1.COUNTRYCODE,
+				    a1.DATEADDED,
+				    a1.DELETED,
+				    a1.MANUALADDRESS,
+				    a1.MODIFIED,
+				    a1.MODIFIEDBY,
+				    a1.NAME,
+				    a1.STREET,
+				    a1.VALIDFROM,
+				    a1.VALIDTO,
 				    a1.ZIP,
 				    c1.id,
 				    c1.DTYPE,
@@ -489,52 +486,37 @@ TODO:
 				    c1.FK_BANKACCOUNT,
 				    c1.FK_CATEGORY,
 				    c1.FK_PAYMENT
-				FROM
-				    FKT_CONTACT c1
-				LEFT JOIN
-				    FKT_ADDRESS a1
-				ON
-				    c1.fk_address = a1.id
-				WHERE
-				    c1.CONTACTTYPE = 0;
+				FROM FKT_CONTACT c1
+				LEFT JOIN FKT_ADDRESS a1
+				ON c1.fk_address = a1.id
+				WHERE c1.CONTACTTYPE = 0 /* Billing contacts */;
 		</sql>
 	</changeSet>
 
 	<changeSet author="rheydenr" id="20190915-052">
 		<comment>update addresses (merge delivery contacts into existing billing contacts)</comment>
 		<sql>
-			MERGE
-			INTO
-			    TMP_CONTACTS_WITH_ADDRESSES t
-			USING
-			    FKT_CONTACT s
-			ON
-			    t.BILLING_CONTACT_FK_ALTERNATECONTACT = s.id
-			WHEN MATCHED
-			    THEN
-			UPDATE
-			SET
+			MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
+			USING FKT_CONTACT s
+			ON t.BILLING_CONTACT_FK_ALTERNATECONTACT = s.id
+			WHEN MATCHED THEN UPDATE
+			  SET
 			    t.DELIVERY_CONTACT_ID = s.ID,
 			    t.DELIVERY_CONTACT_DTYPE = s.DTYPE,
 			    t.DELIVERY_CONTACT_BIRTHDAY = s.BIRTHDAY,
 			    t.DELIVERY_CONTACT_COMPANY = s.COMPANY,
 			    t.DELIVERY_CONTACT_CONTACTTYPE = s.CONTACTTYPE,
-			    t.DELIVERY_CONTACT_CUSTOMERNUMBER = s.CUSTOMERNUMBER,
 			    t.DELIVERY_CONTACT_DATEADDED = s.DATEADDED,
 			    t.DELIVERY_CONTACT_DELETED = s.DELETED,
 			    t.DELIVERY_CONTACT_DISCOUNT = s.DISCOUNT,
-			    t.DELIVERY_CONTACT_EMAIL = s.EMAIL,
-			    t.DELIVERY_CONTACT_FAX = s.FAX,
 			    t.DELIVERY_CONTACT_FIRSTNAME = s.FIRSTNAME,
 			    t.DELIVERY_CONTACT_GENDER = s.GENDER,
 			    t.DELIVERY_CONTACT_GLN = s.GLN,
 			    t.DELIVERY_CONTACT_MANDATEREFERENCE = s.MANDATEREFERENCE,
-			    t.DELIVERY_CONTACT_MOBILE = s.MOBILE,
 			    t.DELIVERY_CONTACT_MODIFIED = s.MODIFIED,
 			    t.DELIVERY_CONTACT_MODIFIEDBY = s.MODIFIEDBY,
 			    t.DELIVERY_CONTACT_NAME = s.NAME,
 			    t.DELIVERY_CONTACT_NOTE = s.NOTE,
-			    t.DELIVERY_CONTACT_PHONE = s.PHONE,
 			    t.DELIVERY_CONTACT_RELIABILITY = s.RELIABILITY,
 			    t.DELIVERY_CONTACT_SUPPLIERNUMBER = s.SUPPLIERNUMBER,
 			    t.DELIVERY_CONTACT_TITLE = s.TITLE,
@@ -556,18 +538,11 @@ TODO:
 
 	<changeSet author="rheydenr" id="20190915-053">
 		<comment>merge delivery addresses</comment>
-		<sql>
-			MERGE
-			INTO
-			    TMP_CONTACTS_WITH_ADDRESSES t
-			USING
-			    FKT_ADDRESS s
-			ON
-			    t.DELIVERY_CONTACT_FK_ADDRESS = s.id
-			WHEN MATCHED
-			    THEN
-			UPDATE
-			SET
+		<sql>MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
+			USING FKT_ADDRESS s
+			ON t.DELIVERY_CONTACT_FK_ADDRESS = s.id
+			WHEN MATCHED THEN UPDATE
+			  SET
 			    t.DELIVERY_ADDRESS_ID = s.ID,
 			    t.DELIVERY_ADDRESS_CITY = s.CITY,
 			    t.DELIVERY_ADDRESS_CITYADDON = s.CITYADDON,
@@ -587,128 +562,120 @@ TODO:
 
 	<changeSet author="rheydenr" id="20190915-054">
 		<comment>fill new contacts table</comment>
-		<sql>INSERT
-			INTO
-			    TMP_FKT_CONTACT
-			    (
-			        ID ,
-			        DTYPE ,
-			        BIRTHDAY ,
-			        COMPANY ,
-			        CUSTOMERNUMBER ,
-			        DATEADDED ,
-			        DELETED ,
-			        DISCOUNT ,
-			        FIRSTNAME ,
-			        GENDER ,
-			        GLN ,
-			        MANDATEREFERENCE ,
-			        MODIFIED ,
-			        MODIFIEDBY ,
-			        NAME ,
-			        NOTE ,
-			        RELIABILITY ,
-			        SUPPLIERNUMBER ,
-			        TITLE ,
-			        USENETGROSS ,
-			        USESALESEQUALIZATIONTAX ,
-			        VALIDFROM ,
-			        VALIDTO ,
-			        VATNUMBER ,
-			        VATNUMBERVALID ,
-			        WEBSHOPNAME ,
-			        WEBSITE ,
-			        FK_BANKACCOUNT ,
-			        FK_CATEGORY ,
-			        FK_PAYMENT ,
-			        OLD_ID
+		<sql>INSERT INTO TMP_FKT_CONTACT
+			   (ID,
+		        DTYPE,
+		        BIRTHDAY,
+		        COMPANY,
+		        CUSTOMERNUMBER,
+		        DATEADDED,
+		        DELETED,
+		        DISCOUNT,
+		        FIRSTNAME,
+		        GENDER,
+		        GLN,
+		        MANDATEREFERENCE,
+		        MODIFIED,
+		        MODIFIEDBY,
+		        NAME,
+		        NOTE,
+		        RELIABILITY,
+		        SUPPLIERNUMBER,
+		        TITLE,
+		        USENETGROSS,
+		        USESALESEQUALIZATIONTAX,
+		        VALIDFROM,
+		        VALIDTO,
+		        VATNUMBER,
+		        VATNUMBERVALID,
+		        WEBSHOPNAME,
+		        WEBSITE,
+		        FK_BANKACCOUNT,
+		        FK_CATEGORY,
+		        FK_PAYMENT,
+		        OLD_ID
 			    )
 			SELECT
-			    BILLING_CONTACT_ID ,
-			    BILLING_CONTACT_DTYPE ,
-			    BILLING_CONTACT_BIRTHDAY ,
-			    BILLING_CONTACT_COMPANY ,
-			    BILLING_CONTACT_CUSTOMERNUMBER ,
-			    BILLING_CONTACT_DATEADDED ,
-			    BILLING_CONTACT_DELETED ,
-			    BILLING_CONTACT_DISCOUNT ,
-			    BILLING_CONTACT_FIRSTNAME ,
-			    BILLING_CONTACT_GENDER ,
-			    BILLING_CONTACT_GLN ,
-			    BILLING_CONTACT_MANDATEREFERENCE ,
-			    BILLING_CONTACT_MODIFIED ,
-			    BILLING_CONTACT_MODIFIEDBY ,
-			    BILLING_CONTACT_NAME ,
-			    BILLING_CONTACT_NOTE ,
-			    BILLING_CONTACT_RELIABILITY ,
-			    BILLING_CONTACT_SUPPLIERNUMBER ,
-			    BILLING_CONTACT_TITLE ,
-			    BILLING_CONTACT_USENETGROSS ,
-			    BILLING_CONTACT_USESALESEQUALIZATIONTAX ,
-			    BILLING_CONTACT_VALIDFROM ,
-			    BILLING_CONTACT_VALIDTO ,
-			    BILLING_CONTACT_VATNUMBER ,
-			    BILLING_CONTACT_VATNUMBERVALID ,
-			    BILLING_CONTACT_WEBSHOPNAME ,
-			    BILLING_CONTACT_WEBSITE ,
-			    BILLING_CONTACT_FK_BANKACCOUNT ,
-			    BILLING_CONTACT_FK_CATEGORY ,
-			    BILLING_CONTACT_FK_PAYMENT ,
+			    BILLING_CONTACT_ID,
+			    BILLING_CONTACT_DTYPE,
+			    BILLING_CONTACT_BIRTHDAY,
+			    BILLING_CONTACT_COMPANY,
+			    BILLING_CONTACT_CUSTOMERNUMBER,
+			    BILLING_CONTACT_DATEADDED,
+			    BILLING_CONTACT_DELETED,
+			    BILLING_CONTACT_DISCOUNT,
+			    BILLING_CONTACT_FIRSTNAME,
+			    BILLING_CONTACT_GENDER,
+			    BILLING_CONTACT_GLN,
+			    BILLING_CONTACT_MANDATEREFERENCE,
+			    BILLING_CONTACT_MODIFIED,
+			    BILLING_CONTACT_MODIFIEDBY,
+			    BILLING_CONTACT_NAME,
+			    BILLING_CONTACT_NOTE,
+			    BILLING_CONTACT_RELIABILITY,
+			    BILLING_CONTACT_SUPPLIERNUMBER,
+			    BILLING_CONTACT_TITLE,
+			    BILLING_CONTACT_USENETGROSS,
+			    BILLING_CONTACT_USESALESEQUALIZATIONTAX,
+			    BILLING_CONTACT_VALIDFROM,
+			    BILLING_CONTACT_VALIDTO,
+			    BILLING_CONTACT_VATNUMBER,
+			    BILLING_CONTACT_VATNUMBERVALID,
+			    BILLING_CONTACT_WEBSHOPNAME,
+			    BILLING_CONTACT_WEBSITE,
+			    BILLING_CONTACT_FK_BANKACCOUNT,
+			    BILLING_CONTACT_FK_CATEGORY,
+			    BILLING_CONTACT_FK_PAYMENT,
 			    BILLING_CONTACT_ID
-			FROM
-			    TMP_CONTACTS_WITH_ADDRESSES;
+			FROM TMP_CONTACTS_WITH_ADDRESSES;
 		</sql>
 	</changeSet>
 
 	<changeSet author="rheydenr" id="20190915-055">
-		<sql>INSERT
-			INTO
-			    tmp_fkt_address
-			    (
-			        ID ,
-			        CITY ,
-			        CITYADDON ,
-			        COUNTRYCODE ,
-			        DATEADDED ,
-			        DELETED ,
-			        EMAIL ,
-			        FAX ,
-			        LOCALCONSULTANT ,
-			        MOBILE ,
-			        MODIFIED ,
-			        MODIFIEDBY ,
-			        NAME ,
-			        PHONE ,
-			        STREET ,
-			        VALIDFROM ,
-			        VALIDTO ,
-			        ZIP ,
-			        FK_CONTACT ,
-			        CONTACT_ADDRESSES
+		<sql>INSERT INTO tmp_fkt_address
+			    (ID,
+		        CITY,
+		        CITYADDON,
+		        COUNTRYCODE,
+		        DATEADDED,
+		        DELETED,
+		        EMAIL,
+		        FAX,
+		        LOCALCONSULTANT,
+		        MOBILE,
+		        MODIFIED,
+		        MODIFIEDBY,
+		        NAME,
+		        PHONE,
+		        STREET,
+		        VALIDFROM,
+		        VALIDTO,
+		        ZIP,
+		        FK_CONTACT,
+		        CONTACT_ADDRESSES
 			    )
 			SELECT
-			    BILLING_ADDRESS_ID ,
-			    BILLING_ADDRESS_CITY ,
-			    BILLING_ADDRESS_CITYADDON ,
-			    BILLING_ADDRESS_COUNTRYCODE ,
-			    BILLING_ADDRESS_DATEADDED ,
-			    BILLING_ADDRESS_DELETED ,
-			    BILLING_CONTACT_EMAIL ,
-			    BILLING_CONTACT_FAX ,
-			    NULL ,
-			    BILLING_CONTACT_MOBILE ,
-			    BILLING_ADDRESS_MODIFIED ,
-			    BILLING_ADDRESS_MODIFIEDBY ,
-			    BILLING_ADDRESS_NAME ,
-			    BILLING_CONTACT_PHONE ,
-			    BILLING_ADDRESS_STREET ,
-			    BILLING_ADDRESS_VALIDFROM ,
-			    BILLING_ADDRESS_VALIDTO ,
-			    BILLING_ADDRESS_ZIP ,
-			    BILLING_CONTACT_ID ,
+			    BILLING_ADDRESS_ID,
+			    BILLING_ADDRESS_CITY,
+			    BILLING_ADDRESS_CITYADDON,
+			    BILLING_ADDRESS_COUNTRYCODE,
+			    BILLING_ADDRESS_DATEADDED,
+			    BILLING_ADDRESS_DELETED,
+			    BILLING_CONTACT_EMAIL,
+			    BILLING_CONTACT_FAX,
+			    NULL,
+			    BILLING_CONTACT_MOBILE,
+			    BILLING_ADDRESS_MODIFIED,
+			    BILLING_ADDRESS_MODIFIEDBY,
+			    BILLING_ADDRESS_NAME,
+			    BILLING_CONTACT_PHONE,
+			    BILLING_ADDRESS_STREET,
+			    BILLING_ADDRESS_VALIDFROM,
+			    BILLING_ADDRESS_VALIDTO,
+			    BILLING_ADDRESS_ZIP,
+			    BILLING_CONTACT_ID,
 			    BILLING_CONTACT_ID
-			FROM
-			    TMP_CONTACTS_WITH_ADDRESSES;
+			FROM TMP_CONTACTS_WITH_ADDRESSES;
 		</sql>
 	</changeSet>
 
@@ -726,63 +693,57 @@ TODO:
 	</changeSet>
 
 	<changeSet author="rheydenr" id="20190915-058">
-		<sql>INSERT
-			INTO
-			    tmp_fkt_address
-			    (
-			        ID ,
-			        CITY ,
-			        CITYADDON ,
-			        COUNTRYCODE ,
-			        DATEADDED ,
-			        DELETED ,
-			        EMAIL ,
-			        FAX ,
-			        LOCALCONSULTANT ,
-			        MOBILE ,
-			        MODIFIED ,
-			        MODIFIEDBY ,
-			        NAME ,
-			        PHONE ,
-			        STREET ,
-			        VALIDFROM ,
-			        VALIDTO ,
-			        ZIP ,
-			        FK_CONTACT ,
-			        CONTACT_ADDRESSES
+		<sql>INSERT INTO tmp_fkt_address
+			   (ID,
+		        CITY,
+		        CITYADDON,
+		        COUNTRYCODE,
+		        DATEADDED,
+		        DELETED,
+		        EMAIL,
+		        FAX,
+		        LOCALCONSULTANT,
+		        MOBILE,
+		        MODIFIED,
+		        MODIFIEDBY,
+		        NAME,
+		        PHONE,
+		        STREET,
+		        VALIDFROM,
+		        VALIDTO,
+		        ZIP,
+		        FK_CONTACT,
+		        CONTACT_ADDRESSES
 			    )
 			SELECT
-			    DELIVERY_ADDRESS_ID ,
-			    DELIVERY_ADDRESS_CITY ,
-			    DELIVERY_ADDRESS_CITYADDON ,
-			    DELIVERY_ADDRESS_COUNTRYCODE ,
-			    DELIVERY_ADDRESS_DATEADDED ,
-			    DELIVERY_ADDRESS_DELETED ,
-			    DELIVERY_CONTACT_EMAIL ,
-			    DELIVERY_CONTACT_FAX ,
-			    NULL ,
-			    DELIVERY_CONTACT_MOBILE ,
-			    DELIVERY_ADDRESS_MODIFIED ,
-			    DELIVERY_ADDRESS_MODIFIEDBY ,
-			    DELIVERY_ADDRESS_NAME ,
-			    DELIVERY_CONTACT_PHONE ,
-			    DELIVERY_ADDRESS_STREET ,
-			    DELIVERY_ADDRESS_VALIDFROM ,
-			    DELIVERY_ADDRESS_VALIDTO ,
-			    DELIVERY_ADDRESS_ZIP ,
-			    BILLING_CONTACT_ID ,
+			    DELIVERY_ADDRESS_ID,
+			    DELIVERY_ADDRESS_CITY,
+			    DELIVERY_ADDRESS_CITYADDON,
+			    DELIVERY_ADDRESS_COUNTRYCODE,
+			    DELIVERY_ADDRESS_DATEADDED,
+			    DELIVERY_ADDRESS_DELETED,
+			    DELIVERY_CONTACT_EMAIL,
+			    DELIVERY_CONTACT_FAX,
+			    NULL,
+			    DELIVERY_CONTACT_MOBILE,
+			    DELIVERY_ADDRESS_MODIFIED,
+			    DELIVERY_ADDRESS_MODIFIEDBY,
+			    DELIVERY_ADDRESS_NAME,
+			    DELIVERY_CONTACT_PHONE,
+			    DELIVERY_ADDRESS_STREET,
+			    DELIVERY_ADDRESS_VALIDFROM,
+			    DELIVERY_ADDRESS_VALIDTO,
+			    DELIVERY_ADDRESS_ZIP,
+			    BILLING_CONTACT_ID,
 			    BILLING_CONTACT_ID
-			FROM
-			    TMP_CONTACTS_WITH_ADDRESSES
-			WHERE
-			    DELIVERY_CONTACT_ID IS NOT NULL;
+			FROM TMP_CONTACTS_WITH_ADDRESSES
+			WHERE DELIVERY_CONTACT_ID IS NOT NULL;
 		</sql>
 	</changeSet>
 	
 	<changeSet author="rheydenr" id="20190915-060">
 	<comment>Update document tables</comment>
-	<sql>
-	insert into TMP_FKT_DOCUMENT (
+	<sql>insert into TMP_FKT_DOCUMENT (
 		ADDRESSFIRSTLINE,
 		BILLINGTYPE,
 		CUSTOMERREF,
@@ -870,11 +831,10 @@ TODO:
 	</changeSet>
 
 	<changeSet author="rheydenr" id="20190915-061">
-	<comment>Create DocumentReceivers</comment>
-	<sql><comment>DocumentReceivers (BILLING) for all documents except Delivery notes </comment>
+		<comment>Create DocumentReceivers</comment>
+		<sql><comment>DocumentReceivers (BILLING) for all documents except Delivery notes</comment>
 		INSERT INTO FKT_DOCUMENTRECEIVER
-	    (
-	        BILLINGTYPE,
+	      ( BILLINGTYPE,
 	        CITY,
 	        CITYADDON,
 	        COMPANY,
@@ -926,20 +886,19 @@ TODO:
 		    BILLING_CONTACT_VATNUMBER,
 		    BILLING_ADDRESS_ZIP,
 		    d.id
-		FROM
-		    TMP_CONTACTS_WITH_ADDRESSES,
+		FROM TMP_CONTACTS_WITH_ADDRESSES,
 		    FKT_DOCUMENT d
-		WHERE
-		    d.fk_contact = billing_contact_id
-		AND d.dtype != 'Delivery';</sql>
+		WHERE d.fk_contact = billing_contact_id
+			AND d.dtype != 'Delivery';</sql>
 	</changeSet>
 	
 	<changeSet author="rheydenr" id="20190915-062">
-	<comment>Create DocumentReceivers</comment>
-	<sql><comment>DocumentReceivers (delivery address) for all documents except Delivery notes</comment>
+		<comment>Create DocumentReceivers</comment>
+		<sql><comment>DocumentReceivers (delivery address) for all documents except Delivery notes.
+			Some attributes like customer number  e-mail, fax, mobile, phone are copied from BILLING_CONTACT fields.
+		</comment>
 		INSERT INTO FKT_DOCUMENTRECEIVER
-		    (
-		        BILLINGTYPE,
+		    (   BILLINGTYPE,
 		        CITY,
 		        CITYADDON,
 		        COMPANY,
@@ -966,7 +925,71 @@ TODO:
 		        FK_DOCUMENT
 		    )
 		SELECT
-		    '5',
+		    '0',  /* Billing address */
+		    DELIVERY_ADDRESS_CITY,
+		    DELIVERY_ADDRESS_CITYADDON,
+		    DELIVERY_CONTACT_COMPANY,
+		    d.consultant,
+		    DELIVERY_ADDRESS_COUNTRYCODE,
+		    BILLING_CONTACT_CUSTOMERNUMBER,
+		    CURRENT_TIMESTAMP,
+		    BILLING_CONTACT_EMAIL,
+		    BILLING_CONTACT_FAX,
+		    DELIVERY_CONTACT_FIRSTNAME,
+		    DELIVERY_CONTACT_GENDER,
+		    BILLING_CONTACT_GLN,
+		    BILLING_CONTACT_MANDATEREFERENCE,
+		    DELIVERY_ADDRESS_MANUALADDRESS,
+		    BILLING_CONTACT_MOBILE,
+		    DELIVERY_ADDRESS_ID,
+		    DELIVERY_CONTACT_ID,
+		    BILLING_CONTACT_PHONE,
+		    DELIVERY_ADDRESS_STREET,
+		    BILLING_CONTACT_SUPPLIERNUMBER,
+		    DELIVERY_CONTACT_TITLE,
+		    BILLING_CONTACT_VATNUMBER,
+		    DELIVERY_ADDRESS_ZIP,
+		    d.id
+		FROM TMP_CONTACTS_WITH_ADDRESSES
+			JOIN FKT_DOCUMENT d
+			ON (d.fk_contact = billing_contact_id)
+			AND d.dtype != 'Delivery'
+			AND delivery_contact_id IS NOT NULL;
+	</sql>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20190915-063">
+	<comment>Create DocumentReceivers</comment>
+	<sql><comment>DocumentReceivers (DELIVERY) for all Delivery note documents</comment>
+		INSERT INTO FKT_DOCUMENTRECEIVER
+	      ( BILLINGTYPE,
+	        CITY,
+	        CITYADDON,
+	        COMPANY,
+	        CONSULTANT,
+	        COUNTRYCODE,
+	        CUSTOMERNUMBER,
+	        DATEADDED,
+	        EMAIL,
+	        FAX,
+	        FIRSTNAME,
+	        GENDER,
+	        GLN,
+	        MANDATEREFERENCE,
+	        MANUALADDRESS,
+	        MOBILE,
+	        ORIGINADDRESSID,
+	        ORIGINCONTACTID,
+	        PHONE,
+	        STREET,
+	        SUPPLIERNUMBER,
+	        TITLE,
+	        VATNUMBER,
+	        ZIP,
+	        FK_DOCUMENT
+	    )
+		SELECT
+		    d.billingtype,
 		    DELIVERY_ADDRESS_CITY,
 		    DELIVERY_ADDRESS_CITYADDON,
 		    DELIVERY_CONTACT_COMPANY,
@@ -991,47 +1014,47 @@ TODO:
 		    DELIVERY_CONTACT_VATNUMBER,
 		    DELIVERY_ADDRESS_ZIP,
 		    d.id
-		FROM TMP_CONTACTS_WITH_ADDRESSES
-		JOIN FKT_DOCUMENT d
-		ON (d.fk_contact = billing_contact_id)
-		AND d.dtype != 'Delivery'
-		AND delivery_contact_id IS NOT NULL;
+		FROM
+		    TMP_CONTACTS_WITH_ADDRESSES,
+		    FKT_DOCUMENT d
+		WHERE
+		    d.fk_contact = billing_contact_id
+		AND d.dtype = 'Delivery';
 	</sql>
 	</changeSet>
 	
-	<changeSet author="rheydenr" id="20190915-063">
+	<changeSet author="rheydenr" id="20190915-065">
 	<comment>Create DocumentReceivers</comment>
-	<sql><comment>DocumentReceivers (DELIVERY) for all Delivery notes documents </comment>
+	<sql><comment>DocumentReceivers (billing address) for all Delivery notes documents</comment>
 		INSERT INTO FKT_DOCUMENTRECEIVER
-		    (
-		        BILLINGTYPE,
-		        CITY,
-		        CITYADDON,
-		        COMPANY,
-		        CONSULTANT,
-		        COUNTRYCODE,
-		        CUSTOMERNUMBER,
-		        DATEADDED,
-		        EMAIL,
-		        FAX,
-		        FIRSTNAME,
-		        GENDER,
-		        GLN,
-		        MANDATEREFERENCE,
-		        MANUALADDRESS,
-		        MOBILE,
-		        ORIGINADDRESSID,
-		        ORIGINCONTACTID,
-		        PHONE,
-		        STREET,
-		        SUPPLIERNUMBER,
-		        TITLE,
-		        VATNUMBER,
-		        ZIP,
-		        FK_DOCUMENT
+		   (BILLINGTYPE,
+	        CITY,
+	        CITYADDON,
+	        COMPANY,
+	        CONSULTANT,
+	        COUNTRYCODE,
+	        CUSTOMERNUMBER,
+	        DATEADDED,
+	        EMAIL,
+	        FAX,
+	        FIRSTNAME,
+	        GENDER,
+	        GLN,
+	        MANDATEREFERENCE,
+	        MANUALADDRESS,
+	        MOBILE,
+	        ORIGINADDRESSID,
+	        ORIGINCONTACTID,
+	        PHONE,
+	        STREET,
+	        SUPPLIERNUMBER,
+	        TITLE,
+	        VATNUMBER,
+	        ZIP,
+	        FK_DOCUMENT
 		    )
 		SELECT
-		    d.billingtype,
+		    '5', /* delivery type */
 		    BILLING_ADDRESS_CITY,
 		    BILLING_ADDRESS_CITYADDON,
 		    BILLING_CONTACT_COMPANY,
@@ -1056,77 +1079,11 @@ TODO:
 		    BILLING_CONTACT_VATNUMBER,
 		    BILLING_ADDRESS_ZIP,
 		    d.id
-		FROM
-		    TMP_CONTACTS_WITH_ADDRESSES,
-		    FKT_DOCUMENT d
-		WHERE
-		    d.fk_contact = billing_contact_id
-		AND d.dtype = 'Delivery';
-	</sql>
-	</changeSet>
-	
-	<changeSet author="rheydenr" id="20190915-065">
-	<comment>Create DocumentReceivers</comment>
-	<sql><comment>DocumentReceivers (billing address) for all Delivery notes documents</comment>
-		INSERT INTO FKT_DOCUMENTRECEIVER
-		    (
-		        BILLINGTYPE,
-		        CITY,
-		        CITYADDON,
-		        COMPANY,
-		        CONSULTANT,
-		        COUNTRYCODE,
-		        CUSTOMERNUMBER,
-		        DATEADDED,
-		        EMAIL,
-		        FAX,
-		        FIRSTNAME,
-		        GENDER,
-		        GLN,
-		        MANDATEREFERENCE,
-		        MANUALADDRESS,
-		        MOBILE,
-		        ORIGINADDRESSID,
-		        ORIGINCONTACTID,
-		        PHONE,
-		        STREET,
-		        SUPPLIERNUMBER,
-		        TITLE,
-		        VATNUMBER,
-		        ZIP,
-		        FK_DOCUMENT
-		    )
-		SELECT
-		    '6',
-		    DELIVERY_ADDRESS_CITY,
-		    DELIVERY_ADDRESS_CITYADDON,
-		    DELIVERY_CONTACT_COMPANY,
-		    d.consultant,
-		    DELIVERY_ADDRESS_COUNTRYCODE,
-		    DELIVERY_CONTACT_CUSTOMERNUMBER,
-		    CURRENT_TIMESTAMP,
-		    DELIVERY_CONTACT_EMAIL,
-		    DELIVERY_CONTACT_FAX,
-		    DELIVERY_CONTACT_FIRSTNAME,
-		    DELIVERY_CONTACT_GENDER,
-		    DELIVERY_CONTACT_GLN,
-		    DELIVERY_CONTACT_MANDATEREFERENCE,
-		    DELIVERY_ADDRESS_MANUALADDRESS,
-		    DELIVERY_CONTACT_MOBILE,
-		    DELIVERY_ADDRESS_ID,
-		    DELIVERY_CONTACT_ID,
-		    DELIVERY_CONTACT_PHONE,
-		    DELIVERY_ADDRESS_STREET,
-		    DELIVERY_CONTACT_SUPPLIERNUMBER,
-		    DELIVERY_CONTACT_TITLE,
-		    DELIVERY_CONTACT_VATNUMBER,
-		    DELIVERY_ADDRESS_ZIP,
-		    d.id
 		FROM TMP_CONTACTS_WITH_ADDRESSES
-		JOIN FKT_DOCUMENT d
-		ON (d.fk_contact = billing_contact_id)
-		AND d.dtype = 'Delivery'
-		AND delivery_contact_id IS NOT NULL;
+			JOIN FKT_DOCUMENT d
+			ON (d.fk_contact = billing_contact_id)
+			AND d.dtype = 'Delivery'
+			AND delivery_contact_id IS NOT NULL;
 	</sql>
 	</changeSet>
 
@@ -1137,10 +1094,14 @@ TODO:
 			newTableName="OLD_FKT_ADDRESS" />
 		<renameTable oldTableName="FKT_CONTACT"
 			newTableName="OLD_FKT_CONTACT" />
-		<renameTable oldTableName="TMP_FKT_ADDRESS"
-			newTableName="FKT_ADDRESS" />
 		<renameTable oldTableName="TMP_FKT_CONTACT"
 			newTableName="FKT_CONTACT" />
+		<renameTable oldTableName="TMP_FKT_ADDRESS"
+			newTableName="FKT_ADDRESS" />
+		<renameTable oldTableName="FKT_DOCUMENT"
+			newTableName="OLD_FKT_DOCUMENT" />
+		<renameTable oldTableName="TMP_FKT_DOCUMENT"
+			newTableName="FKT_DOCUMENT" />
 			
 		<!-- <dropTable tableName="TMP_CONTACTS_WITH_ADDRESSES"/> -->
 	</changeSet>
