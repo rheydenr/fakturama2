@@ -92,6 +92,7 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -133,6 +134,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     
 	@Inject
 	private ILocaleService localeUtil;
+	
+	@Inject
+	private IDocumentAddressManager addressManager;
 	
     @Inject
     @Preference   //(value=InstanceScope.SCOPE)
@@ -520,7 +524,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 	        //    	topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
 	        try {
 				categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
+//				topicTreeViewer = ContextInjectionFactory.make(TopicTreeViewer.class, context);
 				topicTreeViewer = new TopicTreeViewer<DummyStringCategory>(top, msg, true, false);
+				topicTreeViewer.setAddressManager(addressManager);
+				topicTreeViewer.disableSorting();
 				topicTreeViewer.setInput(categories);
 				topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
 			} catch (PersistenceException e) {

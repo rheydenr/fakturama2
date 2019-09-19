@@ -36,6 +36,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.AbstractCategory;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
@@ -53,12 +54,14 @@ import ca.odell.glazedlists.event.ListEventListener;
  */
 public class TopicTreeViewer<T extends AbstractCategory> {
 
-protected static final String TABLEDATA_CATEGORY_FILTER = "CategoryFilter";
-protected static final String TABLEDATA_TRANSACTION_FILTER = "TransactionFilter";
-protected static final String TABLEDATA_CONTACT_FILTER = "ContactFilter";
-protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
+	protected static final String TABLEDATA_CATEGORY_FILTER = "CategoryFilter";
+	protected static final String TABLEDATA_TRANSACTION_FILTER = "TransactionFilter";
+	protected static final String TABLEDATA_CONTACT_FILTER = "ContactFilter";
+	protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
     private Messages msg;
+    
+    private IDocumentAddressManager addressManager;
 
     TreeViewer internalTreeViewer;
 	
@@ -83,6 +86,10 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	private AbstractViewDataTable<? extends IEntity, T> viewDataSetTable;
     private TreeObjectContentProvider<T> contentProvider;
     
+    public TopicTreeViewer() {
+    	
+    }
+    
 	/**
 	 * Constructor Creates a
 	 * 
@@ -94,6 +101,10 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 * @param useAll
 	 */
 	public TopicTreeViewer(Composite parent, Messages msg, /*int style, */boolean useDocumentAndContactFilter, final boolean useAll) {
+		init(parent, msg, useDocumentAndContactFilter, useAll);
+	}
+	
+	private void init(Composite parent, Messages msg, /*int style, */boolean useDocumentAndContactFilter, final boolean useAll) {
 		this.internalTreeViewer = new TreeViewer(parent, SWT.BORDER /*style*/);
 		// Messages can't be injected because this class is not called via application context
 		this.msg = msg;
@@ -189,6 +200,11 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		});
 		
 		internalTreeViewer.setComparator(new TreePathViewerSorter());
+	}
+	
+	public void disableSorting() {
+		// needed for DocumentsListView
+		internalTreeViewer.setComparator(null);
 	}
 		
 	public Tree getTree() {
@@ -410,14 +426,13 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 *            ID of the contact
 	 */
 	public void setContactFromDocument(Document selectedDocument) {
-		if (contactItem == null || selectedDocument == null)
+		if (contactItem == null || selectedDocument == null) {
 			return;
-
-		Optional<DocumentReceiver> contact = selectedDocument.getBillingType().isDELIVERY()
-				? selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isDELIVERY()).findFirst()
-				: selectedDocument.getReceiver().stream().filter(rcv -> rcv.getBillingType().isINVOICE()).findFirst();
+		}
+		
+		DocumentReceiver contact = addressManager.getAdressForBillingType(selectedDocument, selectedDocument.getBillingType());
 		String name = selectedDocument.getAddressFirstLine();
-		contactItem.setContactId(contact.get().getId());
+		contactItem.setContactId(contact.getOriginContactId());
 		contactItem.setName(name);
 		internalTreeViewer.refresh();
 	}
@@ -478,6 +493,14 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 	public void setLabelProvider(TreeCategoryLabelProvider treeTableLabelProvider) {
 		internalTreeViewer.setLabelProvider(treeTableLabelProvider);
+	}
+
+	public IDocumentAddressManager getAddressManager() {
+		return addressManager;
+	}
+
+	public void setAddressManager(IDocumentAddressManager addressManager) {
+		this.addressManager = addressManager;
 	}
 	
 }

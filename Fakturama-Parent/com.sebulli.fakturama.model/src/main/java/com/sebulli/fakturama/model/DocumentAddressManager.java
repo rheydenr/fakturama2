@@ -113,9 +113,20 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 
 	@Override
 	public DocumentReceiver getAdressForBillingType(Document document, BillingType billingType) {
+		if(document.getReceiver().size() == 1) {
+			// if we have only one receiver it is for all BillingTypes
+			return document.getReceiver().get(0);
+		}
 		Optional<DocumentReceiver> documentReceiver = document.getReceiver().stream()
-				.filter(rcv -> rcv == null || rcv.getBillingType().compareTo(billingType) == 0).findFirst();
-		return documentReceiver.orElse(null);
+				.filter(rcv -> rcv.getBillingType().compareTo(billingType) == 0).findFirst();
+		
+		
+		// FALLBACK: Use billingtype of the given document
+		if(!documentReceiver.isPresent()) {
+			documentReceiver = document.getReceiver().stream()
+					.filter(rcv -> rcv.getBillingType().compareTo(document.getBillingType()) == 0).findFirst();
+		}
+		return documentReceiver.get();
 	}
 
 	@Override

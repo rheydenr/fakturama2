@@ -320,7 +320,7 @@ public class ContactUtil {
 	 * @param billingType the {@link BillingType} to convert
 	 * @return {@link ContactType}
 	 */
-	public ContactType convertToContacType(BillingType billingType) {
+	public ContactType convertToContactType(BillingType billingType) {
 		ContactType contactType;
 		switch (billingType) {
 		case DELIVERY:

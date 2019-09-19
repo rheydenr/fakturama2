@@ -1777,7 +1777,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (document.getBillingType().isINVOICE() || document.getBillingType().isDELIVERY()) {
 			BillingType billingTypeToCheck = document.getBillingType().isINVOICE() ? BillingType.DELIVERY
 					: BillingType.INVOICE;
-			ContactType contactType = contactUtil.convertToContacType(billingTypeToCheck);
+			ContactType contactType = contactUtil.convertToContactType(billingTypeToCheck);
 			if (contactType != null && !selectedAddresses.containsKey(billingTypeToCheck)) {
 				java.util.Optional<Address> alternateAddress = contact.getAddresses().parallelStream()
 						.filter(a -> a.getContactTypes().contains(contactType)).findAny();
