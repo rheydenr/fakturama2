@@ -432,7 +432,7 @@ public class TopicTreeViewer<T extends AbstractCategory> {
 		
 		DocumentReceiver contact = addressManager.getAdressForBillingType(selectedDocument, selectedDocument.getBillingType());
 		String name = selectedDocument.getAddressFirstLine();
-		contactItem.setContactId(contact.getOriginContactId());
+		contactItem.setContactId(contact.getId());
 		contactItem.setName(name);
 		internalTreeViewer.refresh();
 	}
