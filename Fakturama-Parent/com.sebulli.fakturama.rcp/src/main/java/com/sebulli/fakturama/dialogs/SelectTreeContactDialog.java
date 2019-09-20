@@ -91,7 +91,7 @@ public class SelectTreeContactDialog<T extends Address> extends AbstractSelectio
         if(StringUtils.equals((String) context.get("CONTACT_TYPE"), "DEBITOR")) {
         	contactListTable = (DebitorTreeListTable) ContextInjectionFactory.make(DebitorTreeListTable.class, context);
 //        } else {
-//        	contactListTable = (ContactListTable<T>) ContextInjectionFactory.make(DebitorListTable.class, context);
+//        	contactListTable = (ContactListTable<T>) ContextInjectionFactory.make(CreditorListTable.class, context);
         }
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(top);

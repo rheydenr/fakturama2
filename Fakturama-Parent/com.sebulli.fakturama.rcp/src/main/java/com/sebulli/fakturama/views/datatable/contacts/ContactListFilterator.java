@@ -39,7 +39,7 @@ public class ContactListFilterator<E extends Contact> implements TextFilterator<
 			Object propertyValue = null;
 			if (beanProperties[p] instanceof IBeanValueProperty) {
 				propertyValue = ((IBeanValueProperty)beanProperties[p]).getValue(element);
-			} else if (beanProperties[p] instanceof IBeanListProperty && element.getAddresses().size() > 0) {
+			} else if (beanProperties[p] instanceof IBeanListProperty && !element.getAddresses().isEmpty()) {
 				propertyValue = ((IBeanListProperty)beanProperties[p]).getList(element).get(0);
 			}
 			if (propertyValue != null)

@@ -10,7 +10,6 @@ import org.eclipse.core.databinding.beans.IBeanProperty;
 import org.eclipse.core.databinding.beans.IBeanValueProperty;
 
 import com.sebulli.fakturama.dao.DebitorAddress;
-import com.sebulli.fakturama.model.Contact;
 
 import ca.odell.glazedlists.TextFilterator;
 
@@ -40,8 +39,8 @@ public class ContactTreeListFilterator implements TextFilterator<DebitorAddress>
 			Object propertyValue = null;
 			if (beanProperties[p] instanceof IBeanValueProperty) {
 				propertyValue = ((IBeanValueProperty)beanProperties[p]).getValue(element);
-//			} else if (beanProperties[p] instanceof IBeanListProperty && element.getAddresses().size() > 0) {
-//				propertyValue = ((IBeanListProperty)beanProperties[p]).getList(element).get(0);
+			} else if (beanProperties[p] instanceof IBeanListProperty && element.getAddress() == null) {
+				propertyValue = ((IBeanListProperty)beanProperties[p]).getList(element).get(0);
 			}
 			if (propertyValue != null)
 				baseList.add(propertyValue.toString());

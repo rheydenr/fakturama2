@@ -398,6 +398,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 
 	    checkForChangedAddresses();
+	    reassignDocumentReceiver();
 
 		if (StringUtils.isNotBlank(newPaymentDescription)) {
 			document.getAdditionalInfo().setPaymentDescription(newPaymentDescription);
@@ -536,7 +537,15 @@ public class DocumentEditor extends Editor<Document> {
         return Boolean.TRUE;
 	}
     
-    /**
+    private void reassignDocumentReceiver() {
+		List<DocumentReceiver> currentReceivers = Arrays.stream(addressAndIconComposite.getItems())
+			.map(tabItem -> (DocumentReceiver) tabItem.getControl().getData(CURRENT_RECEIVER))
+			.collect(Collectors.toList());
+		document.getReceiver().clear();
+		document.getReceiver().addAll(currentReceivers);
+	}
+
+	/**
      * Checks the address field(s) for changed entries.
      */
 	private void checkForChangedAddresses() {
@@ -711,10 +720,13 @@ public class DocumentEditor extends Editor<Document> {
 				// Set the "addressFirstLine" value to the first line of the
 				// contact address (in case of setting a new address from selection
 				// the addressFirstLine property wouldn't be updated).
-				String addressFirstLine = currentReceiver.getCustomerNumber() != null
-						? contactUtil.getNameWithCompany(currentReceiver)
-						: createAddressFirstLineFromString(currentAddressTabWidget);
-				document.setAddressFirstLine(addressFirstLine);
+				// !!! only if this is the first CTab!!!
+				if(index == 0) {
+					String addressFirstLine = currentReceiver.getCustomerNumber() != null
+							? contactUtil.getNameWithCompany(currentReceiver)
+							: createAddressFirstLineFromString(currentAddressTabWidget);
+					document.setAddressFirstLine(addressFirstLine);
+				}
 			} else {
 				// if in bind mode, fill address Text widget with DocumentReceiver's value
 				observedText.setValue(contactUtil.getAddressAsString(currentReceiver));
@@ -1732,6 +1744,8 @@ public class DocumentEditor extends Editor<Document> {
 
 		// select the correct address tab
 		CTabItem addressTab = addressAndIconComposite.getSelection();
+		
+		bindModelValue(documentReceiver, txtConsultant, DocumentReceiver_.consultant.getName(), 250);
 		setAddressInTab(addressTab, documentReceiver);
 		addOtherAddressesIfNotExisting(contact);
 
@@ -1763,6 +1777,10 @@ public class DocumentEditor extends Editor<Document> {
 			String addressAsString = contactUtil.getAddressAsString(documentReceiver);
 			currenCTabItem.setData(CURRENT_RECEIVER, documentReceiver);
 			currenCTabItem.setText(addressAsString);
+			
+			part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+			bindAddressWidgetForIndex(addressAndIconComposite.getSelectionIndex());
+			part.getTransientData().remove(BIND_MODE_INDICATOR);
 		}
 	}
 
@@ -1786,12 +1804,15 @@ public class DocumentEditor extends Editor<Document> {
 					document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver);
 					java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(
 							billingTypeToCheck);
-					CTabItem currenCTabItem = addressTabForAlternativeAddress
-							.orElse(createAddressTabItem(documentReceiver));
-					setAddressInTab(currenCTabItem, documentReceiver);
+						// only set an additional tab if haven't a tab for this billing type yet
+					if(!addressTabForAlternativeAddress.isPresent()) {
+						CTabItem currenCTabItem = createAddressTabItem(documentReceiver);
+						setAddressInTab(currenCTabItem, documentReceiver);
+					}
 				}
 			}
 		}
+
 	}
 
 	private java.util.Optional<CTabItem> lookupAddressTabForBillingType(BillingType billingType) {
