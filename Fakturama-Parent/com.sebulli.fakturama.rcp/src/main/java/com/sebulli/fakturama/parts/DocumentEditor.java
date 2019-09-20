@@ -37,7 +37,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
@@ -2811,23 +2810,26 @@ public class DocumentEditor extends Editor<Document> {
         if (document.getBillingType().isORDER() && defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG)) {
 			CustomerStatistics customerStaticstics = ContextInjectionFactory.make(CustomerStatistics.class, context);
 			
-			customerStaticstics.setContact(addressManager.getBillingAdress(document));
-			if (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD) == 1) {
-				customerStaticstics.setAddress(addressManager.getBillingAdress(document).getManualAddress());
-	            customerStaticstics.makeStatistics(true);
-			} else {	
-                customerStaticstics.makeStatistics(false);
+			DocumentReceiver documentReceiver = addressManager.getBillingAdress(document);
+			customerStaticstics.setContact(documentReceiver);
+			if(documentReceiver.getOriginContactId() != null) {
+				// only relevant if a "real" contact was selected
+				if (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD) == 1) {
+					customerStaticstics.setAddress(contactUtil.getAddressAsString(documentReceiver));
+		            customerStaticstics.makeStatistics(true);
+				} else {	
+	                customerStaticstics.makeStatistics(false);
+				}
 			}
 			
 			if (customerStaticstics.hasPaidInvoices()) {
-
 				//T: Message Dialog
 				MessageDialog.openInformation(parent.getShell(), 
 						//T: Title of the customer statistics dialog
 						msg.dialogMessageboxTitleInfo,
 						//T: Part of the customer statistics dialog
 						// the unescapeJava is because of the Newlines in the message format string
-						MessageFormat.format(StringEscapeUtils.unescapeJava(msg.dialogCustomerStatisticsPart1), 
+						MessageFormat.format(msg.dialogCustomerStatisticsPart1, 
 						        document.getAddressFirstLine(),
 						        customerStaticstics.getOrdersCount(),
 						        customerStaticstics.getLastOrderDate(),

@@ -33,9 +33,7 @@ Export-Package: com.sebulli.fakturama.converter,
  com.sebulli.fakturama.oldmodel,
  com.sebulli.fakturama.util
 Bundle-ActivationPolicy: lazy
-Import-Package: org.apache.commons.lang3,
- org.apache.commons.lang3.builder,
- org.eclipse.e4.core.contexts,
+Import-Package: org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.jface.preference,
