@@ -1768,7 +1768,7 @@ public class DocumentEditor extends Editor<Document> {
 
 	/**
 	 * If current document is an invoice or a delivery note and there's no according
-	 * address we add the appropriate address from that contact.
+	 * address we add the appropriate address from that contact (if only one address fits).
 	 * 
 	 * @param contact currently selected {@link Contact}
 	 */

@@ -503,8 +503,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 	 */
 	protected NatTable createListTable(Composite searchAndTableComposite) {
 
-		BillingType currentBillingType = (BillingType) context.get("ADDRESS_TYPE");
 		ContactType contactType;
+		BillingType currentBillingType = (BillingType) context.get("ADDRESS_TYPE");
 		switch (currentBillingType) {
 		case INVOICE:
 			contactType = ContactType.BILLING;
@@ -566,8 +566,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		natTable.addConfiguration(new TreeLayerExpandCollapseKeyBindings(bodyLayerStack.getTreeLayer(),
 				bodyLayerStack.getSelectionLayer()));
 
-		natTable.configure();
-
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 
 		// matcher input Search text field
@@ -595,6 +593,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		bodyLayerStack.getSelectionLayer().setSelectionModel(selectionModel);
 		// Select complete rows
 		bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration<K>());
+
+		natTable.configure();
 		return natTable;
 	}
 
@@ -829,9 +829,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
             this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
             this.treeLayer = new TreeLayer(this.selectionLayer, treeRowModel);
-            ViewportLayer viewportLayer = new ViewportLayer(this.treeLayer);
-
-            setUnderlyingLayer(viewportLayer);
+            treeLayer.setRegionName(GridRegion.BODY);
+            setUnderlyingLayer(new ViewportLayer(this.treeLayer));
         }
 
         public SelectionLayer getSelectionLayer() {

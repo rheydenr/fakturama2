@@ -2,11 +2,9 @@ package com.sebulli.fakturama.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
@@ -25,6 +23,7 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactType;
+import com.sebulli.fakturama.model.Contact_;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Debitor_;
 
@@ -92,8 +91,17 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<Debitor> query = cb.createQuery(getEntityClass());
 		Root<Debitor> debitorQuery = query.from(getEntityClass());
-		query.select(debitorQuery)
-				.where(cb.and(debitorQuery.get(Debitor_.customerNumber).isNotNull(), cb.not(debitorQuery.get(Debitor_.deleted))));
+		// filter all Debitors with matching addresses
+		query.distinct(true).select(debitorQuery)
+				.where(cb.and(
+						debitorQuery.get(Debitor_.customerNumber).isNotNull(), 
+						cb.not(debitorQuery.get(Debitor_.deleted)),
+						cb.or(
+							cb.isEmpty(debitorQuery.join(Contact_.addresses).get(Address_.contactTypes)),
+							debitorQuery.join(Contact_.addresses).get(Address_.contactTypes).in(contactType)
+						)
+						))
+				.orderBy(cb.asc(debitorQuery.get(Debitor_.customerNumber)));
 		TypedQuery<Debitor> q = getEntityManager().createQuery(query);
 		q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
 //        q.setHint(QueryHints.REFRESH, HintValues.TRUE); 
@@ -101,34 +109,26 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
 		debitorQuery.fetch(Debitor_.categories);
 		debitorQuery.fetch(Debitor_.addresses).fetch(Address_.contactTypes);
 		List<Debitor> debitorsFromDb = q.getResultList();
-
-		// filter all Debitors with matching addresses
-		debitorsFromDb.parallelStream()
-				.filter(d -> d.getAddresses().size() == 1 || d.getAddresses().parallelStream()
-						.filter(a -> a.getContactTypes().contains(contactType)).findAny().isPresent())
-				.sorted(Comparator.comparing(Debitor::getCustomerNumber)).collect(Collectors.toList());
-
 		List<DebitorAddress> treeItems = new ArrayList<>();
 		
 		/*
 		 * Create a list of DebitorAddresses. This is done by creating at least one
 		 * entry (for the main address) and some child entries for other matching addresses.
 		 */
-		
 		for (Debitor debitor : debitorsFromDb) {
 			List<Address> addresses = debitor.getAddresses();
-			DebitorAddress javaTodo; //treeItemDebitorAddress
+			DebitorAddress treeItemDebitorAddress;
 			if (addresses.size() >= 1) {
 				// create the first entry for a debitor
-				javaTodo = createDebitorTreeItem(debitor, addresses.get(0));
+				treeItemDebitorAddress = createDebitorTreeItem(debitor, addresses.get(0));
 				if(addresses.size() > 1) {
 					// if more than one address exists create child entries
-					for (Address adr : addresses.subList(1, addresses.size())) {
-						treeItems.add(createDebitorTreeItem(debitor, adr));
-					}
+					addresses.subList(1, addresses.size())
+						.stream()
+						.filter(adr -> adr.getContactTypes().isEmpty() || adr.getContactTypes().contains(contactType))
+						.forEach(adr -> treeItems.add(createDebitorTreeItem(debitor, adr)));
 				}
-				treeItems.add(javaTodo);
-//				javaTodo.forEach(treeItems::add);
+				treeItems.add(treeItemDebitorAddress);
 			}
 		}
 
