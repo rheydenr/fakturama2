@@ -1,5 +1,7 @@
 package com.sebulli.fakturama.dto;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.DocumentReceiver;
@@ -181,4 +183,8 @@ public class AddressDTO {
 		return this;
 	}
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }

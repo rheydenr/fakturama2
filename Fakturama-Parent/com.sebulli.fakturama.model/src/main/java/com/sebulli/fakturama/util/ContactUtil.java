@@ -341,38 +341,43 @@ public class ContactUtil {
 		String addressString = "";
 		// Get the format string
 		addressFormat = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS);
-		
-		// Hide the following countries
-		String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
-		String[] hideCountries = hideCountriesString.split(",");
-		for (String hideCountry : hideCountries) {
-			String hiddenCountry = "";
-			if(hideCountry.length() <= 3) {
-    			Optional<ULocale> hiddenLocale = localeUtil.findByCode(hideCountry);
-				//if(hiddenLocale.isPresent()) {
+		if (addressDTO == null || addressDTO.getManualAddress() != null) {
+			// if a manual address is set we use it
+			addressString = addressDTO.getManualAddress();
+		} else {
+			// Hide the following countries
+			String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
+			String[] hideCountries = hideCountriesString.split(",");
+			for (String hideCountry : hideCountries) {
+				String hiddenCountry = "";
+				if (hideCountry.length() <= 3) {
+					Optional<ULocale> hiddenLocale = localeUtil.findByCode(hideCountry);
+					// if(hiddenLocale.isPresent()) {
 					hiddenCountry = hiddenLocale.orElse(ULocale.US).getISO3Country();
-				//}
-			}
-			
-			
-			if (addressDTO != null && (StringUtils.equalsIgnoreCase(addressDTO.getCountryCode(), hideCountry)
-			|| StringUtils.equalsIgnoreCase(localeUtil.findByCode(addressDTO.getCountryCode()).orElse(ULocale.US).getISO3Country(), hiddenCountry))) {
-				addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
-				addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
-			}
-		}
+					// }
+				}
 
-		// Get each line
-		String[] addressFormatLines = addressFormat.split("<br>");
-		for (String addressFormatLine : addressFormatLines) {
-			String formatedAddressLine = replaceFormatString(addressFormatLine, addressDTO);
-			String trimmedAddressLine = formatedAddressLine.trim();
-			if ((formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty()) 
-					&& !addressString.isEmpty()) {
-				addressString += separator;
+				if (addressDTO != null && (StringUtils.equalsIgnoreCase(addressDTO.getCountryCode(), hideCountry)
+						|| StringUtils.equalsIgnoreCase(
+								localeUtil.findByCode(addressDTO.getCountryCode()).orElse(ULocale.US).getISO3Country(),
+								hiddenCountry))) {
+					addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
+					addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
+				}
 			}
 
-			addressString += trimmedAddressLine;
+			// Get each line
+			String[] addressFormatLines = addressFormat.split("<br>");
+			for (String addressFormatLine : addressFormatLines) {
+				String formatedAddressLine = replaceFormatString(addressFormatLine, addressDTO);
+				String trimmedAddressLine = formatedAddressLine.trim();
+				if ((formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty())
+						&& !addressString.isEmpty()) {
+					addressString += separator;
+				}
+
+				addressString += trimmedAddressLine;
+			}
 		}
 		return addressString;
 	}
@@ -388,18 +393,17 @@ public class ContactUtil {
 	public String getAddressAsString(final DocumentReceiver documentReceiver, String separator) {
 		String addressString = "";
 		// manualAddress has precedence over regular entries
-		    if(documentReceiver == null || documentReceiver.getManualAddress() != null) {
-		        // if a manual address is set we use it
-		    	addressString = documentReceiver.getManualAddress();
-		    } else {
-		        // else we build an address string from address fields
-		    	return getAddressAsString(AddressDTO.from(documentReceiver), separator);
-		    }
-		
+		if (documentReceiver == null || documentReceiver.getManualAddress() != null) {
+			// if a manual address is set we use it
+			addressString = documentReceiver.getManualAddress();
+		} else {
+			// else we build an address string from address fields
+			return getAddressAsString(AddressDTO.from(documentReceiver), separator);
+		}
+
 		// return the complete address
 		return addressString;
-	}
-	
+	}	
 	
 	
 	public Address createAddressFromString(String address) {

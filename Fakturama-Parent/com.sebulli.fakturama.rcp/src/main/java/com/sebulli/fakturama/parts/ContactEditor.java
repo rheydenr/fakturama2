@@ -1029,7 +1029,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// City Addon
 		Label labelCityAddon = new Label(addressGroup, SWT.NONE);
 		//T: Label in the contact editor
-		labelCityAddon.setText("City Addon");
+		labelCityAddon.setText(msg.editorContactFieldDistrict);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCityAddon);
 		Text txtCityAddon = new Text(addressGroup, SWT.BORDER);
 		addressTabWidget.setCityAddon(txtCityAddon);
@@ -1126,8 +1126,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtMobile);
 		
 		Label labelAddressType = new Label(addressGroup, SWT.NONE);
-		labelAddressType.setText("address for");
-		labelAddressType.setToolTipText("this address can be used for the selected address types");
+		labelAddressType.setText(msg.editorContactFieldContacttype);
+		labelAddressType.setToolTipText(msg.editorContactFieldContacttypeTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAddressType);
 		
 		final MultiChoice<ContactType> mcSimple = new MultiChoice<ContactType>(addressGroup, SWT.None);
@@ -1230,6 +1230,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		if(lastAddressIndex < i) {
 			do {
 				Address address = modelFactory.createAddress();
+				address.setCountryCode(localeUtil.getDefaultLocale().getCountry());
 				// add no ContactType means this address is a default address for this contact
 				editorContact.addToAddresses(address);
 			} while(++lastAddressIndex < i);
