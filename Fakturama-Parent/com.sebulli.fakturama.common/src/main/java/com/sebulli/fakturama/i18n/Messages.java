@@ -179,6 +179,7 @@ public class Messages {
 	public String editorContactFieldEmailValidationerror;
 	public String editorContactFieldSalesequalizationtaxName;
 	public String editorContactFieldWebsiteCantopen;
+	public String editorContactFieldLocalconsultant;
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
 	public String editorDocumentDialogNodefaultvalue;

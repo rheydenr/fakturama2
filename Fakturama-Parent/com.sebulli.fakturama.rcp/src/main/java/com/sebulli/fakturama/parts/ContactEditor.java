@@ -971,7 +971,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		plusButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				CTabItem newAddressTab = createAddressTabForBillingType("address #" + (addressTabFolder.getItemCount() + 1),
+				CTabItem newAddressTab = createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress + " #" + (addressTabFolder.getItemCount() + 1),
 						invisible, createAddressPanel(), countryNames, salutationList);
 //				newAddressTab.setShowClose(true);
 				bindAddressWidgetForIndex(newAddressTab, addressTabFolder.getItemCount() - 1);
@@ -982,11 +982,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		addressTabFolder.setTopRight(plusButton);
 
 		// create an inner tab for each BillingType
-		CTabItem addressTab = createAddressTabForBillingType("main address", invisible, createAddressPanel(), countryNames, salutationList);
+		CTabItem addressTab = createAddressTabForBillingType(msg.editorContactLabelMaintab, invisible, createAddressPanel(), countryNames, salutationList);
 		addressTabFolder.setSelection(addressTab);
 		if(editorContact.getAddresses().size() > 1) {
 			for (int i = 1; i < editorContact.getAddresses().size(); i++) {
-				createAddressTabForBillingType("address #" + i, invisible, createAddressPanel(), countryNames, salutationList);
+				createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress + " #" + i, invisible, createAddressPanel(), countryNames, salutationList);
 			}
 		}
 	    

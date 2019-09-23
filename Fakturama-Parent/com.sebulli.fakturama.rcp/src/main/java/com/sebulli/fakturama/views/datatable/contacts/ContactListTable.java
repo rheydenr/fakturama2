@@ -206,7 +206,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new ContactTableConfiguration());
-//        addCustomStyling(natTable);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 

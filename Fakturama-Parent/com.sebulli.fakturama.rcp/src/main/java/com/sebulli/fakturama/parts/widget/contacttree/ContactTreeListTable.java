@@ -354,22 +354,21 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 
 	private void setColumWidthPercentage(DataLayer dataLayer) {
 		dataLayer.setColumnPercentageSizing(true);
-//    dataLayer.setColumnWidthPercentageByPosition(0, 5);
-//    dataLayer.setColumnWidthPercentageByPosition(1, 15);
-//    dataLayer.setColumnWidthPercentageByPosition(2, 75);
-//    dataLayer.setColumnWidthPercentageByPosition(3, 5);
+		dataLayer.setColumnWidthPercentageByPosition(0, 5);
+		dataLayer.setColumnWidthPercentageByPosition(1, 15);
+		dataLayer.setColumnWidthPercentageByPosition(2, 75);
+		dataLayer.setColumnWidthPercentageByPosition(3, 5);
 	}
 
     private void hookDoubleClickCommand(final NatTable nattable, final TreeLayer gridLayer, String commandId) {
         
         if (commandId != null) {
             // if we are in "selectaddress" mode we have to register a single click mouse event
-            nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+            nattable.getUiBindingRegistry().registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.NONE), new IMouseAction() {
                 public void run(NatTable natTable, MouseEvent event) {
                     int rowPos = natTable.getRowPositionByY(event.y);
                     int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack.treeLayer);
                     selectedObject = ((ListDataProvider<K>) bodyLayerStack.getBodyDataProvider()).getRowObject(bodyRowPos);
-                    /// ???
                 }
             });
         }
@@ -400,7 +399,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
                     eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
                     eventParams.put(SELECTED_ADDRESS_ID, Long.valueOf(selectedObject.getAddress().getId()));
                     eventParams.put(SELECTED_CONTACT_ID, Long.valueOf(selectedObject.getAddress().getContact().getId()));
-//                    // alternatively use the Selection Service
+                    // alternatively use the Selection Service
                     // ==> no! Because this SelectionService has another context than 
                     // the receiver of this topic. Therefore the receiver's SelectionService
                     // is empty :-(
@@ -433,11 +432,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     protected void postConfigureNatTable(NatTable natTable) {
         //as the autoconfiguration of the NatTable is turned off, we have to add the 
         //DefaultNatTableStyleConfiguration and the ConfigRegistry manually 
-        natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
-        natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new ContactTableConfiguration());
-//        addCustomStyling(natTable);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 
@@ -447,7 +443,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
         natTable.addConfiguration(new SingleClickSortConfiguration());
-        natTable.configure();
     }
 
     protected IColumnPropertyAccessor<K> createColumnPropertyAccessor(String[] propertyNames) {
@@ -575,8 +570,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		final FilterList<K> textFilteredIssues = new FilterList<K>(contactListData, textMatcherEditor);
 
 		// build the list for the tree-filtered values (i.e., the value list which is
-		// affected by
-		// tree selection)
+		// affected by tree selection)
 		treeFilteredIssues = new FilterList<K>(textFilteredIssues);
 		setColumWidthPercentage(bodyLayerStack.bodyDataLayer);
 
