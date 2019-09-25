@@ -421,7 +421,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			
             // a new contact is always dirty...
             // setDirty(true);
-
 		}
 		else {
 

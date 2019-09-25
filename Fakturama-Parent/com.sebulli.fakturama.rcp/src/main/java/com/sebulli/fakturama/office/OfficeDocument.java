@@ -195,7 +195,9 @@ public class OfficeDocument {
 			// Stop here and do not fill the document's placeholders, if it's an existing document
 			if (openExisting) {
 				documentPath = Paths.get(document.getOdtPath());
-				generatedPdf = Paths.get(document.getPdfPath());
+				if(document.getPdfPath() != null) {
+					generatedPdf = Paths.get(document.getPdfPath());
+				}
 				openDocument();
 				return;
 			}
@@ -207,10 +209,11 @@ public class OfficeDocument {
             cleanup();
             
             // Recalculate the sum of the document before exporting
-			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
+            DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
+			documentSummary = documentSummaryCalculator.calculate(this.document);
 
 			// Get the VAT summary of the UniDataSet document
-			VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+			VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, context);
 			vatSummarySetManager.add(this.document, Double.valueOf(1.0));
 
             /* Get the placeholders of the OpenOffice template.
@@ -1243,9 +1246,15 @@ public class OfficeDocument {
 	public boolean testOpenAsExisting(Document document, Path template) {
 		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 		Path oODocumentFile = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
+		
+		boolean ignorePdf = true;
+		if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId()) && document.getPdfPath() == null) {
+			// if PDF should be created but the path in the document object is null then it has to be re-created.
+			ignorePdf = false;
+		}
 
 		return (Files.exists(oODocumentFile) && BooleanUtils.isTrue(document.getPrinted()) &&
-				filesAreEqual(document.getPrintTemplate(),template));
+				filesAreEqual(document.getPrintTemplate(),template) && ignorePdf);
 	}
 
     /**
