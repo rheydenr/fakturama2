@@ -412,9 +412,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			// I'ver never given it to the model!
 			// Therefore, to keep it in sync with old version, I've changed it here back to "uncertain" (which is 0).
 			editorContact.setUseNetGross((short)0);
-			
-			// country is determined by locale
-//			editorContact.getAddress().setCountryCode(localeUtil.getDefaultLocale().getCountry());
 
 			// Get the next contact number
 			editorContact.setCustomerNumber(getNextNr());
@@ -970,7 +967,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		plusButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				CTabItem newAddressTab = createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress + " #" + (addressTabFolder.getItemCount() + 1),
+				CTabItem newAddressTab = createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress + " #" + (addressTabFolder.getItemCount()),
 						invisible, createAddressPanel(), countryNames, salutationList);
 //				newAddressTab.setShowClose(true);
 				bindAddressWidgetForIndex(newAddressTab, addressTabFolder.getItemCount() - 1);
@@ -1070,7 +1067,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Local Consultant
 		Label labelLocalConsultant = new Label(addressGroup, SWT.NONE);
 		//T: Label in the contact editor
-		labelLocalConsultant.setText("Local consultant");
+		labelLocalConsultant.setText(msg.editorContactFieldLocalconsultant);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelLocalConsultant);
 		
 		Text txtlocalConsultant = new Text(addressGroup, SWT.BORDER);
@@ -1194,6 +1191,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 	protected void bindAddressWidgetForIndex(CTabItem addressTabItem, int index) {
 	    Address currentAddress = getOrCreateAddressByIndexFromContact(index);
+		// sometimes the country code is null
+		// ==> country is determined by locale
+	    if(currentAddress.getCountryCode() == null) {
+	    	currentAddress.setCountryCode(localeUtil.getDefaultLocale().getCountry());
+	    }
 	    
 	    AddressTabWidget currentAddressTabWidget = addressTabWidgets.get(index);
 		bindModelValue(currentAddress, currentAddressTabWidget.getLocalConsultant(), Address_.localConsultant.getName(), 64);
