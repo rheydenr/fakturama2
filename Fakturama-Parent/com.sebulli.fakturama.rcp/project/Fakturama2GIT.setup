@@ -67,7 +67,7 @@
       xsi:type="setup:VariableTask"
       id="org.fakturama.install.targetplatform"
       name="eclipse.target.platform"
-      defaultValue="2019-03"
+      defaultValue="2019-09"
       storageURI="scope://Workspace"
       label="Eclipse Target Platform">
     <description>basic IDE target platform</description>
@@ -170,9 +170,9 @@
           name="org.eclipse.swt.win32.win32.x86_64"
           filter="(&amp;(osgi.arch=x86_64)(osgi.os=win32)(osgi.ws=win32))"/>
       <repositoryList
-          name="Photon">
+          name="2019-09">
         <repository
-            url="http://download.eclipse.org/releases/photon"/>
+            url="http://download.eclipse.org/releases/2019-09"/>
       </repositoryList>
     </targlet>
     <targlet
@@ -272,7 +272,7 @@
           name="org.eclipse.babel.nls_eclipse_uk.feature.group"/>
       <repositoryList>
         <repository
-            url="https://download.eclipse.org/technology/babel/update-site/R0.16.1/2018-12"/>
+            url="https://download.eclipse.org/technology/babel/update-site/R0.17.0/2019-06"/>
       </repositoryList>
     </targlet>
     <targlet
@@ -315,7 +315,7 @@
           name="org.yaml.snakeyaml"/>
       <repositoryList>
         <repository
-            url="http://download.eclipse.org/tools/orbit/downloads/drops/R20180531190352/repository"/>
+            url="https://download.eclipse.org/tools/orbit/downloads/drops/R20190827152740/repository"/>
       </repositoryList>
     </targlet>
     <targlet
@@ -328,7 +328,7 @@
           name="org.eclipse.nebula.widgets.treemapper.feature.feature.group"/>
       <repositoryList>
         <repository
-            url="http://download.eclipse.org/nebula/releases/2.0.1"/>
+            url="http://download.eclipse.org/nebula/releases/latest"/>
         <repository
             url="http://download.eclipse.org/nebula/incubation/snapshot"/>
       </repositoryList>
