@@ -92,13 +92,18 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 
 	@Override
 	public Address getAddressFromContact(Contact contact, ContactType contactType) {
-		Address address = null;
+		Optional<Address> address = null;
 		if (contact != null && contactType != null) {
 			address = contact.getAddresses().stream()
 					.filter(rcv -> rcv.getContactTypes().isEmpty() || rcv.getContactTypes().contains(contactType))
-					.findFirst().get();
+					.findFirst();
+			
+			// if there's no fitting address use the first one (fallback)
+			if(!address.isPresent()) {
+				address = Optional.ofNullable(contact.getAddresses().get(0));
+			}
 		}
-		return address;
+		return address.get();
 	}
 
 	@Override
@@ -123,12 +128,12 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		Optional<DocumentReceiver> documentReceiver = document.getReceiver().stream()
 				.filter(rcv -> rcv.getBillingType().compareTo(billingType) == 0).findFirst();
 		
-		// FALLBACK: Use billingtype of the given document
+		// FALLBACK: Use billing type of the given document
 		if(!documentReceiver.isPresent()) {
 			documentReceiver = document.getReceiver().stream()
 					.filter(rcv -> rcv.getBillingType().compareTo(document.getBillingType()) == 0).findFirst();
 		}
-		return documentReceiver.get();
+		return documentReceiver.orElse(null);
 	}
 
 	@Override

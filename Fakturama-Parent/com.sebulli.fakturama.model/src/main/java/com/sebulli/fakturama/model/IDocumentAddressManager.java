@@ -16,16 +16,28 @@ public interface IDocumentAddressManager {
 
 	Address getAddressFromContact(Contact contact, ContactType contactType);
 
+	/**
+	 * Get the billing address for a given {@link Document}.
+	 * 
+	 * @param document
+	 * @return
+	 */
 	DocumentReceiver getBillingAdress(Document document);
 
+	/**
+	 * Get the delivery address for a given {@link Document}.
+	 * @param document
+	 * @return
+	 */
 	DocumentReceiver getDeliveryAdress(Document document);
 
 	/**
-	 * Reads the billing address from a {@link Document}. 
+	 * Reads the the address from a {@link Document} for a given {@link BillingType}. If no appropriate {@link BillingType}
+	 * is available, the billingtype of the document is returned.
 	 * 
 	 * @param document the {@link Document}
-	 * @param billingType
-	 * @return
+	 * @param billingType the {@link BillingType} to look for
+	 * @return {@link DocumentReceiver} or <code>null</code>, if none was found
 	 */
 	DocumentReceiver getAdressForBillingType(Document document, BillingType billingType);
 

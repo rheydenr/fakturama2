@@ -76,15 +76,12 @@ public class DbUpdateService implements IDbUpdateService {
 				throw new SQLException("can't create database connection!");
 			}
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-//			if(!eclipsePrefs.get("GENERAL_WORKSPACE_REQUEST", "").isEmpty()) {
-//				System.err.println("dropping old database schema for workspace request");
-//				CatalogAndSchema cat = new CatalogAndSchema("", database.getDefaultSchemaName());
-//				database.dropDatabaseObjects(cat);
-//			}
-//			URL changelogMaster = FrameworkUtil.getBundle(this.getClass()).getResource("/changelog/db.changelog-master.xml");
-//			changelogMaster.openStream();
 			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
 					new OSGiResourceAccessor(context.getBundle()), database);
+//			if(!eclipsePrefs.get("GENERAL_WORKSPACE_REQUEST", "").isEmpty()) {
+//				System.err.println("dropping old database schema for workspace request");
+//				liquibase.dropAll();
+//			}
 //			liquibase.forceReleaseLocks();   // workaround!
 			liquibase.update(new Contexts(), new LabelExpression());
 		} catch (ValidationFailedException exc) {

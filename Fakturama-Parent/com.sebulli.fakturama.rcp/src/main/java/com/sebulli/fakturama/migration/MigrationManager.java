@@ -96,6 +96,7 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.migration.olddao.OldEntitiesDAO;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
@@ -296,7 +297,7 @@ public class MigrationManager {
 		 * HSQL DB since I have to look at the DB with several tools while Fakturama is started.
 		 * This switch is intentionally undocumented in migration documentation.
 		 */
-		if(System.getProperty("fakturama.use.dbserver") == null) {
+		if(!BooleanUtils.toBoolean(System.getProperty("fakturama.use.dbserver"))) {
 		    // hard coded old database name
             hsqlConnectionString = "jdbc:hsqldb:file:" + oldWorkDir + "/Database/Database";
 		} else {
@@ -638,6 +639,7 @@ public class MigrationManager {
 			            document = modelFactory.createOrder();
 			            break;
 			        }
+					document.setBillingType(billingType);
 					if(oldDocument.getAddressid() < 0) {
 						// manually edited address => store in the data container!
 						DocumentReceiver contact = modelFactory.createDocumentReceiver();
@@ -646,25 +648,35 @@ public class MigrationManager {
 						contact.setManualAddress(oldDocument.getAddress());
 						document.getReceiver().add(contact);
 						
-						DocumentReceiver deliveryContact = modelFactory.createDocumentReceiver();
-						deliveryContact.setManualAddress(oldDocument.getDeliveryaddress());
-						deliveryContact.setBillingType(billingType);
-						document.getReceiver().add(deliveryContact);
+						if(!DataUtils.getInstance().MultiLineStringsAreEqual(oldDocument.getAddress(), oldDocument.getDeliveryaddress())) {
+							DocumentReceiver deliveryContact = modelFactory.createDocumentReceiver();
+							deliveryContact.setManualAddress(oldDocument.getDeliveryaddress());
+							BillingType searchBillingType = billingType.isDELIVERY() ? BillingType.INVOICE : BillingType.DELIVERY;
+							deliveryContact.setBillingType(searchBillingType);
+							document.getReceiver().add(deliveryContact);
+						}
 					} else {
 						// use the previous filled Contact hashMap
 						Long newContactIdDerivedFromOld = newContacts.get(oldDocument.getAddressid());
 						if (newContactIdDerivedFromOld == null) {
 							migLogUser.warning(String.format("found a document (No. '%s') which has a contact (id='%d' [DB-ID!]) that is marked as deleted", oldDocument.getName(), oldDocument.getAddressid()));
 						} else {
+							// add main contact as DocumentReceiver
 							Contact contact = contactDAO.findById(newContactIdDerivedFromOld);
 							if(contact != null) {
-								addReceiverToDocument(document, contact, BillingType.INVOICE);
-								addReceiverToDocument(document, contact, BillingType.DELIVERY);
+								addReceiverToDocument(document, contact, billingType);
+								
+								// add delivery address if available and if it differs from main address
+								if(!DataUtils.getInstance().MultiLineStringsAreEqual(oldDocument.getAddress(), oldDocument.getDeliveryaddress())) {
+									BillingType searchBillingType = billingType.isDELIVERY() ? BillingType.INVOICE : BillingType.DELIVERY;
+									// maybe we get the billing address here because no delivery address exists
+									// for delivery notes we have to add the invoice address here, for all other documents it is the delivery address
+									addReceiverToDocument(document, contact, searchBillingType);
+								}
 							}
 						}
 					}
 					document.setAddressFirstLine(oldDocument.getAddressfirstline());
-					document.setBillingType(billingType);
 					document.setCustomerRef(oldDocument.getCustomerref());
 					document.setValidFrom(getSaveParsedDate(oldDocument.getDate()));
 					document.setDeleted(oldDocument.isDeleted());
@@ -702,8 +714,13 @@ public class MigrationManager {
 					document.setPrintTemplate(oldDocument.getPrintedtemplate());
 					
 					// set the consultant for the current billing type
-					Optional<DocumentReceiver> activeReceiver = document.getReceiver().stream().filter(rcv -> rcv.getBillingType().compareTo(billingType) == 0).findFirst();
-					activeReceiver.ifPresent(dr -> dr.setConsultant(oldDocument.getConsultant()));
+					DocumentReceiver activeReceiver = addressManager.getAdressForBillingType(document, billingType);
+					if(activeReceiver == null) {
+						activeReceiver = document.getReceiver().get(0);
+					}
+					if(activeReceiver != null) {
+						activeReceiver.setConsultant(oldDocument.getConsultant());
+					}
 					document.setPrinted(oldDocument.isPrinted());
 					document.setDeposit(oldDocument.isIsdeposit());
 					document.setDocumentDate(getSaveParsedDate(oldDocument.getDate()));
@@ -788,7 +805,6 @@ public class MigrationManager {
 
 	private Document addReceiverToDocument(Document document, Contact contact, BillingType billingType) {
     	DocumentReceiver documentReceiver = addressManager.createDocumentReceiverForBillingType(contact, billingType);
-    	document.getReceiver().add(documentReceiver);
     	if(documentReceiver != null) {
     		document.getReceiver().add(documentReceiver);
     	}
@@ -999,6 +1015,12 @@ public class MigrationManager {
 		address.setEmail(oldContact.getEmail());
 		address.setFax(oldContact.getFax());
 		address.setMobile(oldContact.getMobile());
+		
+		// create local consultant
+		if(oldContact.getFirstname() != null && oldContact.getName() != null) {
+			String localConsultant = String.format("%s %s", oldContact.getFirstname(), oldContact.getName());
+			address.setLocalConsultant(localConsultant);
+		}
 	
 		// we don't have a CountryCode table :-(, therefore we have to look up in ULocale classes
 		String country = getDeliveryConsideredValue(billingtype, oldContact.getDeliveryCountry(), oldContact.getCountry());
@@ -1066,6 +1088,7 @@ public class MigrationManager {
 				// each Receiptvoucher has its own items
 				if(StringUtils.isNotBlank(oldReceiptvoucher.getItems())) {
 					String[] itemRefs = oldReceiptvoucher.getItems().split(",");
+					int pos = 1;
 					for (String itemRef : itemRefs) {
 						OldReceiptvoucheritems oldReceiptvoucherItem = oldDao.findReceiptvoucherItem(itemRef);
 						VoucherItem item = modelFactory.createVoucherItem();
@@ -1073,6 +1096,7 @@ public class MigrationManager {
 						item.setAccountType(itemAccountTypes.get(oldReceiptvoucherItem.getCategory()));
 						item.setName(oldReceiptvoucherItem.getName());
 						item.setPrice(oldReceiptvoucherItem.getPrice());
+						item.setPosNr(pos++);
 						VAT newVat = vatsDAO.findById(newVats.get(oldReceiptvoucherItem.getVatid()));
 						item.setVat(newVat);
 						item.setValidFrom(new Date());
@@ -1109,21 +1133,21 @@ public class MigrationManager {
         	while(cs.hasNext()) {
         		OldExpenditures oldExpenditure = (OldExpenditures) cs.next();
 				try {
-					Voucher Voucher = modelFactory.createVoucher();
-					Voucher.setVoucherType(VoucherType.EXPENDITURE);
+					Voucher voucher = modelFactory.createVoucher();
+					voucher.setVoucherType(VoucherType.EXPENDITURE);
 					if(StringUtils.isNotBlank(oldExpenditure.getCategory()) && expenditureAccounts.containsKey(oldExpenditure.getCategory())) {
-						Voucher.setAccount(voucherCategoriesDAO.getCategory(oldExpenditure.getCategory(), true));
+						voucher.setAccount(voucherCategoriesDAO.getCategory(oldExpenditure.getCategory(), true));
 					}
-					Voucher.setDeleted(oldExpenditure.isDeleted());
-					Voucher.setDiscounted(oldExpenditure.isDiscounted());
-					Voucher.setDocumentNumber(oldExpenditure.getDocumentnr());
-					Voucher.setDoNotBook(oldExpenditure.isDonotbook());
-					Voucher.setValidFrom(new Date());
+					voucher.setDeleted(oldExpenditure.isDeleted());
+					voucher.setDiscounted(oldExpenditure.isDiscounted());
+					voucher.setDocumentNumber(oldExpenditure.getDocumentnr());
+					voucher.setDoNotBook(oldExpenditure.isDonotbook());
+					voucher.setValidFrom(new Date());
 					if(StringUtils.isNotEmpty(oldExpenditure.getDate())) {
 					    Date expenditureDate = dateFormat.parse(oldExpenditure.getDate());
-						Voucher.setVoucherDate(expenditureDate);
+						voucher.setVoucherDate(expenditureDate);
 					}
-					Voucher.setVoucherNumber(oldExpenditure.getNr());
+					voucher.setVoucherNumber(oldExpenditure.getNr());
 					// each Voucher has its own items
 					if(StringUtils.isNotBlank(oldExpenditure.getItems())) {
 						String[] itemRefs = oldExpenditure.getItems().split(",");
@@ -1139,13 +1163,13 @@ public class MigrationManager {
 							item.setPosNr(pos++);
 							VAT newVat = vatsDAO.findById(newVats.get(oldExpenditureItem.getVatid()));
 							item.setVat(newVat);
-							Voucher.addToItems(item);
+							voucher.addToItems(item);
 						}
 					}
-					Voucher.setName(oldExpenditure.getName());
-					Voucher.setPaidValue(oldExpenditure.getPaid());
-					Voucher.setTotalValue(oldExpenditure.getTotal());
-					expendituresDAO.save(Voucher, true);
+					voucher.setName(oldExpenditure.getName());
+					voucher.setPaidValue(oldExpenditure.getPaid());
+					voucher.setTotalValue(oldExpenditure.getTotal());
+					expendituresDAO.save(voucher, true);
 					subMonitor.worked(1);
 				}
 				catch (FakturamaStoringException | ParseException e) {
