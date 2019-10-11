@@ -22,23 +22,6 @@
 <repository location="http://p2.mukis.de/org.eclipse.gemini.ext.di/latest/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_el.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_ar.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.10.0.v20190126060001"/>
-<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.10.0.v20190126060001"/>
-<repository location="https://download.eclipse.org/technology/babel/update-site/R0.16.1/2018-12"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.gemini.jpa.feature.feature.group" version="1.2.0.M1"/>
 <repository location="http://download.eclipse.org/gemini/jpa/updates"/>
 </location>
@@ -79,7 +62,27 @@
 <repository location="http://p2.fakturama.info/2.0.5"/>
 </location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20190602212107/repository"/>
+		<repository location="http://download.eclipse.org/releases/2019-09"/>
+		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
+		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.13.0.v20190710-1453"/>
+		<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.13.0.v20190710-1453"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.600.v20190907-0426"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.6.600.v20190907-0426"/>
+		<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.3.v20190423-0625"/>
+		<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.200.v20190502-0212"/>
+		<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.5.v20190423-0614"/>
+		<unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.0.v20190530-1947"/>
+		<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.100.v20180301-0132"/>
+		<unit id="org.eclipse.emf.common.feature.group" version="2.16.0.v20190625-1131"/>
+		<unit id="org.eclipse.emf.feature.group" version="2.19.0.v20190824-1315"/>
+		<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.10.0.v20190830-1434"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.500.v20190907-0428"/>
+		<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.300.v20190903-0934"/>
+		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.19.0.v20190907-0428"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.13.0.v20190916-1323"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20190827152740/repository"/>
 		<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
 		<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
 		<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
@@ -104,24 +107,21 @@
 		<unit id="org.yaml.snakeyaml" version="1.14.0.v201604211500"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/releases/2019-06"/>
-		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
-		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.12.0.v20190505-1221"/>
-		<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.12.0.v20190505-1221"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.500.v20190605-1801"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.6.500.v20190605-1801"/>
-		<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.3.v20190423-0625"/>
-		<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.200.v20190502-0212"/>
-		<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.5.v20190423-0614"/>
-		<unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.0.v20190530-1947"/>
-		<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.100.v20180301-0132"/>
-		<unit id="org.eclipse.emf.common.feature.group" version="2.16.0.v20190528-0845"/>
-		<unit id="org.eclipse.emf.feature.group" version="2.18.0.v20190528-0845"/>
-		<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.9.0.v20190517-1309"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.400.v20190515-0925"/>
-		<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.200.v20190516-1504"/>
-		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.18.0.v20190528-1257"/>
-		<unit id="org.eclipse.platform.ide" version="4.12.0.I20190605-1800"/>
+		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.17.0/2019-06"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ar.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_el.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.12.0.v20190713060001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.12.0.v20190713060001"/>
 	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
