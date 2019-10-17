@@ -2,7 +2,7 @@ package com.sebulli.fakturama.parts.widget.contacttree;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorAddress;
@@ -16,7 +16,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 
-public class DebitorTreeListTable extends ContactTreeListTable<DebitorAddress>{
+public class DebitorTreeListTable extends ContactTreeListTable<DebitorAddress> {
 
     // ID of this view
     public static final String ID = "fakturama.views.debitorTreeTable";
@@ -49,7 +49,7 @@ public class DebitorTreeListTable extends ContactTreeListTable<DebitorAddress>{
 
 	@Override
 	protected MatcherEditor<DebitorAddress> createTextWidgetMatcherEditor() {
-		ContactTreeListFilterator contactTreeListFilterator = new ContactTreeListFilterator(
+		ContactTreeListFilterator<DebitorAddress> contactTreeListFilterator = new ContactTreeListFilterator<>(
 				BeanProperties.value(DebitorAddress.class, "customerNumber"),
 				BeanProperties.value(DebitorAddress.class, "firstName"),
 				BeanProperties.value(DebitorAddress.class, "name"),

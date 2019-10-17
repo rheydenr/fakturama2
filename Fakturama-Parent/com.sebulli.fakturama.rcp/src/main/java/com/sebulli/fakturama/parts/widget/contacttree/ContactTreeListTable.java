@@ -260,7 +260,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		if (commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
 			hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
 		} else {
-			hookDoubleClickCommand2(natTable, getGridLayer());
+			hookDoubleClickCommand(natTable, getGridLayer(), null);
 		}
 
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
@@ -398,7 +398,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
                     // (was set in MouseEvent handler)
                     eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
                     eventParams.put(SELECTED_ADDRESS_ID, Long.valueOf(selectedObject.getAddress().getId()));
-                    eventParams.put(SELECTED_CONTACT_ID, Long.valueOf(selectedObject.getAddress().getContact().getId()));
+                    eventParams.put(SELECTED_CONTACT_ID, Long.valueOf(selectedObject.getContactId()));
                     // alternatively use the Selection Service
                     // ==> no! Because this SelectionService has another context than 
                     // the receiver of this topic. Therefore the receiver's SelectionService
@@ -422,11 +422,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     
     public K getSelectedObject() {
         return selectedObject;
-    }
-    
-//    @Override
-    protected void hookDoubleClickCommand2(final NatTable nattable, final TreeLayer gridLayer) {
-        hookDoubleClickCommand(nattable, gridLayer, null);
     }
     
     protected void postConfigureNatTable(NatTable natTable) {
@@ -453,6 +448,9 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
                 ContactListDescriptor descriptor = ContactListDescriptor.getDescriptorFromColumn(columnIndex);
                 // For the address always the first entry is displayed (if any)
                 switch (descriptor) {
+                case TYPE:
+                	List<ContactType> dataList =(List) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                	return dataList.isEmpty() ? "" : dataList.get(0);
                 case NO:
                 case FIRSTNAME:
                 case LASTNAME:
@@ -520,8 +518,20 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 
 		final IColumnPropertyAccessor<K> columnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
 
-		bodyLayerStack = new TreeBodyLayerStack(contactListData, columnPropertyAccessor,
+		// matcher input Search text field
+		final MatcherEditor<K> textMatcherEditor = createTextWidgetMatcherEditor();
+
+		// Filtered list for Search text field filter
+		final FilterList<K> textFilteredIssues = new FilterList<K>(contactListData, textMatcherEditor);
+
+		// build the list for the tree-filtered values (i.e., the value list which is
+		// affected by tree selection)
+		treeFilteredIssues = new FilterList<K>(textFilteredIssues);
+
+		bodyLayerStack = new TreeBodyLayerStack(treeFilteredIssues, columnPropertyAccessor,
 				new DebitorAddressTreeFormat<K>());
+		
+		setGridLayer(bodyLayerStack.getTreeLayer());
 
 		// 2. build the column header layer
 		IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<K>(propertyNames,
@@ -562,16 +572,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 				bodyLayerStack.getSelectionLayer()));
 
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-
-		// matcher input Search text field
-		final MatcherEditor<K> textMatcherEditor = createTextWidgetMatcherEditor();
-
-		// Filtered list for Search text field filter
-		final FilterList<K> textFilteredIssues = new FilterList<K>(contactListData, textMatcherEditor);
-
-		// build the list for the tree-filtered values (i.e., the value list which is
-		// affected by tree selection)
-		treeFilteredIssues = new FilterList<K>(textFilteredIssues);
 		setColumWidthPercentage(bodyLayerStack.bodyDataLayer);
 
 		// use a RowSelectionModel that will perform row selections and is able to

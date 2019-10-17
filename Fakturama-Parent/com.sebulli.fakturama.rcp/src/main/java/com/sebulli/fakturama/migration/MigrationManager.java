@@ -923,6 +923,7 @@ public class MigrationManager {
 					contact.setDateAdded(getSaveParsedDate(oldContact.getDateAdded()));
 					
 					Address address = createAddressFromOldContact(BillingType.INVOICE, oldContact);
+					address.setContact(contact);
 					contact.getAddresses().add(address);
 					
 					// create an alternative address for this contact (a.k.a. "Delivery Address")

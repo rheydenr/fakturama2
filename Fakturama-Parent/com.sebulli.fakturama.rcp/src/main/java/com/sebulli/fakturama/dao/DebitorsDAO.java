@@ -23,7 +23,6 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactType;
-import com.sebulli.fakturama.model.Contact_;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Debitor_;
 
@@ -95,11 +94,13 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
 		query.distinct(true).select(debitorQuery)
 				.where(cb.and(
 						debitorQuery.get(Debitor_.customerNumber).isNotNull(), 
-						cb.not(debitorQuery.get(Debitor_.deleted)),
-						cb.or(
-							cb.isEmpty(debitorQuery.join(Contact_.addresses).get(Address_.contactTypes)),
-							debitorQuery.join(Contact_.addresses).get(Address_.contactTypes).in(contactType)
-						)
+						cb.not(debitorQuery.get(Debitor_.deleted))/*
+																	 * , cb.or(
+																	 * cb.isEmpty(debitorQuery.join(Contact_.addresses).
+																	 * get(Address_.contactTypes)),
+																	 * debitorQuery.join(Contact_.addresses).get(
+																	 * Address_.contactTypes).in(contactType) )
+																	 */
 						))
 				.orderBy(cb.asc(debitorQuery.get(Debitor_.customerNumber)));
 		TypedQuery<Debitor> q = getEntityManager().createQuery(query);

@@ -2909,8 +2909,6 @@ public class DocumentEditor extends Editor<Document> {
                 	return;
                 }
 
-                // we can't use the Selection Service!!!  :-(
-//                Contact contact = (Contact) selectionService.getSelection();
                 // this selected contact is from now on the main receiver for this document
                 DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(address, document.getBillingType());
                 

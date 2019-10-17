@@ -16,7 +16,7 @@ import ca.odell.glazedlists.TextFilterator;
 /**
  *
  */
-public class ContactTreeListFilterator implements TextFilterator<DebitorAddress> {
+public class ContactTreeListFilterator<T extends DebitorAddress> implements TextFilterator<T> {
 
 	/** methods for extracting field values */
 	private IBeanProperty[] beanProperties = null;
@@ -30,7 +30,7 @@ public class ContactTreeListFilterator implements TextFilterator<DebitorAddress>
 
 	/** {@inheritDoc} */
 	@SuppressWarnings({ "unchecked" })
-	public void getFilterStrings(List<String> baseList, DebitorAddress element) {
+	public void getFilterStrings(List<String> baseList, T element) {
 		if (element == null)
 			return;
 
