@@ -806,7 +806,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
             // because the Comparator will be set by configuration
             SortedList<K> sortedList = new SortedList<>(rowObjectsGlazedList, null);
             // wrap the SortedList with the TreeList
-            this.treeList = new TreeList<K>(sortedList, treeFormat, TreeList.NODES_START_EXPANDED);
+            this.treeList = new TreeList<K>(sortedList, treeFormat, TreeList.NODES_START_COLLAPSED);
 
             this.bodyDataProvider = new ListDataProvider<K>(this.treeList, columnPropertyAccessor);
             bodyDataLayer = new DataLayer(this.bodyDataProvider);
