@@ -929,6 +929,7 @@ public class MigrationManager {
 					// create an alternative address for this contact (a.k.a. "Delivery Address")
 					if(!isAddressEqualToDeliveryAdress(oldContact)) {
 						Address alternateAddress = createAddressFromOldContact(BillingType.DELIVERY, oldContact);
+						alternateAddress.setContact(contact);
 	                    contact.getAddresses().add(alternateAddress);
 					}
 					
