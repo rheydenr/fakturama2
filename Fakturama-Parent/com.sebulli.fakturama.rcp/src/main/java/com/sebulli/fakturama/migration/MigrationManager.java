@@ -972,7 +972,7 @@ public class MigrationManager {
      * @return True, if both are equal
      */
     private boolean isAddressEqualToDeliveryAdress(OldContacts oldContact) {
-        if (oldContact.getGender() != oldContact.getDeliveryGender()) { return false; }
+//        if (oldContact.getGender() != oldContact.getDeliveryGender()) { return false; }
         if (!oldContact.getDeliveryTitle().equals(oldContact.getTitle())) { return false; }
         if (!oldContact.getDeliveryFirstname().equals(oldContact.getFirstname())) { return false; }
         if (!oldContact.getDeliveryName().equals(oldContact.getName())) { return false; }
