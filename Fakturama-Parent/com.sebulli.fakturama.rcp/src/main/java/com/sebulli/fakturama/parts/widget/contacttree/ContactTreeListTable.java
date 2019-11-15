@@ -515,35 +515,14 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		treeFilteredIssues = new FilterList<K>(contactListData, textMatcherEditor);
 		
 		
-		setGridLayer(new TempDebitorAddressGridListLayer<K>(
-				treeFilteredIssues, propertyNames, columnPropertyAccessor, configRegistry));
-
+		TempDebitorAddressGridListLayer<K> tempDebitorAddressGridListLayer = new TempDebitorAddressGridListLayer<K>(
+				treeFilteredIssues, propertyNames, columnPropertyAccessor, configRegistry, new DebitorAddressTreeFormat<K>());
+		setGridLayer(tempDebitorAddressGridListLayer);
+		
 //		bodyLayerStack = new TreeBodyLayerStack(treeFilteredIssues, columnPropertyAccessor,
 //				new DebitorAddressTreeFormat<K>());
 //		
 //		setGridLayer(bodyLayerStack.getTreeLayer());
-//
-//		// 2. build the column header layer
-//		IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<K>(propertyNames,
-//				columnPropertyAccessor);
-//		DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-//		ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayerStack,
-//				bodyLayerStack.getSelectionLayer());
-//
-//		// build the row header layer
-//		IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
-//		DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
-//		ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayerStack,
-//				bodyLayerStack.getSelectionLayer());
-//
-//		// build the corner layer
-//		IDataProvider cornerDataProvider = new DefaultCornerDataProvider(columnHeaderDataProvider,
-//				rowHeaderDataProvider);
-//		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
-//		ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
-//
-//		// build the grid layer
-//		GridLayer gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
 
 		// turn the auto configuration off as we want to add our header menu
 		// configuration

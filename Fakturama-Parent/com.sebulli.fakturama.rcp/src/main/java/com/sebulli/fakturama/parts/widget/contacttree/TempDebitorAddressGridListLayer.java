@@ -41,6 +41,7 @@ import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.ListViewRowHeaderDataProvider;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TreeList;
 
 /**
  *
@@ -53,7 +54,8 @@ public class TempDebitorAddressGridListLayer<T extends DebitorAddress> {
 	private ViewportLayer viewportLayer;
     
     public TempDebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
-            IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry, Messages msg, boolean withRowHeader) {
+            IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry, Messages msg, boolean withRowHeader,
+            TreeList.Format<T> treeFormat) {
 
         // 1. create BodyLayerStack
         bodyLayerStack = new TempBodyLayerStack<T>(eventList, columnPropertyAccessor, rowIdAccessor);        
@@ -109,26 +111,29 @@ public class TempDebitorAddressGridListLayer<T extends DebitorAddress> {
     }
     
     public TempDebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
-            IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry, boolean withRowHeader) {
-    	this(eventList, propertyNames, columnPropertyAccessor, rowIdAccessor, configRegistry, null, withRowHeader);
+            IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry, boolean withRowHeader,
+            TreeList.Format<T> treeFormat) {
+    	this(eventList, propertyNames, columnPropertyAccessor, rowIdAccessor, configRegistry, null, withRowHeader, treeFormat);
     }
     
     public TempDebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
-            IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry) {
-        this(eventList, propertyNames, columnPropertyAccessor, rowIdAccessor, configRegistry, false);
+            IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry,
+            TreeList.Format<T> treeFormat) {
+        this(eventList, propertyNames, columnPropertyAccessor, rowIdAccessor, configRegistry, false, treeFormat);
     }
 
     /**
      * 
      */
-    public TempDebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, IConfigRegistry configRegistry) {
+    public TempDebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, 
+    		IColumnPropertyAccessor<T> columnPropertyAccessor, IConfigRegistry configRegistry, TreeList.Format<T> treeFormat) {
         this(eventList, propertyNames, columnPropertyAccessor, new IRowIdAccessor<T>() {
             @Override
             public Serializable getRowId(T rowObject) {
                 // default implementation uses entity id as row id
                 return rowObject.getCustomerNumber();
             }
-        }, configRegistry);
+        }, configRegistry, treeFormat);
     }
 
     /**
