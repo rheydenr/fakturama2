@@ -522,11 +522,9 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		final MatcherEditor<K> textMatcherEditor = createTextWidgetMatcherEditor();
 
 		// Filtered list for Search text field filter
-		final FilterList<K> textFilteredIssues = new FilterList<K>(contactListData, textMatcherEditor);
-
 		// build the list for the tree-filtered values (i.e., the value list which is
 		// affected by tree selection)
-		treeFilteredIssues = new FilterList<K>(textFilteredIssues);
+		treeFilteredIssues = new FilterList<K>(contactListData, textMatcherEditor);
 
 		bodyLayerStack = new TreeBodyLayerStack(treeFilteredIssues, columnPropertyAccessor,
 				new DebitorAddressTreeFormat<K>());
@@ -805,6 +803,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
             // use the SortedList constructor with 'null' for the Comparator
             // because the Comparator will be set by configuration
             SortedList<K> sortedList = new SortedList<>(rowObjectsGlazedList, null);
+            
             // wrap the SortedList with the TreeList
             this.treeList = new TreeList<K>(sortedList, treeFormat, TreeList.NODES_START_COLLAPSED);
 
