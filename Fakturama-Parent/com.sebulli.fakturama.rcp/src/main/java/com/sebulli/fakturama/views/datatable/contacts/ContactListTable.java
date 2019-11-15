@@ -89,7 +89,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     private static final String POPUP_ID = "com.sebulli.fakturama.contactlist.popup";
     public static final String SELECTED_CONTACT_ID = "fakturama.contactlist.selectedcontactid";
 
-    protected EventList<T> contactListData;
     protected EventList<ContactCategory> categories;
     
     @Inject
@@ -286,7 +285,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     @Override
     protected NatTable createListTable(Composite searchAndTableComposite) {
         // fill the underlying data source (GlazedList)
-        contactListData = getListData(true);
+    	EventList<T> contactListData = getListData(true);
 
         // get the visible properties to show in list view
         String[] propertyNames = contactDAO.getVisibleProperties();
@@ -303,7 +302,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         
         //build the grid layer
         setGridLayer(new EntityGridListLayer<T>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry));
-        DataLayer tableDataLayer = getGridLayer().getBodyDataLayer();
+        DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
 //        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
 //        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
@@ -311,7 +310,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 //        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
 
         final NatTable natTable = new NatTable(searchAndTableComposite/*, 
-                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, getGridLayer().getGridLayer(), false);
+                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer.getGridLayer(), false);
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
@@ -356,7 +355,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-	        GlazedLists.replaceAll(contactListData, getListData(true), false);
+	        GlazedLists.replaceAll(treeFilteredIssues, getListData(true), false);
 	        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
 	        sync.syncExec(() -> top.setRedraw(true));
     	}
