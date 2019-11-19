@@ -70,11 +70,8 @@ public class TempBodyLayerStack<T extends DebitorAddress> extends AbstractIndexL
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
         glazedListsEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-        rowReorderLayer = new RowReorderLayer(glazedListsEventLayer);
-        // this is for the correct coloring of alternating rows
-        rowReorderLayer.setConfigLabelAccumulator(new AlternatingRowConfigLabelAccumulator());
         
-        this.selectionLayer = new SelectionLayer(rowReorderLayer);
+        this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
         //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
         RowSelectionModel<T> selectionModel = new RowSelectionModel<T>(selectionLayer, bodyDataProvider, rowIdAccessor, false);

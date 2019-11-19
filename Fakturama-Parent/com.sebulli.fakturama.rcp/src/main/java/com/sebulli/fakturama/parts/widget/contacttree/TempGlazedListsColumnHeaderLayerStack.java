@@ -18,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 import com.sebulli.fakturama.dao.DebitorAddress;
-import com.sebulli.fakturama.model.IEntity;
 
 import ca.odell.glazedlists.SortedList;
 

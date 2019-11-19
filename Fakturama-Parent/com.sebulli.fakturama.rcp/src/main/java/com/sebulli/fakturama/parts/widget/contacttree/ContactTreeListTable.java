@@ -217,7 +217,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 
 	private ContactTreeMatcher<K> currentFilter;
 
-	private TreeBodyLayerStack bodyLayerStack;
+	private TempBodyLayerStack<K> bodyLayerStack;
 
 	@PostConstruct
 	public Control createPartControl(Composite parent, MPart listTablePart) {
@@ -253,12 +253,12 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		this.listTablePart = listTablePart;
 		// if another click handler is set we use it
 		// Listen to double clicks
-//		Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_CONTACTS_CLICKHANDLER);
-//		if (commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
-//			hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
-//		} else {
-//			hookDoubleClickCommand(natTable, getGridLayer(), null);
-//		}
+		Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_CONTACTS_CLICKHANDLER);
+		if (commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
+			hookDoubleClickCommand(natTable, /* gridLayer.getGridLayer(), */ (String) commandId);
+		} else {
+			hookDoubleClickCommand(natTable, /* gridLayer, */null);
+		}
 
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
@@ -347,14 +347,14 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		dataLayer.setColumnWidthPercentageByPosition(3, 5);
 	}
 
-    private void hookDoubleClickCommand(final NatTable nattable, final TreeLayer gridLayer, String commandId) {
+	private void hookDoubleClickCommand(final NatTable nattable/* , final TreeLayer gridLayer */, String commandId) {
         
         if (commandId != null) {
             // if we are in "selectaddress" mode we have to register a single click mouse event
             nattable.getUiBindingRegistry().registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.NONE), new IMouseAction() {
                 public void run(NatTable natTable, MouseEvent event) {
                     int rowPos = natTable.getRowPositionByY(event.y);
-                    int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack.treeLayer);
+                    int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack);
                     selectedObject = ((ListDataProvider<K>) bodyLayerStack.getBodyDataProvider()).getRowObject(bodyRowPos);
                 }
             });
@@ -367,7 +367,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
                 //get the row position for the click in the NatTable
                 int rowPos = natTable.getRowPositionByY(event.y);
                 //transform the NatTable row position to the row position of the body layer stack
-                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack.treeLayer);
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack);
                 selectedObject = ((ListDataProvider<K>) bodyLayerStack.getBodyDataProvider()).getRowObject(bodyRowPos);
                 // Call the corresponding editor. The editor is set
                 // in the variable "editor", which is used as a parameter
@@ -418,9 +418,9 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
         natTable.addConfiguration(new ContactTableConfiguration());
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
-//
-//        E4SelectionListener<DebitorAddress> esl = new E4SelectionListener<DebitorAddress>(selectionService, bodyLayerStack.getSelectionLayer(), (IRowDataProvider<DebitorAddress>) bodyLayerStack.bodyDataProvider);
-//        bodyLayerStack.getSelectionLayer().addLayerListener(esl);
+
+        E4SelectionListener<DebitorAddress> esl = new E4SelectionListener<DebitorAddress>(selectionService, bodyLayerStack.getSelectionLayer(), (IRowDataProvider<DebitorAddress>) bodyLayerStack.getBodyDataProvider());
+        bodyLayerStack.getSelectionLayer().addLayerListener(esl);
 
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
@@ -518,6 +518,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		TempDebitorAddressGridListLayer<K> tempDebitorAddressGridListLayer = new TempDebitorAddressGridListLayer<K>(
 				treeFilteredIssues, propertyNames, columnPropertyAccessor, configRegistry, new DebitorAddressTreeFormat<K>());
 		setGridLayer(tempDebitorAddressGridListLayer);
+		
+		bodyLayerStack = tempDebitorAddressGridListLayer.getBodyLayerStack();
 		
 //		bodyLayerStack = new TreeBodyLayerStack(treeFilteredIssues, columnPropertyAccessor,
 //				new DebitorAddressTreeFormat<K>());
@@ -755,64 +757,64 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		return eclipsePrefs;
 	}
 
-    /**
-     * Always encapsulate the body layer stack in an AbstractLayerTransform to
-     * ensure that the index transformations are performed in later commands.
-     *
-     * @param <K>
-     */
-    private class TreeBodyLayerStack extends AbstractLayerTransform {
-
-        private final TreeList<K> treeList;
-        private final IDataProvider bodyDataProvider;
-        private final SelectionLayer selectionLayer;
-        private final TreeLayer treeLayer;
-		private DataLayer bodyDataLayer;
-
-        public TreeBodyLayerStack(List<K> values,
-                IColumnPropertyAccessor<K> columnPropertyAccessor,
-                TreeList.Format<K> treeFormat) {
-            // wrapping of the list to show into GlazedLists
-            // see http://publicobject.com/glazedlists/ for further information
-            EventList<K> eventList = GlazedLists.eventList(values);
-            TransformedList<K, K> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-
-            // use the SortedList constructor with 'null' for the Comparator
-            // because the Comparator will be set by configuration
-            SortedList<K> sortedList = new SortedList<>(rowObjectsGlazedList, null);
-            
-            // wrap the SortedList with the TreeList
-            this.treeList = new TreeList<K>(sortedList, treeFormat, TreeList.NODES_START_COLLAPSED);
-
-            this.bodyDataProvider = new ListDataProvider<K>(this.treeList, columnPropertyAccessor);
-            bodyDataLayer = new DataLayer(this.bodyDataProvider);
-
-            // simply apply labels for every column by index
-            bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-
-            // layer for event handling of GlazedLists and PropertyChanges
-            GlazedListsEventLayer<K> glazedListsEventLayer = new GlazedListsEventLayer<>(bodyDataLayer, this.treeList);
-
-            GlazedListTreeData<K> treeData = new GlazedListTreeData<>(this.treeList);
-            ITreeRowModel<K> treeRowModel = new GlazedListTreeRowModel<>(treeData);
-
-            this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
-
-            this.treeLayer = new TreeLayer(this.selectionLayer, treeRowModel);
-            treeLayer.setRegionName(GridRegion.BODY);
-            setUnderlyingLayer(new ViewportLayer(this.treeLayer));
-        }
-
-        public SelectionLayer getSelectionLayer() {
-            return this.selectionLayer;
-        }
-
-        public TreeLayer getTreeLayer() {
-            return this.treeLayer;
-        }
-
-        public IDataProvider getBodyDataProvider() {
-            return this.bodyDataProvider;
-        }
-    }	
+//    /**
+//     * Always encapsulate the body layer stack in an AbstractLayerTransform to
+//     * ensure that the index transformations are performed in later commands.
+//     *
+//     * @param <K>
+//     */
+//    private class TreeBodyLayerStack extends AbstractLayerTransform {
+//
+//        private final TreeList<K> treeList;
+//        private final IDataProvider bodyDataProvider;
+//        private final SelectionLayer selectionLayer;
+//        private final TreeLayer treeLayer;
+//		private DataLayer bodyDataLayer;
+//
+//        public TreeBodyLayerStack(List<K> values,
+//                IColumnPropertyAccessor<K> columnPropertyAccessor,
+//                TreeList.Format<K> treeFormat) {
+//            // wrapping of the list to show into GlazedLists
+//            // see http://publicobject.com/glazedlists/ for further information
+//            EventList<K> eventList = GlazedLists.eventList(values);
+//            TransformedList<K, K> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
+//
+//            // use the SortedList constructor with 'null' for the Comparator
+//            // because the Comparator will be set by configuration
+//            SortedList<K> sortedList = new SortedList<>(rowObjectsGlazedList, null);
+//            
+//            // wrap the SortedList with the TreeList
+//            this.treeList = new TreeList<K>(sortedList, treeFormat, TreeList.NODES_START_COLLAPSED);
+//
+//            this.bodyDataProvider = new ListDataProvider<K>(this.treeList, columnPropertyAccessor);
+//            bodyDataLayer = new DataLayer(this.bodyDataProvider);
+//
+//            // simply apply labels for every column by index
+//            bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+//
+//            // layer for event handling of GlazedLists and PropertyChanges
+//            GlazedListsEventLayer<K> glazedListsEventLayer = new GlazedListsEventLayer<>(bodyDataLayer, this.treeList);
+//
+//            GlazedListTreeData<K> treeData = new GlazedListTreeData<>(this.treeList);
+//            ITreeRowModel<K> treeRowModel = new GlazedListTreeRowModel<>(treeData);
+//
+//            this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
+//
+//            this.treeLayer = new TreeLayer(this.selectionLayer, treeRowModel);
+//            treeLayer.setRegionName(GridRegion.BODY);
+//            setUnderlyingLayer(new ViewportLayer(this.treeLayer));
+//        }
+//
+//        public SelectionLayer getSelectionLayer() {
+//            return this.selectionLayer;
+//        }
+//
+//        public TreeLayer getTreeLayer() {
+//            return this.treeLayer;
+//        }
+//
+//        public IDataProvider getBodyDataProvider() {
+//            return this.bodyDataProvider;
+//        }
+//    }	
 }
