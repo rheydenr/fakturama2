@@ -37,7 +37,6 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
 import com.sebulli.fakturama.views.datatable.ListViewRowHeaderDataProvider;
 
@@ -59,7 +58,7 @@ public class TempDebitorAddressGridListLayer<T extends DebitorAddress> {
             TreeList.Format<T> treeFormat) {
 
         // 1. create BodyLayerStack
-        bodyLayerStack = new TempBodyLayerStack<T>(eventList, columnPropertyAccessor, rowIdAccessor);        
+        bodyLayerStack = new TempBodyLayerStack<T>(eventList, columnPropertyAccessor, rowIdAccessor, treeFormat);        
 
         //2. build the column header layer
         IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<T>(propertyNames, columnPropertyAccessor);

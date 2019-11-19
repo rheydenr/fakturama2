@@ -304,8 +304,8 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         setGridLayer(new EntityGridListLayer<T>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry));
         DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-//        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-//        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
+        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
+        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
 //        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
 //        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
 
