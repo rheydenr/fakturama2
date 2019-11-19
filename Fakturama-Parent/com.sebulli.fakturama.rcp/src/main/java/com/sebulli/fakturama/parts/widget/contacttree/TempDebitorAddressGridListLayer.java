@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.grid.cell.AlternatingRowConfigLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
@@ -90,7 +91,7 @@ public class TempDebitorAddressGridListLayer<T extends DebitorAddress> {
         ILayer cornerLayer = new CornerLayer(cornerDataLayer, rowHeaderLayer, columnHeaderLayer);
 
         // 5. build the grid layer
-        gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
+        gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer, false);
         // change the alternating row configuration so it does not change on row
         // reordering or scrolling, see Bug #521990
         gridLayer.addConfiguration(new DefaultGridLayerConfiguration(gridLayer) {
@@ -98,10 +99,13 @@ public class TempDebitorAddressGridListLayer<T extends DebitorAddress> {
             @Override
             protected void addAlternateRowColoringConfig(CompositeLayer gridLayer) {
                 addConfiguration(new DefaultRowStyleConfiguration());
+                gridLayer.setConfigLabelAccumulatorForRegion(
+                        GridRegion.BODY,
+                        new AlternatingRowConfigLabelAccumulator(gridLayer
+                                .getChildLayerByRegionName(GridRegion.BODY)));
             }
 
         });
-
         
         setViewportLayer(new ViewportLayer(bodyLayerStack.getSelectionLayer()));
         // as the selection mouse bindings are registered for the region label

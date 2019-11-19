@@ -351,12 +351,11 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
         
         if (commandId != null) {
             // if we are in "selectaddress" mode we have to register a single click mouse event
-            nattable.getUiBindingRegistry().registerSingleClickBinding(MouseEventMatcher.rowHeaderLeftClick(SWT.NONE), new IMouseAction() {
-                public void run(NatTable natTable, MouseEvent event) {
-                    int rowPos = natTable.getRowPositionByY(event.y);
-                    int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack);
-                    selectedObject = ((ListDataProvider<K>) bodyLayerStack.getBodyDataProvider()).getRowObject(bodyRowPos);
-                }
+            nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), 
+        		(NatTable natTable, MouseEvent event) -> {
+                int rowPos = natTable.getRowPositionByY(event.y);
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack);
+                selectedObject = ((ListDataProvider<K>) bodyLayerStack.getBodyDataProvider()).getRowObject(bodyRowPos);
             });
         }
         // Add a double click listener
@@ -543,21 +542,21 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 //				bodyLayerStack.getSelectionLayer()));
 
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
-//		setColumWidthPercentage(bodyLayerStack.bodyDataLayer);
-//
-//		// use a RowSelectionModel that will perform row selections and is able to
-//		// identify a row via unique ID
-//		RowSelectionModel<K> selectionModel = new RowSelectionModel<K>(bodyLayerStack.getSelectionLayer(),
-//				(IRowDataProvider<K>) bodyLayerStack.bodyDataProvider, new IRowIdAccessor<K>() {
-//
-//					@Override
-//					public Serializable getRowId(K rowObject) {
-//						return rowObject.getAddress().getId();
-//					}
-//				}, false);
-//		bodyLayerStack.getSelectionLayer().setSelectionModel(selectionModel);
-//		// Select complete rows
-//		bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration<K>());
+		setColumWidthPercentage(bodyLayerStack.getBodyDataLayer());
+
+		// use a RowSelectionModel that will perform row selections and is able to
+		// identify a row via unique ID
+		RowSelectionModel<K> selectionModel = new RowSelectionModel<K>(bodyLayerStack.getSelectionLayer(),
+				(IRowDataProvider<K>) bodyLayerStack.getBodyDataProvider(), new IRowIdAccessor<K>() {
+
+					@Override
+					public Serializable getRowId(K rowObject) {
+						return rowObject.getAddress().getId();
+					}
+				}, false);
+		bodyLayerStack.getSelectionLayer().setSelectionModel(selectionModel);
+		// Select complete rows
+		bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration<K>());
 
 //		natTable.configure();
 		return natTable;
