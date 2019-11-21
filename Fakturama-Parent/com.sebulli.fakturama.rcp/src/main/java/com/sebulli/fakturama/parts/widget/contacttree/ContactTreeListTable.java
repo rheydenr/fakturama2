@@ -388,8 +388,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     protected void postConfigureNatTable(NatTable natTable) {
         //as the autoconfiguration of the NatTable is turned off, we have to add the 
         //DefaultNatTableStyleConfiguration and the ConfigRegistry manually 
-        natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
-        natTable.addConfiguration(new ContactTableConfiguration());
+//        natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
+//        natTable.addConfiguration(new ContactTableConfiguration());
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 

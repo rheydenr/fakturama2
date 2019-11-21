@@ -18,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.tree.ITreeRowModel;
-import org.eclipse.nebula.widgets.nattable.tree.TreeLayer;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 import com.sebulli.fakturama.dao.DebitorAddress;
@@ -42,7 +41,6 @@ public class TempBodyLayerStack<T extends DebitorAddress> extends AbstractIndexL
     private final SelectionLayer selectionLayer;
     private final TreeList<T> treeList;
     private SortedList<T> sortedList;
-    private RowReorderLayer rowReorderLayer;
     private DetailGlazedListsEventLayer<T> glazedListsEventLayer;
 //    private final TreeLayer treeLayer;
 	private ViewportLayer viewportLayer;
@@ -75,18 +73,18 @@ public class TempBodyLayerStack<T extends DebitorAddress> extends AbstractIndexL
         // wrap the SortedList with the TreeList
         this.treeList = new TreeList<T>(sortedList, treeFormat, TreeList.NODES_START_COLLAPSED);
 
-        this.bodyDataProvider = new ListDataProvider<T>(this.treeList, columnPropertyAccessor);
+        this.bodyDataProvider = new ListDataProvider<T>(sortedList, columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(bodyDataProvider);
 
         // layer for event handling of GlazedLists and PropertyChanges
-        glazedListsEventLayer = new DetailGlazedListsEventLayer<T>(bodyDataLayer, this.treeList);
+        glazedListsEventLayer = new DetailGlazedListsEventLayer<T>(bodyDataLayer, sortedList);
         
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
         glazedListsEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
 
-        GlazedListTreeData<T> treeData = new GlazedListTreeData<>(this.treeList);
-        ITreeRowModel<T> treeRowModel = new GlazedListTreeRowModel<>(treeData);
+//        GlazedListTreeData<T> treeData = new GlazedListTreeData<>(this.treeList);
+//        ITreeRowModel<T> treeRowModel = new GlazedListTreeRowModel<>(treeData);
         
         this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
 
@@ -116,8 +114,12 @@ public class TempBodyLayerStack<T extends DebitorAddress> extends AbstractIndexL
     public SortedList<T> getSortedList() {
         return sortedList;
     }
+    
+    public TreeList<T> getTreeList() {
+		return treeList;
+	}
 
-    protected SelectionLayer getSelectionLayer() {
+	protected SelectionLayer getSelectionLayer() {
         return selectionLayer;
     }
 
@@ -130,13 +132,6 @@ public class TempBodyLayerStack<T extends DebitorAddress> extends AbstractIndexL
      */
     protected DataLayer getBodyDataLayer() {
         return bodyDataLayer;
-    }
-
-    /**
-     * @return the rowReorderLayer
-     */
-    public RowReorderLayer getRowReorderLayer() {
-        return rowReorderLayer;
     }
 
     /**
