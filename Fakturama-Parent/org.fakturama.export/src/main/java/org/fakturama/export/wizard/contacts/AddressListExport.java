@@ -193,7 +193,7 @@ public class AddressListExport extends OOCalcExporter {
 				setCellText(row, col++, contact.getBankAccount().getIban());
 				setCellText(row, col++, contact.getBankAccount().getBic());
 			} else {
-				col += 6;
+				col += 4;
 			}
 			
 			setCellText(row, col++, contact.getNote());
