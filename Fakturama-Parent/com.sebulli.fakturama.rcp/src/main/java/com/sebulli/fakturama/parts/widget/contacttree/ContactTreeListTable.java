@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -182,8 +183,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<K> treeFilteredIssues;
-
-	private ContactTreeMatcher<K> currentFilter;
 
 	private TempBodyLayerStack<K> bodyLayerStack;
 
@@ -424,7 +423,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
                 switch (descriptor) {
                 case TYPE:
                 	List<ContactType> dataList =(List) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
-                	return dataList.isEmpty() ? "" : dataList.get(0);
+                	return dataList.isEmpty() ? "" : dataList.stream().map(t -> t.getName()).collect(Collectors.joining(","));
                 case NO:
                 case FIRSTNAME:
                 case LASTNAME:
