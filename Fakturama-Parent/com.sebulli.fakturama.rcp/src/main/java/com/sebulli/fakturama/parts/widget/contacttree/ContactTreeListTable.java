@@ -176,7 +176,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     private ContactType contactType;
 
 //    private TreeLayer gridLayer;
-    private TempDebitorAddressGridListLayer<K> gridLayer;
+    private DebitorAddressGridListLayer<K> gridLayer;
 
 	// The topic tree viewer displays the categories of the UniDataSets
 	protected TopicTreeViewer<ContactCategory> topicTreeViewer;
@@ -489,7 +489,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		treeFilteredIssues = new FilterList<K>(contactListData, textMatcherEditor);
 		
 		
-		TempDebitorAddressGridListLayer<K> tempDebitorAddressGridListLayer = new TempDebitorAddressGridListLayer<K>(
+		DebitorAddressGridListLayer<K> tempDebitorAddressGridListLayer = new DebitorAddressGridListLayer<K>(
 				treeFilteredIssues, propertyNames, columnPropertyAccessor, configRegistry, new DebitorAddressTreeFormat<K>());
 		setGridLayer(tempDebitorAddressGridListLayer);
 		
@@ -659,7 +659,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     /**
      * @return the gridLayer
      */
-    public TempDebitorAddressGridListLayer<K> getGridLayer() {
+    public DebitorAddressGridListLayer<K> getGridLayer() {
         return gridLayer;
     }
 //    public TreeLayer getGridLayer() {
@@ -706,7 +706,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     /**
      * @param gridLayer the gridLayer to set
      */
-    protected void setGridLayer(TempDebitorAddressGridListLayer<K> gridLayer) {
+    protected void setGridLayer(DebitorAddressGridListLayer<K> gridLayer) {
         this.gridLayer = gridLayer;
     }
 //    protected void setGridLayer(TreeLayer gridLayer) {

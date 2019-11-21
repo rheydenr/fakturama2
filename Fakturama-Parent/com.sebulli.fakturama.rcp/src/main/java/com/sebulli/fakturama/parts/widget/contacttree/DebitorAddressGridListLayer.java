@@ -39,7 +39,6 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
-import com.sebulli.fakturama.views.datatable.ListViewRowHeaderDataProvider;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TreeList;
@@ -47,14 +46,14 @@ import ca.odell.glazedlists.TreeList;
 /**
  *
  */
-public class TempDebitorAddressGridListLayer<T extends DebitorAddress> {
+public class DebitorAddressGridListLayer<T extends DebitorAddress> {
 
     private TempBodyLayerStack<T> bodyLayerStack;
-    private TempGlazedListsColumnHeaderLayerStack<T> columnHeaderLayer;
+    private ContactTreeListColumnHeaderLayerStack<T> columnHeaderLayer;
     private GridLayer gridLayer;
 	private ViewportLayer viewportLayer;
     
-    public TempDebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
+    public DebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
             IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry, Messages msg, boolean withRowHeader,
             TreeList.Format<T> treeFormat) {
 
@@ -63,7 +62,7 @@ public class TempDebitorAddressGridListLayer<T extends DebitorAddress> {
 
         //2. build the column header layer
         IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<T>(propertyNames, columnPropertyAccessor);
-        columnHeaderLayer = new TempGlazedListsColumnHeaderLayerStack<T>(columnHeaderDataProvider, columnPropertyAccessor, configRegistry, bodyLayerStack);
+        columnHeaderLayer = new ContactTreeListColumnHeaderLayerStack<T>(columnHeaderDataProvider, columnPropertyAccessor, configRegistry, bodyLayerStack);
 
         // 3. build the row header layer
         IDataProvider rowHeaderDataProvider = new DefaultRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider());
@@ -114,13 +113,13 @@ public class TempDebitorAddressGridListLayer<T extends DebitorAddress> {
         getViewportLayer().setRegionName(GridRegion.BODY);
     }
     
-    public TempDebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
+    public DebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
             IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry, boolean withRowHeader,
             TreeList.Format<T> treeFormat) {
     	this(eventList, propertyNames, columnPropertyAccessor, rowIdAccessor, configRegistry, null, withRowHeader, treeFormat);
     }
     
-    public TempDebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
+    public DebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
             IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry,
             TreeList.Format<T> treeFormat) {
         this(eventList, propertyNames, columnPropertyAccessor, rowIdAccessor, configRegistry, false, treeFormat);
@@ -129,7 +128,7 @@ public class TempDebitorAddressGridListLayer<T extends DebitorAddress> {
     /**
      * 
      */
-    public TempDebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, 
+    public DebitorAddressGridListLayer(EventList<T> eventList, String[] propertyNames, 
     		IColumnPropertyAccessor<T> columnPropertyAccessor, IConfigRegistry configRegistry, TreeList.Format<T> treeFormat) {
         this(eventList, propertyNames, columnPropertyAccessor, new IRowIdAccessor<T>() {
             @Override

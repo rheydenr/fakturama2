@@ -1,17 +1,13 @@
 package com.sebulli.fakturama.parts.widget.contacttree;
 
-import java.util.Map;
-
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
-import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
@@ -25,25 +21,12 @@ import ca.odell.glazedlists.SortedList;
  * Column header layer stack, with a {@link SortHeaderLayer}.
  * 	Utilizes {@link GlazedListsSortModel} for sorting
  */
-public class TempGlazedListsColumnHeaderLayerStack<T extends DebitorAddress> extends AbstractLayerTransform {
+public class ContactTreeListColumnHeaderLayerStack<T extends DebitorAddress> extends AbstractLayerTransform {
 	private IDataProvider dataProvider;
 	private DefaultColumnHeaderDataLayer dataLayer;
 	private ColumnHeaderLayer columnHeaderLayer;
 
-	public TempGlazedListsColumnHeaderLayerStack(String[] propertyNames, 
-												Map<String, String> propertyToLabelMap, 
-												SortedList<T> sortedList,
-												IColumnPropertyAccessor<T> columnPropertyAccessor, 
-												IConfigRegistry configRegistry,
-												DefaultBodyLayerStack bodyLayerStack) {
-
-		this(new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap),
-				sortedList,
-				columnPropertyAccessor, 
-				configRegistry,
-				bodyLayerStack);
-	}
-	public TempGlazedListsColumnHeaderLayerStack(IDataProvider dataProvider,
+	public ContactTreeListColumnHeaderLayerStack(IDataProvider dataProvider,
 			IColumnPropertyAccessor<T> columnPropertyAccessor, 
 			IConfigRegistry configRegistry,
 			TempBodyLayerStack<T> bodyLayerStack) {
@@ -65,30 +48,7 @@ public class TempGlazedListsColumnHeaderLayerStack<T extends DebitorAddress> ext
 	    
 	}
 	
-	@Deprecated
-	public TempGlazedListsColumnHeaderLayerStack(IDataProvider dataProvider, 
-			SortedList<T> sortedList,
-			IColumnPropertyAccessor<T> columnPropertyAccessor, 
-			IConfigRegistry configRegistry,
-			DefaultBodyLayerStack bodyLayerStack) {
-		
-		this.dataProvider = dataProvider;
-		dataLayer = new DefaultColumnHeaderDataLayer(dataProvider);
-		columnHeaderLayer = new ColumnHeaderLayer(dataLayer, bodyLayerStack, bodyLayerStack.getSelectionLayer());
-
-		SortHeaderLayer<T> sortHeaderLayer = new SortHeaderLayer<T>(
-												columnHeaderLayer, 
-												new GlazedListsSortModel<T>(
-														sortedList, 
-														columnPropertyAccessor,
-														configRegistry, 
-														dataLayer), 
-												false);
-
-		setUnderlyingLayer(sortHeaderLayer);
-	}
-	   
-    public TempGlazedListsColumnHeaderLayerStack(IDataProvider dataProvider, 
+    public ContactTreeListColumnHeaderLayerStack(IDataProvider dataProvider, 
             SortedList<T> sortedList,
             IColumnPropertyAccessor<T> columnPropertyAccessor, 
             IConfigRegistry configRegistry,
