@@ -512,9 +512,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// Create the address tab
 		Composite tabAddress;
+		if (useBank || useMisc || useNote) {
 			tabFolder = new CTabFolder(top, SWT.NONE);
 			tabFolder.setSimple(false);
-		if (useBank || useMisc || useNote) {
 			GridDataFactory.fillDefaults().grab(true, true).applyTo(tabFolder);
 
 			CTabItem item1 = new CTabItem(tabFolder, SWT.NONE);
@@ -573,8 +573,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			tabNote = new Composite(invisible, SWT.NONE);
 		}
 		tabNote.setLayout(new FillLayout());
-		tabFolder.setSelection(0);
-
+		if(tabFolder != null) {
+			tabFolder.setSelection(0);
+		}
+		
 		// Group: address
 		createAddressGroup(invisible, tabAddress);
 		
