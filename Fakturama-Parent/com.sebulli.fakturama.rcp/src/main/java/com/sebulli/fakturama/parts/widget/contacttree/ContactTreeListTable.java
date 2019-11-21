@@ -37,10 +37,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -58,7 +54,6 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
-import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.SortStatePersistor;
@@ -98,10 +93,7 @@ import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.widget.search.TextSearchControl;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListDescriptor;
-import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
-import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
-import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -168,7 +160,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     private static final String POPUP_ID = "com.sebulli.fakturama.contactlist.popup";
     public static final String SELECTED_CONTACT_ID = "fakturama.treecontactlist.selectedcontactid";
 	public static final String SELECTED_ADDRESS_ID = "fakturama.treecontactlist.selectedaddressid";
-
     
     protected EventList<ContactCategory> categories;
     
@@ -179,9 +170,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 
     private K selectedObject;
     private ContactType contactType;
-
-//    private TreeLayer gridLayer;
-    private DebitorAddressGridListLayer<K> gridLayer;
 
 	// The topic tree viewer displays the categories of the UniDataSets
 	protected TopicTreeViewer<ContactCategory> topicTreeViewer;
@@ -393,7 +381,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     protected void postConfigureNatTable(NatTable natTable) {
         //as the autoconfiguration of the NatTable is turned off, we have to add the 
         //DefaultNatTableStyleConfiguration and the ConfigRegistry manually 
-//        natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new ContactTreeTableConfiguration());
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
@@ -516,18 +503,12 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		
 		DebitorAddressGridListLayer<K> tempDebitorAddressGridListLayer = new DebitorAddressGridListLayer<K>(
 				treeFilteredIssues, propertyNames, columnPropertyAccessor, configRegistry, new DebitorAddressTreeFormat<K>());
-		setGridLayer(tempDebitorAddressGridListLayer);
 		
 		bodyLayerStack = tempDebitorAddressGridListLayer.getBodyLayerStack();
-		
-//		bodyLayerStack = new TreeBodyLayerStack(treeFilteredIssues, columnPropertyAccessor,
-//				new DebitorAddressTreeFormat<K>());
-//		
-//		setGridLayer(bodyLayerStack.getTreeLayer());
 
 		// turn the auto configuration off as we want to add our header menu
 		// configuration
-		final NatTable natTable = new NatTable(searchAndTableComposite, gridLayer.getGridLayer(), false);
+		final NatTable natTable = new NatTable(searchAndTableComposite, tempDebitorAddressGridListLayer.getGridLayer(), false);
 
 		// as the autoconfiguration of the NatTable is turned off, we have to
 		// add the DefaultNatTableStyleConfiguration and the ConfigRegistry
@@ -557,8 +538,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		bodyLayerStack.getSelectionLayer().setSelectionModel(selectionModel);
 		// Select complete rows
 		bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration<K>());
-
-//		natTable.configure();
 		return natTable;
 	}
 
@@ -581,18 +560,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
     protected String getEditorId() {
         return DebitorEditor.ID;
     }
-
-    /* (non-Javadoc)
-     * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#createCategoryTreeViewer(org.eclipse.swt.widgets.Composite)
-     */
-    protected TopicTreeViewer<ContactCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<ContactCategory>(top, msg, false, true);
-//    	topicTreeViewer = (TopicTreeViewer<ContactCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
-        categories = GlazedLists.eventList(contactCategoriesDAO.findAll());
-        topicTreeViewer.setInput(categories);
-        topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
-        return topicTreeViewer;
-    }
     
     public void handleRefreshEvent(String message) {
     	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
@@ -602,14 +569,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 	        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
 	        sync.syncExec(() -> top.setRedraw(true));
     	}
-    }
-
-    /* (non-Javadoc)
-     * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#setCategoryFilter(java.lang.String, com.sebulli.fakturama.views.datatable.vats.TreeObjectType)
-     */
-    public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        currentFilter = new ContactTreeMatcher<>(filter, treeObjectType, createRootNodeDescriptor(filter));
-		treeFilteredIssues.setMatcher(currentFilter);
     }
 
     /* (non-Javadoc)
@@ -680,16 +639,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
         }
     }
 	
-
-    /**
-     * @return the gridLayer
-     */
-    public DebitorAddressGridListLayer<K> getGridLayer() {
-        return gridLayer;
-    }
-//    public TreeLayer getGridLayer() {
-//    	return gridLayer;
-//    }
     
     class ContactTreeTableConfiguration extends AbstractRegistryConfiguration {
 
@@ -728,15 +677,6 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
             natTable.setFocus();
         }
     }
-    /**
-     * @param gridLayer the gridLayer to set
-     */
-    protected void setGridLayer(DebitorAddressGridListLayer<K> gridLayer) {
-        this.gridLayer = gridLayer;
-    }
-//    protected void setGridLayer(TreeLayer gridLayer) {
-//    	this.gridLayer = gridLayer;
-//    }
 
     protected ConfigRegistry getConfigRegistry() {
 		return configRegistry;
@@ -756,64 +696,4 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		return eclipsePrefs;
 	}
 
-//    /**
-//     * Always encapsulate the body layer stack in an AbstractLayerTransform to
-//     * ensure that the index transformations are performed in later commands.
-//     *
-//     * @param <K>
-//     */
-//    private class TreeBodyLayerStack extends AbstractLayerTransform {
-//
-//        private final TreeList<K> treeList;
-//        private final IDataProvider bodyDataProvider;
-//        private final SelectionLayer selectionLayer;
-//        private final TreeLayer treeLayer;
-//		private DataLayer bodyDataLayer;
-//
-//        public TreeBodyLayerStack(List<K> values,
-//                IColumnPropertyAccessor<K> columnPropertyAccessor,
-//                TreeList.Format<K> treeFormat) {
-//            // wrapping of the list to show into GlazedLists
-//            // see http://publicobject.com/glazedlists/ for further information
-//            EventList<K> eventList = GlazedLists.eventList(values);
-//            TransformedList<K, K> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
-//
-//            // use the SortedList constructor with 'null' for the Comparator
-//            // because the Comparator will be set by configuration
-//            SortedList<K> sortedList = new SortedList<>(rowObjectsGlazedList, null);
-//            
-//            // wrap the SortedList with the TreeList
-//            this.treeList = new TreeList<K>(sortedList, treeFormat, TreeList.NODES_START_COLLAPSED);
-//
-//            this.bodyDataProvider = new ListDataProvider<K>(this.treeList, columnPropertyAccessor);
-//            bodyDataLayer = new DataLayer(this.bodyDataProvider);
-//
-//            // simply apply labels for every column by index
-//            bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
-//
-//            // layer for event handling of GlazedLists and PropertyChanges
-//            GlazedListsEventLayer<K> glazedListsEventLayer = new GlazedListsEventLayer<>(bodyDataLayer, this.treeList);
-//
-//            GlazedListTreeData<K> treeData = new GlazedListTreeData<>(this.treeList);
-//            ITreeRowModel<K> treeRowModel = new GlazedListTreeRowModel<>(treeData);
-//
-//            this.selectionLayer = new SelectionLayer(glazedListsEventLayer);
-//
-//            this.treeLayer = new TreeLayer(this.selectionLayer, treeRowModel);
-//            treeLayer.setRegionName(GridRegion.BODY);
-//            setUnderlyingLayer(new ViewportLayer(this.treeLayer));
-//        }
-//
-//        public SelectionLayer getSelectionLayer() {
-//            return this.selectionLayer;
-//        }
-//
-//        public TreeLayer getTreeLayer() {
-//            return this.treeLayer;
-//        }
-//
-//        public IDataProvider getBodyDataProvider() {
-//            return this.bodyDataProvider;
-//        }
-//    }	
 }
