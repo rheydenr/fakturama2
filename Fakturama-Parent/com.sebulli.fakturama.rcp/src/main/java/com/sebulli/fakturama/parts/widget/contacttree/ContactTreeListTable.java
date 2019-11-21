@@ -37,6 +37,10 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -54,6 +58,7 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.LayerUtil;
 import org.eclipse.nebula.widgets.nattable.reorder.RowReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
+import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.selection.config.RowOnlySelectionConfiguration;
 import org.eclipse.nebula.widgets.nattable.sort.SortStatePersistor;
@@ -389,12 +394,32 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
         //as the autoconfiguration of the NatTable is turned off, we have to add the 
         //DefaultNatTableStyleConfiguration and the ConfigRegistry manually 
 //        natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
-//        natTable.addConfiguration(new ContactTableConfiguration());
+        natTable.addConfiguration(new ContactTreeTableConfiguration());
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 
         E4SelectionListener<DebitorAddress> esl = new E4SelectionListener<DebitorAddress>(selectionService, bodyLayerStack.getSelectionLayer(), (IRowDataProvider<DebitorAddress>) bodyLayerStack.getBodyDataProvider());
         bodyLayerStack.getSelectionLayer().addLayerListener(esl);
+        
+        // TODO for later use (if we're using Tree Table)
+//		ISelectionProvider selectionProvider = new RowSelectionProvider<>(bodyLayerStack.getSelectionLayer(),
+//				bodyLayerStack.getBodyDataProvider(), false); // Provides rows where any cell in the row is selected
+//
+//		selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
+//
+//			@Override
+//			public void selectionChanged(SelectionChangedEvent event) {
+//				System.out.println("Selection changed:");
+//
+//				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+//				@SuppressWarnings("rawtypes")
+//				Iterator it = selection.iterator();
+//				while (it.hasNext()) {
+//					System.out.println("  " + it.next());
+//				}
+//			}
+//
+//		});
 
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
@@ -666,7 +691,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 //    	return gridLayer;
 //    }
     
-    class ContactTableConfiguration extends AbstractRegistryConfiguration {
+    class ContactTreeTableConfiguration extends AbstractRegistryConfiguration {
 
         @Override
         public void configureRegistry(IConfigRegistry configRegistry) {
