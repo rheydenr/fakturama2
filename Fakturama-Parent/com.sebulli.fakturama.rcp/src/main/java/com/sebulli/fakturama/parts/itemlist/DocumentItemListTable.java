@@ -708,8 +708,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         selectionProvider.addSelectionChangedListener((SelectionChangedEvent event) -> {
 //                log.debug("Selection changed:");
                 
-                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-                selectionService.setSelection(selection.toList());
+    		IStructuredSelection structuredSelection = event.getStructuredSelection();
+                selectionService.setSelection(structuredSelection.toList());
             }
         );
          

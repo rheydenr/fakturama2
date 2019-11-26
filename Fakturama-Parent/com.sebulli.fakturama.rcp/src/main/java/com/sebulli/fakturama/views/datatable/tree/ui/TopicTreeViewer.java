@@ -152,11 +152,11 @@ public class TopicTreeViewer<T extends AbstractCategory> {
 				String categoryFilter = "";
 				long transactionFilter = -1;
 				long contactFilter = -1;
-				ISelection selection = event.getSelection();
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
 
 				// Get the selection
-				if (selection != null && selection instanceof IStructuredSelection) {
-					Object obj = ((IStructuredSelection) selection).getFirstElement();
+				if (structuredSelection != null) {
+					Object obj = structuredSelection.getFirstElement();
 					if (obj != null) {
 
 						// Get the selected object

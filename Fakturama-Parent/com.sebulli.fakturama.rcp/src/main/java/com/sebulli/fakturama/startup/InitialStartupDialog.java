@@ -273,8 +273,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
             @SuppressWarnings("unchecked")
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				String driverClass = (String) ((ServiceReference<DataSourceFactory>)((IStructuredSelection) event
-			      .getSelection()).getFirstElement()).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
+				String driverClass = (String) ((ServiceReference<DataSourceFactory>)(event
+			      .getStructuredSelection()).getFirstElement()).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 				txtJdbcUrl.setText(StringUtils.defaultString(jdbcUrlMap.get(driverClass), ""));
 			}
 		});
@@ -353,7 +353,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
     @SuppressWarnings("unchecked")
 	@Override
 	protected void okPressed() {
-		IStructuredSelection selection = (IStructuredSelection) comboDriver.getSelection();
+		IStructuredSelection selection = comboDriver.getStructuredSelection();
 		ServiceReference<DataSourceFactory> firstElement = (ServiceReference<DataSourceFactory>) selection.getFirstElement();
 		String driver = selection.isEmpty() ? DEFAULT_JDBC_CLASS : (String) firstElement.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 

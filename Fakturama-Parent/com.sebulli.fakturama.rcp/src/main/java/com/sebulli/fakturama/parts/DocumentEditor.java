@@ -797,8 +797,7 @@ public class DocumentEditor extends Editor<Document> {
         	public void selectionChanged(SelectionChangedEvent event) {
 
         		// Get the selected element
-        		ISelection selection = event.getSelection();
-        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
         		if (!structuredSelection.isEmpty()) {
         			// Get first selected element.
         			Object firstElement = structuredSelection.getFirstElement();
@@ -832,8 +831,7 @@ public class DocumentEditor extends Editor<Document> {
         	// sum and update the shipping VAT.
         	public void selectionChanged(SelectionChangedEvent event) {
         		// Get the selected element.
-        		ISelection selection = event.getSelection();
-        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
         		if (!structuredSelection.isEmpty()) {
         			// Get first selected element.
         			shipping = (Shipping) structuredSelection.getFirstElement();
@@ -2116,8 +2114,7 @@ public class DocumentEditor extends Editor<Document> {
 
 			// A combo entry is selected
 			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection selection = event.getSelection();
-				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
 				if (!structuredSelection.isEmpty()) {
 
 					// get first element ...

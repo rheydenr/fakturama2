@@ -389,8 +389,8 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
      * order to recreate this page's state in the next instance of this page.
      */
     protected void storeSelectedCategoryAndWizard(String setting, TreeViewer viewer) {
-        Object selected = ((IStructuredSelection) viewer
-                .getSelection()).getFirstElement();
+        Object selected = viewer
+                .getStructuredSelection().getFirstElement();
 
         if (selected != null) {
             if (selected instanceof IE4WizardCategory) {

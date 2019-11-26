@@ -38,6 +38,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -397,7 +398,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 //			public void selectionChanged(SelectionChangedEvent event) {
 //				System.out.println("Selection changed:");
 //
-//				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+//		IStructuredSelection structuredSelection = event.getStructuredSelection();
 //				@SuppressWarnings("rawtypes")
 //				Iterator it = selection.iterator();
 //				while (it.hasNext()) {

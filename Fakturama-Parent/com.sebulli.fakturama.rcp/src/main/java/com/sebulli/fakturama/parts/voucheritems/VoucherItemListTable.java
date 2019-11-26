@@ -423,9 +423,9 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
             public void selectionChanged(SelectionChangedEvent event) {
 //                log.debug("Selection changed:");
                 
-                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
                 @SuppressWarnings("unchecked")
-                List<VoucherItemDTO> selectedElements = selection.toList();
+                List<VoucherItemDTO> selectedElements = structuredSelection.toList();
                 selectionService.setSelection(selectedElements);
             }
             
