@@ -673,8 +673,13 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 				noVat = false;
 			} else {
 				// Use the vat name
-				if (noVatName.isEmpty() && !itemType.getVatname().isEmpty()) {
-					noVatName = itemType.getVatname();
+				if (noVatName.isEmpty()) {
+					if (!itemType.getVatname().isEmpty()) {
+						noVatName = itemType.getVatname();
+					} else {
+						// fallback if VAT name isn't set
+						noVatName = msg.dataDefaultVat;
+					}
 				}
 			}
 

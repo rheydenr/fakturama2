@@ -76,7 +76,7 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 	            					.append(URLEncoder.encode(connector.getUser(), "UTF-8"))
 									.append("&password=")
 									.append(URLEncoder.encode(connector.getPassword(), "UTF-8"))
-									.append("&action=status").toString();
+									.append("&action=get_status").toString();
                 //this.webShopImportManager.log.debug("POST-String: " + postString);
 	            connection.setRequestProperty("Content-Type",
                         "application/x-www-form-urlencoded");
