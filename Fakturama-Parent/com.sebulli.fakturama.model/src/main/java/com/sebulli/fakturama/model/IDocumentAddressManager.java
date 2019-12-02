@@ -14,6 +14,14 @@ public interface IDocumentAddressManager {
 	 */
 	DocumentReceiver createDocumentReceiverFromContact(Address address, BillingType billingType);
 
+	/**
+	 * Gets the first(!) fitting  {@link Address} from {@link Contact} for the given {@link ContactType}.
+	 * If no {@link Address} could be found the first address of the contact is being used.
+	 * 
+	 * @param contact the {@link Contact} whose address should be evaluated
+	 * @param contactType the {@link ContactType} for which the  {@link Address} should be
+	 * @return {@link Address} from {@link Contact} for the given {@link ContactType}
+	 */
 	Address getAddressFromContact(Contact contact, ContactType contactType);
 
 	/**
