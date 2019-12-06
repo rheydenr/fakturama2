@@ -94,7 +94,7 @@ TODO:
 	
 	<changeSet id="20190915-040" author="rheydenr">
 	<comment>Create new tables.</comment>
-			<createTable tableName="FKT_ADDRESS_CONTACTTYPES">
+		<createTable tableName="FKT_ADDRESS_CONTACTTYPES">
 			<column name="ADDRESS_CONTACTTYPES" type="BIGINT"/>
 			<column name="T_ELEMENT" type="VARCHAR(255)"/>
 		</createTable>
@@ -111,7 +111,7 @@ TODO:
 			<column name="COUNTRYCODE" type="VARCHAR(255)"/>
 			<column name="CUSTOMERNUMBER" type="VARCHAR(255)"/>
 			<column name="DATEADDED" type="date"/>
-			<column defaultValueBoolean="false" name="DELETED" type="BIT"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
 			<column name="DESCRIPTION" type="LONGTEXT"/>
 			<column name="EMAIL" type="VARCHAR(255)"/>
 			<column name="FAX" type="VARCHAR(255)"/>
@@ -149,8 +149,8 @@ TODO:
 			<column name="BILLINGTYPE" type="INT"/>
 			<column name="CUSTOMERREF" type="VARCHAR(255)"/>
 			<column name="DATEADDED" type="date"/>
-			<column defaultValueBoolean="false" name="DELETED" type="BIT"/>
-			<column defaultValueBoolean="false" name="DEPOSIT" type="BIT"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
+			<column defaultValueBoolean="false" name="DEPOSIT" type="BOOLEAN"/>
 			<column name="DOCUMENTDATE" type="date"/>
 			<column name="DUEDAYS" type="INT"/>
 			<column name="ITEMSREBATE" type="DOUBLE"/>
@@ -163,12 +163,12 @@ TODO:
 			<column name="NETGROSS" type="INT"/>
 			<column name="ODTPATH" type="VARCHAR(255)"/>
 			<column name="ORDERDATE" type="date"/>
-			<column defaultValueBoolean="false" name="PAID" type="BIT"/>
+			<column defaultValueBoolean="false" name="PAID" type="BOOLEAN"/>
 			<column name="PAIDVALUE" type="DOUBLE"/>
 			<column name="PAYDATE" type="date"/>
 			<column name="PDFPATH" type="VARCHAR(255)"/>
 			<column name="PRINTTEMPLATE" type="VARCHAR(255)"/>
-			<column defaultValueBoolean="false" name="PRINTED" type="BIT"/>
+			<column defaultValueBoolean="false" name="PRINTED" type="BOOLEAN"/>
 			<column name="PROGRESS" type="INT"/>
 			<column name="SERVICEDATE" type="date"/>
 			<column name="SHIPPINGAUTOVAT" type="VARCHAR(255)"/>
@@ -198,7 +198,7 @@ TODO:
 			<column name="COMPANY" type="VARCHAR(255)"/>
 			<column name="CUSTOMERNUMBER" type="VARCHAR(255)"/>
 			<column name="DATEADDED" type="date"/>
-			<column defaultValueBoolean="false" name="DELETED" type="BIT"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
 			<column name="DISCOUNT" type="DOUBLE"/>
 			<column name="FIRSTNAME" type="VARCHAR(255)"/>
 			<column name="GENDER" type="INT"/>
@@ -212,11 +212,11 @@ TODO:
 			<column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
 			<column name="TITLE" type="VARCHAR(255)"/>
 			<column name="USENETGROSS" type="SMALLINT"/>
-			<column defaultValueBoolean="false" name="USESALESEQUALIZATIONTAX" type="BIT"/>
+			<column defaultValueBoolean="false" name="USESALESEQUALIZATIONTAX" type="BOOLEAN"/>
 			<column name="VALIDFROM" type="date"/>
 			<column name="VALIDTO" type="date"/>
 			<column name="VATNUMBER" type="VARCHAR(255)"/>
-			<column defaultValueBoolean="false" name="VATNUMBERVALID" type="BIT"/>
+			<column defaultValueBoolean="false" name="VATNUMBERVALID" type="BOOLEAN"/>
 			<column name="WEBSHOPNAME" type="VARCHAR(255)"/>
 			<column name="WEBSITE" type="VARCHAR(255)"/>
 			<column name="FK_BANKACCOUNT" type="BIGINT"/>
@@ -233,7 +233,7 @@ TODO:
 			<column name="CITYADDON" type="VARCHAR(255)"/>
 			<column name="COUNTRYCODE" type="VARCHAR(255)"/>
 			<column name="DATEADDED" type="date"/>
-			<column defaultValueBoolean="false" name="DELETED" type="BIT"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
 			<column name="EMAIL" type="VARCHAR(255)"/>
 			<column name="FAX" type="VARCHAR(255)"/>
 			<column name="LOCALCONSULTANT" type="VARCHAR(255)"/>
@@ -259,7 +259,7 @@ TODO:
 			<column name="BILLING_ADDRESS_COUNTRYCODE" type="VARCHAR(255)" />
 			<column name="BILLING_ADDRESS_DATEADDED" type="DATE" />
 			<column name="BILLING_ADDRESS_DELETED"
-				defaultValueBoolean="false" type="BIT" />
+				defaultValueBoolean="false" type="BOOLEAN" />
 			<column name="BILLING_ADDRESS_MANUALADDRESS"
 				type="VARCHAR(4096)" />
 			<column name="BILLING_ADDRESS_MODIFIED" type="DATE" />
@@ -278,7 +278,7 @@ TODO:
 				type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_DATEADDED" type="DATE" />
 			<column name="BILLING_CONTACT_DELETED"
-				defaultValueBoolean="false" type="BIT" />
+				defaultValueBoolean="false" type="BOOLEAN" />
 			<column name="BILLING_CONTACT_DISCOUNT" type="DOUBLE" />
 			<column name="BILLING_CONTACT_EMAIL" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_FAX" type="VARCHAR(255)" />
@@ -299,12 +299,12 @@ TODO:
 			<column name="BILLING_CONTACT_TITLE" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_USENETGROSS" type="SMALLINT" />
 			<column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX"
-				defaultValueBoolean="false" type="BIT" />
+				defaultValueBoolean="false" type="BOOLEAN" />
 			<column name="BILLING_CONTACT_VALIDFROM" type="DATE" />
 			<column name="BILLING_CONTACT_VALIDTO" type="DATE" />
 			<column name="BILLING_CONTACT_VATNUMBER" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_VATNUMBERVALID"
-				defaultValueBoolean="false" type="BIT" />
+				defaultValueBoolean="false" type="BOOLEAN" />
 			<column name="BILLING_CONTACT_WEBSHOPNAME" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_WEBSITE" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_FK_ADDRESS" type="BIGINT" />
@@ -318,7 +318,7 @@ TODO:
 			<column name="DELIVERY_ADDRESS_COUNTRYCODE" type="VARCHAR(255)" />
 			<column name="DELIVERY_ADDRESS_DATEADDED" type="DATE" />
 			<column name="DELIVERY_ADDRESS_DELETED"
-				defaultValueBoolean="false" type="BIT" />
+				defaultValueBoolean="false" type="BOOLEAN" />
 			<column name="DELIVERY_ADDRESS_MANUALADDRESS"
 				type="VARCHAR(4096)" />
 			<column name="DELIVERY_ADDRESS_MODIFIED" type="DATE" />
@@ -335,7 +335,7 @@ TODO:
 			<column name="DELIVERY_CONTACT_CONTACTTYPE" type="INTEGER" />
 			<column name="DELIVERY_CONTACT_DATEADDED" type="DATE" />
 			<column name="DELIVERY_CONTACT_DELETED"
-				defaultValueBoolean="false" type="BIT"/>
+				defaultValueBoolean="false" type="BOOLEAN"/>
 			<column name="DELIVERY_CONTACT_DISCOUNT" type="DOUBLE" />
 			<column name="DELIVERY_CONTACT_FIRSTNAME" type="VARCHAR(255)" />
 			<column name="DELIVERY_CONTACT_GENDER" type="INTEGER" />
@@ -752,11 +752,11 @@ TODO:
 	<changeSet author="rheydenr" id="20190915-054">
 		<comment>update some null field values</comment>
 	    <update tableName="TMP_CONTACTS_WITH_ADDRESSES">
-	        <column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX" value="false"/>
+	        <column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX" valueBoolean="false"/>
 	        <where>BILLING_CONTACT_USESALESEQUALIZATIONTAX IS NULL</where>
 	    </update>
 	    <update tableName="TMP_CONTACTS_WITH_ADDRESSES">
-	        <column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX" value="false"/>
+	        <column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX" valueBoolean="false"/>
 	        <where>BILLING_CONTACT_USESALESEQUALIZATIONTAX IS NULL</where>
 	    </update>
 	</changeSet>
@@ -1180,8 +1180,7 @@ TODO:
 			        VATNUMBER,
 			        ZIP,
 			        FK_DOCUMENT,
-			        VALIDFROM
-			    )
+			        VALIDFROM )
 			SELECT
 			    '5',
 			    /* delivery address */

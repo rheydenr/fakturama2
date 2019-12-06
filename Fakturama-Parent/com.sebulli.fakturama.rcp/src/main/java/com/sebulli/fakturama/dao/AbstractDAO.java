@@ -310,24 +310,25 @@ em.joinTransaction();
      * @return found or newly created Entity
      * @throws FakturamaStoringException 
      */
-    public T findOrCreate(T object, boolean checkOnly) throws FakturamaStoringException {
-        T retval = null;
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<T> query = criteriaBuilder.createQuery(getEntityClass());
-        Root<T> root = query.from(getEntityClass());
-        Set<Predicate> restrictions = getRestrictions(object, criteriaBuilder, root);
-        CriteriaQuery<T> select = query.select(root).where(restrictions.toArray(new Predicate[]{}));
+	public T findOrCreate(T object, boolean checkOnly) throws FakturamaStoringException {
+		T retval = null;
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<T> query = criteriaBuilder.createQuery(getEntityClass());
+		Root<T> root = query.from(getEntityClass());
+		Set<Predicate> restrictions = getRestrictions(object, criteriaBuilder, root);
+		CriteriaQuery<T> select = query.select(root).where(restrictions.toArray(new Predicate[] {}));
 
-        List<T> resultList = getEntityManager().createQuery(select).getResultList();
-        if (!checkOnly && resultList.isEmpty()) {
-        	((IEntity)object).setValidFrom(new Date());
-            retval = save(object);
-        } else if(!resultList.isEmpty()){
-            retval = resultList.get(0);
-        }
-        return retval;
-    }
-    
+		List<T> resultList = getEntityManager().createQuery(select).getResultList();
+		if (!checkOnly) {
+			if (resultList.isEmpty()) {
+				((IEntity) object).setValidFrom(new Date());
+				retval = save(object);
+			} else /* !resultList.isEmpty() */ {
+				retval = resultList.get(0);
+			}
+		}
+		return retval;
+	}    
   
     /**
      * Restrictions for {@link AbstractDAO#findOrCreate} method. Has to be overridden by sub classes.

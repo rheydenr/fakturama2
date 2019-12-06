@@ -99,7 +99,7 @@ public class ContactsCsvImporter {
 	private String[] requiredHeaders = { "category", "gender", "title", "firstname", "name", "company", "street", "zip", "city", "country",
 			"delivery_gender", "delivery_title", "delivery_firstname", "delivery_name", "delivery_company",
 			"delivery_street", "delivery_zip", "delivery_city", "delivery_country",
-			"account_holder", "account", "bank_code", "bank_name", "iban", "bic",
+			"account_holder", "bank_name", "iban", "bic",
 			"nr", "note", "date_added",  "payment", "reliability",
 			"phone", "fax", "mobile", "email", "website", "vatnr", "vatnrvalid", "discount" };
 
@@ -218,7 +218,7 @@ public class ContactsCsvImporter {
 					/*
 					 * Customer number, first name, name and ZIP are compared
 					 */
-					Contact testContact = contactsDAO.findOrCreate(contact);
+					Contact testContact = contactsDAO.findOrCreate(contact, true);
 					
 					// if found and no update is required skip to the next record
 					if(testContact != null && !updateExisting) {
@@ -226,12 +226,16 @@ public class ContactsCsvImporter {
 						continue;
 					}
 					
+					if(testContact == null) {
+						// work further with testcontact
+						testContact = contact;
+					}
+					
 					ContactCategory category = contactCategoriesDAO.findByName(prop.getProperty("category"));
 					if(category == null && prop.getProperty("category") != null) {
 						category = modelFactory.createContactCategory();
 						category.setName(prop.getProperty("category"));
 					}
-					// work further with testcontact
 					testContact.setCategories(category);
 					testContact.setGender(contactUtil.getSalutationID(prop.getProperty("gender")));
 

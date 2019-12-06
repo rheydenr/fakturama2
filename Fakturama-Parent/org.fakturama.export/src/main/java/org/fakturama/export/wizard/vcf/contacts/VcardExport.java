@@ -84,34 +84,6 @@ public class VcardExport {
 	}
 	
 	/**
-	 * Write a property and one attribute
-	 * 
-	 * @param property
-	 * 			The property to write
-	 * @param s
-	 * 			The 1st attribute
-	 */
-	private void writeVCard(String property, String s) {
-		if(StringUtils.isNotBlank(s)) {
-			writeVCard(property, s, null);
-		}
-	}
-
-	/**
-	 * Write a property and two attributes
-	 * 
-	 * @param property
-	 * 			The property to write
-	 * @param s1
-	 * 			The 1st attribute
-	 * @param s2
-	 * 			The 2nd attribute
-	 */
-	private void writeVCard(String property, String s1, String s2) {
-		writeVCard(property, s1, s2, null, null, null, null, null);
-	}
-	
-	/**
 	 * Write an attribute, if it is not empty and add 
 	 * a semicolon between two attributes.
 	 * 
@@ -143,13 +115,13 @@ public class VcardExport {
 	 * 
 	 * @param property
 	 * 			The property to write
-	 * @param s
+	 * @param attributes
 	 * 			The attribute(d)
 	 */
-	private void writeVCard(String property, String... s) {
+	private void writeVCard(String property, String... attributes) {
 
 		// Exit, if all attributes are empty 
-		if (s.length == 0 || Arrays.stream(s).allMatch(o -> o.length() == 0)) {
+		if (attributes.length == 0 || Arrays.stream(attributes).allMatch(o -> o != null && o.length() == 0)) {
 			return;
 		}
 		
@@ -157,7 +129,7 @@ public class VcardExport {
 		try {
 			bos.write(property);
 			boolean isFirst = true;
-			for (String string : s) {
+			for (String string : attributes) {
 				writeAttribute(string, isFirst);
 				isFirst = false;
 			}

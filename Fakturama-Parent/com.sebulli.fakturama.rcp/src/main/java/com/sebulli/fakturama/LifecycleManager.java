@@ -432,6 +432,10 @@ public class LifecycleManager {
     void processAdditions(final IEventBroker eventBroker, MApplication app, EModelService modelService, IApplicationContext appContext,
     		@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation, final ISplashService splashService) {
         
+    	
+//    	StartupRecorder.openRecorder("huhu");
+    	
+    	
     	// TODO put the Login Dialog in here
         if(eclipsePrefs.getBoolean("isreinit", false)) {
         	dbUpdateService.updateDatabase();

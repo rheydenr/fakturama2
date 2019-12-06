@@ -90,7 +90,6 @@ public class AddressExport {
 					//T: Used as heading of a table. Keep the word short.
 					"\"id\";"+ 
 					"\"category\";"+
-					
 					"\"gender\";"+
 					"\"title\";"+
 					"\"firstname\";"+
@@ -119,7 +118,7 @@ public class AddressExport {
 					"\"delivery_mobile\";"+
 					"\"delivery_email\";"+
 					
-					"\"bank_holder\";"+
+					"\"account_holder\";"+
 					"\"bank_name\";"+
 					"\"iban\";"+
 					"\"bic\";"+
@@ -148,8 +147,8 @@ public class AddressExport {
 				stringBuffer.append(contact.getId()).append(";");
 				if(contact.getCategories() != null) {
 					stringBuffer.append(ExporterHelper.inQuotes(CommonConverter.getCategoryName(contact.getCategories(), "/")));
-				} else {
-					stringBuffer.append(";");
+//				} else {
+//					stringBuffer.append(";");
 				}
 				stringBuffer.append(";")
 					.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(contact.getGender()))).append(";")
