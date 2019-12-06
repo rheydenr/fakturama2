@@ -52,7 +52,7 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 	@Override
 	protected Creditor createNewContact(FakturamaModelFactory modelFactory) {
 		Creditor createCreditor = modelFactory.createCreditor();
-		createCreditor.setContactType(ContactType.BILLING);
+//		createCreditor.setContactType(ContactType.BILLING);
 		return createCreditor;
 	}
 	
@@ -82,13 +82,5 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 	@Override
 	protected void setPartLabelForNewContact(MPart part) {
 		part.setLabel(msg.commandNewCreditorName);
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.sebulli.fakturama.parts.ContactEditor#getDeliveryContact()
-	 */
-	@Override
-	protected Creditor getDeliveryContact() {
-		return (Creditor) editorContact.getAlternateContacts();
 	}
 }

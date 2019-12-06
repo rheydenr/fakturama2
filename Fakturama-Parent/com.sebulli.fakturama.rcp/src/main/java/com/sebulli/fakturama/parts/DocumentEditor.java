@@ -16,11 +16,13 @@ package com.sebulli.fakturama.parts;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,12 +37,12 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.observable.sideeffect.ISideEffectFactory;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -58,6 +60,9 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
+import org.eclipse.jface.databinding.swt.WidgetSideEffects;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -74,13 +79,13 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
@@ -111,8 +116,9 @@ import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.TextsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
-import com.sebulli.fakturama.dialogs.SelectContactDialog;
 import com.sebulli.fakturama.dialogs.SelectTextDialog;
+import com.sebulli.fakturama.dialogs.SelectTreeContactDialog;
+import com.sebulli.fakturama.dto.AddressDTO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -128,11 +134,15 @@ import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.DocumentReceiver_;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
@@ -144,6 +154,7 @@ import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
 import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
 import com.sebulli.fakturama.parts.itemlist.ItemListBuilder;
+import com.sebulli.fakturama.parts.widget.contacttree.ContactTreeListTable;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
 import com.sebulli.fakturama.parts.widget.contentprovider.HashMapContentProvider;
 import com.sebulli.fakturama.parts.widget.formatter.MoneyFormatter;
@@ -155,7 +166,6 @@ import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentItemUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.products.ProductListTable;
 import com.sebulli.fakturama.views.datatable.texts.TextListTable;
@@ -168,6 +178,7 @@ import com.sebulli.fakturama.views.datatable.texts.TextListTable;
  */
 public class DocumentEditor extends Editor<Document> {
 
+	private static final String ADDRESS_TAB_BILLINGTYPE = "ADDRESS_FOR_BILLING_TAB";
 	public static final String DOCUMENT_RECALCULATE = "DOCUMENT.RECALCULATE";
 	public static final String PARAM_SILENT_MODE = "org.fakturama.documenteditor.silentmode";
 	
@@ -182,6 +193,8 @@ public class DocumentEditor extends Editor<Document> {
 	public static final String DOCUMENT_ID = "com.sebulli.fakturama.editors.document.id";
     
     private static final String TOOLITEM_COMMAND = "toolitem_command";
+	private static final String ORIGIN_RECEIVER = "ORIGIN_RECEIVER";
+//	private static final String CURRENT_RECEIVER = "CURRENT_RECEIVER";
 
     @Inject
     protected EHandlerService handlerService;
@@ -232,6 +245,9 @@ public class DocumentEditor extends Editor<Document> {
 	
 	@Inject
 	private IDialogSettings settings;
+	
+	@Inject
+	private IDocumentAddressManager addressManager;
 
 	// SWT components of the editor
 	private Composite top;
@@ -241,11 +257,13 @@ public class DocumentEditor extends Editor<Document> {
 	private CDateTime dtServiceDate;
 	private Text txtCustomerRef;
 	private Text txtConsultant;
-	private Text txtAddress;
+	
+	private CTabFolder addressAndIconComposite;
+	private List<Text> txtAddresses = new ArrayList<>();
+	
 	private ComboViewer comboViewerNoVat;
 	private ComboViewer comboNetGross;
 	private Text txtInvoiceRef;
-//	private TableViewer tableViewerItems;
 	private Text txtMessage;
 	private Text txtMessage2;
 	private Text txtMessage3;
@@ -262,56 +280,34 @@ public class DocumentEditor extends Editor<Document> {
 	private FormattedText itemsDiscount;
 	private Combo comboShipping;
 	private FormattedText shippingValue;
-	//private Text depositValue;
 	private FormattedText vatValue;
 	private FormattedText totalValue;
-	private Composite addressAndIconComposite;
-	private Label differentDeliveryAddressIcon;
 	private Label netLabel;
 
 	// These flags are set by the preference settings.
 	// They define, if elements of the editor are displayed, or not.
 	private boolean useGross;
 
-	// The type of this document
-	private DocumentType documentType;
-
-	// These are (non visible) values of the document
-	
-	/*
-	 * Since the contact could be either a delivery or a billing contact we have to use an extra field for it.
-	 */
-	private Contact displayAddress = null;
 	private boolean noVat;
 	private String noVatName;
-//	private String noVatDescription;
-//	private Payment payment;
-//	private MonetaryAmount paidValue = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
-//	private int shippingId;
 	private Shipping shipping = null;
-//	private VAT shippingVat = null;
-//	private String shippingVatDescription = "";
-//	private ShippingVatType shippingAutoVat = ShippingVatType.SHIPPINGVATGROSS;
 	private MonetaryAmount total =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 	private MonetaryAmount deposit =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
-//	private MonetaryAmount finalPayment = FastMoney.MIN_VALUE;
 	private int dunningLevel = Integer.valueOf(0);
-//	private int duedays;
-	private String billingAddress = "";
-	private String deliveryAddress = "";
-//	private DocumentEditor thisDocumentEditor;
+	
+	/*
+	 * Map for selected contacts (used for comparing and detecting changed addresses).
+	 */
+	private Map<BillingType, DocumentReceiver> selectedAddresses = new HashMap<>();
+	
 	private int netgross = DocumentSummary.ROUND_NOTSPECIFIED;
 
-	// Action to print this document's content.
-	// Print means: Export the document in an OpenOffice document
-//	CreateOODocumentAction printAction;
-
-	// defines, if the contact is new created
+	// defines if the document is new created
 	private boolean newDocument;
 
 	// If the customer is changed and this document displays no payment text,
 	// use this variable to store the payment and due days
-//	private Payment newPayment = null;
+	@Deprecated
 	private String newPaymentDescription = "";
 	
 	// Imported delivery notes. This list is used to
@@ -328,28 +324,6 @@ public class DocumentEditor extends Editor<Document> {
 	private Text selectedMessageField;
 	private Group copyGroup;
 	private List<Document> pendingDeliveryMerges;
-	
-//	/**
-//	 * Constructor
-//	 * 
-//	 * Associate the table view with the editor
-//	 */
-//	public DocumentEditor() {
-//		cellNavigation = new CellNavigation(itemTableColumns);
-//		tableViewID = ViewDocumentTable.ID;
-//		editorID = "document";
-//		thisDocumentEditor = this;
-//	}
-//
-//	/**
-//	 * Select the next cell
-//	 * @param keyCode
-//	 * @param element
-//	 * @param itemEditingSupport
-//	 */
-//	public void selectNextCell(int keyCode, Object element, DocumentItemEditingSupport itemEditingSupport) {
-//		cellNavigation.selectNextCell(keyCode, element, itemEditingSupport, items,tableViewerItems);
-//	}
 	
 	/**
 	 * Mark this document as printed
@@ -382,12 +356,15 @@ public class DocumentEditor extends Editor<Document> {
 		 *  	- deleted (is checked by the items string)
 		 *  	- shared (not modified by editor)
 		 */
-
+    	
 		boolean wasDirty = getMDirtyablePart().isDirty();
+		
+		// set focus outside of address tab
+		txtCustomerRef.setFocus();
 
 		if (newDocument) {
 			// Check if the document number is the next one
-			if (documentType != DocumentType.LETTER) {
+			if (!document.getBillingType().isLETTER()) {
 				int result = setNextFreeNumberInPrefStore(txtName.getText(), Document_.name.getName());
 
 				// It's not the next free ID
@@ -402,7 +379,6 @@ public class DocumentEditor extends Editor<Document> {
 					MessageFormat.format(msg.editorDocumentErrorDocnumberNotnextfree, getNextNr()) + "\n" + 
 					//T: Text of the dialog that appears if the number is not valid.
 					msg.editorContactHintSeepreferences);
-//					throw new RuntimeException(msg.editorDocumentErrorDocnumberNotnextfree);
 					return Boolean.FALSE;
 				}
 			}
@@ -417,143 +393,24 @@ public class DocumentEditor extends Editor<Document> {
 		// Always set the editor's data set to "undeleted"
 		document.setDeleted(Boolean.FALSE);
 
-		// Set the document type TODO check if it could be omitted since we set it in init method
-		document.setBillingType(BillingType.get(documentType.getKey()));
-
 		// If this is an order, use the date as order date
-		if (documentType == DocumentType.ORDER) {
+		if (document.getBillingType().isORDER()) {
 			document.setOrderDate(dtDate.getSelection());
 		} else {
 			document.setOrderDate(dtOrderDate.getSelection());
 		}
 
-	    String addressById = "";
+	    checkForChangedAddresses();
+	    reassignDocumentReceiver();
 
-		// Test, if the txtAddress field was modified
-		// and write the content of the txtAddress to the documents address or
-		// delivery address
-		boolean addressModified = false;
-		// if it's a delivery note, compare the delivery address
-		if (documentType == DocumentType.DELIVERY) {
-            if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getDeliveryContact()), txtAddress.getText())) {
-				addressModified = true;
-			}
-            if(document.getDeliveryContact() == null || displayAddress.getCustomerNumber() == null && addressModified) {
-			    /*
-			     * If no addressId was given (no contact selected) then we use
-			     * the text field content for the manual address (but only if the address was modified).
-			     */
-            	displayAddress = modelFactory.createDebitor();
-            	Address address = modelFactory.createAddress();
-            	address.setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
-            	displayAddress.setAddress(address);
-            	document.setDeliveryContact(displayAddress);
-            }
-
-			// Use the delivery address if the billing address is empty
-			if (billingAddress.isEmpty()) {
-				billingAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
-			}
-			if (displayAddress != null && displayAddress.getCustomerNumber() != null) {
-				addressById = contactUtil.getAddressAsString(document.getDeliveryContact());
-//    			document.setDeliveryContact(displayAddress);
-			} else if(addressModified) {
-			    /*
-			     * If no addressId was given (no contact selected) then we use
-			     * the text field content for the manual address (but only if the address was modified).
-			     */
-//    			document.getDeliveryContact().getAddress().setManualAddress(DataUtils.getInstance().removeCR(txtAddress.getText()));
-			}
+		if (StringUtils.isNotBlank(newPaymentDescription)) {
+			document.getAdditionalInfo().setPaymentDescription(newPaymentDescription);
 		}
-		else {
-			if (!DataUtils.getInstance().MultiLineStringsAreEqual(contactUtil.getAddressAsString(document.getBillingContact()), txtAddress.getText())) {
-				addressModified = true;
-			}
-
-			// Use the billing address if the delivery address is empty
-			if (deliveryAddress.isEmpty()) {
-				deliveryAddress = DataUtils.getInstance().removeCR(txtAddress.getText());
-			}
-			
-		   /* if the address was modified but addressId has a customer number then we have
-			* a manually changed contact which has to be created as new contact (else we would
-			* update the existing contact which isn't wanted in most cases).
-			* But wait... the Id of the old entry and the new entry have to be the same.
-			* Else it could be a newly selected contact from the contact list.
-			*/
-			// TODO check FAK-276 if it is working! 
-			if(addressModified && (displayAddress.getCustomerNumber() != null && document.getBillingContact().getId() == displayAddress.getId()
-			       || displayAddress.getCustomerNumber() == null)) {
-				// before we change an address we have to check for delivery addresses and save it...
-				if(document.getDeliveryContact() == null && document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null) {
-					document.setDeliveryContact(document.getBillingContact().getAlternateContacts());
-				}
-			    displayAddress = modelFactory.createDebitor();
-			    Address address = modelFactory.createAddress();
-			    address.setManualAddress(txtAddress.getText());
-			    displayAddress.setAddress(address);
-			    try {
-                    displayAddress = contactDAO.save(displayAddress);
-                } catch (FakturamaStoringException e) {
-                    log.error(e);
-                }
-			}
-
-			if (displayAddress.getCustomerNumber() != null) {
-				addressById = contactUtil.getAddressAsString(displayAddress);
-				/* If the previous address was a manual entry it has to be deleted, because
-				 * else a lot of orphans could be created (manual addresses without a 
-				 * reference to a document).
-				 */
-				if(document.getBillingContact().getCustomerNumber() == null) {
-				    document.getBillingContact().setDeleted(Boolean.TRUE);
-				}
-			} else {
-				// A manually changed address means that there's no reason for an alternative address which was stored earlier.
-				// Therefore we remove that alternative address from document.
-				document.setDeliveryContact(null);
-			}
-            // set the new contact
-            document.setBillingContact(displayAddress);
-		}
-
-		// Show a warning if the entered address is not similar to the address
-		// of the document which is set by the address ID.
-		if (displayAddress.getCustomerNumber() != null && addressModified) {
-			JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
-			if (jaroWinklerDistance.apply(addressById, DataUtils.getInstance().removeCR(txtAddress.getText())) < 0.75) {
-				MessageDialog.openWarning(top.getShell(),
-
-				//T: Title of the dialog that appears if the document is assigned to  an other address.
-				msg.editorDocumentErrorWrongcontactTitle,
-				
-				//T: Text of the dialog that appears if the document is assigned to  an other address.
-				MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressById));
-//				return;
-			}
-		}
-
-		// Set the payment values depending on if the document is paid or not
-//		if (comboPayment != null) {
-		    // this is done by databinding
-//			document.setStringValueByKey("paymentdescription", comboPayment.getText());
-//		}
-		// If this document contains no payment widgets, but..
-//		else {
-			// the customer changed and so there is a new payment. Set it.
-		// TODO Check it! The payment *cannot* be changed manually!
-			if (StringUtils.isNotBlank(newPaymentDescription)) {
-				document.getAdditionalInfo().setPaymentDescription(newPaymentDescription);
-			}
-//		}
 
 		if (bPaid != null) {
 			String paymentText = "";
 
             if (bPaid.getSelection()) {
-//                document.setPaid(Boolean.TRUE);
-                //				document.setPayDate(dtPaidDate.getSelection());   // done by databinding
-                //				document.setPaidValue(paidValue.getNumber().doubleValue());   // done by databinding
                 deposit =  Money.zero(currencyUnit);
 				// check if the paid value is only a deposit or the whole invoice amount
 				// not: a discount could decrease the invoice amount!
@@ -568,7 +425,7 @@ public class DocumentEditor extends Editor<Document> {
            			document.setDeposit(Boolean.FALSE);
                     document.setPaid(Boolean.TRUE);
                 }
-                if (documentType == DocumentType.INVOICE) {
+                if (document.getBillingType().isINVOICE()) {
                     // update dunnings
                     updateDunnings();
                 }
@@ -591,14 +448,12 @@ public class DocumentEditor extends Editor<Document> {
                     paymentText = document.getPayment().getUnpaidText();
                 }
             }
-//			document.setDueDays(duedays);
 			document.getAdditionalInfo().setPaymentText(paymentText);
 		}
 		// If this document contains no payment widgets, but..
 		else {
 			// the customer changed and so there is a new payment. Set it.
 			if (!newPaymentDescription.isEmpty() && document.getPayment() != null) {
-//			    document.setDueDays(duedays);
 			    document.setPaid(Boolean.FALSE);
 			    document.setPaidValue(Double.valueOf(0.0));
 
@@ -612,7 +467,7 @@ public class DocumentEditor extends Editor<Document> {
 		document.setTotalValue(total.getNumber().doubleValue());
 		
 		// Set the dunning level
-		if(documentType == DocumentType.DUNNING) {
+		if(document.getBillingType().isDUNNING()) {
 		    ((Dunning)document).setDunningLevel(dunningLevel);
 		}
 
@@ -632,7 +487,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		// Update the invoice references in all documents within the same transaction
-		if(documentType.equals(DocumentType.INVOICE)) {
+		if(document.getBillingType().isINVOICE()) {
 		    documentsDAO.updateInvoiceReferences((Invoice) document);
 		
     		// Update the references in the delivery notes
@@ -649,51 +504,16 @@ public class DocumentEditor extends Editor<Document> {
 			document.setItems(items);
 		}
 
-		// Set the "addressfirstline" value to the first line of the
-		// contact address
-		if (displayAddress != null && displayAddress.getCustomerNumber() != null) {
-			document.setAddressFirstLine(contactUtil.getNameWithCompany(displayAddress));
-		}
-		else {
-			String s = DataUtils.getInstance().removeCR(txtAddress.getText());
-			
-			// Remove the "\n" if it was a "\n" as line break.
-			s = s.split("\n")[0];
-			
-			document.setAddressFirstLine(s);
-		}
-
 		// Mark the (modified) document as "not printed"
 		if (wasDirty) {
 			document.setPrinted(false);
 		}
 
-		// If it is a new document
-		if (newDocument) {
-			// If it's an invoice, set the "invoiceid" to the ID.
-			// So all documents will inherit this ID
-//			if ((documentType == DocumentType.INVOICE) && (document.getIntValueByKey("id") != document.getIntValueByKey("invoiceid"))) {
-//				document.setIntValueByKey("invoiceid", document.getIntValueByKey("id"));
-//				Data.INSTANCE.getDocuments().updateDataSet(document);
-//			}
-
-			// Now it is no longer new.
-			newDocument = false;
-
-			// Create a new editor input.
-			// So it's no longer the parent data
-//			this.setInput(new UniDataSetEditorInput(document));
-		}
-		else {
-
-			// Do not create a new data set - just update the old one
-//			Data.INSTANCE.getDocuments().updateDataSet(document);
-		}
+		// If it is a new document => Now it is no longer new.
+		newDocument = false;
 		
         try {
             document = documentsDAO.save(document);
-            // update address in model
-            displayAddress = (documentType == DocumentType.DELIVERY) ? document.getDeliveryContact() : document.getBillingContact();
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
@@ -716,10 +536,47 @@ public class DocumentEditor extends Editor<Document> {
         
         // reset dirty flag
         setDirty(false);
+        ((MPart)getMDirtyablePart()).getProperties().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
         return Boolean.TRUE;
 	}
     
-    @Override
+    private void reassignDocumentReceiver() {
+		document.getReceiver().clear();
+		document.getReceiver().addAll(selectedAddresses.values());
+	}
+
+	/**
+     * Checks the address field(s) for changed entries.
+     */
+	private void checkForChangedAddresses() {
+
+		// Show a warning if the entered address is not similar to the address
+		// of the document which is set by the address ID.
+		// Compare only if current address is from the same origin as the stored adress.
+		// (Else the user has selected another address from Contact list.)
+		JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
+		for (CTabItem tabItem : addressAndIconComposite.getItems()) {
+			AddressDTO addressDTO = (AddressDTO) tabItem.getControl().getData(ORIGIN_RECEIVER);
+			DocumentReceiver documentReceiver = selectedAddresses.get(tabItem.getData(ADDRESS_TAB_BILLINGTYPE));
+			String addressAsString = contactUtil.getAddressAsString(addressDTO, System.lineSeparator());
+			if (!addressAsString.isEmpty()
+					&& addressDTO != null 
+					&& addressDTO.getAddressId() == documentReceiver.getOriginAddressId() 
+					&& jaroWinklerDistance.apply(DataUtils.getInstance().removeCR(addressAsString),
+					    DataUtils.getInstance().removeCR(((Text) tabItem.getControl()).getText())) < 0.75) {
+				MessageDialog.openWarning(top.getShell(),
+						// T: Title of the dialog that appears if the document is assigned to an other
+						// address.
+						msg.editorDocumentErrorWrongcontactTitle,
+
+						// T: Text of the dialog that appears if the document is assigned to an other
+						// address.
+						MessageFormat.format(msg.editorDocumentErrorWrongcontactMsg, addressAsString));
+			}
+		}
+	}
+
+	@Override
     protected void bindModel() {
 		
 		// for the (very ugly!) Linux bug which posts an event after each binding
@@ -730,7 +587,18 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, dtDate, Document_.documentDate.getName());
 		bindModelValue(document, comboNetGross, Document_.netGross.getName());
 		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
-		bindModelValue(document, txtConsultant, Document_.consultant.getName(), 250);
+		
+		DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
+		
+		// the first document's receiver is the main receiver. That consultant field is
+		// bound to document's consultant field.
+		bindModelValue(mainTypeReceiver, txtConsultant, DocumentReceiver_.consultant.getName(), 250);
+		
+		CTabItem[] items = addressAndIconComposite.getItems();
+		for (int i = 0; i < items.length; i++) {
+			bindAddressWidgetForIndex(i);
+		}
+		
 		bindModelValue(document, dtServiceDate, Document_.serviceDate.getName());
 		bindModelValue(document, dtOrderDate, Document_.orderDate.getName());
 
@@ -766,6 +634,8 @@ public class DocumentEditor extends Editor<Document> {
 		if(comboShipping != null) {
 			fillAndBindShippingCombo();
 		}
+		
+		DocumentType documentType = DocumentTypeUtil.findByBillingType(document.getBillingType());
 		if(documentType.canBePaid()) {
 			bindModelValue(document, bPaid, Document_.paid.getName());
 			if(isInvoiceDeposited()) {
@@ -794,6 +664,124 @@ public class DocumentEditor extends Editor<Document> {
         
     }
 
+	/**
+	 * This is the "manual" implementation of the UpdateValueStrategy, since it
+	 * seems not to be possible for updating a list of receivers which are displayed
+	 * in a CTabFolder widget. The UpdateValueStrategy is for displaying a
+	 * DocumentReceiver's address in an address tab. Since the address tab only
+	 * contains a plain Text field, the values from DocumentReceiver has to be
+	 * converted. Furthermore, the value in the Text field can be overwritten. In
+	 * this case, the values from DocumentReceiver has to be cleared an the
+	 * manualAddress field has to be set. For comparing the original Documentreceiver's 
+	 * address with the currently selected (or entered) one it is stored in the data 
+	 * field of the text widget.
+	 */
+	private void bindAddressWidgetForIndex(int index) {
+		final Text currentAddressTabWidget = txtAddresses.get(index);
+		ISideEffectFactory sideEffectFactory = WidgetSideEffects.createFactory(currentAddressTabWidget);
+		ISWTObservableValue<String> observedText = WidgetProperties.text(SWT.FocusOut).observe(currentAddressTabWidget);
+		// react on changes inside the Text widget (which contains the String
+		// representation of an address)
+		sideEffectFactory.create(observedText::getValue, addressString -> {
+			BillingType billingType = (BillingType) addressAndIconComposite.getItem(index).getData(ADDRESS_TAB_BILLINGTYPE);
+			DocumentReceiver currentReceiver = selectedAddresses.get(billingType);
+//			DocumentReceiver currentReceiver = (DocumentReceiver) currentAddressTabWidget.getData(CURRENT_RECEIVER);
+			if (currentReceiver == null) {
+				// should not occur
+				return;
+				// throw new RuntimeException("can't get DocumentReceiver from current CTabItem.");
+			}
+			if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+				// only if not in bind mode
+				
+				// Test if the txtAddress field was modified
+				// ("modified" means that the content of the text field differs from the address
+				// from current DocumentReceiver and was manually(!) changed)
+				boolean addressModified = !DataUtils.getInstance().MultiLineStringsAreEqual(
+						contactUtil.getAddressAsString(currentReceiver),
+						observedText.getValue());
+				// TODO check if FAK-276 is working!
+	
+				if (addressModified) {
+					// DocumentReceiver was changed manually
+					currentReceiver = clearAddressFields(currentReceiver);
+					currentReceiver.setManualAddress(observedText.getValue());
+				
+				/*
+				 * possible cases:
+				 * 
+				 * Document | Adresse alt        | Adresse neu        | Aktion
+				 * neu      | --                 | Adr. aus Kontakten | neuer DocumentReceiver mit dieser Adresse  (v) ==> firstLine wird nicht angezeigt
+				 * neu      | --                 | manuelle Adr.      | neuer DocumentReceiver mit dieser Adresse  (v)
+				 * vorh.    | Adr. aus Kontakten | Adr. aus Kontakten | DocumentReceiver mit neuer Adresse füllen, manualAddress null setzen  (v) ==> firstLine wird nicht angezeigt
+				 * vorh.    | manuelle Eingabe   | Adr. aus Kontakten | DocumentReceiver mit neuer Adresse füllen, manualAddress null setzen  (v)
+				 * vorh.    | Adr. aus Kontakten | manuelle Eingabe 1)| DocumentReceiver leeren, manualAddress setzen  (v)
+				 * vorh.    | manuelle Eingabe   | manuelle Eingabe   | DocumentReceiver leeren, manualAddress setzen  (v)
+				 * 
+				 * 1) "manuelle Eingabe" kann hier auch heißen, daß die bestehende Adresse einfach geändert wurde.
+				 */
+					setDirty(true);
+				}
+				updateAddressFirstLine(currentReceiver, currentAddressTabWidget, index);
+			} else {
+				// if in bind mode, fill address Text widget with DocumentReceiver's value
+				observedText.setValue(contactUtil.getAddressAsString(currentReceiver));
+			}
+		});
+	}
+
+	private void updateAddressFirstLine(DocumentReceiver currentReceiver, Text currentAddressTabWidget, int index) {
+		// Set the "addressFirstLine" value to the first line of the
+		// contact address (in case of setting a new address from selection
+		// the addressFirstLine property wouldn't be updated).
+		// !!! only if this is the first CTab!!!
+		if(index == 0) {
+			String addressFirstLine = currentReceiver.getCustomerNumber() != null
+					? contactUtil.getNameWithCompany(currentReceiver)
+					: createAddressFirstLineFromString(currentAddressTabWidget);
+			document.setAddressFirstLine(addressFirstLine);
+		}
+	}
+
+	/**
+	 * Clear all fields of a DocumentReceiver.
+	 * 
+	 * @param originReceiver
+	 */
+	final private DocumentReceiver clearAddressFields(DocumentReceiver originReceiver) {
+		originReceiver.setCompany(null);
+		originReceiver.setStreet(null);
+		originReceiver.setCityAddon(null);
+		originReceiver.setCity(null);
+		originReceiver.setZip(null);
+		originReceiver.setCountryCode(null);
+		originReceiver.setManualAddress(null);
+		originReceiver.setTitle(null);
+		originReceiver.setFirstName(null);
+		originReceiver.setCustomerNumber(null);
+		return originReceiver;
+	}
+
+	private String createAddressFirstLineFromString(Text currentText) {
+		String s = currentText.getText();
+		
+		// Remove the "\n" if it was a "\n" as line break.
+		return s.split(System.lineSeparator())[0];
+	}
+	
+	protected DocumentReceiver getOrCreateAddressByIndexFromContact(int i) {
+		// get last address and fill up the address list
+		int lastAddressIndex = document.getReceiver().size() - 1;
+		if(lastAddressIndex < i) {
+			do {
+				DocumentReceiver address = modelFactory.createDocumentReceiver();
+				// add no ContactType means this address is a default address for this contact
+				document.getReceiver().add(address);
+			} while(++lastAddressIndex < i);
+		}
+		return document.getReceiver().get(i);
+	}
+
 	private void fillAndBindPaymentCombo() {
 		Payment tmpPayment = document.getPayment();
 		ComboViewer comboViewerPayment;
@@ -809,8 +797,7 @@ public class DocumentEditor extends Editor<Document> {
         	public void selectionChanged(SelectionChangedEvent event) {
 
         		// Get the selected element
-        		ISelection selection = event.getSelection();
-        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
         		if (!structuredSelection.isEmpty()) {
         			// Get first selected element.
         			Object firstElement = structuredSelection.getFirstElement();
@@ -844,8 +831,7 @@ public class DocumentEditor extends Editor<Document> {
         	// sum and update the shipping VAT.
         	public void selectionChanged(SelectionChangedEvent event) {
         		// Get the selected element.
-        		ISelection selection = event.getSelection();
-        		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
         		if (!structuredSelection.isEmpty()) {
         			// Get first selected element.
         			shipping = (Shipping) structuredSelection.getFirstElement();
@@ -862,10 +848,8 @@ public class DocumentEditor extends Editor<Document> {
         	}
 
 			private void clearManualShipping(Document document) {
-//				document.getAdditionalInfo().setShippingAutoVat(null);
 				document.getAdditionalInfo().setShippingDescription(null);
 //				document.getAdditionalInfo().setShippingName(null);
-//				document.getAdditionalInfo().setShippingValue(null);
 //				document.getAdditionalInfo().setShippingVatDescription(null);
 //				document.getAdditionalInfo().setShippingVatValue(null);
 			}
@@ -975,16 +959,12 @@ public class DocumentEditor extends Editor<Document> {
 		if (newDocument) {
 
 			// .. get the document type (=the category) to ..
-			String category;
-			if(BooleanUtils.isTrue(silentMode)) {
-				category = (String) context.get(CallEditor.PARAM_CATEGORY);
-			} else {
-				category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
-			}
-			BillingType billingType = BillingType.get(category);
-			documentType = DocumentType.findByKey(billingType.getValue());
-			if (documentType == DocumentType.NONE) {
-				documentType = DocumentType.ORDER;
+			String category = BooleanUtils.isTrue(silentMode) 
+					? (String) context.get(CallEditor.PARAM_CATEGORY) 
+					: (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+			BillingType billingType = category != null ? BillingType.get(category) : BillingType.NONE;
+			if (billingType.isNONE()) {
+				billingType = BillingType.ORDER;
 			}
 			
 			// if this document should be a copy of an existing document, create it
@@ -995,12 +975,8 @@ public class DocumentEditor extends Editor<Document> {
 				}
 			} else {
 				// create a blank new document
-				document = DocumentTypeUtil.createDocumentByDocumentType(documentType);
+				document = DocumentTypeUtil.createDocumentByBillingType(billingType);
 			}
-            document.setBillingType(billingType);
-            // a new document is always dirty...
-            // no, this is false!
-//            setDirty(true);
 
 			// Copy the entry "message", or reset it to ""
 			if (!defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_COPY_MESSAGE_FROM_PARENT)) {
@@ -1010,11 +986,11 @@ public class DocumentEditor extends Editor<Document> {
 			}
 
 			// If it's a dunning, increase the dunning level by 1
-			if (documentType == DocumentType.DUNNING) {
+			if (billingType.isDUNNING()) {
 				// get the parents document type
-				DocumentType documentTypeParent = parentDoc != null ? DocumentTypeUtil.findByBillingType(parentDoc.getBillingType()) : DocumentType.NONE;
+				BillingType billingTypeParent = parentDoc != null ? parentDoc.getBillingType() : BillingType.NONE;
 				
-				if (documentTypeParent == DocumentType.DUNNING) {
+				if (billingTypeParent.isDUNNING()) {
 					dunningLevel = ((Dunning)parentDoc).getDunningLevel() + 1;
 				} else {
 					dunningLevel = 1;
@@ -1025,7 +1001,7 @@ public class DocumentEditor extends Editor<Document> {
 			}
 
 			// If it's a credit or a dunning, set it to unpaid
-			if ( documentType == DocumentType.CREDIT || documentType == DocumentType.DUNNING) {
+			if (billingType.isCREDIT() || billingType.isDUNNING()) {
 				document.setPaid(false);
 			}
 			
@@ -1077,7 +1053,7 @@ public class DocumentEditor extends Editor<Document> {
 				}
 				total = Money.of(document.getTotalValue(), currencyUnit);
 				
-				if(documentType == DocumentType.DUNNING) {
+				if(billingType.isDUNNING()) {
 					document.setOrderDate(parentDoc.getOrderDate()); // see FAK-490
 					document.setServiceDate(parentDoc.getServiceDate());  // see FAK-472
 				}
@@ -1096,10 +1072,7 @@ public class DocumentEditor extends Editor<Document> {
 		else {
 
 			// Get document type, set editorID
-			documentType =  DocumentTypeUtil.findByBillingType(document.getBillingType());
-			setEditorID(documentType.getTypeAsString());
-
-//			payment = document.getPayment();
+			setEditorID(document.getBillingType().toString());
 			shipping = document.getShipping();
 
 			// and the editor's part name
@@ -1107,22 +1080,12 @@ public class DocumentEditor extends Editor<Document> {
 
 		}
 
-		// These variables contain settings that are not in
-		// visible SWT widgets.
-//		duedays = document.getDueDays() != null ? document.getDueDays() : Integer.valueOf(0);
-		
-		// the address is either the delivery address (if the document is a delivery note) or the billing address
-		displayAddress = (document.getBillingType().isDELIVERY()) ? document.getDeliveryContact() : document.getBillingContact();
-		
 		noVat = document.getNoVatReference() != null;
 		if(noVat) {
 		    noVatName = document.getNoVatReference().getName();
-//		    noVatDescription = document.getNoVatReference().getDescription();
 		}
 		
 		netgross = document.getNetGross() != null ? document.getNetGross() : DocumentSummary.ROUND_NET_VALUES;
-		
-//		paidValue = document.getPaidValue() != null ? Money.of(document.getPaidValue(), currencyUnit) :  Money.zero(currencyUnit);
 		if (dunningLevel <= 0) {
             if (document.getBillingType().isDUNNING()) {
             	dunningLevel = ((Dunning)document).getDunningLevel();
@@ -1130,33 +1093,8 @@ public class DocumentEditor extends Editor<Document> {
                 dunningLevel = Integer.valueOf(1);
             }
         }
-
-		/*
-		 * We have to distinguish the following cases:
-		 * 1.  document type is a delivery document
-		 * 1.1 document has a delivery contact ==> use that as billing (main) contact
-		 * 1.2 document has a billing contact ==> use that as delivery contact
-		 * 1.3 document has no billing contact ==> use delivery contact as billing contact
-		 * 2.  document's type is other than delivery document
-		 * 2.1 document has a billing contact ==> use that as main contact
-		 * 2.2 document has a delivery contact ==> use that as delivery contact 
-		 * 2.3 document has no delivery contact ==> check if billing contact has an alternate contact and use use billing contact as delivery contact
-		 */
 		
-	    billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
-    	deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
-
-		
-//		if(document.getBillingType().isDELIVERY()) {
-//	        billingAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
-//			deliveryAddress = contactUtil.getAddressAsString(document.getBillingContact() != null 
-//					? document.getBillingContact() : document.getDeliveryContact());
-//		} else {
-//	        billingAddress = contactUtil.getAddressAsString(displayAddress);
-//			deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact() != null 
-//					? document.getDeliveryContact() : document.getBillingContact() != null && document.getBillingContact().getAlternateContacts() != null 
-//						? document.getBillingContact().getAlternateContacts() : document.getBillingContact());
-//		}
+    	fillSelectedAddresses();
 
 		if(BooleanUtils.isNotTrue(silentMode)) {
 			showOrderStatisticDialog(parent);
@@ -1164,7 +1102,7 @@ public class DocumentEditor extends Editor<Document> {
         
         // Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS/*, DocumentSummary.ROUND_NET_VALUES*/) == DocumentSummary.ROUND_NET_VALUES);
+            useGross = (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
         } else { 
             useGross = (netgross == DocumentSummary.ROUND_GROSS_VALUES);
         }
@@ -1184,6 +1122,13 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
     /**
+     * Helper method to fill the lookup hash map with all the selected contacts (for addresses resulting in DocumentReceivers).
+     */
+    private void fillSelectedAddresses() {
+    	document.getReceiver().forEach(rcv -> selectedAddresses.put(rcv.getBillingType(), rcv));
+	}
+
+	/**
      * Creates a copy of the given {@link Document}.
      * 
      * @param parentDoc the source document
@@ -1191,7 +1136,9 @@ public class DocumentEditor extends Editor<Document> {
      * @return a copy of the source document
      */
 	private Document copyFromSourceDocument(Document parentDoc, BillingType pTargetType) {
-		Contact billingContact;
+		DocumentType documentType = DocumentTypeUtil.findByBillingType(pTargetType);
+		
+		// TODO Check if parentDoc is equal to field "document"
 		Document retval = DocumentTypeUtil.createDocumentByBillingType(pTargetType);
 		retval.setSourceDocument(parentDoc);
 		// what about additionalInfo?
@@ -1225,16 +1172,9 @@ public class DocumentEditor extends Editor<Document> {
 			retval.setTransactionId(parentDoc.getTransactionId());
 		}
 		
-		billingContact = parentDoc.getBillingContact();
-		retval.setBillingContact(billingContact);
-		retval.setDeliveryContact(java.util.Optional.ofNullable(parentDoc.getDeliveryContact()).orElse(billingContact));
-		
-		// the delivery address can only be set from parent doc's delivery contact if one exists. Otherwise we have to take the 
-		// addressFirstLine instead
-		retval.setAddressFirstLine(contactUtil.getNameWithCompany(billingContact));
+		createReceiverInformationFromParentDoc(parentDoc, retval);
 		
 		retval.setCustomerRef(parentDoc.getCustomerRef());
-		retval.setConsultant(parentDoc.getConsultant());
 		retval.setServiceDate(parentDoc.getServiceDate());
 		retval.setOrderDate(parentDoc.getOrderDate());
 		if(parentDoc.getBillingType().isINVOICE()) {
@@ -1262,6 +1202,21 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
 	/**
+	 * Create the receiver information for this document.
+	 * 
+	 * @param resultingDoc the document for which the receiver's information should be created
+	 */
+	private void createReceiverInformationFromParentDoc(Document parentDoc, Document resultingDoc) {
+		DocumentReceiver receiver = modelFactory.createDocumentReceiver();
+		
+		// determine parentDoc's Contact
+		receiver.setConsultant(addressManager.getAdressForBillingType(parentDoc, parentDoc.getBillingType()).getConsultant());
+
+		resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(addressManager.getAdressForBillingType(resultingDoc, parentDoc.getBillingType())));
+		resultingDoc.getReceiver().add(receiver);
+	}
+
+	/**
 	 * Returns the document
 	 * 
 	 * @return The document
@@ -1283,9 +1238,10 @@ public class DocumentEditor extends Editor<Document> {
 	 * Returns the document type
 	 * 
 	 * @return The document type
+	 * 
 	 */
 	public DocumentType getDocumentType() {
-		return documentType;
+		return DocumentTypeUtil.findByBillingType(document.getBillingType());
 	}
 
 	/**
@@ -1309,9 +1265,8 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 */
 	public void calculate(boolean forceCalc) {
-
 		// Recalculate only documents that contains price values.
-		if (!documentType.hasPrice() && !forceCalc) {
+		if (!getDocumentType().hasPrice() && !forceCalc) {
 			return;
 		}
 		
@@ -1349,7 +1304,7 @@ public class DocumentEditor extends Editor<Document> {
 			shipping = lookupDefaultShippingValue();
 		}
 		
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(document,
+		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(
 				defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX));
         if(document.getShipping() == null) {
     		documentSummary = documentSummaryCalculator.calculate(null, docItems,
@@ -1420,12 +1375,16 @@ public class DocumentEditor extends Editor<Document> {
         }
 		
 		// Use the customers settings instead, if they are set
-		if (displayAddress != null && address_changed) {
+        DocumentReceiver addr = selectedAddresses.get(BillingType.INVOICE);
+		if (addr != null && address_changed && addr.getOriginContactId() != null) {
 			// useNetGross can be null (from database!)
-			if (displayAddress.getUseNetGross() != null && displayAddress.getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
+			Contact contact = contactDAO.findById(addr.getOriginContactId());
+			if (contact.getUseNetGross() != null 
+					&& contact.getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
 				useGross = false;
 				netgross = DocumentSummary.ROUND_NET_VALUES;
-			} else if (displayAddress.getUseNetGross() == null || displayAddress.getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
+			} else if (addr == null 
+					|| contact.getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 			}
@@ -1434,7 +1393,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 
 		// Show a warning if the customer uses a different setting for net or gross
-		if ((useGross != oldUseGross) && documentType.hasPrice()) {
+		if ((useGross != oldUseGross) && getDocumentType().hasPrice()) {
 			
 			if (address_changed) {
 				MessageBox messageBox = new MessageBox(top.getShell(), SWT.ICON_WARNING | SWT.OK);
@@ -1585,9 +1544,7 @@ public class DocumentEditor extends Editor<Document> {
 			spDueDays = new Spinner(paidDataContainer, SWT.BORDER | SWT.RIGHT);
 			spDueDays.setMinimum(0);
 			spDueDays.setMaximum(365);
-//			spDueDays.setSelection(duedays);
 			spDueDays.setIncrement(1);
-//			spDueDays.setSize(70, SWT.DEFAULT);
 			spDueDays.setPageIncrement(10);
 			spDueDays.setToolTipText(dueDaysLabel.getToolTipText());
 			GridDataFactory.swtDefaults().hint(90, SWT.DEFAULT).applyTo(spDueDays);
@@ -1628,7 +1585,6 @@ public class DocumentEditor extends Editor<Document> {
 				long difference = calendarIssue.getTime() - calendarDocument.getTime();
 				// Calculate from milliseconds to days
 				int days = (int) (difference / (1000 * 60 * 60 * 24));
-//					duedays = days;
 				spDueDays.setSelection(days);
 				// spinner doesn't throw an event if updating...
 				document.setDueDays(spDueDays.getSelection());
@@ -1758,50 +1714,49 @@ public class DocumentEditor extends Editor<Document> {
 	 * Show or hide the warning icon
 	 */
     private void showHideWarningIcon() {
+    	
+    	// FIXME implement!
 
-        // Check, whether the delivery address is the same as the billing address
-        boolean hasDifferentDeliveryAddress;
-
-        if (documentType == DocumentType.DELIVERY) {
-            hasDifferentDeliveryAddress = !DataUtils.getInstance().MultiLineStringsAreEqual(billingAddress, txtAddress.getText());
-            // see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=188271
-            differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentaddress, billingAddress.replaceAll("&", "&&")));
-        } else {
-            hasDifferentDeliveryAddress = !DataUtils.getInstance().MultiLineStringsAreEqual(deliveryAddress, txtAddress.getText());
-            differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentdeliveryaddress, deliveryAddress.replaceAll("&", "&&")));
-        }
-        
-        if (hasDifferentDeliveryAddress) {
-            // Show the icon
-            GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
-        } else {
-            // Hide the icon
-            GridDataFactory.swtDefaults().hint(0, 0).align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
-        }
+//        // Check, whether the delivery address is the same as the billing address
+//        boolean hasDifferentDeliveryAddress;
+//
+//        if (document.getBillingType().isDELIVERY) {
+//            hasDifferentDeliveryAddress = !DataUtils.getInstance().MultiLineStringsAreEqual(addressString, txtAddress.getText());
+//            // see also https://bugs.eclipse.org/bugs/show_bug.cgi?id=188271
+//            differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentaddress, addressString.replaceAll("&", "&&")));
+//        } else {
+//            hasDifferentDeliveryAddress = !DataUtils.getInstance().MultiLineStringsAreEqual(addressString, txtAddress.getText());
+//            differentDeliveryAddressIcon.setToolTipText(MessageFormat.format(msg.editorDocumentWarningDifferentdeliveryaddress, addressString.replaceAll("&", "&&")));
+//        }
+//        
+//        if (hasDifferentDeliveryAddress) {
+//            // Show the icon
+//            GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
+//        } else {
+//            // Hide the icon
+//            GridDataFactory.swtDefaults().hint(0, 0).align(SWT.END, SWT.CENTER).applyTo(differentDeliveryAddressIcon);
+//        }
     }
 	
 	/**
-	 * Fill the address label with a contact 
+	 * Fill the address {@link CTabItem} with a contact 
+	 * @param address 
 	 * 
 	 * @param contact
 	 * 		The contact
 	 */
-	private void setAddress(Contact contact) {
-		// Use delivery address, if it's a delivery note
-		if (documentType == DocumentType.DELIVERY) {
-			this.displayAddress = contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact;
-		    document.setDeliveryContact(displayAddress);
-		    document.setBillingContact(contact);
-		} else {
-			this.displayAddress = contact;
-		    document.setDeliveryContact(contact.getAlternateContacts() != null ? contact.getAlternateContacts() : contact);
-		    document.setBillingContact(displayAddress);
-		}
-		txtAddress.setText(contactUtil.getAddressAsString(this.displayAddress));
+	private void setAddress(Address address, DocumentReceiver documentReceiver) {
+		Contact contact = address.getContact();
+		// set the DocumentReceiver in the currently active address tab
+		selectedAddresses.put(document.getBillingType(), documentReceiver);
 
-	    billingAddress = contactUtil.getAddressAsString(document.getBillingContact());
-    	deliveryAddress = contactUtil.getAddressAsString(document.getDeliveryContact());
+		// select the correct address tab
+		CTabItem addressTab = addressAndIconComposite.getSelection();
 		
+		bindModelValue(documentReceiver, txtConsultant, DocumentReceiver_.consultant.getName(), 250);
+		setAddressInTab(addressTab, documentReceiver, addressAndIconComposite.getSelectionIndex());
+		addOtherAddressesIfNotExisting(contact);
+
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) && itemsDiscount != null) {
         	itemsDiscount.setValue(contact.getDiscount());
         	document.setItemsRebate(contact.getDiscount());
@@ -1822,10 +1777,56 @@ public class DocumentEditor extends Editor<Document> {
 		showHideWarningIcon();
 		addressAndIconComposite.layout(true);
 		updateUseGross(true);
-		
-//		setDirty(true);
 	}
 	
+	private void setAddressInTab(CTabItem addressTab, DocumentReceiver documentReceiver, int position) {
+		if (addressTab != null) {
+			Text currenCTabItem = (Text) addressTab.getControl();
+			String addressAsString = contactUtil.getAddressAsString(documentReceiver);
+			currenCTabItem.setText(addressAsString);
+			updateAddressFirstLine(documentReceiver, currenCTabItem, position);
+
+			part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
+			bindAddressWidgetForIndex(addressAndIconComposite.getSelectionIndex());
+			part.getTransientData().remove(BIND_MODE_INDICATOR);
+		}
+	}
+
+	/**
+	 * If current document is an invoice or a delivery note and there's no according
+	 * address we add the appropriate address from that contact (if only one address fits).
+	 * 
+	 * @param contact currently selected {@link Contact}
+	 */
+	private void addOtherAddressesIfNotExisting(Contact contact) {
+		if (document.getBillingType().isINVOICE() || document.getBillingType().isDELIVERY()) {
+			BillingType billingTypeToCheck = document.getBillingType().isINVOICE() ? BillingType.DELIVERY
+					: BillingType.INVOICE;
+			ContactType contactType = contactUtil.convertToContactType(billingTypeToCheck);
+			if (contactType != null && !selectedAddresses.containsKey(billingTypeToCheck)) {
+				java.util.Optional<Address> alternateAddress = contact.getAddresses().parallelStream()
+						.filter(a -> a.getContactTypes().contains(contactType)).findAny();
+				if (alternateAddress.isPresent()) {
+					DocumentReceiver documentReceiver = addressManager
+							.createDocumentReceiverFromContact(alternateAddress.get(), billingTypeToCheck);
+					document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver);
+					java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(
+							billingTypeToCheck);
+						// only set an additional tab if haven't a tab for this billing type yet
+					if(!addressTabForAlternativeAddress.isPresent()) {
+						CTabItem currenCTabItem = createAddressTabItem(documentReceiver);
+						setAddressInTab(currenCTabItem, documentReceiver, addressAndIconComposite.getItemCount());
+					}
+				}
+			}
+		}
+
+	}
+
+	private java.util.Optional<CTabItem> lookupAddressTabForBillingType(BillingType billingType) {
+		return  Arrays.stream(addressAndIconComposite.getItems()).filter(t -> t.getData(ADDRESS_TAB_BILLINGTYPE).equals(billingType)).findFirst();
+	}
+
 	/**
 	 * Use this payment and update the duedays
 	 * 
@@ -1859,12 +1860,6 @@ public class DocumentEditor extends Editor<Document> {
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	private void createPartControl(Composite parent) {
-		// Printing an document from the document editor means:
-		// Start OpenOffice in the background and export the document as
-		// an OpenOffice document.
-//		printAction = new CreateOODocumentAction();
-//		getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.PRINT.getId(), printAction);
-
 		// Create the ScrolledComposite to scroll horizontally and vertically
 	    ScrolledComposite scrollcomposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 
@@ -1890,7 +1885,7 @@ public class DocumentEditor extends Editor<Document> {
 		Label labelName = new Label(top, SWT.NONE);
 
 		// for letters the "No." label has to be changed, see FAK-437
-		if(documentType == DocumentType.LETTER) {
+		if(document.getBillingType().isLETTER()) {
 			//T: Letter Editor - Label Document Subject
 			labelName.setText(msg.editorDocumentLetterSubject);
 			labelName.setToolTipText(msg.editorDocumentLetterSubjectTooltip);
@@ -1909,7 +1904,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// The document number is the document name
 		// but for letters it is the subject, see above
-		if(documentType == DocumentType.LETTER) {
+		if(document.getBillingType().isLETTER()) {
 			txtName = new Text(nrDateNetGrossComposite, SWT.BORDER);
 			txtName.setSize(400, SWT.DEFAULT);
 		} else {
@@ -1938,7 +1933,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(dtDate);
 		
 		// combo list to select between net or gross
-		comboNetGross = new ComboViewer(documentType.hasPrice() ? nrDateNetGrossComposite : invisible, SWT.BORDER | SWT.READ_ONLY);
+		comboNetGross = new ComboViewer(getDocumentType().hasPrice() ? nrDateNetGrossComposite : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboNetGross.getCombo().setToolTipText(msg.editorDocumentNetgrossTooltip);
 		
 		Map<Integer, String> netGrossContent = new HashMap<>();
@@ -1977,8 +1972,8 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Set the title in large letters
 		Label labelDocumentType = new Label(titleComposite, SWT.NONE);
-		String documentTypeString = msg.getMessageFromKey(DocumentType.findByKey(document.getBillingType().getValue()).getSingularKey());
-		if (documentType == DocumentType.DUNNING) {
+		String documentTypeString = msg.getMessageFromKey(getDocumentType().getSingularKey());
+		if (document.getBillingType().isDUNNING()) {
 			documentTypeString = MessageFormat.format("{0}. {1}", Integer.toString(dunningLevel), documentTypeString);
 		}
 		labelDocumentType.setText(documentTypeString);
@@ -2022,7 +2017,7 @@ public class DocumentEditor extends Editor<Document> {
 		txtConsultant.setToolTipText(labelConsultant.getToolTipText());
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(txtConsultant);
 		
-		boolean useOrderDate = (documentType != DocumentType.ORDER);
+		boolean useOrderDate = !document.getBillingType().isORDER();
 
 		// Service date
 		Label labelServiceDate = new Label(useOrderDate ? xtraSettingsComposite : invisible, SWT.NONE);
@@ -2040,7 +2035,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Order date
 		Label labelOrderDate = new Label(useOrderDate ? xtraSettingsComposite : invisible, SWT.NONE);
-		if (documentType == DocumentType.OFFER) {
+		if (document.getBillingType().isOFFER()) {
 			//T: Label in the document editor
 			labelOrderDate.setText(msg.editorDocumentFieldRequestdate);
 			labelOrderDate.setToolTipText(msg.editorDocumentFieldRequestdateTooltip);
@@ -2084,13 +2079,13 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(dtVestingPeriodEnd);
 
 		// A reference to the invoice
-		Label labelInvoiceRef = new Label(documentType.hasInvoiceReference() ? xtraSettingsComposite : invisible, SWT.NONE);
+		Label labelInvoiceRef = new Label(getDocumentType().hasInvoiceReference() ? xtraSettingsComposite : invisible, SWT.NONE);
 		//T: Label in the document editor
 		labelInvoiceRef.setText(msg.editorDocumentFieldInvoice);
 		labelInvoiceRef.setToolTipText(msg.editorDocumentFieldInvoiceTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.BOTTOM).applyTo(labelInvoiceRef);
 		
-		txtInvoiceRef = new Text(documentType.hasInvoiceReference() ? xtraSettingsComposite : invisible, SWT.BORDER);
+		txtInvoiceRef = new Text(getDocumentType().hasInvoiceReference() ? xtraSettingsComposite : invisible, SWT.BORDER);
 		txtInvoiceRef.setToolTipText(labelInvoiceRef.getToolTipText());
 		Invoice invoiceId = document.getInvoiceReference();
 		if (invoiceId != null) {
@@ -2102,14 +2097,14 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtInvoiceRef);
 
 		// This document should use a VAT of 0%
-		Label labelNoVat = new Label(documentType.hasPrice() ? xtraSettingsComposite : invisible, SWT.NONE);
+		Label labelNoVat = new Label(getDocumentType().hasPrice() ? xtraSettingsComposite : invisible, SWT.NONE);
 		//T: Label in the document editor
 		labelNoVat.setText(msg.commonFieldVat);
 		labelNoVat.setToolTipText(msg.editorDocumentZerovatTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNoVat);
 
 		// combo list with all 0% VATs
-		comboViewerNoVat = new ComboViewer(documentType.hasPrice() ? xtraSettingsComposite : invisible, SWT.BORDER  | SWT.READ_ONLY);
+		comboViewerNoVat = new ComboViewer(getDocumentType().hasPrice() ? xtraSettingsComposite : invisible, SWT.BORDER  | SWT.READ_ONLY);
 		comboViewerNoVat.getCombo().setToolTipText(labelNoVat.getToolTipText());
 		comboViewerNoVat.setContentProvider(new EntityComboProvider());
 		comboViewerNoVat.setLabelProvider(new EntityLabelProvider());
@@ -2119,8 +2114,7 @@ public class DocumentEditor extends Editor<Document> {
 
 			// A combo entry is selected
 			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection selection = event.getSelection();
-				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
 				if (!structuredSelection.isEmpty()) {
 
 					// get first element ...
@@ -2201,12 +2195,13 @@ public class DocumentEditor extends Editor<Document> {
 		selectAddressButton.addMouseListener(new MouseAdapter() {
 
 			// Open the address dialog if the icon is clicked.
+			@SuppressWarnings("unchecked")
 			public void mouseDown(MouseEvent e) {
 			    /*
 			     * This code searches for the dialog part in the Application model
-			     * and opens it. The content of this dialog is taken from ContactListTable.
+			     * and opens it. The content of this dialog is taken from ContactTreeListTable.
 			     * The part in the Application model has an additional context entry
-			     * "fakturama.datatable.contacts.clickhandler" which is for the ContactListTable
+			     * "fakturama.datatable.contacts.clickhandler" which is for the ContactTreeListTable
 			     * part to decide which action should be taken on double click.
 			     * Once an entry is selected the address (or, more specific, the Contact object id)
 			     * is posted via EventBroker. There the handleDialogSelection method comes on stage.
@@ -2221,15 +2216,16 @@ public class DocumentEditor extends Editor<Document> {
             	// save MPart
             	MPart myPart = context.get(MPart.class);
                 // FIXME Workaround (quick & dirty), please use enums or an extra button
-                SelectContactDialog<Contact> dlg = null;
+            	SelectTreeContactDialog<Address> dlg = null;
+		    	context.set("ADDRESS_TYPE", document.getBillingType());
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
-				    dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
+				    dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    } else {
 			    	context.set("CONTACT_TYPE", "DEBITOR");
-			    	dlg = ContextInjectionFactory.make(SelectContactDialog.class, context);
+			    	dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    }
-			    dlg.setDialogBoundsSettings(getDialogSettings("SelectContactDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
+			    dlg.setDialogBoundsSettings(getDialogSettings("SelectTreeContactDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
 			    dlg.open();
 			    context.set(MPart.class, myPart);
 			    // the result is set via event DialogSelection/Contact
@@ -2253,7 +2249,7 @@ public class DocumentEditor extends Editor<Document> {
                 ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                 handlerService.executeHandler(parameterizedCommand);
 			    
-			    document.getBillingContact().getAddress().setManualAddress(null);
+                addressManager.getBillingAdress(document).setManualAddress(null);
                 setDirty(true);
 			}
 		});
@@ -2275,50 +2271,32 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		});
 
-		// Composite that contains the address and the warning icon
-		addressAndIconComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
-		GridLayoutFactory.fillDefaults().numColumns(2).applyTo(addressAndIconComposite);
-		GridDataFactory.fillDefaults().minSize(100, 80).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(addressAndIconComposite);
-
-		// The address field
-		txtAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		if (documentType == DocumentType.DELIVERY) {
-			txtAddress.setText(deliveryAddress);
-		} else {
-			txtAddress.setText(billingAddress);
+		// Composite that contains the addresses
+		addressAndIconComposite = new CTabFolder(top, SWT.NONE);
+		addressAndIconComposite.setSimple(false);
+		// create main document receiver
+		DocumentReceiver mainReceiver = createOrGetMainReceiver();
+		CTabItem addressTab = createAddressTabItem(mainReceiver);
+		addressAndIconComposite.setSelection(addressTab);
+		if(document.getReceiver().size() > 1) {
+			Iterator<DocumentReceiver> it = document.getReceiver().iterator();
+			while (it.hasNext()) {
+				DocumentReceiver currentDocumentReceiver = it.next();
+				if(mainReceiver.equals(currentDocumentReceiver)) {
+					continue;
+				}
+				createAddressTabItem(currentDocumentReceiver);
+			}
 		}
 		
-		/*
-		 * TODO Wenn die Adresse händisch geändert wird, muß sie in manualAddress kopiert werden (am 
-		 * besten nach dem Verlassen des Widgets). Falls ein Kontakt ausgewählt wurde, muß dieses
-		 * Feld wieder auf null gesetzt werden und die Contact-Verknüpfung aktualisiert werden.
-		 * Von daher geht hier ein simples "superviceControl" nicht.
-		 * ==> Das wird aber schon alles im doSave() gemacht, daher brauchen wir hier nur checken,
-		 * ob überhaupt etwas geändert wurde.
-		 */
-//		superviceControl(txtAddress, 250);
 		
-		txtAddress.addModifyListener(new ModifyListener() {
-            
-            @Override
-            public void modifyText(ModifyEvent e) {
-//		        if(!contactUtil.getAddressAsString(document.getBillingContact()).contentEquals(txtAddress.getText())) {
-//		            document.setManualAddress(txtAddress.getText());
-//		            document.setBillingContact(null);
-		            setDirty(true);
-		            showHideWarningIcon();
-//		        }
-            }
-        });
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(txtAddress);
-
-		// Add the attention sign if the delivery address is not equal to the billing address
-		differentDeliveryAddressIcon = new Label(addressAndIconComposite, SWT.NONE);
-		differentDeliveryAddressIcon.setImage(Icon.ICON_WARNING.getImage(IconSize.ToolbarIconSize));
+		GridDataFactory.fillDefaults().minSize(100, 80).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(addressAndIconComposite);
+//		addressAndIconComposite.setSelection(0);
 		
-		showHideWarningIcon();
+//		showHideWarningIcon();
 
-/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
+		DocumentType documentType = getDocumentType();
+		/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
 		// Add the item table, if the document is one with items.
 		if (documentType.hasItems()) {
 		    ItemListBuilder itemListBuilder = ContextInjectionFactory.make(ItemListBuilder.class, context);
@@ -2369,7 +2347,6 @@ public class DocumentEditor extends Editor<Document> {
 //                dialog.setOnTop(true);
 //                dialog.getTransientData().put(DOCUMENT_ID, document.getName());
 //                modelService.bringToTop(dialog);
-				
                 
                 selectedMessageField = txtMessage;
 
@@ -2395,40 +2372,24 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Add a multi line text field for the message.
 		txtMessage = new Text(messageFieldsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-//		txtMessage.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage()));
 		txtMessage.setToolTipText(messageLabel.getToolTipText());
 		
 		GridDataFactory.defaultsFor(txtMessage).minSize(80, 50).applyTo(txtMessage);
-//		GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage);
 
 		if (noOfMessageFields >= 2) {
 			// Add a multi line text field for the message.
 			txtMessage2 = new Text(messageFieldsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-//			txtMessage2.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage2()));
 			
 			GridDataFactory.defaultsFor(txtMessage2).minSize(80, 50).applyTo(txtMessage2);
 			txtMessage2.setToolTipText(messageLabel.getToolTipText());
-//			GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage2);
 		}
 		if (noOfMessageFields >= 3) {
 			// Add a multi line text field for the message.
 			txtMessage3 = new Text(messageFieldsComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-//			txtMessage3.setText(DataUtils.getInstance().makeOSLineFeeds(document.getMessage3()));
 			txtMessage3.setToolTipText(messageLabel.getToolTipText());
 			
 			GridDataFactory.defaultsFor(txtMessage3).minSize(80, 50).applyTo(txtMessage3);
-//			GridDataFactory.fillDefaults().grab(true, true).applyTo(txtMessage3);
 		}
-		
-		// Set the tab order
-		if (documentType.hasInvoiceReference())
-			setTabOrder(txtAddress, txtInvoiceRef);
-		else if (documentType.hasPrice())
-			setTabOrder(txtAddress, comboViewerNoVat.getControl());
-		else if (documentType.hasItems())
-			setTabOrder(txtAddress, itemListTable.getNatTable());
-		else
-			setTabOrder(txtAddress, txtMessage);
 
 		// Depending on if the document has price values.
 		if (!documentType.hasPrice()) {
@@ -2440,15 +2401,9 @@ public class DocumentEditor extends Editor<Document> {
 				GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(messageFieldsComposite);
 			}
 
-//			createTotalComposite(documentType.hasPrice());
-			
 			// Get the documents'shipping values.
 			shipping = document.getShipping();
-//			shippingVat = document.getShipping().getShippingVat();
-//			shippingAutoVat = document.getShippingAutoVat();
-//			shippingVatDescription = document.getShipping().getShippingVat().getDescription();
 
-//			calculate(Data.INSTANCE.getDocuments().getDatasetById(invoiceId));
 			calculate(true);
 		
 		} else {  // document *has* a price
@@ -2477,6 +2432,53 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		bindModel();
+		
+		// Set the tab order
+		if (documentType.hasInvoiceReference())
+			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtInvoiceRef);
+		else if (documentType.hasPrice())
+			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), comboViewerNoVat.getControl());
+		else if (documentType.hasItems())
+			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), itemListTable.getNatTable());
+		else
+			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtMessage);
+	}
+
+	private DocumentReceiver createOrGetMainReceiver() {
+		// always add the receiver for the current document type at the first position
+		DocumentReceiver mainReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
+		if(mainReceiver == null) {
+			mainReceiver = modelFactory.createDocumentReceiver();
+			mainReceiver.setBillingType(document.getBillingType());
+			document.getReceiver().add(mainReceiver);
+		}
+
+		return mainReceiver;
+	}
+
+	/**
+	 * Create a single tab for a {@link DocumentReceiver}. For recognizing a changed
+	 * address the origin {@link DocumentReceiver} is stored in data field.
+	 * 
+	 * @param documentReceiver the {@link DocumentReceiver} to set
+	 */
+	final private CTabItem createAddressTabItem(DocumentReceiver documentReceiver) {
+		CTabItem addressTabItem = new CTabItem(addressAndIconComposite, SWT.NONE);
+		addressTabItem.setData(ADDRESS_TAB_BILLINGTYPE, documentReceiver.getBillingType());
+		addressTabItem.setText(documentReceiver.getBillingType().getName());
+
+		// The address field
+		Text currentAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+
+		// initially both objects are equal
+		currentAddress.setData(ORIGIN_RECEIVER, AddressDTO.from(documentReceiver));
+		selectedAddresses.put(documentReceiver.getBillingType(), documentReceiver);
+		addressTabItem.setToolTipText("'ne Adresse ");
+		
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(currentAddress);
+		addressTabItem.setControl(currentAddress);
+		txtAddresses.add(currentAddress);
+		return addressTabItem;
 	}
 
 	private int getNumberOfMessageFields() {
@@ -2511,7 +2513,7 @@ public class DocumentEditor extends Editor<Document> {
         String tooltipPrefix = msg.commandNewTooltip + " ";
         
 		// Add buttons, depending on the document type
-		switch (documentType) {
+		switch (document.getBillingType()) {
 		case OFFER:
             createToolItem(toolBarDuplicateDocument, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
                     tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
@@ -2780,7 +2782,7 @@ public class DocumentEditor extends Editor<Document> {
     protected Icon createDocumentIcon() {
         Icon icon = null;
         try {
-		    switch (documentType) {
+		    switch (document.getBillingType()) {
             case INVOICE:
                 part.setIconURI(Icon.COMMAND_INVOICE.getIconURI());
                 icon = Icon.ICON_INVOICE;
@@ -2833,26 +2835,29 @@ public class DocumentEditor extends Editor<Document> {
      */
     protected void showOrderStatisticDialog(Composite parent) {
         // Show an info dialog, if this is a regular customer
-        if (documentType == DocumentType.ORDER && defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG)) {
+        if (document.getBillingType().isORDER() && defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG)) {
 			CustomerStatistics customerStaticstics = ContextInjectionFactory.make(CustomerStatistics.class, context);
 			
-			customerStaticstics.setContact(document.getBillingContact());
-			if (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD) == 1) {
-				customerStaticstics.setAddress(document.getBillingContact().getAddress().getManualAddress());
-	            customerStaticstics.makeStatistics(true);
-			} else {	
-                customerStaticstics.makeStatistics(false);
+			DocumentReceiver documentReceiver = addressManager.getBillingAdress(document);
+			customerStaticstics.setContact(documentReceiver);
+			if(documentReceiver.getOriginContactId() != null) {
+				// only relevant if a "real" contact was selected
+				if (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD) == 1) {
+					customerStaticstics.setAddress(contactUtil.getAddressAsString(documentReceiver));
+		            customerStaticstics.makeStatistics(true);
+				} else {	
+	                customerStaticstics.makeStatistics(false);
+				}
 			}
 			
 			if (customerStaticstics.hasPaidInvoices()) {
-
 				//T: Message Dialog
 				MessageDialog.openInformation(parent.getShell(), 
 						//T: Title of the customer statistics dialog
 						msg.dialogMessageboxTitleInfo,
 						//T: Part of the customer statistics dialog
 						// the unescapeJava is because of the Newlines in the message format string
-						MessageFormat.format(StringEscapeUtils.unescapeJava(msg.dialogCustomerStatisticsPart1), 
+						MessageFormat.format(msg.dialogCustomerStatisticsPart1, 
 						        document.getAddressFirstLine(),
 						        customerStaticstics.getOrdersCount(),
 						        customerStaticstics.getLastOrderDate(),
@@ -2876,7 +2881,7 @@ public class DocumentEditor extends Editor<Document> {
     protected void handleDialogSelection(@UIEventTopic("DialogSelection/*") Event event) {
         if (event != null) {
             // the event has already all given params in it since we created them as Map
-            String targetDocumentName= (String) event.getProperty(DOCUMENT_ID);
+            String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
             // at first we have to check if the message is for us
             if(!StringUtils.equals(targetDocumentName, document.getName())) {
                 // silently ignore this event if it's not for this document
@@ -2893,15 +2898,23 @@ public class DocumentEditor extends Editor<Document> {
 
             switch (subTopic) {
             case "Contact":
-                Long contactId = (Long) event.getProperty(ContactListTable.SELECTED_CONTACT_ID);
-                Contact contact = contactDAO.findById(contactId, true);
-//
-//                // we can't use the Selection Service!!!
-//                Contact contact = (Contact) selectionService.getSelection();
-                setAddress(contact);
-                // If a Contact is selected the manualAddress field has to be set to null!
-//                document.getBillingContact().getAddress().setManualAddress(null);
-//                document.setBillingContact(contact);
+                Long addressId = (Long) event.getProperty(ContactTreeListTable.SELECTED_ADDRESS_ID);
+                
+                Address address = contactDAO.findByAddressId(addressId);
+                if(address == null) {
+                	log.error(String.format("Something weird happened. Selected Address with ID %ld couldn't be found in your database.", addressId));
+                	return;
+                }
+
+                // this selected contact is from now on the main receiver for this document
+                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(address, document.getBillingType());
+                
+                /*
+                 * If a Contact is selected as DocumentReceiver it has to be added to the current Document. But if another
+                 * {@link DocumentReceiver} for the same {@link BillingType} exists it has to be replaced.
+                 */
+                document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver); 
+                setAddress(address, documentReceiver);
                 isChanged = true;
                 break;
             case "Product":
@@ -2988,6 +3001,7 @@ public class DocumentEditor extends Editor<Document> {
 	 * @param selectedProducts
 	 */
     private void addItemsToItemList(Collection<Product> selectedProducts) {
+    	DocumentType documentType = DocumentTypeUtil.findByBillingType(document.getBillingType());
 		for (Product product : selectedProducts) {
 			DocumentItem newItem = documentItemUtil.from(product, documentType);
 
@@ -2997,9 +3011,6 @@ public class DocumentEditor extends Editor<Document> {
 		    }
 		    itemListTable.addNewItem(new DocumentItemDTO(newItem));
 		}
-
-		//          if (newItem!= null)
-		//              tableViewerItems.reveal(newItem);
 		setDirty(true);
 		calculate();
 	} 
@@ -3099,8 +3110,8 @@ public class DocumentEditor extends Editor<Document> {
 	 */
 	@Focus
 	public void setFocus() {
-		if(txtAddress != null) 
-			txtAddress.setFocus();
+		if(addressAndIconComposite != null) 
+			addressAndIconComposite.setFocus();
 	}
 
 	/**
@@ -3110,7 +3121,7 @@ public class DocumentEditor extends Editor<Document> {
 	 */
 	private boolean thereIsOneWithSameNumber() {
 		// Letters do not have to be checked
-		if (documentType == DocumentType.LETTER)
+		if (document.getBillingType().isLETTER())
 			return false;
 
 		// Cancel, if there is already a document with the same ID
@@ -3141,7 +3152,7 @@ public class DocumentEditor extends Editor<Document> {
     
 	@Override
 	protected String getEditorID() {
-	    return documentType.getTypeAsString();
+	    return document.getBillingType().getName();
 	}
 	
     @Override

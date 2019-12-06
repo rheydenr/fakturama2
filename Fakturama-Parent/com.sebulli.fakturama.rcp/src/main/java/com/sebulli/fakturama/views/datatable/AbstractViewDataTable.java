@@ -168,7 +168,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	    // Create the top composite
 		top = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(2).applyTo(top);
-		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).applyTo(top);
+//		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).applyTo(top);
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, contextHelpId);
@@ -689,9 +689,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 		// empty per default
     }
 
-
 	abstract protected AbstractDAO<T> getEntityDAO();
-
 
     /**
      * @return

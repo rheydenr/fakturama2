@@ -45,9 +45,11 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -82,6 +84,9 @@ public class ContactsCsvImporter {
     
     @Inject
     private IDateFormatterService dateFormatterService;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
 
     private char quoteChar, separator;
     
@@ -94,7 +99,7 @@ public class ContactsCsvImporter {
 	private String[] requiredHeaders = { "category", "gender", "title", "firstname", "name", "company", "street", "zip", "city", "country",
 			"delivery_gender", "delivery_title", "delivery_firstname", "delivery_name", "delivery_company",
 			"delivery_street", "delivery_zip", "delivery_city", "delivery_country",
-			"account_holder", "account", "bank_code", "bank_name", "iban", "bic",
+			"account_holder", "bank_name", "iban", "bic",
 			"nr", "note", "date_added",  "payment", "reliability",
 			"phone", "fax", "mobile", "email", "website", "vatnr", "vatnrvalid", "discount" };
 
@@ -206,11 +211,14 @@ public class ContactsCsvImporter {
 					contact.setName(prop.getProperty("name"));
 					Address address = modelFactory.createAddress();
 					address.setZip(prop.getProperty("zip"));
-					contact.setAddress(address);
+					
+					// TODO make BillingType changeable
+					address.getContactTypes().add(ContactType.BILLING);
+					contact.getAddresses().add(address);
 					/*
 					 * Customer number, first name, name and ZIP are compared
 					 */
-					Contact testContact = contactsDAO.findOrCreate(contact);
+					Contact testContact = contactsDAO.findOrCreate(contact, true);
 					
 					// if found and no update is required skip to the next record
 					if(testContact != null && !updateExisting) {
@@ -218,12 +226,16 @@ public class ContactsCsvImporter {
 						continue;
 					}
 					
+					if(testContact == null) {
+						// work further with testcontact
+						testContact = contact;
+					}
+					
 					ContactCategory category = contactCategoriesDAO.findByName(prop.getProperty("category"));
 					if(category == null && prop.getProperty("category") != null) {
 						category = modelFactory.createContactCategory();
 						category.setName(prop.getProperty("category"));
 					}
-					// work further with testcontact
 					testContact.setCategories(category);
 					testContact.setGender(contactUtil.getSalutationID(prop.getProperty("gender")));
 
@@ -231,30 +243,42 @@ public class ContactsCsvImporter {
 					testContact.setCompany(prop.getProperty("company"));
 					
 					// if previous address is given use it
-					if(testContact.getAddress() != null) {
-						address = testContact.getAddress();
+					Address tmpAddress = addressManager.getAddressFromContact(testContact, ContactType.BILLING);
+					if(tmpAddress != null) {
+						address = tmpAddress;
 					}
 					address.setValidFrom(Calendar.getInstance().getTime());
 					address.setStreet(prop.getProperty("street"));
 					address.setCity(prop.getProperty("city"));
+					address.setPhone(prop.getProperty("phone"));
+					address.setFax(prop.getProperty("fax"));
+					address.setMobile(prop.getProperty("mobile"));
+					address.setEmail(prop.getProperty("email"));
 //					address.setCountryCode(prop.getProperty("country")); TODO get correct country code!
-					testContact.setAddress(address);
+					testContact.getAddresses().add(address);
 
-					Debitor deliveryContact = testContact.getAlternateContacts() != null ? (Debitor) testContact.getAlternateContacts() : modelFactory.createDebitor();
-					deliveryContact.setGender(contactUtil.getSalutationID(prop.getProperty("delivery_gender")));
-					deliveryContact.setTitle(prop.getProperty("delivery_title"));
-					deliveryContact.setFirstName(prop.getProperty("delivery_firstname"));
-					deliveryContact.setName(prop.getProperty("delivery_name"));
-					deliveryContact.setCompany(prop.getProperty("delivery_company"));
+					Address deliveryAddress = addressManager.getAddressFromContact(testContact, ContactType.DELIVERY);
+					Debitor deliveryContact = deliveryAddress != null ? (Debitor) testContact : modelFactory.createDebitor();
+//					deliveryContact.setGender(contactUtil.getSalutationID(prop.getProperty("delivery_gender")));
+//					deliveryContact.setTitle(prop.getProperty("delivery_title"));
+//					deliveryContact.setFirstName(prop.getProperty("delivery_firstname"));
+//					deliveryContact.setName(prop.getProperty("delivery_name"));
+//					deliveryContact.setCompany(prop.getProperty("delivery_company"));
 					
-					Address deliveryAddress = deliveryContact.getAddress() != null ? deliveryContact.getAddress() : modelFactory.createAddress();
+
+					if(deliveryAddress == null) {
+						deliveryAddress = modelFactory.createAddress();
+					}
 					deliveryAddress.setValidFrom(Calendar.getInstance().getTime());
 					deliveryAddress.setStreet(prop.getProperty("delivery_street"));
 					deliveryAddress.setZip(prop.getProperty("delivery_zip"));
 					deliveryAddress.setCity(prop.getProperty("delivery_city"));
+					deliveryAddress.setPhone(prop.getProperty("delivery_phone"));
+					deliveryAddress.setFax(prop.getProperty("delivery_fax"));
+					deliveryAddress.setMobile(prop.getProperty("delivery_mobile"));
+					deliveryAddress.setEmail(prop.getProperty("delivery_email"));
 //					deliveryAddress.setCountryCode(prop.getProperty("delivery_country")); // FIXME set correct country code!!!!
-					deliveryContact.setAddress(deliveryAddress);
-					testContact.setAlternateContacts(deliveryContact);
+					deliveryContact.getAddresses().add(deliveryAddress);
 
 					BankAccount account = testContact.getBankAccount() != null ? testContact.getBankAccount() : modelFactory.createBankAccount();
 					account.setValidFrom(Calendar.getInstance().getTime());
@@ -280,10 +304,6 @@ public class ContactsCsvImporter {
 					}
 					testContact.setReliability(ReliabilityType.getByName(prop.getProperty("reliability")));
 
-					testContact.setPhone(prop.getProperty("phone"));
-					testContact.setFax(prop.getProperty("fax"));
-					testContact.setMobile(prop.getProperty("mobile"));
-					testContact.setEmail(prop.getProperty("email"));
 					testContact.setWebsite(prop.getProperty("website"));
 					testContact.setVatNumber(prop.getProperty("vatnr"));
 					testContact.setVatNumberValid(BooleanUtils.toBooleanObject(prop.getProperty("vatnrvalid")));

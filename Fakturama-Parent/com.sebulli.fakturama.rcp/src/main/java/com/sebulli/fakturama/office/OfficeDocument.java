@@ -72,6 +72,7 @@ import org.w3c.dom.NodeList;
 import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
+import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
@@ -120,6 +121,9 @@ public class OfficeDocument {
     @Inject
     private DocumentsDAO documentsDAO;
     
+	@Inject
+	private DocumentReceiverDAO documentReceiverDao;
+
 	@Inject
 	private ILocaleService localeUtil;
     
@@ -191,22 +195,25 @@ public class OfficeDocument {
 			// Stop here and do not fill the document's placeholders, if it's an existing document
 			if (openExisting) {
 				documentPath = Paths.get(document.getOdtPath());
-				generatedPdf = Paths.get(document.getPdfPath());
+				if(document.getPdfPath() != null) {
+					generatedPdf = Paths.get(document.getPdfPath());
+				}
 				openDocument();
 				return;
 			}
 			
 			// check if we have to use sales equalization tax
-	        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
+	        setUseSalesEquationTaxForDocument(document);
 
 			// remove previous images            
             cleanup();
             
             // Recalculate the sum of the document before exporting
-			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
+            DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
+			documentSummary = documentSummaryCalculator.calculate(this.document);
 
 			// Get the VAT summary of the UniDataSet document
-			VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+			VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, context);
 			vatSummarySetManager.add(this.document, Double.valueOf(1.0));
 
             /* Get the placeholders of the OpenOffice template.
@@ -1239,9 +1246,15 @@ public class OfficeDocument {
 	public boolean testOpenAsExisting(Document document, Path template) {
 		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 		Path oODocumentFile = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
+		
+		boolean ignorePdf = true;
+		if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId()) && document.getPdfPath() == null) {
+			// if PDF should be created but the path in the document object is null then it has to be re-created.
+			ignorePdf = false;
+		}
 
 		return (Files.exists(oODocumentFile) && BooleanUtils.isTrue(document.getPrinted()) &&
-				filesAreEqual(document.getPrintTemplate(),template));
+				filesAreEqual(document.getPrintTemplate(),template) && ignorePdf);
 	}
 
     /**
@@ -1314,8 +1327,13 @@ public class OfficeDocument {
      */
     public void setDocument(Document document) {
         this.document = document;
-        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
+        
+        setUseSalesEquationTaxForDocument(document);
     }
+
+	private void setUseSalesEquationTaxForDocument(Document document) {
+		this.useSET = documentReceiverDao.isSETEnabled(document);
+	}
 
     /**
      * @return the template

@@ -103,7 +103,7 @@
 			<varlistentry>
 				<term>Hauptmenü Hilfe</term>
 				<listitem>
-					<para>Befehle zum Abrufen von Informationen und zur Softwareaktualisierung.
+					<para>Befehle zum Abrufen von Informationen<!-- und zur Softwareaktualisierung -->.
 			Siehe <link linkend="application_mainmenu_help">Hauptmenü Hilfe</link>
 					</para>
 				</listitem>
@@ -1682,7 +1682,22 @@
 						</inlinemediaobject>
 					</term>
 					<listitem>
-						<para>Die Adresse kann direkt eingegeben werden. Ebenso kann über das Icon "Kontakt" eine Liste mit allen Debitoradressen geöffnet und die gewünschte Adresse ausgewählt werden (mit STRG+Klick wird die Kreditoren-Auswahl geöffnet). Dann wird mit dem Adresstext intern auch eine Verknüpfung zu dieser Adresse hergestellt. Dadurch können beispielsweise Zusatzinformationen (Kontonummer usw.) beim Ausdruck der Rechnung mit eingeblendet werden. Ist bei dem entsprechenden Kontakt eine Zahlungsart hinterlegt, wird diese ebenfalls mit übernommen.</para>
+						<para>Über das Icon "Kontakt" kann eine Liste mit allen Debitoradressen geöffnet 
+						und die gewünschte Adresse ausgewählt werden (mit <emphasis role="italic">STRG+Klick</emphasis> wird die Kreditoren-Auswahl geöffnet). Dann wird mit dem Adresstext 
+						intern auch eine Verknüpfung zu dieser Adresse hergestellt. Dadurch können beispielsweise Zusatzinformationen (Kontonummer usw.) 
+						beim Ausdruck der Rechnung mit eingeblendet werden. Ist bei dem entsprechenden Kontakt eine Zahlungsart hinterlegt, wird diese 
+						ebenfalls mit übernommen.</para>
+						<para>Die Adressen im Auswahldialog werden nach der entsprechenden Dokumentenart gefiltert. Wird gerade ein Rechnungsdokument bearbeitet,
+						werden nur Rechnungsadressen angezeigt. Bei einem Lieferschein werden dementsprechend nur Lieferadressen angezeigt. Wurde das Feld
+						im Kontakt leer gelassen wird die Adresse ebenfalls angezeigt. Hat ein Kontakt mehrere infrage kommende Adressen werden diese
+						in einer Baumstruktur unter dem entsprechenden Kontakteintrag anzgezeigt.</para>
+						<para>Wird für ein Rechnungsdokument ein Kontakt ausgewählt, der eine separate Lieferanschrift besitzt, so wird diese
+						ebenfalls gleich in das Adressfeld eingefügt (in einem separaten Reiter). Dasselbe gilt auch für einen Lieferschein
+						(dort wird die Rechnungsadresse aus dem Kontakt mit hinzugefügt). Die Adressreiter sind mit der Art der jeweiligen Anschrift versehen.</para>
+						<para>Wird die ausgewählte Adresse später im Dokumenten-Editor geändert, wirkt sich dies nur auf das aktuelle Dokument
+						aus und nicht auf den ursprünglich gespeicherten Kontakt. Dementsprechend wirkt sich ein geänderter Kontakt auch nicht auf die 
+						Adresse im Dokumenteditor aus. Wurde ein Kontakt nachträglich geändert (im Kontakteditor), muss er bei Bedarf wieder neu 
+						dem Dokument hinzugefügt werden.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
@@ -1718,28 +1733,10 @@
 					</listitem>
 				</varlistentry>
 			</variablelist>
+			<para>Eine Adresse kann auch ohne Auswahl über den Kontakte-Dialog manuell eingegeben werden. Damit entfällt allerdings
+			die Möglichkeit, bestimmte Platzhalter zu befüllen (z. B. Kundennummer oder Bankverbindung des Kunden).</para>
 			<para>Siehe auch <link linkend="preferences_contactformat">Format des Adressfeldes</link>
 			</para>
-		</sect2>
-		<sect2>
-			<title>Warnsymbol</title>
-			<variablelist>
-				<varlistentry>
-					<term>
-						<inlinemediaobject>
-							<imageobject role="html">
-								<imagedata fileref="../images/editor/warning_32.png" format="PNG" scalefit="1"/>
-							</imageobject>
-							<imageobject role="fo">
-								<imagedata contentdepth="90%" fileref="../images/editor/warning_32.png" format="PNG" scalefit="1"/>
-							</imageobject>
-						</inlinemediaobject>
-					</term>
-					<listitem>
-						<para>Unterscheidet sich die Lieferadresse von der Rechnungsadresse, so erscheint ein Warnsymbol. Die Lieferadresse wird angezeigt, wenn man mit der Maus über das Symbol streicht.</para>
-					</listitem>
-				</varlistentry>
-			</variablelist>
 		</sect2>
 		<sect2>
 			<title>Leistungsdatum</title>
@@ -1798,7 +1795,6 @@
 						</inlinemediaobject>
 					</term>
 					<listitem>
-
 						<para>Importieren aller Artikel eines Lieferscheins. Zusätzlich kann die Lieferscheinnummer in das Feld <emphasis role="bold">Bemerkung</emphasis> übernommen werden.</para>
 						<para>Es werden im Auswahldialog nur die Lieferscheine angezeigt, die noch keiner Rechnung zugeordnet sind. Eine bereits zugeordnete Lieferscheinnummer kann im <link linkend="application_overview">Übersichtsfenster</link> wieder zurückgesetzt werden. Ist bereits eine Kontaktadresse vergeben, werden nur die Lieferscheine dieses Kunden aufgelistet.</para>
 						<para>Dieses Icon ist nur bei Rechnungen und Proformarechnungen aktiv.</para>
@@ -2079,15 +2075,15 @@
 		</sect2>
 		<sect2>
 			<title>Adresse</title>
-			<para>Adresse ist auch Rechnungsadresse. Einzelne Felder wie <emphasis role="bold">Anrede, Titel, Firma oder Land</emphasis> können in den Einstellungen auch ausgeblendet werden, falls sie nie benutzt werden.</para>
-		</sect2>
-		<sect2>
-			<title>Lieferadresse entspricht Rechnungsadresse</title>
-			<para>Ist dieses Feld aktiviert, so wird als Lieferadresse die Rechnungsadresse verwendet.</para>
-		</sect2>
-		<sect2>
-			<title>Lieferadresse</title>
-			<para>Wird ausgeblendet, wenn <emphasis role="bold">Lieferadresse entspricht Rechnungsadresse</emphasis> aktiviert wurde.</para>
+			<para>Der Reiter unterteilt sich in allgemeine Angaben wie Firmenname und/oder Name des Kunden bzw. Debitors. Daneben
+			gibt es einen weiteren Bereich, in dem verschiedene Adressen zu diesem Kontakt erfasst werden können. Diese Adressen
+			können über das [+]-Symbol hinzugefügt werden. Derzeit ist es leider noch nicht möglich, eine Adresse auch wieder zu löschen.
+			Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine). Lässt man
+			die Auswahl leer, kann die Adresse für beliebige Arten von Dokumenten verwendet werden. Ansonsten werden die Adressen
+			des Kontaktes bei der Adressauswahl über den Dokumentendialog gefiltert.</para>
+			<para>Einzelne Felder wie <emphasis role="bold">Anrede, Titel, Firma oder Land</emphasis> 
+			können in den Einstellungen auch ausgeblendet werden, falls sie nie benutzt werden.</para>
+			<para>Siehe dazu auch <link linkend="editor_editor_document_address">Adressauswahl im Dokumenteneditor</link>.</para>
 		</sect2>
 		<sect2>
 			<title>Reiter Bankkonto</title>

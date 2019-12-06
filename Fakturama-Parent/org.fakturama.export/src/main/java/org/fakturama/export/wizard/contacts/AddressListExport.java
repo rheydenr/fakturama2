@@ -15,7 +15,6 @@
 package org.fakturama.export.wizard.contacts;
 
 
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -30,7 +29,10 @@ import org.odftoolkit.odfdom.type.Color;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
 /**
@@ -48,6 +50,10 @@ public class AddressListExport extends OOCalcExporter {
     
     @Inject
     private IEclipseContext context;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
+
 
 	/**
 	 * 	Do the export job.
@@ -92,6 +98,10 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.commonFieldZipcode);
 		setCellTextInBold(row, col++, msg.commonFieldCity);
 		setCellTextInBold(row, col++, msg.commonFieldCountry);
+		setCellTextInBold(row, col++, msg.exporterDataTelephone);
+		setCellTextInBold(row, col++, msg.exporterDataTelefax);
+		setCellTextInBold(row, col++, msg.exporterDataMobile);
+		setCellTextInBold(row, col++, msg.exporterDataEmail);
 		setCellTextInBold(row, col++, msg.commonFieldGender + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldTitle + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldFirstname + deliveryAddress);
@@ -101,9 +111,11 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.commonFieldZipcode + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldCity + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldCountry + deliveryAddress);
+		setCellTextInBold(row, col++, msg.exporterDataTelephone + deliveryAddress);
+		setCellTextInBold(row, col++, msg.exporterDataTelefax + deliveryAddress);
+		setCellTextInBold(row, col++, msg.exporterDataMobile + deliveryAddress);
+		setCellTextInBold(row, col++, msg.exporterDataEmail + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldAccountholder);
-		setCellTextInBold(row, col++, msg.commonFieldAccount);
-		setCellTextInBold(row, col++, msg.editorContactFieldBankcodeName);
 		setCellTextInBold(row, col++, msg.editorContactFieldBankName);
 		setCellTextInBold(row, col++, msg.exporterDataIban);
 		setCellTextInBold(row, col++, msg.exporterDataBic);
@@ -111,10 +123,6 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.commonFieldDate);
 		setCellTextInBold(row, col++, msg.editorContactFieldPaymentName);
 		setCellTextInBold(row, col++, msg.editorContactFieldReliabilityName);
-		setCellTextInBold(row, col++, msg.exporterDataTelephone);
-		setCellTextInBold(row, col++, msg.exporterDataTelefax);
-		setCellTextInBold(row, col++, msg.exporterDataMobile);
-		setCellTextInBold(row, col++, msg.exporterDataEmail);
 		setCellTextInBold(row, col++, msg.exporterDataWebsite);
 		setCellTextInBold(row, col++, msg.exporterDataVatno);
 		setCellTextInBold(row, col++, msg.exporterDataVatnoValid);
@@ -146,48 +154,53 @@ public class AddressListExport extends OOCalcExporter {
 			setCellText(row, col++, contact.getName());
 			setCellText(row, col++, contact.getCompany());
 			
-			if(contact.getAddress() != null) {
-				setCellText(row, col++, contact.getAddress().getStreet());
-				setCellText(row, col++, contact.getAddress().getZip());
-				setCellText(row, col++, contact.getAddress().getCity());
-				setCellText(row, col++, localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
+			Address billingAddress = addressManager.getAddressFromContact(contact, ContactType.BILLING);
+			if(billingAddress != null) {
+				setCellText(row, col++, billingAddress.getStreet());
+				setCellText(row, col++, billingAddress.getZip());
+				setCellText(row, col++, billingAddress.getCity());
+				setCellText(row, col++, localeUtil.findByCode(billingAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
+				setCellText(row, col++, billingAddress.getPhone());
+				setCellText(row, col++, billingAddress.getFax());
+				setCellText(row, col++, billingAddress.getMobile());
+				setCellText(row, col++, billingAddress.getEmail());
 			} else {
-				col += 4;
+				col += 8;
 			}
 			
-			Contact deliveryContact;
-			if (contact.getAlternateContacts() != null) {
-				deliveryContact = contact.getAlternateContacts();
+			setCellText(row, col++, contactUtil.getSalutationString(contact.getGender()));
+			setCellText(row, col++, contact.getTitle());
+			setCellText(row, col++, contact.getFirstName());
+			setCellText(row, col++, contact.getName());
+			setCellText(row, col++, contact.getCompany());
+			Address deliveryContact = addressManager.getAddressFromContact(contact, ContactType.BILLING);
+			if (deliveryContact != null) {
+				setCellText(row, col++, deliveryContact.getStreet());
+				setCellText(row, col++, deliveryContact.getZip());
+				setCellText(row, col++, deliveryContact.getCity());
+				setCellText(row, col++, localeUtil.findByCode(deliveryContact.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
+				setCellText(row, col++, deliveryContact.getPhone());
+				setCellText(row, col++, deliveryContact.getFax());
+				setCellText(row, col++, deliveryContact.getMobile());
+				setCellText(row, col++, deliveryContact.getEmail());
 			} else {
-				deliveryContact = contact;
-			}
-			setCellText(row, col++, contactUtil.getSalutationString(deliveryContact.getGender()));
-			setCellText(row, col++, deliveryContact.getTitle());
-			setCellText(row, col++, deliveryContact.getFirstName());
-			setCellText(row, col++, deliveryContact.getName());
-			setCellText(row, col++, deliveryContact.getCompany());
-			if (deliveryContact.getAddress() != null) {
-				setCellText(row, col++, deliveryContact.getAddress().getStreet());
-				setCellText(row, col++, deliveryContact.getAddress().getZip());
-				setCellText(row, col++, deliveryContact.getAddress().getCity());
-				setCellText(row, col++, localeUtil.findByCode(deliveryContact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry());
-			} else {
-				col += 4;
+				col += 8;
 			}
 			
 			if(contact.getBankAccount() != null) {
 				setCellText(row, col++, contact.getBankAccount().getAccountHolder());
-				setCellText(row, col++, contact.getBankAccount().getName());
-				setCellText(row, col++, contact.getBankAccount().getBankCode() != null ? contact.getBankAccount().getBankCode().toString() : "");
 				setCellText(row, col++, contact.getBankAccount().getBankName());
 				setCellText(row, col++, contact.getBankAccount().getIban());
 				setCellText(row, col++, contact.getBankAccount().getBic());
 			} else {
-				col += 6;
+				col += 4;
 			}
 			
 			setCellText(row, col++, contact.getNote());
-			setCellText(row, col++, DateFormat.getDateInstance().format(contact.getDateAdded()));
+			Calendar cal = Calendar.getInstance();
+			cal.clear();
+			cal.setTime(contact.getDateAdded());
+			setCellValueAsDate(row, col++, cal);
 			
 			if(contact.getPayment() != null) {
 				setCellText(row, col++, contact.getPayment().getDescription());
@@ -201,16 +214,16 @@ public class AddressListExport extends OOCalcExporter {
 				col++;
 			}
 			
-			setCellText(row, col++, contact.getPhone());
-			setCellText(row, col++, contact.getFax());
-			setCellText(row, col++, contact.getMobile());
-			setCellText(row, col++, contact.getEmail());
 			setCellText(row, col++, contact.getWebsite());
 			setCellText(row, col++, contact.getVatNumber());
-			setCellValueAsBoolean(row, col++, contact.getVatNumberValid());
+			if(contact.getVatNumber().isEmpty()) {
+				col++;
+			} else {
+				setCellValueAsBoolean(row, col++, contact.getVatNumberValid());
+			}
 			setCellValueAsPercent(row, col++, contact.getDiscount());
 			if(contact.getBirthday() != null) {
-				Calendar cal = Calendar.getInstance();
+				cal.clear();
 				cal.setTime(contact.getBirthday());
 				setCellValueAsDate(row, col++, cal);
 			} else {

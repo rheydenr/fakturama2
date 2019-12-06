@@ -45,6 +45,7 @@ import com.sebulli.fakturama.model.Credit;
 import com.sebulli.fakturama.model.Delivery;
 import com.sebulli.fakturama.model.Delivery_;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver_;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
@@ -66,7 +67,7 @@ public class DocumentsDAO extends AbstractDAO<Document> {
     @Inject
     @Translation
     protected Messages msg;
-
+    
     protected Class<Document> getEntityClass() {
     	return Document.class;
     }
@@ -342,7 +343,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
     }
 
     /**
-     * Finds all paid {@link Invoice}s by a given {@link Contact}.
+     * Find all paid {@link Invoice}s by a given {@link Contact}.
      * 
      * @param contact the {@link Contact} to look up
      * @return List of paid {@link Invoice}s
@@ -351,12 +352,25 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Invoice> criteria = cb.createQuery(Invoice.class);
         Root<Invoice> root = criteria.from(Invoice.class);
-        CriteriaQuery<Invoice> cq = criteria.where(
-                cb.and(
-                        cb.equal(root.<Boolean>get(Invoice_.paid), true),
-                        cb.equal(root.<Contact>get(Invoice_.billingContact), contact))
-                      );
-        return getEntityManager().createQuery(cq).getResultList();
+        
+        /*
+         *  SELECT distinct d.name
+			FROM FKT_DOCUMENTRECEIVER dr ,
+			     FKT_DOCUMENT d,
+			     FKT_CONTACT c
+			WHERE dr.FK_DOCUMENT = d.ID
+			  AND dr.ORIGINCONTACTID = c.ID
+			  AND d.dtype = 'Invoice'
+			  and c.id = 1
+         */
+
+        CriteriaQuery<Invoice> cq = criteria.distinct(true).where(
+            cb.and(cb.equal(root.<Boolean>get(Invoice_.paid), true),
+                   cb.equal(root.<Boolean>get(Invoice_.deleted), false),
+                   cb.equal(root.join(Invoice_.receiver).get(DocumentReceiver_.originContactId), contact.getId())
+                 ));
+        List<Invoice> resultList = getEntityManager().createQuery(cq).getResultList();
+		return resultList;
     }    
     
     public void updateDunnings(Document document) {

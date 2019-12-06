@@ -29,10 +29,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
+import com.ibm.icu.text.SimpleDateFormat;
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
 /**
@@ -51,7 +55,10 @@ public class VcardExport {
     @Inject
     private IEclipseContext context;
     
-//    private SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
+    @Inject
+    private IDocumentAddressManager addressManager;
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
 
 	// Buffered writer for the output stream
 	private BufferedWriter bos  = null;
@@ -74,34 +81,6 @@ public class VcardExport {
 		s = s.replace(",", "\\,");
 		s = s.replace(";", "\\;");
 		return s;
-	}
-	
-	/**
-	 * Write a property and one attribute
-	 * 
-	 * @param property
-	 * 			The property to write
-	 * @param s
-	 * 			The 1st attribute
-	 */
-	private void writeVCard(String property, String s) {
-		if(StringUtils.isNotBlank(s)) {
-			writeVCard(property, s, null);
-		}
-	}
-
-	/**
-	 * Write a property and two attributes
-	 * 
-	 * @param property
-	 * 			The property to write
-	 * @param s1
-	 * 			The 1st attribute
-	 * @param s2
-	 * 			The 2nd attribute
-	 */
-	private void writeVCard(String property, String s1, String s2) {
-		writeVCard(property, s1, s2, null, null, null, null, null);
 	}
 	
 	/**
@@ -136,13 +115,13 @@ public class VcardExport {
 	 * 
 	 * @param property
 	 * 			The property to write
-	 * @param s
+	 * @param attributes
 	 * 			The attribute(d)
 	 */
-	private void writeVCard(String property, String... s) {
+	private void writeVCard(String property, String... attributes) {
 
 		// Exit, if all attributes are empty 
-		if (s.length == 0 || Arrays.stream(s).allMatch(o -> o.length() == 0)) {
+		if (attributes.length == 0 || Arrays.stream(attributes).allMatch(o -> o != null && o.length() == 0)) {
 			return;
 		}
 		
@@ -150,7 +129,7 @@ public class VcardExport {
 		try {
 			bos.write(property);
 			boolean isFirst = true;
-			for (String string : s) {
+			for (String string : attributes) {
 				writeAttribute(string, isFirst);
 				isFirst = false;
 			}
@@ -186,21 +165,32 @@ public class VcardExport {
 				
 				// Export one VCARD
 				writeVCard("BEGIN:","VCARD");
-				writeVCard("VERSION:","3.0");
+				writeVCard("VERSION:","2.1");
 				writeVCard("N:", contact.getName(),
 						contact.getFirstName());
 				writeVCard("FN:", contactUtil.getNameWithCompany(contact));
+				switch (contact.getGender()) {
+				case 1:
+					writeVCard("GENDER:", "M");
+					break;
+				case 2:
+					writeVCard("GENDER:", "F");
+					break;
+				default:
+					break;
+				}
+				
 				// doesn't work :-( ... at least not with Thunderbird
-//				if(contact.getBirthday() != null) {
-//					writeVCard("BDAY:", sdf.format(contact.getBirthday()));
-//				}
-				Address address = contact.getAddress();
+				if(contact.getBirthday() != null) {
+					writeVCard("BDAY:", sdf.format(contact.getBirthday()));
+				}
+				Address address = addressManager.getAddressFromContact(contact,ContactType.BILLING);
 				if(address != null
 						&& (StringUtils.isNotBlank(contact.getCompany()) 
 								|| StringUtils.isNotBlank(address.getStreet()) 
 								|| StringUtils.isNotBlank(address.getCity())
 					)) {
-					writeVCard("ADR;TYPE=home:",
+					writeVCard("ADR;WORK;PREF:",
 							"",
 							contact.getCompany(),
 							address.getStreet(),
@@ -211,48 +201,52 @@ public class VcardExport {
 							   ? localeUtil.findByCode(address.getCountryCode()).get().getDisplayCountry()
 							   : ""
 							);
+					writeVCard("TEL;WORK;VOICE:",address.getPhone());
+					writeVCard("TEL;FAX:",address.getFax());
+					writeVCard("TEL;CELL;VOICE:",address.getMobile());
+					writeVCard("EMAIL;internet:",address.getEmail());
 				}
 				
-				Contact alternateContacts;
-				if (contact.getAlternateContacts() != null) {
-					alternateContacts = contact.getAlternateContacts();
-				} else {
-					alternateContacts = contact;
-				}
-				address = alternateContacts.getAddress();
+				address = addressManager.getAddressFromContact(contact, ContactType.DELIVERY);
 				if(address != null) {
+					String countryCode = address.getCountryCode();
+					String displayCountry = "";
+					if(countryCode != null) {
+						displayCountry = localeUtil.findByCode(countryCode).orElse(localeUtil.getDefaultLocale()).getDisplayCountry();
+					}
 					if(StringUtils.isNotBlank(contact.getCompany()) 
 							|| StringUtils.isNotBlank(address.getStreet()) 
 							|| StringUtils.isNotBlank(address.getCity())) {	
 						writeVCard("ADR;TYPE=postal:",
 								"",
-								alternateContacts.getCompany(),
+								contact.getCompany(),
 								address.getStreet(),
 								address.getCity(),
 								"",
-								address.getZip(),
-								localeUtil.findByCode(address.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry()
+								StringUtils.defaultString(address.getZip()),
+								displayCountry
 								);
+						writeVCard("ORG:", contact.getCompany());
 					}
 					writeVCard("ADR;TYPE=other:",
-							contactUtil.getNameWithCompany(alternateContacts),
-							alternateContacts.getCompany(),
-							address.getStreet(),
-							address.getCity(),
+							StringUtils.defaultString(address.getCityAddon()),
+							StringUtils.defaultString(contact.getCompany()),
+							StringUtils.defaultString(address.getStreet()),
+							StringUtils.defaultString(address.getCity()),
 							"",
-							address.getZip(),
-							localeUtil.findByCode(address.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry()
+							StringUtils.defaultString(address.getZip()),
+							displayCountry
 							);
+					writeVCard("TEL;HOME;VOICE:",address.getPhone());
+					writeVCard("TEL;WORK;FAX:",address.getFax());
+					writeVCard("TEL;CELL;VOICE:",address.getMobile());
+					writeVCard("EMAIL;internet:",address.getEmail());
 				}
 				
-				writeVCard("TEL;TYPE=HOME,WORK,VOICE:",contact.getPhone());
-				writeVCard("TEL;TYPE=HOME,WORK,FAX:",contact.getFax());
-				writeVCard("TEL;TYPE=HOME,WORK,CELL:",contact.getMobile());
-				writeVCard("EMAIL;TYPE=internet:",contact.getEmail());
-				writeVCard("URL:",contact.getWebsite());
+				writeVCard("URL;WORK:",contact.getWebsite());
 
 				writeVCard("NOTE:",contact.getNote());
-				writeVCard("CATEGORIES:", contact.getCategories() != null ? contact.getCategories().getName() : "");
+				writeVCard("CATEGORIES:", contact.getCategories() != null ? CommonConverter.getCategoryName(contact.getCategories(), "/") : "");
 				
 				writeVCard("END:","VCARD");
 			}

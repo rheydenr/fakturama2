@@ -129,6 +129,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		            // HSQL (File) => this is the original setting from Fakturama 1.x
 		            // "jdbc:hsqldb:file:/path/to/database;shutdown=true
 		            jdbcUrlMap.put(driverClass, "jdbc:hsqldb:file:/path/to/database;shutdown=true");
+//		            jdbcUrlMap.put(driverClass, "jdbc:hsqldb:hsql://localhost:9002/fakdbneu");
 					break;
 				case "org.apache.derby.jdbc.ClientDriver":
 				case "org.apache.derby.jdbc.EmbeddedDriver":
@@ -272,8 +273,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
             @SuppressWarnings("unchecked")
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				String driverClass = (String) ((ServiceReference<DataSourceFactory>)((IStructuredSelection) event
-			      .getSelection()).getFirstElement()).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
+				String driverClass = (String) ((ServiceReference<DataSourceFactory>)(event
+			      .getStructuredSelection()).getFirstElement()).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 				txtJdbcUrl.setText(StringUtils.defaultString(jdbcUrlMap.get(driverClass), ""));
 			}
 		});
@@ -290,6 +291,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		// if an old value is set, we use it, else use the first entry from combo box
 		@SuppressWarnings("unchecked")
 		String firstEntry = (String) ((ServiceReference<DataSourceFactory>)comboDriver.getElementAt(jdbcClassComboIndex)).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
+		firstEntry = StringUtils.defaultString(jdbcUrlMap.get(firstEntry), "");
 		txtJdbcUrl.setText(preferences.get(PersistenceUnitProperties.JDBC_URL, firstEntry));
 		txtJdbcUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
@@ -351,7 +353,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
     @SuppressWarnings("unchecked")
 	@Override
 	protected void okPressed() {
-		IStructuredSelection selection = (IStructuredSelection) comboDriver.getSelection();
+		IStructuredSelection selection = comboDriver.getStructuredSelection();
 		ServiceReference<DataSourceFactory> firstElement = (ServiceReference<DataSourceFactory>) selection.getFirstElement();
 		String driver = selection.isEmpty() ? DEFAULT_JDBC_CLASS : (String) firstElement.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 

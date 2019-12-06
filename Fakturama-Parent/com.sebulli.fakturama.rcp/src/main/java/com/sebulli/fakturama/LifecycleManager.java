@@ -156,9 +156,9 @@ public class LifecycleManager {
 
         	splashService.setMessage("checking database...");
         	
-        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
+        	boolean dbupdate = dbUpdateService.updateDatabase();
         	if(!dbupdate) {
-        		log.error(null, "couldn't create or update database!");
+        		log.error("couldn't create or update database!");
         		System.exit(1);
         	}
         	
@@ -432,6 +432,10 @@ public class LifecycleManager {
     void processAdditions(final IEventBroker eventBroker, MApplication app, EModelService modelService, IApplicationContext appContext,
     		@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation, final ISplashService splashService) {
         
+    	
+//    	StartupRecorder.openRecorder("huhu");
+    	
+    	
     	// TODO put the Login Dialog in here
         if(eclipsePrefs.getBoolean("isreinit", false)) {
         	dbUpdateService.updateDatabase();

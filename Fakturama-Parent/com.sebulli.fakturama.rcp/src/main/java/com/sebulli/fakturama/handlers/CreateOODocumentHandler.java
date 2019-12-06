@@ -46,7 +46,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -204,14 +203,12 @@ public class CreateOODocumentHandler {
 						item.setText(StringUtils.substringBeforeLast(template.getFileName().toString(),
 								OO_TEMPLATE_FILEEXTENSION));
 						item.setData(template);
-						item.addListener(SWT.Selection, new Listener() {
-							public void handleEvent(Event e) {
+						item.addListener(SWT.Selection, (Event e) -> {
 								// save the document and open the exporter
 								documentEditor.doSave(null);
 								openOODocument(documentEditor.getDocument(true), (Path) e.widget.getData(), shell, silentMode);
 								// documentEditor.markAsPrinted();
 								updateStockQuantity(shell, olditemsList, documentEditor.getDocument());
-							}
 						});
 					}
 	

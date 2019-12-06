@@ -73,7 +73,7 @@ import org.eclipse.swt.widgets.Control;
 
 import com.ibm.icu.text.SimpleDateFormat;
 import com.sebulli.fakturama.dao.AbstractDAO;
-import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
@@ -87,11 +87,12 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.BillingType;
-import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -134,6 +135,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 	@Inject
 	private ILocaleService localeUtil;
 	
+	@Inject
+	private IDocumentAddressManager addressManager;
+	
     @Inject
     @Preference   //(value=InstanceScope.SCOPE)
     private IEclipsePreferences eclipsePrefs;
@@ -145,7 +149,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private DocumentsDAO documentsDAO;
     
     @Inject
-    private ContactsDAO contactsDAO;
+    private DocumentReceiverDAO contactsDAO;
     
 	@Inject
 	private INumberFormatterService numberFormatterService;
@@ -520,7 +524,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 	        //    	topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
 	        try {
 				categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
+//				topicTreeViewer = ContextInjectionFactory.make(TopicTreeViewer.class, context);
 				topicTreeViewer = new TopicTreeViewer<DummyStringCategory>(top, msg, true, false);
+				topicTreeViewer.setAddressManager(addressManager);
+				topicTreeViewer.disableSorting();
 				topicTreeViewer.setInput(categories);
 				topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
 			} catch (PersistenceException e) {
@@ -663,7 +670,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Override
     public void setContactFilter(long filter) {
         // Set the label with the filter string
-      Contact contact = contactsDAO.findById(filter);
+      DocumentReceiver contact = contactsDAO.findById(filter);
       if(contact != null) {
         setCategoryFilter(contactUtil.getNameWithCompany(contact), TreeObjectType.CONTACTS_ROOTNODE);
 //          filterLabel.setText(contactUtil.getNameWithCompany(contact));

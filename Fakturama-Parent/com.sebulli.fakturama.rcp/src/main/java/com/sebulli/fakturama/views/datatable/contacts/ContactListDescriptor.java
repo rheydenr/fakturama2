@@ -27,6 +27,7 @@ public enum ContactListDescriptor {
     COMPANY("company", "common.field.company", 3, 150), 
     ZIP("address.zip", "common.field.zipcode", 4, 50),
     CITY("address.city", "common.field.city", 5, 80),
+    TYPE("contactType", "editor.contact.field.contacttype", 6, 30), 
     ;
     
     private String propertyName, messageKey;
@@ -92,6 +93,7 @@ public enum ContactListDescriptor {
                 ContactListDescriptor.COMPANY.getPropertyName(), 
                 ContactListDescriptor.ZIP.getPropertyName(), 
                 ContactListDescriptor.CITY.getPropertyName(), 
+                ContactListDescriptor.TYPE.getPropertyName(), 
         };
     }
 }

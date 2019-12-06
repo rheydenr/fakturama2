@@ -16,7 +16,6 @@ Bundle-Activator: com.sebulli.fakturama.resources.Activator
 Service-Component: OSGI-INF/templateservice.xml,
  OSGI-INF/urlstreamhandlerservice.xml
 Import-Package: javax.inject;version="1.0.0",
- org.apache.commons.lang3,
  org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.internal.services,

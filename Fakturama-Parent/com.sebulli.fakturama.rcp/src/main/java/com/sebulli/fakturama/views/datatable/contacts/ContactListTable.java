@@ -3,8 +3,10 @@
  */
 package com.sebulli.fakturama.views.datatable.contacts;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -49,6 +51,7 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.parts.DebitorEditor;
@@ -86,7 +89,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     private static final String POPUP_ID = "com.sebulli.fakturama.contactlist.popup";
     public static final String SELECTED_CONTACT_ID = "fakturama.contactlist.selectedcontactid";
 
-    protected EventList<T> contactListData;
     protected EventList<ContactCategory> categories;
     
     @Inject
@@ -108,7 +110,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
-        log.info("create Contact list part");
+//        log.info("create Contact list part");
         super.createPartControl(parent, Contact.class, true, ID);
         this.listTablePart = listTablePart;
         // if another click handler is set we use it
@@ -203,7 +205,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new ContactTableConfiguration());
-//        addCustomStyling(natTable);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
 
@@ -224,13 +225,25 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 
             public Object getDataValue(T rowObject, int columnIndex) {
                 ContactListDescriptor descriptor = ContactListDescriptor.getDescriptorFromColumn(columnIndex);
+                // For the address always the first entry is displayed (if any)
                 switch (descriptor) {
                 case NO:
                 case FIRSTNAME:
                 case LASTNAME:
-                case ZIP:
-                case CITY:
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
+                case ZIP:
+                	if(!rowObject.getAddresses().isEmpty()) {
+                		// display only the first address's values
+                		Optional<Address> firstAddress = getFirstAddress(rowObject);
+						return firstAddress.isPresent() ? firstAddress.get().getZip() : "";
+                	}
+                	break;
+                case CITY:
+                	if(!rowObject.getAddresses().isEmpty()) {
+                		Optional<Address> firstAddress = getFirstAddress(rowObject);
+						return firstAddress.isPresent() ? firstAddress.get().getCity() : "";
+                	}
+                	break;
                 case COMPANY:
                 	String value = (String) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
                 	if(value != null) {
@@ -242,7 +255,11 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                 return null;
             }
 
-            public void setDataValue(Contact rowObject, int columnIndex, Object newValue) {
+            private Optional<Address> getFirstAddress(T rowObject) {
+            	return rowObject.getAddresses().stream().min(Comparator.comparingLong(Address::getId));
+			}
+
+			public void setDataValue(Contact rowObject, int columnIndex, Object newValue) {
                 throw new UnsupportedOperationException("you can't change a value in list view!");
             }
 
@@ -268,7 +285,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     @Override
     protected NatTable createListTable(Composite searchAndTableComposite) {
         // fill the underlying data source (GlazedList)
-        contactListData = getListData(true);
+    	EventList<T> contactListData = getListData(true);
 
         // get the visible properties to show in list view
         String[] propertyNames = contactDAO.getVisibleProperties();
@@ -279,23 +296,21 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         final MatcherEditor<T> textMatcherEditor = createTextWidgetMatcherEditor();
         
         // Filtered list for Search text field filter
-        final FilterList<T> textFilteredIssues = new FilterList<T>(contactListData, textMatcherEditor);
-
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
-        treeFilteredIssues = new FilterList<T>(textFilteredIssues);
+        treeFilteredIssues = new FilterList<T>(contactListData, textMatcherEditor);
         
         //build the grid layer
         setGridLayer(new EntityGridListLayer<T>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry));
-        DataLayer tableDataLayer = getGridLayer().getBodyDataLayer();
+        DataLayer tableDataLayer = gridLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-//        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-//        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
+        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
+        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
 //        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
 //        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
 
         final NatTable natTable = new NatTable(searchAndTableComposite/*, 
-                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, getGridLayer().getGridLayer(), false);
+                SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.BORDER*/, gridLayer.getGridLayer(), false);
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
@@ -340,7 +355,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
 	        sync.syncExec(() -> top.setRedraw(false));
 	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-	        GlazedLists.replaceAll(contactListData, getListData(true), false);
+	        GlazedLists.replaceAll(treeFilteredIssues, getListData(true), false);
 	        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
 	        sync.syncExec(() -> top.setRedraw(true));
     	}

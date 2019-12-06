@@ -16,8 +16,9 @@ package com.sebulli.fakturama.i18n;
 import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
 import org.eclipse.e4.core.services.nls.Message;
+
+import com.ibm.icu.util.StringTokenizer;
 
 /**
  * This class contains all the message keys from
@@ -178,6 +179,7 @@ public class Messages {
 	public String editorContactFieldEmailValidationerror;
 	public String editorContactFieldSalesequalizationtaxName;
 	public String editorContactFieldWebsiteCantopen;
+	public String editorContactFieldLocalconsultant;
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
 	public String editorDocumentDialogNodefaultvalue;
@@ -268,9 +270,12 @@ public class Messages {
 	public String editorContactFieldBirthdayName;
 	public String editorContactFieldBirthdayTooltip;
 	public String editorContactFieldCategoryTooltip;
+	public String editorContactFieldContacttype;
+	public String editorContactFieldContacttypeTooltip;
 	public String editorContactFieldDeliverersbirthdayTooltip;
 	public String editorContactFieldDeliveryaddressequalsName;
 	public String editorContactFieldDiscountTooltip;
+	public String editorContactFieldDistrict;
 	public String editorContactFieldFirstnamelastnameName;
 	public String editorContactFieldLastnamefirstnameName;
 	public String editorContactFieldMandaterefName;
@@ -287,6 +292,8 @@ public class Messages {
 	public String editorContactLabelAddress;
 	public String editorContactLabelBankaccount;
 	public String editorContactLabelNotice;
+	public String editorContactLabelAdditionaladdress;
+	public String editorContactLabelMaintab;
 	public String editorDocumentAdditemTooltip;
 	public String editorDocumentCheckboxPaidTooltip;
 	public String editorDocumentCollectiveinvoiceTooltip;
@@ -926,13 +933,15 @@ public class Messages {
 			Class<?> c = this.getClass();
 			// make the key java-like :-)
 			StringBuffer sb = new StringBuffer();
-			StrTokenizer st = new StrTokenizer(retval, ".");
-			while (st.hasNext()) {
-				if (st.previousIndex() == -1) {
-					sb.append(st.next());
+			StringTokenizer st = new StringTokenizer(retval, ".");
+			boolean isFirst = true;
+			while (st.hasMoreElements()) {
+				if (isFirst) {
+					sb.append(st.nextToken());
+					isFirst = false;
 					continue;
 				}
-				sb.append(StringUtils.capitalize(st.next()));
+				sb.append(StringUtils.capitalize(st.nextToken()));
 			}
 
 			Field chap = c.getDeclaredField(sb.toString());

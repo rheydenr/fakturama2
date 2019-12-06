@@ -28,6 +28,8 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.eclipse.nebula.widgets.formattedtext,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.nebula.widgets.picture,
+ org.eclipse.nebula.widgets.treemapper,
+ org.eclipse.nebula.widgets.opal.multichoice,
  org.eclipse.nebula.jface.cdatetime,
  org.eclipse.jface,
  org.eclipse.jface.databinding,
@@ -55,26 +57,26 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.apache.commons.cli,
  org.apache.commons.codec,
  org.apache.commons.collections,
- org.apache.commons.lang3,
  org.apache.commons.validator,
+ org.apache.commons.logging;bundle-version="1.1.1",
+ org.apache.commons.text,
  org.apache.poi.ooxml,
  javax.inject,
  org.eclipse.emf.common,
  org.javamoney.osgi,
  org.eclipse.osgi,
  org.eclipse.draw2d,
- org.eclipse.nebula.widgets.treemapper,
  org.eclipse.gemini.ext.di,
  org.eclipse.osgi.services,
  org.eclipse.equinox.security,
  org.eclipse.persistence.moxy,
  com.ibm.icu;bundle-version="58.2.0",
- org.apache.commons.logging;bundle-version="1.1.1",
- org.apache.commons.text
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/parcelservice.xml,OSGI-INF/splashservice.xml
-Import-Package: javax.inject,
+ org.eclipse.nebula.widgets.nattable.extension.e4;bundle-version="1.1.0",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists;bundle-version="1.5.0",
+ org.eclipse.nebula.widgets.nattable.extension.nebula;bundle-version="1.1.0",
+ org.eclipse.e4.ui.css.swt.theme;bundle-version="0.12.300",
+ org.eclipse.ui.themes;bundle-version="1.2.600"
+Import-Package: javax.inject;version="1.0.0",
  org.apache.commons.io,
  org.eclipse.core.commands,
  org.eclipse.core.net.proxy,
@@ -129,4 +131,7 @@ Import-Package: javax.inject,
  org.osgi.service.prefs,
  org.osgi.util.tracker,
  org.osgi.util.xml
+Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: com.sebulli.fakturama.rcp
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Service-Component: OSGI-INF/parcelservice.xml,OSGI-INF/splashservice.xml

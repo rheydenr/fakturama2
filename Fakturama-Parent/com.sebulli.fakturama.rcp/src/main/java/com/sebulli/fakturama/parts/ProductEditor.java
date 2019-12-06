@@ -850,8 +850,7 @@ public class ProductEditor extends Editor<Product> {
 			public void selectionChanged(SelectionChangedEvent event) {
 
 				// Handle selection changed event 
-				ISelection selection = event.getSelection();
-				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
 				if (!structuredSelection.isEmpty()) {
                     // Get the first element ...
                     // Get the selected VAT

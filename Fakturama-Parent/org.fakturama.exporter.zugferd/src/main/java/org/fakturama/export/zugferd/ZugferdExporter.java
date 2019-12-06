@@ -109,6 +109,7 @@ import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.CEFACTCodeDAO;
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.Transaction;
@@ -122,10 +123,13 @@ import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
+import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.office.Placeholders;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -167,12 +171,18 @@ public class ZugferdExporter {
     
 	@Inject
 	private ILocaleService localeUtil;
+	
+	@Inject
+	private ContactsDAO contactsDAO;
     
 	@Inject
 	private INumberFormatterService numberFormatterService;
 
     @Inject
     private IDateFormatterService dateFormatterService;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
 
     private Shell shell;
 	
@@ -450,7 +460,7 @@ public class ZugferdExporter {
 		
 		// create buyer information
 		TradePartyType buyer = factory.createTradePartyType()
-				.withID(createIdFromString(invoice.getBillingContact().getCustomerNumber()))
+				.withID(createIdFromString(addressManager.getBillingAdress(invoice).getCustomerNumber()))
 				.withName(createText(invoice.getAddressFirstLine()))
 //TODO EXTENDED					.withDefinedTradeContact(createContact(invoice, ContactType.BUYER))
 				.withPostalTradeAddress(createAddress(invoice, ContactType.BUYER))
@@ -516,27 +526,30 @@ public class ZugferdExporter {
 		// Detailinformationen zum abweichenden Rechnungsempfänger
 //		tradeSettlement.setInvoiceeTradeParty(createTradeParty(invoice));  // das wird gar nicht erfaßt!
 
-		Contact contact = invoice.getBillingContact();
-		DebtorFinancialAccountType debtorAccount = createDebtorAccount(contact);
-		IDType id = StringUtils.isNotBlank(contact.getMandateReference()) ? 
-				factory.createIDType().withValue(contact.getMandateReference())
-				.withSchemeAgencyID(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CREDITORID)) : 
-					null;
-		TradeSettlementPaymentMeansType paymentType = factory.createTradeSettlementPaymentMeansType()
-				.withTypeCode(createPaymentTypeCode(invoice))
-				.withInformation(createText(invoice.getPayment().getName()))
-				.withID(id);
-		CreditorFinancialAccountType creditor = createCreditorAccount();
-		if(creditor != null) {
-			paymentType.setPayeePartyCreditorFinancialAccount(creditor);
-			paymentType.setPayeeSpecifiedCreditorFinancialInstitution(createCreditorFinancialInstitution());
+		DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
+		Contact contact = getOriginContact(documentReceiver);
+		if (contact != null) {
+			DebtorFinancialAccountType debtorAccount = createDebtorAccount(contact.getBankAccount());
+			IDType id = StringUtils.isNotBlank(contact.getMandateReference())
+					? factory.createIDType().withValue(contact.getMandateReference()).withSchemeAgencyID(
+							preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CREDITORID))
+					: null;
 
+			TradeSettlementPaymentMeansType paymentType = factory.createTradeSettlementPaymentMeansType()
+					.withTypeCode(createPaymentTypeCode(invoice))
+					.withInformation(createText(invoice.getPayment().getName())).withID(id);
+			CreditorFinancialAccountType creditor = createCreditorAccount();
+			if (creditor != null) {
+				paymentType.setPayeePartyCreditorFinancialAccount(creditor);
+				paymentType.setPayeeSpecifiedCreditorFinancialInstitution(createCreditorFinancialInstitution());
+
+			}
+			if (debtorAccount != null) {
+				paymentType.setPayerPartyDebtorFinancialAccount(debtorAccount);
+				paymentType.setPayerSpecifiedDebtorFinancialInstitution(createDebtorFinancialInstitution(invoice));
+			}
+			tradeSettlement.getSpecifiedTradeSettlementPaymentMeans().add(paymentType);
 		}
-		if(debtorAccount != null) {
-			paymentType.setPayerPartyDebtorFinancialAccount(debtorAccount);
-			paymentType.setPayerSpecifiedDebtorFinancialInstitution(createDebtorFinancialInstitution(invoice));
-		}
-		tradeSettlement.getSpecifiedTradeSettlementPaymentMeans().add(paymentType);
 
 		// Get the items of the UniDataSet document
 		List<DocumentItem> itemDataSets = invoice.getItems();
@@ -1031,11 +1044,13 @@ public class ZugferdExporter {
 	}
 
 	private DebtorFinancialInstitutionType createDebtorFinancialInstitution(Document invoice) {
-		if(!StringUtils.isEmpty(invoice.getBillingContact().getBankAccount().getBic())) {
+		DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
+		Contact billingAddress = getOriginContact(documentReceiver);
+		if(!StringUtils.isEmpty(billingAddress.getBankAccount().getBic())) {
 			return factory.createDebtorFinancialInstitutionType()
-					.withBICID(createIdFromString(invoice.getBillingContact().getBankAccount().getBic()))
+					.withBICID(createIdFromString(billingAddress.getBankAccount().getBic()))
 //					.withGermanBankleitzahlID(createIdFromString(invoice.getFormatedStringValueByKeyFromOtherTable("addressid.CONTACTS:bank_code")))
-					.withName(createText(invoice.getBillingContact().getBankAccount().getBankName()));
+					.withName(createText(billingAddress.getBankAccount().getBankName()));
 		} else return null;
 	}
 
@@ -1050,11 +1065,11 @@ public class ZugferdExporter {
 		return retval;
 	}
 
-	private DebtorFinancialAccountType createDebtorAccount(Contact contact) {
-		if(contact.getBankAccount() != null 
-				&& !StringUtils.isEmpty(contact.getBankAccount().getIban())) {
+	private DebtorFinancialAccountType createDebtorAccount(BankAccount bankAccount) {
+		if(bankAccount != null 
+				&& !StringUtils.isEmpty(bankAccount.getIban())) {
 			return factory.createDebtorFinancialAccountType()
-					.withIBANID(createIdFromString(contact.getBankAccount().getIban()))
+					.withIBANID(createIdFromString(bankAccount.getIban()))
 //					.withProprietaryID(createIdFromString(invoice.getFormatedStringValueByKeyFromOtherTable("addressid.CONTACTS:account")))
 					;
 		} else return null;
@@ -1102,9 +1117,10 @@ public class ZugferdExporter {
 			}
 			break;
 		case BUYER:
-			if(!StringUtils.isEmpty(invoice.getBillingContact().getVatNumber())) {
+			DocumentReceiver billingAddress = addressManager.getBillingAdress(invoice);
+			if(!StringUtils.isEmpty(billingAddress.getVatNumber())) {
 				retval = factory.createTaxRegistrationType()
-						.withID(createIdWithSchemeFromString(getNullCheckedValue(invoice.getBillingContact().getVatNumber()), "VA"));
+						.withID(createIdWithSchemeFromString(getNullCheckedValue(billingAddress.getVatNumber()), "VA"));
 			}
 			break;
 		default:
@@ -1143,13 +1159,14 @@ public class ZugferdExporter {
 				//.withCountryID(createCountry(preferences.getString("YOURCOMPANY_COMPANY_COUNTRY")));
 			break;
 		case BUYER:
+			DocumentReceiver billingAddress = addressManager.getBillingAdress(invoice);
 			// Korrektur
-			countryCode = invoice.getBillingContact().getAddress().getCountryCode();
+			countryCode = billingAddress.getCountryCode();
 			retval = factory.createTradeAddressType()
-				.withPostcodeCode(createCode(invoice.getBillingContact().getAddress().getZip()))
-				.withLineOne(createText(invoice.getBillingContact().getAddress().getStreet()))
+				.withPostcodeCode(createCode(billingAddress.getZip()))
+				.withLineOne(createText(billingAddress.getStreet()))
 	//		.withLineTwo(is empty at the moment)
-				.withCityName(createText(invoice.getBillingContact().getAddress().getCity()))
+				.withCityName(createText(billingAddress.getCity()))
 				.withCountryID(createCountry(countryCode));
 //			.withCountryID(createCountry(invoice.getFormatedStringValueByKeyFromOtherTable("addressid.CONTACTS:country")));
 			break;
@@ -1268,4 +1285,12 @@ public class ZugferdExporter {
 
 		return retval;
 	}
+	
+	private Contact getOriginContact(DocumentReceiver contact) {
+		if(contact.getOriginContactId() != null) {
+			return contactsDAO.findById(contact.getOriginContactId());
+		}
+		return null;
+	}
+
 }

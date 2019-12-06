@@ -14,16 +14,16 @@
  
 package com.sebulli.fakturama.views.datatable.contacts;
 
-import ca.odell.glazedlists.matchers.Matcher;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
 
+import ca.odell.glazedlists.matchers.Matcher;
+
 /**
- * {@link Matcher} class for filtering the VAT list entries. The {@link ShippingMatcher} checks if
+ * {@link Matcher} class for filtering the Contact list entries. The {@link ContactMatcher} checks if
  * an item has the selected category (selected from tree viewer).
  *
  */

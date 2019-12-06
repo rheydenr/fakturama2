@@ -457,7 +457,7 @@ public class ShippingEditor extends Editor<Shipping> {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 // Get the selected list entry
-                autoVat = (ShippingVatType) ((IStructuredSelection)comboAutoVat.getSelection()).getFirstElement();
+                autoVat = (ShippingVatType) (comboAutoVat.getStructuredSelection()).getFirstElement();
                 // If no gross values are used, do not allow to select
                 // the entry "SHIPPINGVATGROSS"
                 if (!useGross && (autoVat.isSHIPPINGVATGROSS()))
@@ -524,8 +524,7 @@ public class ShippingEditor extends Editor<Shipping> {
             public void selectionChanged(SelectionChangedEvent event) {
 
                 // Handle selection changed event 
-                ISelection selection = event.getSelection();
-                IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
 
                 // If one element is selected
                 if (!structuredSelection.isEmpty()) {
