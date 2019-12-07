@@ -601,11 +601,11 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         // Attention: If the contact is new then we have to create a new number for it!
         if(StringUtils.isBlank(contactItem.getCustomerNumber())) {
     		NumberGenerator numberProvider = ContextInjectionFactory.make(NumberGenerator.class, context);
-            numberProvider.setEditorID(DebitorEditor.class.getSimpleName());
-            String nextNr = numberProvider.getNextNr();
+    		String editorId = DebitorEditor.class.getSimpleName();
+            String nextNr = numberProvider.getNextNr(editorId);
             contactItem.setCustomerNumber(nextNr);
             contactItem = contactsDAO.update(contactItem);
-            numberProvider.setNextFreeNumberInPrefStore(nextNr);
+			numberProvider.setNextFreeNumberInPrefStore(nextNr, editorId);
         }
 //            contactItem.setSupplierNumber(contact.get???); ==> is not transferred from connector!!!
 

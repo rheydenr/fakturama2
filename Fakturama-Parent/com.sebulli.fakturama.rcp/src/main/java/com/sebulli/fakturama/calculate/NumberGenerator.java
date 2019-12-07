@@ -27,7 +27,6 @@ import com.sebulli.fakturama.model.UserProperty;
 public class NumberGenerator {
 	private static final int ERROR_NOT_NEXT_ID = 1;
 	private static final int NO_ERROR = 0;
-    private String editorID = "";
 
 	private FakturamaModelFactory modelFactory =  FakturamaModelPackage.MODELFACTORY;
 
@@ -39,17 +38,14 @@ public class NumberGenerator {
 
     @Inject
     private PropertiesDAO propertiesDao;
-    
-    public int setNextFreeNumberInPrefStore(String value) {
-    	return setNextFreeNumberInPrefStore(value, editorID);
-    }
 
 	/**
 	 * Set the next free document number in the preference store. But check if
 	 * the documents number is the next free one.
 	 * 
-	 * @param s
+	 * @param value
 	 *            The document number as string.
+	 * @param editorId the editor id for which this number should be set
 	 * @return Errorcode, if the document number is correctly set to the next
 	 *         free number.
 	 */
@@ -121,10 +117,6 @@ public class NumberGenerator {
 		// The result of the validation
 		return result;
 	}
-	
-	public void setNextNumber(String prefStrNr, int nr) {
-		setNextNumber(prefStrNr, nr, editorID);
-	}
 
 	public void setNextNumber(String prefStrNr, int nr, String editorId) {
 //		defaultValuePrefs.setValue(prefStrNr, nr);
@@ -156,10 +148,6 @@ public class NumberGenerator {
         }
 	}
 	
-	public int getCurrentNumber() {
-		return getCurrentNumber(editorID);
-	}
-	
 	/**
 	 * Gets the current number of the specified entity type.
 	 * 
@@ -173,9 +161,6 @@ public class NumberGenerator {
 		return Integer.parseInt(nextNumberString);
 	}
 	
-	public String getNextNr() {
-		return getNextNr(editorID);
-	}
 
 	/**
 	 * Get the next document number
@@ -258,19 +243,5 @@ public class NumberGenerator {
 
 		// Return the string with the next free document number
 		return nextNr;
-	}
-
-	/**
-	 * @return the editorID
-	 */
-	public final String getEditorID() {
-		return editorID;
-	}
-
-	/**
-	 * @param editorID the editorID to set
-	 */
-	public final void setEditorID(String editorID) {
-		this.editorID = editorID;
 	}
 }

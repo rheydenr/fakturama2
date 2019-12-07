@@ -401,6 +401,8 @@ public class Constants {
      */
     public static final String PREFERENCES_CONTACT_USE_DELIVERY = "CONTACT_USE_DELIVERY";
 
+	public static final String PREFERENCES_CONTACT_SUPPRESS_CONTACTNUMER_CHECK = "CONTACT_SUPPRESS_CONTACTNUMER_CHECK";
+
     /**
      * 
      */

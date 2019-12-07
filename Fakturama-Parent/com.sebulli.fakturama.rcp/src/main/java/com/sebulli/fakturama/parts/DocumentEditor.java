@@ -365,7 +365,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (newDocument) {
 			// Check if the document number is the next one
 			if (!document.getBillingType().isLETTER()) {
-				int result = setNextFreeNumberInPrefStore(txtName.getText(), Document_.name.getName());
+				int result = getNumberGenerator().setNextFreeNumberInPrefStore(txtName.getText(), Document_.name.getName());
 
 				// It's not the next free ID
 				if (result == ERROR_NOT_NEXT_ID) {
@@ -376,7 +376,7 @@ public class DocumentEditor extends Editor<Document> {
 					msg.editorDocumentErrorDocnumberTitle,
 					
 					//T: Text of the dialog that appears if the customer number is not valid.
-					MessageFormat.format(msg.editorDocumentErrorDocnumberNotnextfree, getNextNr()) + "\n" + 
+					MessageFormat.format(msg.editorDocumentErrorDocnumberNotnextfree, getNumberGenerator().getNextNr(getEditorID())) + "\n" + 
 					//T: Text of the dialog that appears if the number is not valid.
 					msg.editorContactHintSeepreferences);
 					return Boolean.FALSE;
@@ -1065,7 +1065,7 @@ public class DocumentEditor extends Editor<Document> {
 //			document.setPaid(Boolean.FALSE);
 
 			// Get the next document number
-			document.setName(getNextNr());
+			document.setName(getNumberGenerator().getNextNr(getEditorID()));
 
 		}
 		// If an existing document was opened ..
@@ -1112,7 +1112,7 @@ public class DocumentEditor extends Editor<Document> {
         	try {
         		calculate();
         		document = documentsDAO.save(document);
-        		setNextFreeNumberInPrefStore(document.getName(), Document_.name.getName());
+				getNumberGenerator().setNextFreeNumberInPrefStore(document.getName(), Document_.name.getName());
             } catch (FakturamaStoringException e) {
                 log.error(e);
 			}

@@ -47,7 +47,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -208,7 +207,8 @@ public class ProductEditor extends Editor<Product> {
         
 		if (newProduct) {
 			// Check, if the item number is the next one
-			if (setNextFreeNumberInPrefStore(textItemNr.getText(), Product_.itemNumber.getName()) == ERROR_NOT_NEXT_ID) {
+			int result = getNumberGenerator().setNextFreeNumberInPrefStore(textItemNr.getText(), Product_.itemNumber.getName());
+			if (result == ERROR_NOT_NEXT_ID) {
 				// It's not the next free ID
 				// Display an error message
 				MessageDialog.openError(top.getShell(),
@@ -353,7 +353,7 @@ public class ProductEditor extends Editor<Product> {
 			editorProduct.setVat(vat);
 
 			// Get the next item number
-			editorProduct.setItemNumber(getNextNr());
+			editorProduct.setItemNumber(getNumberGenerator().getNextNr(getEditorID()));
 		}
 		else {
 
