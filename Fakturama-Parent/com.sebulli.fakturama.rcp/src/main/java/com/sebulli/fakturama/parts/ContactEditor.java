@@ -170,7 +170,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private ComboViewer comboReliability;
 	private Text txtSupplierNr;
 	private Text txtWebsite;
-	private Text txtWebshopName;
+	private Text txtWebshopName, txtAlias;
 	private Text txtVatNr;
 	private Text txtGln;
 	private FormattedText txtDiscount;
@@ -677,7 +677,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		
 		// FAK-382 clickable URL
 		txtWebsite.addMouseListener(new UrlCallHandler(txtWebsite, log));
-		
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(txtWebsite);
 
 		// Suppliernumber
@@ -702,6 +701,13 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWebshopName);
 		txtWebshopName = new Text(tabMisc, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebshopName);
+		
+		// Alias for this contact 
+		Label labelAlias = new Label(tabMisc, SWT.NONE);
+		labelAlias.setText(msg.editorContactFieldAlias);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAlias);
+		txtAlias = new Text(tabMisc, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAlias);
 		
 		// VAT number
 		Label labelVatNr = new Label(tabMisc, SWT.NONE);
@@ -1178,6 +1184,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 64);
 		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 64);
 		bindModelValue(editorContact, txtWebshopName, Contact_.webshopName.getName(), 64);
+		bindModelValue(editorContact, txtAlias, Contact_.alias.getName(), 64);
 
 		bindModelValue(editorContact, comboReliability, Contact_.reliability.getName());
 		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 32);

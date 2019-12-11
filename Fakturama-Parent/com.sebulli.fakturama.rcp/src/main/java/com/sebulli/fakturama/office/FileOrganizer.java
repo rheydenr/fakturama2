@@ -128,6 +128,7 @@ public class FileOrganizer {
 		DocumentReceiver documentContact = document.getReceiver().stream().filter(r -> r.getBillingType() == null || r.getBillingType().isINVOICE() || r.getBillingType().isDELIVERY()).findFirst().get();
 		String name = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getName()));
 		String companyOrName = replaceIllegalCharacters(contactUtil.getCompanyOrLastname(documentContact));
+		String alias = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getAlias()));
 
 		// Replace the placeholders
 		String customerRef = replaceIllegalCharacters(document.getCustomerRef());
@@ -140,6 +141,7 @@ public class FileOrganizer {
 				.replaceAll("\\{name\\}", name)
 				.replaceAll("\\{firstname\\}", replaceIllegalCharacters(documentContact.getFirstName()))
 				.replaceAll("\\{companyorname\\}", companyOrName)
+				.replaceAll("\\{alias\\}", alias)
 				.replaceAll("\\{custno\\}", 
 					StringUtils.defaultString(documentContact.getCustomerNumber()));
 

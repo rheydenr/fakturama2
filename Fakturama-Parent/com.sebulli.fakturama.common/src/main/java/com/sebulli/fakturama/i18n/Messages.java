@@ -180,6 +180,7 @@ public class Messages {
 	public String editorContactFieldSalesequalizationtaxName;
 	public String editorContactFieldWebsiteCantopen;
 	public String editorContactFieldLocalconsultant;
+	public String editorContactFieldAlias;
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
 
