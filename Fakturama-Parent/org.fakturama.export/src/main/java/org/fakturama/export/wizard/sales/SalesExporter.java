@@ -27,6 +27,7 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -80,6 +81,9 @@ public class SalesExporter extends OOCalcExporter {
     
     @Inject
     private IDocumentAddressManager addressManager;
+    
+	@Inject
+	private IEclipseContext context;
 
 
 	/**
@@ -172,7 +176,7 @@ public class SalesExporter extends OOCalcExporter {
 
 		// Create a VAT summary set manager that collects all VAT
 		// values of all documents
-		VatSummarySetManager vatSummarySetAllDocuments = new VatSummarySetManager();
+		VatSummarySetManager vatSummarySetAllDocuments = ContextInjectionFactory.make(VatSummarySetManager.class, context);
 
 		// Table column headings
 		int headLine = row;
@@ -198,7 +202,7 @@ public class SalesExporter extends OOCalcExporter {
 		// the columns are created.
 		// Later all the documents are analyzed a second time and then they
 		// are exported document by document into the table.
-		DocumentSummaryCalculator dsc = new DocumentSummaryCalculator();
+		DocumentSummaryCalculator dsc = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
 //		for (Document document : documents) {
 //			if (documentShouldBeExported(document)) {
 //				dsc.calculate(document);
@@ -255,9 +259,9 @@ public class SalesExporter extends OOCalcExporter {
 		DocumentSummary documentSummary;
 		for (Document document : documents) {
 			documentSummary = null;
+			VatSummarySetManager vatSummarySetOneDocument = ContextInjectionFactory.make(VatSummarySetManager.class, context);
 
 			// Now analyze document by document
-			VatSummarySetManager vatSummarySetOneDocument = new VatSummarySetManager();
 			documentSummary = dsc.calculate(document);
 
 			// Calculate the relation between paid value and the value

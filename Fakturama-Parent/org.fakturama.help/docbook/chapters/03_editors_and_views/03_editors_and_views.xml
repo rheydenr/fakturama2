@@ -1833,6 +1833,21 @@
 						<para>Löscht den ausgewählten Artikel.</para>
 					</listitem>
 				</varlistentry>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+						<para>Dupliziert den oder die ausgewählten Artikel.</para>
+					</listitem>
+				</varlistentry>
 			</variablelist>
 			<para>
 				<anchor xreflabel="" xml:id="editor_document_previewpicture"/>In der Artikelliste kann zusätzlich ein Vorschaubild angezeigt werden. Ein Klick auf dieses öffnet eine vergrößerte Ansicht des Produktbildes.</para>
