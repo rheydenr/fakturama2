@@ -858,6 +858,11 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.NR")) {
 			value = item.getItemNumber();
 		}
+		
+		// Get the item number
+		else if (key.equals("ITEM.SUPPLIERNUMBER")) {
+			value = item.getSupplierItemNumber();
+		}
 
 		// Get the quanity unit
 		else if (key.equals("ITEM.QUANTITYUNIT")) {

@@ -47,11 +47,8 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
@@ -135,7 +132,7 @@ public class ProductEditor extends Editor<Product> {
 	private Composite top;
 	private Text textItemNr;
 	private Text textName;
-	private Text textGtin;
+	private Text textGtin, textSupplierItemNumber;
 	private Text textDescription;
 	private Text udf01, udf02, udf03;
 	private Combo comboVat;
@@ -492,12 +489,21 @@ public class ProductEditor extends Editor<Product> {
 		Label labelGtin = new Label(productDescGroup, SWT.NONE);
 		labelGtin.setText(msg.editorProductFieldGtin);
 //		labelGtin.setToolTipText(msg.editorProductFieldGtinTooltip);
-
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelGtin);
+		
 		textGtin = new Text(productDescGroup, SWT.BORDER);
-//		textGtin.setToolTipText(labelGtin.getToolTipText());
 		textGtin.addKeyListener(new ReturnKeyAdapter(textGtin));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textGtin);
+		
+		// supplier's product number
+		Label labelSupplierItemNumber = new Label(productDescGroup, SWT.NONE);
+		labelSupplierItemNumber.setText(msg.editorProductFieldSupplierItemnumber);
+		labelSupplierItemNumber.setToolTipText(msg.editorProductFieldSupplierItemnumberTooltip);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelSupplierItemNumber);
+		
+		textSupplierItemNumber = new Text(productDescGroup, SWT.BORDER);
+		textSupplierItemNumber.addKeyListener(new ReturnKeyAdapter(textSupplierItemNumber));
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(textSupplierItemNumber);
 
 		// for correct tab-order (see FAK-465)
 		Control nextWidget = null;
@@ -785,6 +791,7 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, textName, Product_.name.getName(), 64);
 		fillAndBindCategoryCombo();
 		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
+		bindModelValue(editorProduct, textSupplierItemNumber, Product_.supplierItemNumber.getName(), 64);
 		bindModelValue(editorProduct, textDescription, Product_.description.getName(), 0);   // no limit
 		if(useQuantityUnit) {
 			UpdateValueStrategy strategy = new UpdateValueStrategy();
@@ -845,9 +852,7 @@ public class ProductEditor extends Editor<Product> {
     	ComboViewer comboViewer = new ComboViewer(comboVat);
         comboViewer.setContentProvider(new EntityComboProvider());
         comboViewer.setLabelProvider(new EntityLabelProvider());
-		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-			public void selectionChanged(SelectionChangedEvent event) {
+		comboViewer.addSelectionChangedListener(event -> {
 
 				// Handle selection changed event 
         		IStructuredSelection structuredSelection = event.getStructuredSelection();
@@ -879,7 +884,6 @@ public class ProductEditor extends Editor<Product> {
 							grossText[i].setVatValue(selectedVat.getTaxValue());
 					}
 				}
-			}
 		});
 
 		// Create a JFace combo viewer for the VAT list

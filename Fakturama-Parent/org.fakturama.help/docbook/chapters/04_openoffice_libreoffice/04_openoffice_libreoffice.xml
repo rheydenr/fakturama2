@@ -945,6 +945,12 @@ id="04_openoffice_libreoffice">
 						</entry>
 					</row>
 					<row>
+						<entry>ITEM.SUPPLIERNUMBER</entry>
+						<entry>
+							<para>Artikelnummer des Herstellers</para>
+						</entry>
+					</row>
+					<row>
 						<entry>ITEM.QUANTITYUNIT</entry>
 						<entry>
 							<para>Mengeneinheit</para>
