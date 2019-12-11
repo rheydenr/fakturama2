@@ -1482,5 +1482,15 @@ TODO:
 		</addColumn>
 	</changeSet>
 	
+	<changeSet author="rheydenr" id="20191211-003"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_CONTACT">
+			<column name="T_ALIAS" type="varchar(255)" />
+		</addColumn>
+		<addColumn tableName="FKT_DOCUMENTRECEIVER">
+			<column name="T_ALIAS" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
     

@@ -77,6 +77,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		documentReceiver.setSupplierNumber(contact.getSupplierNumber());
 		documentReceiver.setMandateReference(contact.getMandateReference());
 		documentReceiver.setGln(contact.getGln());
+		documentReceiver.setAlias(contact.getAlias());
 //		documentReceiver.setBankAccount(contact.getBankAccount());
 //		documentReceiver.setUseSalesEqualizationTax(contact.getUseSalesEqualizationTax());
 
