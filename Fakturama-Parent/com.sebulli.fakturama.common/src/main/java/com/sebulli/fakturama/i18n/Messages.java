@@ -182,7 +182,6 @@ public class Messages {
 	public String editorContactFieldLocalconsultant;
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
-	public String editorDocumentDialogNodefaultvalue;
 
 	public String Data653;
 	public String dataDefaultContactFormatExcludedcountries;
@@ -295,6 +294,7 @@ public class Messages {
 	public String editorContactLabelAdditionaladdress;
 	public String editorContactLabelMaintab;
 	public String editorDocumentAdditemTooltip;
+	public String editorDocumentCopyitemTooltip;
 	public String editorDocumentCheckboxPaidTooltip;
 	public String editorDocumentCollectiveinvoiceTooltip;
 	public String editorDocumentCreateduplicate;
@@ -303,6 +303,7 @@ public class Messages {
 	public String editorDocumentDeleteitemTooltip;
 	public String editorDocumentDialogGrossvalues;
 	public String editorDocumentDialogNetvalues;
+	public String editorDocumentDialogNodefaultvalue;
 	public String editorDocumentDialogWarningDocumentexists;
 	public String editorDocumentDialogWarningCopyexists;
 	public String editorDocumentDiscountTooltip;

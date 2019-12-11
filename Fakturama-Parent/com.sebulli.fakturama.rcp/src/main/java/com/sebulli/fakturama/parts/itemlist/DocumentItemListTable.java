@@ -313,8 +313,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 			    			}
 			    		})
 				.build();
-////		
-//		getGridLayer().getSelectionLayer().getSelectedRowPositions();
 
 		return retval;
 	}
@@ -979,8 +977,40 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         }
     }
 
+	public void copySelectedEntry() {
+    	@SuppressWarnings("unchecked")
+		Collection<DocumentItemDTO> selectedEntries = (Collection<DocumentItemDTO>)selectionService.getSelection(DocumentEditor.ID);
+        if(selectedEntries != null && selectedEntries.size() > 0) {
+        	
+        	// at first, close an open cell editor, if any
+        	if(natTable.getActiveCellEditor() != null) {
+        		natTable.getActiveCellEditor().close();
+        	}
+        	
+        	boolean isAdded = false;
+        	
+        	for (DocumentItemDTO documentItemDTO : selectedEntries) {
+        		DocumentItem newDocumentItem = documentItemDTO.getDocumentItem().clone();
+				DocumentItemDTO itemCopy = new DocumentItemDTO(newDocumentItem);
+				isAdded = documentItemsListData.add(itemCopy);
+			}
+        	
+            if(isAdded) {
+            	renumberItems();
+                // Recalculate the total sum of the document if necessary
+                // do it via the messaging system and send a message to DocumentEditor
+                Map<String, Object> event = new HashMap<>();
+                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
+                event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
+                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+            }
+        	
+        } else {
+            log.debug("no rows selected!");
+        }
+	}
 
-    /**
+	/**
      * Set the "novat" in all items. If a document is marked as "novat", the {@link VAT}
      * of all items is displayed as "0.0%"
      * @param noVat <code>true</code> if no {@link VAT} should be used

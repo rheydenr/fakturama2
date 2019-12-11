@@ -2289,11 +2289,8 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		}
 		
-		
 		GridDataFactory.fillDefaults().minSize(100, 80).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(addressAndIconComposite);
 //		addressAndIconComposite.setSelection(0);
-		
-//		showHideWarningIcon();
 
 		DocumentType documentType = getDocumentType();
 		/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 

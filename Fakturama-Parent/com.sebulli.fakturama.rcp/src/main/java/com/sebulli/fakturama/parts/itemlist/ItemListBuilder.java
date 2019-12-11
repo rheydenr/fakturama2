@@ -244,6 +244,21 @@ public class ItemListBuilder {
                 itemListTable.renumberItems();
             }
         });
+        
+
+        // Item copy button
+        Label copyButton = new Label(addButtonComposite, SWT.NONE);
+        //T: Tool Tip Text
+        copyButton.setToolTipText(msg.editorDocumentCopyitemTooltip);
+        copyButton.setImage(Icon.COMMAND_COPY.getImage(IconSize.DefaultIconSize));
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(copyButton);
+        copyButton.addMouseListener(new MouseAdapter() {
+
+            // Delete the selected item
+            public void mouseDown(MouseEvent e) {
+                itemListTable.copySelectedEntry();
+            }
+        });
 
     //Create the context menu
     //createContextMenu(tableViewerItems);
