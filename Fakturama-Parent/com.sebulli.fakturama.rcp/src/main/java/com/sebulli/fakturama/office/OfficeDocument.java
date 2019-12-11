@@ -43,6 +43,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -1045,7 +1047,8 @@ public class OfficeDocument {
 				int pictureWidth = 100;
 				double pictureRatio = 1.0;
 				double pixelRatio = 1.0;
-			      
+				Path workDir = null;
+
 				// Read the image a first time to get width and height
 				try (ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());) {
 					
@@ -1073,12 +1076,13 @@ public class OfficeDocument {
 					}
 					
 					// Generate the image
-					
+					String imageName = "tmpImage"+RandomStringUtils.randomAlphanumeric(8);
+				
 					/*
 					 * Workaround: As long as the ODF toolkit can't handle images from a ByteStream
 					 * we have to convert it to a temporary image and insert that into the document.
 					 */
-					Path workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "tmpImage"+item.getDescription().hashCode());
+					workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), imageName);
 					
 					// FIXME Scaling doesn't work! :-(
 					// Therefore we "scale" the image manually by setting width and height inside result document
@@ -1118,7 +1122,15 @@ public class OfficeDocument {
 
 				}
 				catch (IOException e) {
-					e.printStackTrace();
+					log.error("Can't create temporary image file. Reason: " + e);
+				} finally {
+					if(workDir != null) {
+						try {
+							Files.deleteIfExists(workDir);
+						} catch (IOException e) {
+							log.error("Can't delete temporary image file. Reason: " + e);
+						}
+					}
 				}
 			}
 			
