@@ -964,18 +964,22 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         	
         	boolean isRemoved = documentItemsListData.removeAll(selectedEntries);
             if(isRemoved) {
-            	renumberItems();
-                // Recalculate the total sum of the document if necessary
-                // do it via the messaging system and send a message to DocumentEditor
-                Map<String, Object> event = new HashMap<>();
-                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
-                event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
-                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+            	informEditor();
             }
         } else {
             log.debug("no rows selected!");
         }
     }
+
+	private void informEditor() {
+		renumberItems();
+		// Recalculate the total sum of the document if necessary
+		// do it via the messaging system and send a message to DocumentEditor
+		Map<String, Object> event = new HashMap<>();
+		event.put(DocumentEditor.DOCUMENT_ID, document.getName());
+		event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
+		evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+	}
 
 	public void copySelectedEntry() {
     	@SuppressWarnings("unchecked")
@@ -1002,13 +1006,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 			}
         	
             if(isAdded) {
-            	renumberItems();
-                // Recalculate the total sum of the document if necessary
-                // do it via the messaging system and send a message to DocumentEditor
-                Map<String, Object> event = new HashMap<>();
-                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
-                event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
-                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+            	informEditor();
             }
         	
         } else {
