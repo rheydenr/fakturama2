@@ -991,6 +991,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         	
         	for (DocumentItemDTO documentItemDTO : selectedEntries) {
         		DocumentItem newDocumentItem = documentItemDTO.getDocumentItem().clone();
+        		
+        		// some modifications...
+        		newDocumentItem.setDateAdded(null);
+        		newDocumentItem.setModified(null);
+        		newDocumentItem.setModifiedBy(null);
+        		
 				DocumentItemDTO itemCopy = new DocumentItemDTO(newDocumentItem);
 				isAdded = documentItemsListData.add(itemCopy);
 			}
