@@ -710,10 +710,12 @@ public class ContactUtil {
 	 */
 	public String getGreeting(DocumentReceiver contact) {
 		String greeting = "";
-		int gender;
 
 		// Use the gender dependent preference settings
-		gender = contact.getGender();
+		Integer gender = contact.getGender();
+		if(gender == null) {
+			gender = Integer.valueOf(0);
+		}
 		switch (gender) {
 		case 1:
 			greeting = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_GREETING_MR);
