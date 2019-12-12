@@ -108,6 +108,7 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
         productListTable = ContextInjectionFactory.make(ProductListTable.class, context);
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
+        productListTable.getSearchControl().getTextControl().setFocus();
 
 		return top;
 	}
