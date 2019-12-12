@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.apache.commons.feature"
-      label="Commons IO and Commons Lang"
-      version="3.3.0"
+      label="Several Apache Commons Libs"
+      version="3.4.0"
       provider-name="apache.org">
 
    <description url="http://www.example.com/description">

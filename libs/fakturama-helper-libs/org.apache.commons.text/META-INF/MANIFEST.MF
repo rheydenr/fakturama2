@@ -11,5 +11,5 @@ Export-Package: org.apache.commons.text,
  org.apache.commons.text.matcher,
  org.apache.commons.text.similarity,
  org.apache.commons.text.translate
-Bundle-ClassPath: lib/commons-text-1.6.jar
+Bundle-ClassPath: lib/commons-text-1.8.jar
 Automatic-Module-Name: org.apache.commons.text

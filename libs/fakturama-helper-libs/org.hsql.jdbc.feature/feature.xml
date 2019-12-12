@@ -2,7 +2,7 @@
 <feature
       id="org.hsql.jdbc.feature"
       label="HSQL DB Feature"
-      version="2.4.1"
+      version="2.5.0"
       provider-name="Hypersonic">
 
    <description url="http://www.example.com/description">

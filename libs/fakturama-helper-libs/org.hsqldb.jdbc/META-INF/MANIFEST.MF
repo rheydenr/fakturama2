@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: HSQL JDBC driver
 Bundle-SymbolicName: org.hsqldb.jdbc
-Bundle-Version: 2.4.1
+Bundle-Version: 2.5.0
 Bundle-Vendor: hypersonic
 Export-Package: org.hsqldb,
  org.hsqldb.auth,
@@ -23,6 +23,7 @@ Export-Package: org.hsqldb,
  org.hsqldb.rowio,
  org.hsqldb.scriptio,
  org.hsqldb.server,
+ org.hsqldb.trigger,
  org.hsqldb.types,
  org.hsqldb.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

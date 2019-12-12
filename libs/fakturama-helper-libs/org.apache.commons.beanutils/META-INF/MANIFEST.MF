@@ -11,5 +11,5 @@ Export-Package: org.apache.commons.beanutils,
  org.apache.commons.beanutils.locale,
  org.apache.commons.beanutils.locale.converters
 Require-Bundle: org.apache.commons.logging;bundle-version="1.1.1"
-Bundle-ClassPath: lib/commons-beanutils-1.9.3.jar
+Bundle-ClassPath: lib/commons-beanutils-1.9.4.jar
 Automatic-Module-Name: org.apache.commons.beanutils
