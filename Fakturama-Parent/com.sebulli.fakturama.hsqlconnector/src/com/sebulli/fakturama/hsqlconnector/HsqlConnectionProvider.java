@@ -96,6 +96,10 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 	public void stopServer() {
 		server.shutdownCatalogs(Database.CLOSEMODE_COMPACT);
 		server.stop();
+		
+//		// #0000604: Create a database backup
+//		BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
+		
 		BackupManager bm = new BackupManager();
 		bm.createBackup(workspace);
 	}

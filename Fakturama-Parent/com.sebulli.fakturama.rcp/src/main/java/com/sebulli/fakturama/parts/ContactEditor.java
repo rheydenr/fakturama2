@@ -46,6 +46,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
@@ -456,7 +457,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
      */
     @Inject
     @Optional
-    public void handleForceClose(@UIEventTopic(ContactEditor.EDITOR_ID + "/forceClose") Event event) {
+    public void handleForceClose(@UIEventTopic(ContactEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "forceClose") Event event) {
         // the event has already all given params in it since we created them as Map
         String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
         // at first we have to check if the message is for us

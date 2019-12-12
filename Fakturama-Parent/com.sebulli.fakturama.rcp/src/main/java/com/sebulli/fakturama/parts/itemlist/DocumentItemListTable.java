@@ -38,6 +38,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -654,7 +655,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
 	                rowObject.setDocumentItemDirty(false);
 	                
-	                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+	                evtBroker.post(DocumentEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "itemChanged", event);
                 }
             }
 
@@ -978,7 +979,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 		Map<String, Object> event = new HashMap<>();
 		event.put(DocumentEditor.DOCUMENT_ID, document.getName());
 		event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
-		evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+		evtBroker.post(DocumentEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "itemChanged", event);
 	}
 
 	public void copySelectedEntry() {

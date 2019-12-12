@@ -57,6 +57,7 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
@@ -264,9 +265,7 @@ public class DocumentEditor extends Editor<Document> {
 	private ComboViewer comboViewerNoVat;
 	private ComboViewer comboNetGross;
 	private Text txtInvoiceRef;
-	private Text txtMessage;
-	private Text txtMessage2;
-	private Text txtMessage3;
+	private Text txtMessage, txtMessage2, txtMessage3;
 	private Button bPaid;
 	private Composite paidContainer;
 	private Composite paidDataContainer = null;
@@ -2888,7 +2887,7 @@ public class DocumentEditor extends Editor<Document> {
             boolean isChanged = false;
             String topic = StringUtils.defaultString(event.getTopic());
             String subTopic = "";
-            String[] topicName = topic.split("/");
+            String[] topicName = topic.split(UIEvents.TOPIC_SEP);
             if (topicName.length > 1) {
                 subTopic = topicName[1];
             }
