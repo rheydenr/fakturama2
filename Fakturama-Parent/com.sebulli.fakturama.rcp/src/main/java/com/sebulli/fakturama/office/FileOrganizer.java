@@ -141,6 +141,7 @@ public class FileOrganizer {
 				.replaceAll("\\{name\\}", name)
 				.replaceAll("\\{firstname\\}", replaceIllegalCharacters(documentContact.getFirstName()))
 				.replaceAll("\\{companyorname\\}", companyOrName)
+				.replaceAll("\\{company\\}", replaceIllegalCharacters(StringUtils.defaultString(documentContact.getCompany())))
 				.replaceAll("\\{alias\\}", alias)
 				.replaceAll("\\{custno\\}", 
 					StringUtils.defaultString(documentContact.getCustomerNumber()));

@@ -742,6 +742,10 @@
                 </listitem>
                 <listitem>
                     <para>
+                        <emphasis role="bold">{company}</emphasis> Firmenname des Kunden</para>
+                </listitem>
+                <listitem>
+                    <para>
                         <emphasis role="bold">{alias}</emphasis> Aliasname des Kunden</para>
                 </listitem>
                 <listitem>
