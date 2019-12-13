@@ -45,7 +45,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -107,12 +107,12 @@ public class ShippingEditor extends Editor<Shipping> {
     private Composite top;
     private Text textName;
     private Text textDescription;
-    private Combo comboVat;
+    private CCombo comboVat;
     private ComboViewer comboViewer;
     private ComboViewer comboAutoVat;
     private NetText netText;
     private GrossText grossText;
-    private Combo comboCategory;
+    private CCombo comboCategory;
     private ShippingCategory oldCat;
 
     // defines if the shipping is just created
@@ -340,7 +340,7 @@ public class ShippingEditor extends Editor<Shipping> {
         labelCategory.setToolTipText(msg.editorShippingCategoryTooltip);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        comboCategory = new Combo(top, SWT.BORDER);
+        comboCategory = new CCombo(top, SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 
         // Shipping description
@@ -421,7 +421,7 @@ public class ShippingEditor extends Editor<Shipping> {
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVat);
 
         // VAT combo list
-        comboVat = new Combo(top, SWT.BORDER | SWT.READ_ONLY);
+        comboVat = new CCombo(top, SWT.BORDER | SWT.READ_ONLY);
         comboViewer = new ComboViewer(comboVat);
         comboViewer.setContentProvider(new EntityComboProvider());
         comboViewer.setLabelProvider(new EntityLabelProvider());

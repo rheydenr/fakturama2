@@ -51,6 +51,7 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.FormattedTextObservableValue;
 import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -407,8 +408,17 @@ public abstract class Editor<T extends IEntity> {
          */
         boolean observeModelChangeManually = false;
         if(source instanceof Combo) {
-            uiWidget = WidgetProperties.comboSelection().observe((Combo) source);
-            observeModelChangeManually = true;
+			uiWidget = WidgetProperties.comboSelection().observe((Combo) source);
+			observeModelChangeManually = true;
+        } else if(source instanceof CCombo) {
+			uiWidget = WidgetProperties.ccomboSelection().observe((CCombo) source);
+			((CCombo) source).addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+						getMDirtyablePart().setDirty(true);
+				}
+			});
+			observeModelChangeManually = true;
         } else if (source instanceof Button) {
             uiWidget = WidgetProperties.buttonSelection().observe((Button) source);
             observeModelChangeManually = true;
