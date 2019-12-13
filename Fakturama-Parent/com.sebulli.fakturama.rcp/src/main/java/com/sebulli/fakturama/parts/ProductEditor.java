@@ -271,7 +271,7 @@ public class ProductEditor extends Editor<Product> {
 	        // check if we can delete the old category (if it's empty)
 	        if(oldCat != null && oldCat != editorProduct.getCategories()) {
 	        	long countOfEntriesInCategory = productsDAO.countByCategory(oldCat);
-	        	if(countOfEntriesInCategory == 0) {
+	        	if(countOfEntriesInCategory == 0 && !productCategoriesDAO.hasChildren(oldCat)) {
 	        		productCategoriesDAO.deleteEmptyCategory(oldCat);
 	        	}
 	        }
