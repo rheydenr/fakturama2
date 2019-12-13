@@ -272,8 +272,11 @@ public class ExpenditureVoucherListTable extends AbstractViewDataTable<Voucher, 
 
     @Override
     protected TopicTreeViewer<VoucherCategory> createCategoryTreeViewer(Composite top) {
-//    	topicTreeViewer = (TopicTreeViewer<VoucherCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
-        topicTreeViewer = new TopicTreeViewer<VoucherCategory>(top, msg, false, true);
+        context.set(TopicTreeViewer.PARENT_COMPOSITE, top);
+        context.set(TopicTreeViewer.USE_DOCUMENT_AND_CONTACT_FILTER, false);
+        context.set(TopicTreeViewer.USE_ALL, true);
+        
+    	topicTreeViewer = (TopicTreeViewer<VoucherCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(voucherCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

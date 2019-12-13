@@ -13,6 +13,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -343,8 +344,13 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
      */
     @Override
     protected TopicTreeViewer<ContactCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<ContactCategory>(top, msg, false, true);
-//    	topicTreeViewer = (TopicTreeViewer<ContactCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+//        topicTreeViewer = new TopicTreeViewer<ContactCategory>(top, msg, false, true);
+
+        context.set(TopicTreeViewer.PARENT_COMPOSITE, top);
+        context.set(TopicTreeViewer.USE_DOCUMENT_AND_CONTACT_FILTER, false);
+        context.set(TopicTreeViewer.USE_ALL, true);
+        
+    	topicTreeViewer = (TopicTreeViewer<ContactCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(contactCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

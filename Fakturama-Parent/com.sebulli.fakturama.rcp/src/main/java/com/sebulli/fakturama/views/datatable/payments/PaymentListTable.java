@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -294,8 +295,11 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
 
     @Override
     protected TopicTreeViewer<VoucherCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<VoucherCategory>(top, msg, false, true);
-//    	topicTreeViewer = (TopicTreeViewer<VoucherCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+        context.set(TopicTreeViewer.PARENT_COMPOSITE, top);
+        context.set(TopicTreeViewer.USE_DOCUMENT_AND_CONTACT_FILTER, false);
+        context.set(TopicTreeViewer.USE_ALL, true);
+        
+    	topicTreeViewer = (TopicTreeViewer<VoucherCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(accountDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

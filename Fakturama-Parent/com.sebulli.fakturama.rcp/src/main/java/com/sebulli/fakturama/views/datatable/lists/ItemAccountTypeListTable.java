@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -255,8 +256,11 @@ public class ItemAccountTypeListTable extends AbstractViewDataTable<ItemAccountT
 
     @Override
     protected TopicTreeViewer<ItemListTypeCategory> createCategoryTreeViewer(Composite top) {
-//    	topicTreeViewer = (TopicTreeViewer<ItemListTypeCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
-        topicTreeViewer = new TopicTreeViewer<ItemListTypeCategory>(top, msg, false, true);
+
+        context.set(TopicTreeViewer.PARENT_COMPOSITE, top);
+        context.set(TopicTreeViewer.USE_DOCUMENT_AND_CONTACT_FILTER, false);
+        context.set(TopicTreeViewer.USE_ALL, true);
+    	topicTreeViewer = (TopicTreeViewer<ItemListTypeCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         List<ItemListTypeCategory> categoryList = itemListTypeCategoriesDAO.findAll();
         categories = GlazedLists.eventList(categoryList);
         categories.forEach(cat -> msg.getMessageFromKey(cat.getName()));

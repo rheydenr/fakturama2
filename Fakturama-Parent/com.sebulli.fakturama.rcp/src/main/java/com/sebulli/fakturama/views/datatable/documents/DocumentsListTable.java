@@ -524,8 +524,12 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 	        //    	topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
 	        try {
 				categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
-//				topicTreeViewer = ContextInjectionFactory.make(TopicTreeViewer.class, context);
-				topicTreeViewer = new TopicTreeViewer<DummyStringCategory>(top, msg, true, false);
+
+		        context.set(TopicTreeViewer.PARENT_COMPOSITE, top);
+		        context.set(TopicTreeViewer.USE_DOCUMENT_AND_CONTACT_FILTER, true);
+		        context.set(TopicTreeViewer.USE_ALL, false);
+				
+				topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
 				topicTreeViewer.setAddressManager(addressManager);
 				topicTreeViewer.disableSorting();
 				topicTreeViewer.setInput(categories);
