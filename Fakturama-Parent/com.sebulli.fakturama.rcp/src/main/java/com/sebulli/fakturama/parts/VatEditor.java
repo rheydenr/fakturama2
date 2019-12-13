@@ -38,8 +38,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -83,7 +83,7 @@ public class VatEditor extends Editor<VAT> {
     private Text textName;
     private Text textDescription;
     private FormattedText textValue, textSalesEqTax;
-    private Combo comboCategory;
+    private CCombo comboCategory;
     private VATCategory oldCat;
 
     // defines if the vat is just created
@@ -259,8 +259,7 @@ public class VatEditor extends Editor<VAT> {
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        comboCategory = new Combo(top, SWT.BORDER);
-//        fillAndBindCategoryCombo();
+        comboCategory = new CCombo(top, SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 
         // The description

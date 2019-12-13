@@ -52,6 +52,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -140,7 +141,7 @@ public class ProductEditor extends Editor<Product> {
 	private FormattedText textQuantity;
 	private FormattedText costPrice;
 	private Text textQuantityUnit;
-	private Combo comboCategory;
+	private CCombo comboCategory;
 	private ProductCategory oldCat;
 	private FakturamaPictureControl labelProductPicture;
 	private Composite photoComposite;
@@ -482,7 +483,7 @@ public class ProductEditor extends Editor<Product> {
 		labelCategory.setToolTipText(msg.editorProductCategoryTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        comboCategory = new Combo(productDescGroup, SWT.BORDER);
+        comboCategory = new CCombo(productDescGroup, SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
         
         // GTIN

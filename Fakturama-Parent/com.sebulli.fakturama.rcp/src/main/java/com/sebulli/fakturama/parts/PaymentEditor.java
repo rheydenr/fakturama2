@@ -39,10 +39,10 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.IntegerFormatter;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -97,7 +97,7 @@ public class PaymentEditor extends Editor<Payment> {
 	private Text textPaid;
 	private Text textDepositPaid;
 	private Text textUnpaid;
-	private Combo comboCategory;
+	private CCombo comboCategory;
 
 	// defines if the payment is newly created
 	private boolean newPayment;
@@ -259,7 +259,7 @@ public class PaymentEditor extends Editor<Payment> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 		
         // Collect all category strings
-        comboCategory = new Combo(top, SWT.BORDER);
+        comboCategory = new CCombo(top, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCategory);
 
 		// Payment description

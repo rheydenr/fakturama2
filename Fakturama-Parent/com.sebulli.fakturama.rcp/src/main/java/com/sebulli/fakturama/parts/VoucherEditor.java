@@ -55,10 +55,10 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -115,7 +115,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	protected EPartService partService;
 	protected MPart part;
 	protected Composite top;
-	protected Combo comboCategory;
+	protected CCombo comboCategory;
 	protected CDateTime dtDate;
 	
 	@Inject
@@ -224,7 +224,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 	
-	        comboCategory = new Combo(top, SWT.BORDER);
+	        comboCategory = new CCombo(top, SWT.BORDER);
 	        comboCategory.setToolTipText(msg.commonFieldAccountTooltip);
 //	        fillAndBindCategoryCombo();
 	        GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);

@@ -31,7 +31,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -72,7 +72,7 @@ public class ListEditor extends Editor<ItemAccountType> {
     private Composite top;
     private Text textName;
     private Text textValue;
-    private Combo comboCategory;
+    private CCombo comboCategory;
 
     private MPart part;
 
@@ -189,7 +189,7 @@ public class ListEditor extends Editor<ItemAccountType> {
         labelCategory.setToolTipText(msg.editorListTooltip);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
         
-        comboCategory = new Combo(top, SWT.BORDER | SWT.READ_ONLY);
+        comboCategory = new CCombo(top, SWT.BORDER | SWT.READ_ONLY);
         comboCategory.setToolTipText(msg.editorListTooltip);
         GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(300, SWT.DEFAULT).applyTo(comboCategory);
 

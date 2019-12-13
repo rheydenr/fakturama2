@@ -64,6 +64,7 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -175,7 +176,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private Text txtVatNr;
 	private Text txtGln;
 	private FormattedText txtDiscount;
-	private Combo comboCategory;
+	private CCombo comboCategory;
 	private ComboViewer comboUseNetGross;
 
 	// These flags are set by the preference settings.
@@ -653,8 +654,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelCategory.setToolTipText(msg.editorContactFieldCategoryTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-//		createCategoryCombo();
-        comboCategory = new Combo(tabMisc, SWT.BORDER);
+        comboCategory = new CCombo(tabMisc, SWT.BORDER);
         comboCategory.setToolTipText(labelCategory.getToolTipText());
         GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(comboCategory);
 

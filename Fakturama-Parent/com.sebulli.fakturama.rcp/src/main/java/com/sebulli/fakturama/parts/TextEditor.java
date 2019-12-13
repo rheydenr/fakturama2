@@ -32,7 +32,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -81,7 +81,7 @@ public class TextEditor extends Editor<TextModule> {
     private Composite top;
 	private Text textName;
 	private Text textText;
-	private Combo comboCategory;
+	private CCombo comboCategory;
 
 	// defines, if the text is new created
 	private boolean newText;
@@ -229,7 +229,7 @@ public class TextEditor extends Editor<TextModule> {
 		labelCategory.setToolTipText(msg.textFieldCategoryTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        comboCategory = new Combo(top, SWT.BORDER);
+        comboCategory = new CCombo(top, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 		
 		// The text
