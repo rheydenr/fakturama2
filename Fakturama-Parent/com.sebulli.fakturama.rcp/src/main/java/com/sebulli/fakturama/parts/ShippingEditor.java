@@ -40,7 +40,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -138,6 +137,8 @@ public class ShippingEditor extends Editor<Shipping> {
 
     // This UniDataSet represents the editor's input 
     private Shipping editorShipping = null;
+
+	private Label labelVat;
 
     /**
      * Saves the contents of this part
@@ -349,7 +350,6 @@ public class ShippingEditor extends Editor<Shipping> {
 
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDescription);
         textDescription = new Text(top, SWT.BORDER);
-        //		textDescription.setText(editorShipping.getDescription());
         textDescription.setToolTipText(labelDescription.getToolTipText());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(textDescription);
 
@@ -367,7 +367,7 @@ public class ShippingEditor extends Editor<Shipping> {
 
         // Create a net label
         if (useNet) {
-            Label netValueLabel = new Label(netGrossComposite, SWT.NONE);
+			Label netValueLabel = new Label(netGrossComposite, SWT.NONE);
             netValueLabel.setText(msg.productDataNet);
             GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(netValueLabel);
         }
@@ -416,8 +416,7 @@ public class ShippingEditor extends Editor<Shipping> {
             GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).align(SWT.CENTER, SWT.TOP).applyTo(netText.getNetText().getControl());
         }
         
-        // VAT Label
-        Label labelVat = new Label(top, SWT.NONE);
+        labelVat = new Label(top, SWT.NONE);
         labelVat.setText(msg.commonFieldVat);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVat);
 
@@ -642,6 +641,7 @@ public class ShippingEditor extends Editor<Shipping> {
         // a constant VAT factor
         case SHIPPINGVATFIX:
             comboVat.setVisible(true);
+            labelVat.setVisible(true);
             if (useNet && netText != null) {
                 netText.setVisible(true);
                 netText.setVatValue(editorShipping.getShippingVat().getTaxValue());
@@ -656,6 +656,7 @@ public class ShippingEditor extends Editor<Shipping> {
         // same VAT factor as the items. The gross value is kept constant.
         case SHIPPINGVATGROSS:
             comboVat.setVisible(false);
+            labelVat.setVisible(false);
             if (netText != null) {
                 netText.setVisible(false);
                 netText.setVatValue(Double.valueOf(0.0));
@@ -670,6 +671,7 @@ public class ShippingEditor extends Editor<Shipping> {
         // same VAT factor as the items. The net value is kept constant.
         case SHIPPINGVATNET:
             comboVat.setVisible(false);
+            labelVat.setVisible(false);
             if (netText != null) {
                 netText.setVisible(true);
                 netText.setVatValue(Double.valueOf(0.0));
@@ -682,16 +684,6 @@ public class ShippingEditor extends Editor<Shipping> {
         }
 
     }
-//
-//    @PreDestroy
-//    public void beforeClose() {
-//        // Refresh the table view of all Shippings. This is necessary because if you change an entity
-//        // and don't save it, the list view gets updated (with the unsaved entity!). This call updates the
-//        // list view from database.
-//        evtBroker.post(EDITOR_ID, Editor.UPDATE_EVENT);
-//        editorShipping = null;
-//        top = null;
-//    }
    
     @Override
     protected String getDefaultEntryKey() {
