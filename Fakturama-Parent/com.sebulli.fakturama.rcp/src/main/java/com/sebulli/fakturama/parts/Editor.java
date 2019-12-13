@@ -31,6 +31,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
@@ -106,6 +107,9 @@ public abstract class Editor<T extends IEntity> {
 	
     @Inject
     protected IEclipseContext context;
+    
+    @Inject @Optional
+    protected NumberGenerator numberGenerator;
 
 	@Inject
 	@Translation
@@ -313,8 +317,7 @@ public abstract class Editor<T extends IEntity> {
 	 * @deprecated use {@link NumberGenerator#getNextNr(String)}
 	 */
 	protected String getNextNr() {
-		NumberGenerator numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
-		return numberGenerator.getNextNr(getEditorID());
+		return getNumberGenerator().getNextNr(getEditorID());
 	}
 
 	/**
@@ -328,8 +331,7 @@ public abstract class Editor<T extends IEntity> {
 	 * @deprecated use {@link NumberGenerator#setNextFreeNumberInPrefStore(String, String, String)}
 	 */
 	protected int setNextFreeNumberInPrefStore(String value, String key) {
-		NumberGenerator numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
-		return numberGenerator.setNextFreeNumberInPrefStore(value, getEditorID());
+		return getNumberGenerator().setNextFreeNumberInPrefStore(value, getEditorID());
 	}
 	
     /**
@@ -628,4 +630,11 @@ public abstract class Editor<T extends IEntity> {
     }
 
     protected abstract Class<T> getModelClass();
+
+	private NumberGenerator getNumberGenerator() {
+		if(numberGenerator == null) {
+			numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
+		}
+		return numberGenerator;
+	}
 }

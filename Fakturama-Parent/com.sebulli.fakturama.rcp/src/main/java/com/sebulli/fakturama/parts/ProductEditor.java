@@ -38,6 +38,7 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -68,6 +69,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
 
+import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
@@ -128,6 +130,9 @@ public class ProductEditor extends Editor<Product> {
     
     @Inject
     protected IEclipseContext context;
+    
+    @Inject @Optional
+    protected NumberGenerator numberGenerator;
 
 	// SWT widgets of the editor
 	private Composite top;
@@ -206,7 +211,7 @@ public class ProductEditor extends Editor<Product> {
         
 		if (newProduct) {
 			// Check, if the item number is the next one
-			if (setNextFreeNumberInPrefStore(textItemNr.getText(), Product_.itemNumber.getName()) == ERROR_NOT_NEXT_ID) {
+			if (numberGenerator.setNextFreeNumberInPrefStore(textItemNr.getText(), Product_.itemNumber.getName()) == ERROR_NOT_NEXT_ID) {
 				// It's not the next free ID
 				// Display an error message
 				MessageDialog.openError(top.getShell(),
@@ -315,6 +320,9 @@ public class ProductEditor extends Editor<Product> {
 	public void init(Composite parent) {
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(Icon.COMMAND_PRODUCT.getIconURI());
+        if(numberGenerator == null) {
+        	numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
+        }
         
 		String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
 		if (StringUtils.isNumeric(tmpObjId)) {
@@ -351,7 +359,7 @@ public class ProductEditor extends Editor<Product> {
 			editorProduct.setVat(vat);
 
 			// Get the next item number
-			editorProduct.setItemNumber(getNextNr());
+			editorProduct.setItemNumber(numberGenerator.getNextNr(ID));
 		}
 		else {
 
@@ -795,7 +803,7 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, textSupplierItemNumber, Product_.supplierItemNumber.getName(), 64);
 		bindModelValue(editorProduct, textDescription, Product_.description.getName(), 0);   // no limit
 		if(useQuantityUnit) {
-			UpdateValueStrategy strategy = new UpdateValueStrategy();
+			UpdateValueStrategy<Text, String> strategy = new UpdateValueStrategy<>();
 			strategy.setBeforeSetValidator((Object value) -> {
 		        String quantityUnit = (String) value;
 		        if(isQuantityUnitValid(quantityUnit)) {
@@ -835,12 +843,12 @@ public class ProductEditor extends Editor<Product> {
 	 */
 	private boolean isQuantityUnitValid(String quantityUnit) {
 		boolean retval = false;
-		if(StringUtils.isBlank(quantityUnit) || quantityUnit.matches("(?U)\\w+")) {
+		if(StringUtils.isBlank(quantityUnit) || quantityUnit.matches("(?U)\\w+\\.*")) {
 			retval = true;
 		} else {
 			// Pattern: n#name1|n#name2|n#name3
 			// only pairs of such blocks are valid!
-			if(quantityUnit.matches("(?U)(\\d+#\\w+\\|?)+")) {
+			if(quantityUnit.matches("(?U)(\\d+#\\w+\\.*\\|?)+")) {
 				retval = true;
 			}
 		}
