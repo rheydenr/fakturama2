@@ -399,6 +399,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUNIT);
         }
         
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
+        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.WEIGHT);
+        }
+        
         if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.ITEMNUMBER);
         }
@@ -467,6 +471,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                    break;
 	                case OPTIONAL:
 	                case QUNIT:
+	                case WEIGHT:
 	                case ITEMNUMBER:
 	                case NAME:
 	                case DESCRIPTION:
