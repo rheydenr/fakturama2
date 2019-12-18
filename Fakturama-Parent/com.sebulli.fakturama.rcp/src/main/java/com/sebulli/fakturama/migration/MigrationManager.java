@@ -854,10 +854,6 @@ public class MigrationManager {
 			}
 			item.setQuantity(oldItem.getQuantity());
 			item.setQuantityUnit(oldItem.getQunit());
-
-			// only PRO version
-//			item.setTara(oldItem.getTara());
-//			item.setWeight(oldItem.getWeight());
 			
 			// the owning document is _always_ the document which was given as parameter herein
 			document.addToItems(item);
