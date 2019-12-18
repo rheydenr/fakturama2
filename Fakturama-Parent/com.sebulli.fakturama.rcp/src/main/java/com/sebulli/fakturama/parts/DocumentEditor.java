@@ -77,6 +77,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
+import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
@@ -282,6 +283,7 @@ public class DocumentEditor extends Editor<Document> {
 	private FormattedText vatValue;
 	private FormattedText totalValue;
 	private Label netLabel;
+	private FormattedText tara; 
 
 	// These flags are set by the preference settings.
 	// They define, if elements of the editor are displayed, or not.
@@ -586,6 +588,7 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, dtDate, Document_.documentDate.getName());
 		bindModelValue(document, comboNetGross, Document_.netGross.getName());
 		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
+		bindModelValue(document, tara, Document_.tara.getName(), 50);
 		
 		DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
 		
@@ -1867,7 +1870,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1200, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setMinSize(1200, 700);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
@@ -2292,7 +2295,7 @@ public class DocumentEditor extends Editor<Document> {
 //		addressAndIconComposite.setSelection(0);
 
 		DocumentType documentType = getDocumentType();
-		/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
+/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
 		// Add the item table, if the document is one with items.
 		if (documentType.hasItems()) {
 		    ItemListBuilder itemListBuilder = ContextInjectionFactory.make(ItemListBuilder.class, context);
@@ -2305,7 +2308,17 @@ public class DocumentEditor extends Editor<Document> {
 		        .build();
 		}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
-
+		
+		Composite taraComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
+		GridLayoutFactory.fillDefaults().applyTo(taraComposite);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraComposite);
+		Label taraLabel = new Label(taraComposite, SWT.NONE);
+		taraLabel.setText("Tara");
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraLabel);
+		tara = new FormattedText(top);
+		tara.setFormatter(new DoubleFormatter());
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).span(3, 1).applyTo(tara.getControl());
+		
 		// Container for the message label and the add button
 		Composite addMessageButtonComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(addMessageButtonComposite);
@@ -2727,7 +2740,7 @@ public class DocumentEditor extends Editor<Document> {
 		shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
    
 		// Shipping combo		
-		comboShipping = new Combo(shippingComposite, SWT.BORDER/* | SWT.READ_ONLY*/);
+		comboShipping = new Combo(shippingComposite, SWT.BORDER);
 		comboShipping.setToolTipText(msg.editorDocumentFieldShippingTooltip);
 		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboShipping);
    
