@@ -241,6 +241,18 @@ id="04_openoffice_libreoffice">
 						<entry>Gesamtanzahl der Artikel</entry>
 					</row>
 					<row>
+						<entry>DOCUMENT.WEIGHT.TARA</entry>
+						<entry>Verpackungsgewicht</entry>
+					</row>
+					<row>
+						<entry>DOCUMENT.WEIGHT.NET</entry>
+						<entry>Nettogesamtgewicht der Artikel</entry>
+					</row>
+					<row>
+						<entry>DOCUMENT.WEIGHT.TOTAL</entry>
+						<entry>Gesamtgewicht</entry>
+					</row>
+					<row>
 						<entry>DOCUMENT.TOTAL.VAT</entry>
 						<entry>Mehrwertsteuer</entry>
 					</row>

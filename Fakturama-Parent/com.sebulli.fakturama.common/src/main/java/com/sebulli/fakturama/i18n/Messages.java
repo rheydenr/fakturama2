@@ -342,6 +342,10 @@ public class Messages {
 	public String editorDocumentFieldServicedateTooltip;
 	public String editorDocumentFieldShipping;
 	public String editorDocumentFieldShippingTooltip;
+	public String editorDocumentFieldNetweight;
+	public String editorDocumentFieldTara;
+	public String editorDocumentFieldTotalweight;
+	
 	public String editorDocumentItems;
 	public String editorDocumentNetgrossTooltip;
 	public String editorDocumentPaidvalue;

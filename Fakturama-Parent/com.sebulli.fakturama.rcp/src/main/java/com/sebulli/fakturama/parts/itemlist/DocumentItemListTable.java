@@ -521,7 +521,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 case WEIGHT:
                 	Double newWeight = ObjectUtils.defaultIfNull((Double) newValue, Double.valueOf(0.0));
                 	rowObject.getDocumentItem().setWeight(newWeight);
-                	calculate = false; // no recalculation needed
                 	break;
                 case ITEMNUMBER:
                     rowObject.getDocumentItem().setItemNumber((String) newValue);

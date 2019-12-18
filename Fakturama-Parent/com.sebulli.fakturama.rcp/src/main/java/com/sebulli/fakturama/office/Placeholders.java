@@ -147,12 +147,17 @@ public class Placeholders {
 			"DOCUMENT.VESTINGPERIOD.END",
 			"DOCUMENT.ITEMS.GROSS",
 			"DOCUMENT.ITEMS.NET",
+			"DOCUMENT.ITEMS.NET.DISCOUNTED",
 			"DOCUMENT.ITEMS.COUNT",
 			"DOCUMENT.TOTAL.QUANTITY",
 			"DOCUMENT.TOTAL.NET",
-			"DOCUMENT.ITEMS.NET.DISCOUNTED",
 			"DOCUMENT.TOTAL.VAT",
 			"DOCUMENT.TOTAL.GROSS",
+			
+			"DOCUMENT.WEIGHT.TARA",
+			"DOCUMENT.WEIGHT.NET",
+			"DOCUMENT.WEIGHT.TOTAL",
+			
 			"DOCUMENT.DEPOSIT.DEPOSIT",
 			"DOCUMENT.DEPOSIT.FINALPAYMENT",
 			"DOCUMENT.DEPOSIT.DEP_TEXT",
@@ -722,6 +727,17 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return Double.toString(documentSummary.getTotalQuantity()); // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
 
+		if (key.startsWith("DOCUMENT.WEIGHT")) {
+			if (key.equals("DOCUMENT.WEIGHT.TARA"))
+				return numberFormatterService.doubleToFormattedQuantity(document.getTara());
+			double netWeightValue = document.getItems().stream().mapToDouble(d -> d.getWeight() != null ? d.getWeight() : Double.valueOf(0.0)).sum();
+			if (key.equals("DOCUMENT.WEIGHT.NET"))
+				return numberFormatterService.doubleToFormattedQuantity(netWeightValue);
+			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
+			if (key.equals("DOCUMENT.WEIGHT.TOTAL"))
+				return numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue);
+		}		
+		
 		if (key.equals("DOCUMENT.DEPOSIT.DEPOSIT")) return numberFormatterService.formatCurrency(documentSummary.getDeposit());
 		if (key.equals("DOCUMENT.DEPOSIT.FINALPAYMENT")) return numberFormatterService.formatCurrency(documentSummary.getFinalPayment());
 		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString(Constants.PREFERENCES_DEPOSIT_TEXT);

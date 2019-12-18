@@ -325,6 +325,8 @@ public class DocumentEditor extends Editor<Document> {
 	private Text selectedMessageField;
 	private Group copyGroup;
 	private List<Document> pendingDeliveryMerges;
+	private Label netWeight;
+	private Label totalWeight;
 	
 	/**
 	 * Mark this document as printed
@@ -861,7 +863,7 @@ public class DocumentEditor extends Editor<Document> {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// if the shipping combo box value is changed manually we have to cut off the shipping from document
-				// and set it to the additionalinfos object
+				// and set it to the additionalInfos object
 				if(e != null) {
 					ISelection selection = comboViewerShipping.getSelection();
 					// an empty selection signals that the user has typed an own value
@@ -880,7 +882,7 @@ public class DocumentEditor extends Editor<Document> {
         // Fill the shipping combo with the shipping values.
         List<Shipping> allShippings = shippingsDAO.findAll();
         comboViewerShipping.setInput(allShippings);
-        	document.setShipping(tmpShipping);
+        document.setShipping(tmpShipping);
         if(tmpShipping == null && document.getAdditionalInfo().getShippingDescription() != null) {
         	// shipping was set manually => we have to do some magic :-)
         	comboShipping.setText(document.getAdditionalInfo().getShippingDescription());
@@ -1349,6 +1351,15 @@ public class DocumentEditor extends Editor<Document> {
 		if (totalValue != null) {
 			totalValue.setValue(documentSummary.getTotalGross());
 			totalValue.getControl().setToolTipText(msg.documentOrderStatePaid + ": " + document.getPaidValue());
+		}
+		
+		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
+			// set weight widgets
+			double netWeightValue = itemListTable.getDocumentItemsListData().stream()
+					.mapToDouble(DocumentItemDTO::getWeight).sum();
+			netWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue));
+			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
+			totalWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue));
 		}
 	}
 
@@ -2161,9 +2172,6 @@ public class DocumentEditor extends Editor<Document> {
 		    comboViewerNoVat.getCombo().select(0);
 		}
 
-//		Composite groupComposite = new Composite(top, SWT.BORDER);
-//		GridLayoutFactory.fillDefaults().margins(10, 10).applyTo(groupComposite);
-//		GridDataFactory.fillDefaults().span(1, 2).minSize(250, SWT.DEFAULT).align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(groupComposite);
 		copyGroup = new Group(top, SWT.SHADOW_ETCHED_OUT);
 		
 		//T: Document Editor
@@ -2309,15 +2317,37 @@ public class DocumentEditor extends Editor<Document> {
 		}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
 		
-		Composite taraComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
+		Composite taraComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) ? top : invisible, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(taraComposite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraComposite);
 		Label taraLabel = new Label(taraComposite, SWT.NONE);
-		taraLabel.setText("Tara");
+		taraLabel.setText(msg.editorDocumentFieldTara);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraLabel);
-		tara = new FormattedText(top);
+		
+		Composite weightComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) ? top : invisible, SWT.NONE);
+		GridLayoutFactory.fillDefaults().numColumns(5).applyTo(weightComposite);
+		GridDataFactory.swtDefaults().span(3, 1).applyTo(weightComposite);
+		tara = new FormattedText(weightComposite, SWT.BORDER | SWT.RIGHT);
 		tara.setFormatter(new DoubleFormatter());
-		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).span(3, 1).applyTo(tara.getControl());
+		tara.getControl().addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				calculate();
+			}
+		});
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(tara.getControl());
+		
+		Label netWeightLabel = new Label(weightComposite, SWT.NONE);
+		netWeightLabel.setText(msg.editorDocumentFieldNetweight);
+		netWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
+		netWeight.setAlignment(SWT.RIGHT);
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(netWeight);
+		
+		Label totalWeightLabel = new Label(weightComposite, SWT.NONE);
+		totalWeightLabel.setText(msg.editorDocumentFieldTotalweight);
+		totalWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
+		totalWeight.setAlignment(SWT.RIGHT);
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(totalWeight);
 		
 		// Container for the message label and the add button
 		Composite addMessageButtonComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
