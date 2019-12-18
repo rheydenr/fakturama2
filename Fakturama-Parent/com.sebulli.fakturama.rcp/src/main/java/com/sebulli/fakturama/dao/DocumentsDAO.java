@@ -349,6 +349,9 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
      * @return List of paid {@link Invoice}s
      */
     public List<Invoice> findPaidInvoicesForContact(Contact contact) {
+    	if(contact == null) {
+    		return Collections.emptyList();
+    	}
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Invoice> criteria = cb.createQuery(Invoice.class);
         Root<Invoice> root = criteria.from(Invoice.class);

@@ -167,7 +167,7 @@ public class TextEditor extends Editor<TextModule> {
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(Icon.COMMAND_TEXT.getIconURI());
-        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+        String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input

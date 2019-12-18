@@ -128,7 +128,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
        this.listTablePart = listTablePart;
        // if another click handler is set we use it
        // Listen to double clicks
-       Object commandId = this.listTablePart.getProperties().get("fakturama.datatable.texts.clickhandler");
+       Object commandId = this.listTablePart.getTransientData().get("fakturama.datatable.texts.clickhandler");
        if(commandId != null) { // exactly it would be "com.sebulli.fakturama.command.selectitem"
            hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
        } else {

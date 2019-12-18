@@ -25,7 +25,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 	}
 
 	/**
-	 * Create a new {@link DocumentReceiver} from a {@link Contact} for a given
+	 * Create a new {@link DocumentReceiver} from a contact address for a given
 	 * {@link BillingType}. Nearly all fields are copied from {@link Contact} except
 	 * <code>manualAddress</code>.
 	 * 
@@ -34,7 +34,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 	 * @return {@link DocumentReceiver}
 	 */
 	@Override
-	public DocumentReceiver createDocumentReceiverFromContact(Address address, BillingType billingType) {
+	public DocumentReceiver createDocumentReceiverFromAddress(Address address, BillingType billingType) {
 		Contact contact = address.getContact();
 		return createDocumentReceiver(contact, address, billingType);
 	}

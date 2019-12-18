@@ -863,7 +863,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         // Recalculate the total sum of the document if necessary
         // do it via the messaging system and send a message to ExpenditureVoucherEditor
         Map<String, Object> event = new HashMap<>();
-        event.put(DocumentEditor.DOCUMENT_ID, ((MPart)top.getParent().getParent().getData("modelElement")).getProperties().get(VoucherEditor.PART_ID));
+        event.put(DocumentEditor.DOCUMENT_ID, ((MPart)top.getParent().getParent().getData("modelElement")).getTransientData().get(VoucherEditor.PART_ID));
         event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
         evtBroker.post(VoucherEditor.EDITOR_ID + "/itemChanged", event);
     }

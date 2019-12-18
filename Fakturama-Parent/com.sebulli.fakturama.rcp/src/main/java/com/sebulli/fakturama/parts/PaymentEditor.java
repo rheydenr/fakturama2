@@ -150,7 +150,7 @@ public class PaymentEditor extends Editor<Payment> {
 		// to the data base
 		if (newPayment) {
 			newPayment = false;
-            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            String category = (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 VoucherCategory newCat = accountDAO.findCategoryByName(category);
                 payment.setCategory(newCat);
@@ -191,7 +191,7 @@ public class PaymentEditor extends Editor<Payment> {
         long stdID = 1L;
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(Icon.COMMAND_PAYMENT.getIconURI());
-        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+        String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input

@@ -113,9 +113,9 @@ public class BrowserEditor {
         this.part = (MPart) parent.getData("modelElement");
         part.setIconURI(Icon.COMMAND_WWW.getIconURI());
 
-		url =  (String) part.getProperties().get(OpenBrowserEditorHandler.PARAM_URL);
+		url =  (String) part.getTransientData().get(OpenBrowserEditorHandler.PARAM_URL);
 //		setPartName(input.getName());
-		isFakturamaProjectUrl = BooleanUtils.toBoolean(part.getProperties().get(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL));
+		isFakturamaProjectUrl = BooleanUtils.toBoolean((Boolean) part.getTransientData().get(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL));
         // Sets the URL
         if (this.isFakturamaProjectUrl) {
             url = OpenBrowserEditorHandler.FAKTURAMA_PROJECT_URL;

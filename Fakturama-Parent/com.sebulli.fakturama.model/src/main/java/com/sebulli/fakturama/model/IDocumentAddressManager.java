@@ -12,7 +12,7 @@ public interface IDocumentAddressManager {
 	 * @param billingType {@link BillingType} of {@link DocumentReceiver}
 	 * @return {@link DocumentReceiver}
 	 */
-	DocumentReceiver createDocumentReceiverFromContact(Address address, BillingType billingType);
+	DocumentReceiver createDocumentReceiverFromAddress(Address address, BillingType billingType);
 
 	/**
 	 * Gets the first(!) fitting  {@link Address} from {@link Contact} for the given {@link ContactType}.

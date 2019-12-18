@@ -324,7 +324,7 @@ public class ProductEditor extends Editor<Product> {
         	numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
         }
         
-		String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+		String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
 		if (StringUtils.isNumeric(tmpObjId)) {
 		    Long objId = Long.valueOf(tmpObjId);
 		    // Set the editor's data set to the editor's input

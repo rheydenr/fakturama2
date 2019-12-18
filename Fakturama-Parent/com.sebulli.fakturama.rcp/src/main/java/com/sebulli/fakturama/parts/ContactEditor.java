@@ -337,7 +337,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         Map<String, Object> eventParams = new HashMap<>();
         // the transientData HashMap contains the target document number
         // (was set in MouseEvent handler)
-        String callerDocument = (String) part.getProperties().get(CallEditor.PARAM_CALLING_DOC);
+        String callerDocument = (String) part.getTransientData().get(CallEditor.PARAM_CALLING_DOC);
         if(callerDocument != null) {
             eventParams.put(DocumentEditor.DOCUMENT_ID, callerDocument);
             eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(editorContact.getId()));
@@ -384,7 +384,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(getEditorIconURI());
-        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+        String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input

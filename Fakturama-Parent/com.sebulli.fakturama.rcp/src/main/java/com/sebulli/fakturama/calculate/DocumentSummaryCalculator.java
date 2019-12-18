@@ -13,6 +13,7 @@ import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.DocumentReceiverDAO;
@@ -32,6 +33,8 @@ import com.sebulli.fakturama.model.VAT;
  *
  */
 public class DocumentSummaryCalculator {
+	public static final String CURRENCY_CODE = "CURRENCY_CODE";
+
 	@Inject
 	private DocumentReceiverDAO documentReceiverDao;
 
@@ -44,6 +47,12 @@ public class DocumentSummaryCalculator {
 	public DocumentSummaryCalculator() {
 	    this(false, DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
+	
+	@Inject
+	public DocumentSummaryCalculator(IEclipseContext context) {
+	    this((CurrencyUnit)context.get(CURRENCY_CODE));
+	}
+
 	
 	public DocumentSummaryCalculator(boolean useSET) {
 		this.useSET = useSET;

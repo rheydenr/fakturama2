@@ -140,7 +140,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         this.listTablePart = listTablePart;
         super.createPartControl(parent, Product.class, true, ID);
         // Listen to double clicks
-        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_PRODUCTS_CLICKHANDLER);
+        Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_PRODUCTS_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
         	getGridLayer().getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
             

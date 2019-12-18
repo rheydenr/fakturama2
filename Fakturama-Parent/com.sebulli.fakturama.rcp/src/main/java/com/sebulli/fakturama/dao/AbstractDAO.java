@@ -365,7 +365,7 @@ em.joinTransaction();
         QueryByExamplePolicy policy = new QueryByExamplePolicy();
         policy.addSpecialOperation(String.class, "containsSubstring");
         policy.setAttributesToAlwaysInclude(getAlwaysIncludeAttributes());
-        policy.setShouldUseEqualityForNulls(true);
+        policy.setShouldUseEqualityForNulls(false);
         return policy;
     }
     

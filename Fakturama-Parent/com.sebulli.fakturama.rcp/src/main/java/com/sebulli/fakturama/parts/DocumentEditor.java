@@ -539,7 +539,7 @@ public class DocumentEditor extends Editor<Document> {
         
         // reset dirty flag
         setDirty(false);
-        ((MPart)getMDirtyablePart()).getProperties().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
+        ((MPart)getMDirtyablePart()).getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
         return Boolean.TRUE;
 	}
     
@@ -936,8 +936,8 @@ public class DocumentEditor extends Editor<Document> {
     		tmpDuplicate = (String) context.get(CallEditor.PARAM_DUPLICATE);
     	} else {
     		this.part = (MPart) parent.getData("modelElement");
-    		tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
-    		tmpDuplicate = (String) part.getProperties().get(CallEditor.PARAM_DUPLICATE);
+    		tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
+    		tmpDuplicate = (String) part.getTransientData().get(CallEditor.PARAM_DUPLICATE);
     	}
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
@@ -965,7 +965,7 @@ public class DocumentEditor extends Editor<Document> {
 			// .. get the document type (=the category) to ..
 			String category = BooleanUtils.isTrue(silentMode) 
 					? (String) context.get(CallEditor.PARAM_CATEGORY) 
-					: (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+					: (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
 			BillingType billingType = category != null ? BillingType.get(category) : BillingType.NONE;
 			if (billingType.isNONE()) {
 				billingType = BillingType.ORDER;
@@ -1145,6 +1145,7 @@ public class DocumentEditor extends Editor<Document> {
 		// TODO Check if parentDoc is equal to field "document"
 		Document retval = DocumentTypeUtil.createDocumentByBillingType(pTargetType);
 		retval.setSourceDocument(parentDoc);
+		createReceiverInformationFromParentDoc(retval);
 		// what about additionalInfo?
 		retval.setShipping(parentDoc.getShipping());
 		retval.setShippingValue(parentDoc.getShipping() != null ? parentDoc.getShipping().getShippingValue() : parentDoc.getShippingValue());
@@ -1176,8 +1177,6 @@ public class DocumentEditor extends Editor<Document> {
 			retval.setTransactionId(parentDoc.getTransactionId());
 		}
 		
-		createReceiverInformationFromParentDoc(parentDoc, retval);
-		
 		retval.setCustomerRef(parentDoc.getCustomerRef());
 		retval.setServiceDate(parentDoc.getServiceDate());
 		retval.setOrderDate(parentDoc.getOrderDate());
@@ -1189,10 +1188,9 @@ public class DocumentEditor extends Editor<Document> {
 
 		// copy items
 		for (DocumentItem item : parentDoc.getItems()) {
-			DocumentItem newItem = modelFactory.createDocumentItem();
 			// ok, looks a bit odd, but I've generated a (very simple!) copy method which
 			// returns a new object. TODO refactor the generation method (see Template!)
-			newItem = item.clone();
+			DocumentItem newItem = item.clone();
 			retval.addToItems(newItem);
 		}
 		retval.setItemsRebate(parentDoc.getItemsRebate());
@@ -1210,13 +1208,21 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 * @param resultingDoc the document for which the receiver's information should be created
 	 */
-	private void createReceiverInformationFromParentDoc(Document parentDoc, Document resultingDoc) {
-		DocumentReceiver receiver = modelFactory.createDocumentReceiver();
+	private void createReceiverInformationFromParentDoc(Document resultingDoc) {
+		Document parentDoc = resultingDoc.getSourceDocument();
 		
 		// determine parentDoc's Contact
-		receiver.setConsultant(addressManager.getAdressForBillingType(parentDoc, parentDoc.getBillingType()).getConsultant());
+		DocumentReceiver addressFromParentDoc = addressManager.getAdressForBillingType(parentDoc, parentDoc.getBillingType());
 
-		resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(addressManager.getAdressForBillingType(resultingDoc, parentDoc.getBillingType())));
+		// lookup origin receiver for an additional address which fits to this billing type
+		Contact contactFromReceiver = contactDAO.findById(addressFromParentDoc.getOriginContactId());
+		DocumentReceiver receiver = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
+		
+//		DocumentReceiver receiver = addressFromParentDoc.clone();
+		// change type
+//		receiver.setBillingType(resultingDoc.getBillingType());
+
+		resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(addressFromParentDoc));
 		resultingDoc.getReceiver().add(receiver);
 	}
 
@@ -1392,12 +1398,11 @@ public class DocumentEditor extends Editor<Document> {
 		if (addr != null && address_changed && addr.getOriginContactId() != null) {
 			// useNetGross can be null (from database!)
 			Contact contact = contactDAO.findById(addr.getOriginContactId());
-			if (contact.getUseNetGross() != null 
-					&& contact.getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
+			if (DocumentSummary.ROUND_NET_VALUES == contact.getUseNetGross()) {
 				useGross = false;
 				netgross = DocumentSummary.ROUND_NET_VALUES;
 			} else if (addr == null 
-					|| contact.getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
+					|| DocumentSummary.ROUND_GROSS_VALUES == contact.getUseNetGross()) {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 			}
@@ -1821,7 +1826,7 @@ public class DocumentEditor extends Editor<Document> {
 						.filter(a -> a.getContactTypes().contains(contactType)).findAny();
 				if (alternateAddress.isPresent()) {
 					DocumentReceiver documentReceiver = addressManager
-							.createDocumentReceiverFromContact(alternateAddress.get(), billingTypeToCheck);
+							.createDocumentReceiverFromAddress(alternateAddress.get(), billingTypeToCheck);
 					document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver);
 					java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(
 							billingTypeToCheck);
@@ -2512,7 +2517,7 @@ public class DocumentEditor extends Editor<Document> {
 		// initially both objects are equal
 		currentAddress.setData(ORIGIN_RECEIVER, AddressDTO.from(documentReceiver));
 		selectedAddresses.put(documentReceiver.getBillingType(), documentReceiver);
-		addressTabItem.setToolTipText("'ne Adresse ");
+//		addressTabItem.setToolTipText("'ne Adresse ");
 		
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(currentAddress);
 		addressTabItem.setControl(currentAddress);
@@ -2946,7 +2951,7 @@ public class DocumentEditor extends Editor<Document> {
                 }
 
                 // this selected contact is from now on the main receiver for this document
-                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(address, document.getBillingType());
+                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromAddress(address, document.getBillingType());
                 
                 /*
                  * If a Contact is selected as DocumentReceiver it has to be added to the current Document. But if another

@@ -216,11 +216,11 @@ public class CallEditor {
 	            	 * the SAME document/payment/shipping/whatever. Since the context is null, a new document window is opened :-(
 	            	 */
 	    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type)/* && mPart.getContext() != null*/) {
-	    				String object = (String) mPart.getProperties().get(PARAM_OBJ_ID);
-	    				if(object == null) {
-	    					// try another info container :-)
-	    					object = (String) mPart.getTransientData().get(PARAM_OBJ_ID);
-	    				}
+	    				String object = (String) mPart.getTransientData().get(PARAM_OBJ_ID);
+//	    				if(object == null) {
+//	    					// try another info container :-)
+//	    					object = (String) mPart.getTransientData().get(PARAM_OBJ_ID);
+//	    				}
 	    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
 	    					myPart = mPart;
 	    					break;
@@ -238,7 +238,7 @@ public class CallEditor {
 			myPart.setVisible(true);
 			myPart.getTags().add(partDescriptor.getCategory());
 
-			myPart.getProperties().putAll(params);
+			myPart.getTransientData().putAll(params);
 			stack.getChildren().add(myPart);
 			// we have to distinguish the different editors here
 			switch (type) {
@@ -261,13 +261,13 @@ public class CallEditor {
 			case ExpenditureVoucherListTable.ID:
                 myPart.setLabel(msg.commandExpenditurevouchersName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ExpenditureVoucherEditor.class.getName());
-                myPart.getProperties().put(PARAM_VOUCHERTYPE, VoucherType.EXPENDITURE.getName());
+                myPart.getTransientData().put(PARAM_VOUCHERTYPE, VoucherType.EXPENDITURE.getName());
                 break;
 			case ReceiptVoucherEditor.ID:
 			case ReceiptVoucherListTable.ID:
                 myPart.setLabel(msg.commandReceiptvouchersName);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + ReceiptVoucherEditor.class.getName());
-                myPart.getProperties().put(PARAM_VOUCHERTYPE, VoucherType.RECEIPTVOUCHER.getName());
+                myPart.getTransientData().put(PARAM_VOUCHERTYPE, VoucherType.RECEIPTVOUCHER.getName());
                 break;
 			case ListEditor.ID:
 			case ItemAccountTypeListTable.ID:
@@ -289,12 +289,12 @@ public class CallEditor {
             case DebitorEditor.ID:
                 myPart.setLabel(msg.pageContacts);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + DebitorEditor.class.getName());
-                myPart.getProperties().put(PARAM_EDITOR_TYPE, type);
+                myPart.getTransientData().put(PARAM_EDITOR_TYPE, type);
                 break;
             case CreditorEditor.ID:
                 myPart.setLabel(msg.pageContacts);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + CreditorEditor.class.getName());
-                myPart.getProperties().put(PARAM_EDITOR_TYPE, type);
+                myPart.getTransientData().put(PARAM_EDITOR_TYPE, type);
                 break;
             case DocumentsListTable.ID:
             case DocumentEditor.ID:
@@ -302,7 +302,7 @@ public class CallEditor {
                 DocumentType docType = DocumentTypeUtil.findByBillingType(billingType);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + DocumentEditor.class.getName());
                 myPart.setLabel(msg.getMessageFromKey(docType.getNewText()));
-                myPart.getProperties().put(PARAM_DUPLICATE, duplicate);
+                myPart.getTransientData().put(PARAM_DUPLICATE, duplicate);
                 break;
 			default:
 				myPart.setLabel("unknown");

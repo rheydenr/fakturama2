@@ -200,7 +200,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
         // if another click handler is set we use it
         // Listen to double clicks
-        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
+        Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
             hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
         } else {
@@ -443,7 +443,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     
     protected NatTable createListTable(Composite searchAndTableComposite) {
         // fill the underlying data source (GlazedList)
-    	if(this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER) != null) {
+    	if(this.listTablePart.getTransientData().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER) != null) {
     		// if a click handler is set we are in "dialog" mode which only uses delivery notes.
     		documentListData = GlazedLists.eventList(documentsDAO.findAllDeliveriesWithoutInvoice());
     	} else {
@@ -515,7 +515,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Override
     protected TopicTreeViewer<DummyStringCategory> createCategoryTreeViewer(Composite top) {
-        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
+        Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
         	topicTreeViewer = null;
         } else {
