@@ -1502,5 +1502,12 @@ TODO:
 		</addColumn>
 	</changeSet>
 	
+	<changeSet author="rheydenr" id="20191218-001"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_DOCUMENT">
+			<column name="VERSION" type="BIGINT" />
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
     

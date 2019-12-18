@@ -734,34 +734,44 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 		}
 		return retval;
 	}
-
-	public Set<Long> saveBatch(List<Document> resultList) throws FakturamaStoringException {
-		Set<Long> documentIds = new HashSet<>();
-		Set<Document> docSet = new HashSet<>();
-		Document lastSuccessfulObject = null;
-		try {
-			checkConnection();
-			EntityManager entityManager = getEntityManager();
-			entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
-			entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING_SIZE, 20);
-			EntityTransaction trx = entityManager.getTransaction();
-			trx.begin();
-			for (Document doc : resultList) {
-				lastSuccessfulObject = entityManager.merge(doc);
-				getEntityManager().persist(lastSuccessfulObject);
-				// documentIds.add(currentDocument.getId());
-//				System.out.println("t");
-				docSet.add(lastSuccessfulObject);
-			}
-			trx.commit();
-		} catch (SQLException e) {
-			throw new FakturamaStoringException("Error saving to the database.", e, lastSuccessfulObject);
+	
+	@Override
+	public Document save(Document object) throws FakturamaStoringException {
+		Integer version = object.getVersion();
+		if(version == null) {
+			version = Integer.valueOf(0);
 		}
-		documentIds = docSet.stream().map(d -> d.getId()).collect(Collectors.toSet());
-		return documentIds;
+		object.setVersion(version + 1);
+		return super.save(object);
 	}
-	
-	
+//
+//	public Set<Long> saveBatch(List<Document> resultList) throws FakturamaStoringException {
+//		Set<Long> documentIds = new HashSet<>();
+//		Set<Document> docSet = new HashSet<>();
+//		Document lastSuccessfulObject = null;
+//		try {
+//			checkConnection();
+//			EntityManager entityManager = getEntityManager();
+//			entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
+//			entityManager.setProperty(PersistenceUnitProperties.BATCH_WRITING_SIZE, 20);
+//			EntityTransaction trx = entityManager.getTransaction();
+//			trx.begin();
+//			for (Document doc : resultList) {
+//				lastSuccessfulObject = entityManager.merge(doc);
+//				getEntityManager().persist(lastSuccessfulObject);
+//				// documentIds.add(currentDocument.getId());
+////				System.out.println("t");
+//				docSet.add(lastSuccessfulObject);
+//			}
+//			trx.commit();
+//		} catch (SQLException e) {
+//			throw new FakturamaStoringException("Error saving to the database.", e, lastSuccessfulObject);
+//		}
+//		documentIds = docSet.stream().map(d -> d.getId()).collect(Collectors.toSet());
+//		return documentIds;
+//	}
+//	
+//	
 	
 	
 }
