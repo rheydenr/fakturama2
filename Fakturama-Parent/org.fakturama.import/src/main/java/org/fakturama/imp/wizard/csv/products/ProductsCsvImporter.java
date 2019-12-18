@@ -88,7 +88,7 @@ public class ProductsCsvImporter {
 	// Defines all columns that are used and imported
 	private String[] requiredHeaders = { "itemnr", "name", "category", "description", "price1", "price2", "price3",
 			"price4", "price5", "block1", "block2", "block3", "block4", "block5", "vat", "options", "weight", "unit",
-			"date_added", "picturename", "quantity", "webshopid", "qunit" };
+			"date_added", "picturename", "quantity", "webshopid", "qunit", "costprice" };
 
 	// The result string
 	private String result = " ";
@@ -218,6 +218,8 @@ public class ProductsCsvImporter {
 							? Integer.parseInt(prop.getProperty("block4")) : Integer.valueOf(1000));
 					product.setBlock5(StringUtils.isNumeric(prop.getProperty("block5"))
 							? Integer.parseInt(prop.getProperty("block5")) : Integer.valueOf(10000));
+					
+					product.setCostPrice(DataUtils.getInstance().StringToDouble(prop.getProperty("costprice")));
 
                     setProductOptions(product, prop.getProperty("options"));
 
@@ -232,7 +234,7 @@ public class ProductsCsvImporter {
 						product.setModified(today);
 					}
 
-					if(prop.getProperty("picturename") != null && (!prop.getProperty("picturename").isEmpty() || importEmptyValues)) {
+					if(prop.getProperty("picturename") != null && !basePath.toString().isEmpty() && (!prop.getProperty("picturename").isEmpty() || importEmptyValues)) {
 					    byte[] picture = readPicture(prop.getProperty("picturename"), basePath);
 					    product.setPicture(picture);
 					}

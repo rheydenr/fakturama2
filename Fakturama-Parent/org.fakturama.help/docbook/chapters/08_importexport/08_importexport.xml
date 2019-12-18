@@ -587,6 +587,12 @@
 					<para>Mengeneinheit</para>
 				</listitem>
 			</varlistentry>
+			<varlistentry>
+				<term>costprice</term>
+				<listitem>
+					<para>Einkaufspreis</para>
+				</listitem>
+			</varlistentry>
 		</variablelist>
 		<para>Es wird empfohlen, den Import zuerst mit einer Datei aus nur 2-3 Einträgen zu testen, bevor die ganze Datei importiert wird. Bei einem fehlerhaften Import muss ansonsten jedes Produkt einzeln gelöscht werden.</para>
 		<para>Siehe auch <link linkend="importexport_export_csv_products">Export Liste Produkte als CSV-Datei</link>
