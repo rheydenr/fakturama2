@@ -87,7 +87,6 @@ import org.eclipse.nebula.widgets.nattable.selection.EditTraversalStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -377,65 +376,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
  */
     
     protected NatTable createListTable(Composite tableComposite) {  
-        Integer columnIndex = Integer.valueOf(0);
         // fill the underlying data source (GlazedLists)
         initItemsList();
 
-        // Create the table columns 
-        // get the visible properties to show in list view along with their position index
-        final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = new DualHashBidiMap<>();
-
-        if (containsOptionalItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
-           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.OPTIONAL);
-        }
-
-        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUANTITY);
-        
-        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUNIT)) {
-           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUNIT);
-        }
-        
-        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
-        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.WEIGHT);
-        }
-        
-        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR)) {
-           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.ITEMNUMBER);
-        }
-        
-        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
-           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.PICTURE);
-        }        
-
-        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0) {
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATESTART);
-         }        
-        
-        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 1) {
-        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATEEND);
-        }        
-        
-        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
-        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
-
-        if (documentType.hasPrice() 
-        		|| document.getBillingType().isDELIVERY() && getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE)) {
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
-	        
-	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX) && useSET) {
-	        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.SALESEQUALIZATIONTAX);
-	        }        
-            
-            // "$ItemGrossPrice" (if useGross = true) or "price" (if useGross = false)
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.UNITPRICE);
-            
-            if (containsDiscountedItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM)) {
-                propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DISCOUNT);
-            } 
-            
-            // useGross = true => "$ItemGrossTotal", useGross = false => "$ItemNetTotal"
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.TOTALPRICE);
-        }
+        final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = createColumns();
         
         List<DocumentItemListDescriptor> tmpList2 = new ArrayList<DocumentItemListDescriptor>(propertyNamesList.values());
         String[] propertyNames = tmpList2.stream().map(DocumentItemListDescriptor::getPropertyName).collect(Collectors.toList()).toArray(new String[]{});
@@ -507,8 +451,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                			? new Price(rowObject.getDocumentItem(), useSET).getUnitGrossRounded() 
 	                			: new Price(rowObject.getDocumentItem(), useSET).getUnitNetRounded();
 	                	retval = amount.getNumber().doubleValue();
-	                	
-	                    //retval = (Double) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
 	                    break;
 	                case TOTALPRICE:
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"
@@ -711,7 +653,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         gridListLayer.getViewportLayer().addConfiguration(new DefaultEditBindings());
         gridListLayer.getViewportLayer().addConfiguration(new DefaultEditConfiguration());
         gridListLayer.getViewportLayer().addConfiguration(new DocumentItemTableConfiguration());
-//        
+        
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently.
         BidiMap<DocumentItemListDescriptor, Integer> reverseMap = propertyNamesList.inverseBidiMap();
@@ -775,6 +717,67 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         
         return natTable;
     }
+
+
+	private BidiMap<Integer, DocumentItemListDescriptor> createColumns() {
+		// Create the table columns 
+        // get the visible properties to show in list view along with their position index
+        Integer columnIndex = Integer.valueOf(0);
+        final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = new DualHashBidiMap<>();
+
+        if (containsOptionalItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
+           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.OPTIONAL);
+        }
+
+        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUANTITY);
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUNIT)) {
+           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUNIT);
+        }
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
+        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.WEIGHT);
+        }
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR)) {
+           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.ITEMNUMBER);
+        }
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
+           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.PICTURE);
+        }        
+
+        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0) {
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATESTART);
+         }        
+        
+        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 1) {
+        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATEEND);
+        }        
+        
+        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
+        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
+
+        if (documentType.hasPrice() 
+        		|| document.getBillingType().isDELIVERY() && getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE)) {
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
+	        
+	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX) && useSET) {
+	        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.SALESEQUALIZATIONTAX);
+	        }        
+            
+            // "$ItemGrossPrice" (if useGross = true) or "price" (if useGross = false)
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.UNITPRICE);
+            
+            if (containsDiscountedItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM)) {
+                propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DISCOUNT);
+            } 
+            
+            // useGross = true => "$ItemGrossTotal", useGross = false => "$ItemNetTotal"
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.TOTALPRICE);
+        }
+		return propertyNamesList;
+	}
 
 	@Override
 	protected void createDefaultContextMenu() {
@@ -904,9 +907,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // with a discounted price was found
         Optional<DocumentItemDTO> discountedValue = getDocumentItemsListData().stream().filter(item -> item.getDocumentItem().getItemRebate() != null && item.getDocumentItem().getItemRebate().compareTo(Double.valueOf(0.0)) != 0).findFirst();
         containsDiscountedItems = discountedValue.isPresent();
-
-        // Renumber all Items ==> WHY???
-//        renumberItems();
     }
     
     @Override
@@ -1412,20 +1412,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     protected AbstractDAO<DocumentItemDTO> getEntityDAO() {
         throw new UnsupportedOperationException("Inside a list table there's no extra DAO.");
     }
-//
-//	/**
-//	 * @return the useGross
-//	 */
-//	public final boolean isUseGross() {
-//		return useGross;
-//	}
-//
-//	/**
-//	 * @param useGross the useGross to set
-//	 */
-//	public final void setUseGross(boolean useGross) {
-//		this.useGross = useGross;
-//	}
 
 	/**
 	 * @return the container
