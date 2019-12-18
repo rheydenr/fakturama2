@@ -77,6 +77,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
+import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
@@ -282,6 +283,7 @@ public class DocumentEditor extends Editor<Document> {
 	private FormattedText vatValue;
 	private FormattedText totalValue;
 	private Label netLabel;
+	private FormattedText tara; 
 
 	// These flags are set by the preference settings.
 	// They define, if elements of the editor are displayed, or not.
@@ -323,6 +325,8 @@ public class DocumentEditor extends Editor<Document> {
 	private Text selectedMessageField;
 	private Group copyGroup;
 	private List<Document> pendingDeliveryMerges;
+	private Label netWeight;
+	private Label totalWeight;
 	
 	/**
 	 * Mark this document as printed
@@ -586,6 +590,7 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, dtDate, Document_.documentDate.getName());
 		bindModelValue(document, comboNetGross, Document_.netGross.getName());
 		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
+		bindModelValue(document, tara, Document_.tara.getName(), 50);
 		
 		DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
 		
@@ -858,7 +863,7 @@ public class DocumentEditor extends Editor<Document> {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// if the shipping combo box value is changed manually we have to cut off the shipping from document
-				// and set it to the additionalinfos object
+				// and set it to the additionalInfos object
 				if(e != null) {
 					ISelection selection = comboViewerShipping.getSelection();
 					// an empty selection signals that the user has typed an own value
@@ -877,7 +882,7 @@ public class DocumentEditor extends Editor<Document> {
         // Fill the shipping combo with the shipping values.
         List<Shipping> allShippings = shippingsDAO.findAll();
         comboViewerShipping.setInput(allShippings);
-        	document.setShipping(tmpShipping);
+        document.setShipping(tmpShipping);
         if(tmpShipping == null && document.getAdditionalInfo().getShippingDescription() != null) {
         	// shipping was set manually => we have to do some magic :-)
         	comboShipping.setText(document.getAdditionalInfo().getShippingDescription());
@@ -1346,6 +1351,15 @@ public class DocumentEditor extends Editor<Document> {
 		if (totalValue != null) {
 			totalValue.setValue(documentSummary.getTotalGross());
 			totalValue.getControl().setToolTipText(msg.documentOrderStatePaid + ": " + document.getPaidValue());
+		}
+		
+		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
+			// set weight widgets
+			double netWeightValue = itemListTable.getDocumentItemsListData().stream()
+					.mapToDouble(DocumentItemDTO::getWeight).sum();
+			netWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue));
+			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
+			totalWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue));
 		}
 	}
 
@@ -1867,7 +1881,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1200, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setMinSize(1200, 700);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
@@ -2158,9 +2172,6 @@ public class DocumentEditor extends Editor<Document> {
 		    comboViewerNoVat.getCombo().select(0);
 		}
 
-//		Composite groupComposite = new Composite(top, SWT.BORDER);
-//		GridLayoutFactory.fillDefaults().margins(10, 10).applyTo(groupComposite);
-//		GridDataFactory.fillDefaults().span(1, 2).minSize(250, SWT.DEFAULT).align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(groupComposite);
 		copyGroup = new Group(top, SWT.SHADOW_ETCHED_OUT);
 		
 		//T: Document Editor
@@ -2292,7 +2303,7 @@ public class DocumentEditor extends Editor<Document> {
 //		addressAndIconComposite.setSelection(0);
 
 		DocumentType documentType = getDocumentType();
-		/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
+/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
 		// Add the item table, if the document is one with items.
 		if (documentType.hasItems()) {
 		    ItemListBuilder itemListBuilder = ContextInjectionFactory.make(ItemListBuilder.class, context);
@@ -2305,7 +2316,39 @@ public class DocumentEditor extends Editor<Document> {
 		        .build();
 		}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
-
+		
+		Composite taraComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) ? top : invisible, SWT.NONE | SWT.RIGHT);
+		GridLayoutFactory.fillDefaults().applyTo(taraComposite);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraComposite);
+		Label taraLabel = new Label(taraComposite, SWT.NONE);
+		taraLabel.setText(msg.editorDocumentFieldTara);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraLabel);
+		
+		Composite weightComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) ? top : invisible, SWT.NONE);
+		GridLayoutFactory.fillDefaults().numColumns(5).applyTo(weightComposite);
+		GridDataFactory.swtDefaults().span(3, 1).applyTo(weightComposite);
+		tara = new FormattedText(weightComposite, SWT.BORDER | SWT.RIGHT);
+		tara.setFormatter(new DoubleFormatter());
+		tara.getControl().addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				calculate();
+			}
+		});
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(tara.getControl());
+		
+		Label netWeightLabel = new Label(weightComposite, SWT.NONE);
+		netWeightLabel.setText(msg.editorDocumentFieldNetweight);
+		netWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
+		netWeight.setAlignment(SWT.RIGHT);
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(netWeight);
+		
+		Label totalWeightLabel = new Label(weightComposite, SWT.NONE);
+		totalWeightLabel.setText(msg.editorDocumentFieldTotalweight);
+		totalWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
+		totalWeight.setAlignment(SWT.RIGHT);
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(totalWeight);
+		
 		// Container for the message label and the add button
 		Composite addMessageButtonComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(addMessageButtonComposite);
@@ -2727,7 +2770,7 @@ public class DocumentEditor extends Editor<Document> {
 		shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
    
 		// Shipping combo		
-		comboShipping = new Combo(shippingComposite, SWT.BORDER/* | SWT.READ_ONLY*/);
+		comboShipping = new Combo(shippingComposite, SWT.BORDER);
 		comboShipping.setToolTipText(msg.editorDocumentFieldShippingTooltip);
 		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboShipping);
    

@@ -11,6 +11,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.stack.DefaultBodyLayerStack;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.SortHeaderLayer;
@@ -27,8 +28,8 @@ import ca.odell.glazedlists.SortedList;
  */
 public class GlazedListsColumnHeaderLayerStack<T extends IEntity> extends AbstractLayerTransform {
 	private IDataProvider dataProvider;
-	private DefaultColumnHeaderDataLayer dataLayer;
-	private ColumnHeaderLayer columnHeaderLayer;
+	private DataLayer dataLayer;
+	private ILayer columnHeaderLayer;
 
 	public GlazedListsColumnHeaderLayerStack(String[] propertyNames, 
 												Map<String, String> propertyToLabelMap, 
@@ -123,7 +124,7 @@ public class GlazedListsColumnHeaderLayerStack<T extends IEntity> extends Abstra
 		return dataProvider;
 	}
 
-	public ColumnHeaderLayer getColumnHeaderLayer() {
+	public ILayer getColumnHeaderLayer() {
 		return columnHeaderLayer;
 	}
 }

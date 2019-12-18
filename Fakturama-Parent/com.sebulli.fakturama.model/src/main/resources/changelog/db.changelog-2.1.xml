@@ -1492,5 +1492,15 @@ TODO:
 		</addColumn>
 	</changeSet>
 	
+	<changeSet author="rheydenr" id="20191211-004"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<dropColumn tableName="FKT_DOCUMENTITEM">
+			<column name="TARA" />
+		</dropColumn>
+		<addColumn tableName="FKT_DOCUMENT">
+			<column name="TARA" type="DOUBLE"/>
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
     

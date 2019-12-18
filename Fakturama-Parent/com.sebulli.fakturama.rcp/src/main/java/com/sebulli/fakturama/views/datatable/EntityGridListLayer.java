@@ -20,7 +20,6 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
-import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
@@ -40,11 +39,8 @@ import ca.odell.glazedlists.EventList;
  *
  */
 public class EntityGridListLayer<T extends IEntity> {
-
     private BodyLayerStack<T> bodyLayerStack;
-    private GlazedListsColumnHeaderLayerStack<T> columnHeaderLayer;
     private GridLayer gridLayer;
-	private ViewportLayer viewportLayer;
     
     public EntityGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
             IRowIdAccessor<T> rowIdAccessor, IConfigRegistry configRegistry, Messages msg, boolean withRowHeader) {
@@ -54,8 +50,8 @@ public class EntityGridListLayer<T extends IEntity> {
 
         //2. build the column header layer
         IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<T>(propertyNames, columnPropertyAccessor);
-        columnHeaderLayer = new GlazedListsColumnHeaderLayerStack<T>(columnHeaderDataProvider, columnPropertyAccessor, configRegistry, bodyLayerStack);
-
+        GlazedListsColumnHeaderLayerStack<T> columnHeaderLayer = new GlazedListsColumnHeaderLayerStack<T>(columnHeaderDataProvider, columnPropertyAccessor, configRegistry, bodyLayerStack);
+        
         // 3. build the row header layer
         IDataProvider rowHeaderDataProvider = new ListViewRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider(), withRowHeader);
         DataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
@@ -83,12 +79,6 @@ public class EntityGridListLayer<T extends IEntity> {
 
         // 5. build the grid layer
         gridLayer = new GridLayer(bodyLayerStack, columnHeaderLayer, rowHeaderLayer, cornerLayer);
-        
-        setViewportLayer(new ViewportLayer(bodyLayerStack.getSelectionLayer()));
-        // as the selection mouse bindings are registered for the region label
-        // GridRegion.BODY we need to set that region label to the viewport so
-        // the selection via mouse is working correctly
-        getViewportLayer().setRegionName(GridRegion.BODY);
     }
     
     public EntityGridListLayer(EventList<T> eventList, String[] propertyNames, IColumnPropertyAccessor<T> columnPropertyAccessor, 
@@ -147,14 +137,6 @@ public class EntityGridListLayer<T extends IEntity> {
 	 * @return the viewportLayer
 	 */
 	public ViewportLayer getViewportLayer() {
-		return viewportLayer;
+		return bodyLayerStack.getViewportLayer();
 	}
-
-	/**
-	 * @param viewportLayer the viewportLayer to set
-	 */
-	private void setViewportLayer(ViewportLayer viewportLayer) {
-		this.viewportLayer = viewportLayer;
-	}
-
 }

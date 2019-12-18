@@ -74,6 +74,10 @@ public class DocumentItemDTO implements IEntity {
 	public DocumentItem getDocumentItem() {
 		return documentItem;
 	}
+	
+	public Double getWeight() {
+		return documentItem != null && documentItem.getWeight() != null ? documentItem.getWeight() : Double.valueOf(0.0);
+	}
 
 	/**
 	 * @return the price
