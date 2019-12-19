@@ -35,7 +35,10 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptions;
 
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.ICSVParser;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
@@ -150,10 +153,13 @@ public class ProductsCsvImporter {
 		String[] columns;
 
 		Path inputFile = Paths.get(fileName);
+		
 
 		// Open the existing file
 		try (BufferedReader in = Files.newBufferedReader(inputFile);
-			 CSVReader csvr = new CSVReader(in, separator, quoteChar);) {
+			 ) {
+			ICSVParser csvParser = new CSVParserBuilder().withSeparator(separator).withQuoteChar(quoteChar).build();
+			CSVReader csvr = new CSVReaderBuilder(in).withCSVParser(csvParser).build();
 
 			// Read next CSV line
 			columns = csvr.readNext();
