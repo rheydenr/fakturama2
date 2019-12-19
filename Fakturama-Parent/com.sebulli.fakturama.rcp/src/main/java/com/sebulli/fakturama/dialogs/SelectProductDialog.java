@@ -51,7 +51,9 @@ import com.sebulli.fakturama.views.datatable.products.ProductListTable;
  * @author Gerd Bartelt
  */
 public class SelectProductDialog extends AbstractSelectionDialog<Product> {
-    protected static final Point DEFAULT_DIALOG_SIZE = new Point(800, 550);
+    protected static final String PRODUCTSELECTION_DIALOG = "org.fakturama.productselection.dialog";
+
+	protected static final Point DEFAULT_DIALOG_SIZE = new Point(800, 550);
 
     @Inject
     @Translation
@@ -102,8 +104,8 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
         context.set(IEventBroker.class, evtBroker);
         MPart part = modelService.createModelElement(MPart.class);
         part.setContext(context);
-        part.setElementId("org.fakturama.productselection.dialog");
-        part.getProperties().put(Constants.PROPERTY_PRODUCTS_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
+        part.setElementId(PRODUCTSELECTION_DIALOG);
+        part.getTransientData().put(Constants.PROPERTY_PRODUCTS_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
         context.set(MPart.class, part);
         productListTable = ContextInjectionFactory.make(ProductListTable.class, context);
 

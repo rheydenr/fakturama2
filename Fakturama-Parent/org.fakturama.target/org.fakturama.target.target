@@ -36,26 +36,6 @@
 <repository location="https://dl.bintray.com/testng-team/testng-eclipse-release/updatesites/6.10.0.201612030230/"/>
 </location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/releases/2019-09"/>
-		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
-		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.13.0.v20190710-1453"/>
-		<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.13.0.v20190710-1453"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.600.v20190907-0426"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.6.600.v20190907-0426"/>
-		<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.3.v20190423-0625"/>
-		<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.200.v20190502-0212"/>
-		<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.5.v20190423-0614"/>
-		<unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.0.v20190530-1947"/>
-		<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.100.v20180301-0132"/>
-		<unit id="org.eclipse.emf.common.feature.group" version="2.16.0.v20190625-1131"/>
-		<unit id="org.eclipse.emf.feature.group" version="2.19.0.v20190824-1315"/>
-		<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.10.0.v20190830-1434"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.500.v20190907-0428"/>
-		<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.300.v20190903-0934"/>
-		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.19.0.v20190907-0428"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.13.0.v20190916-1323"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20190827152740/repository"/>
 		<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
 		<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
@@ -122,6 +102,26 @@
 		<unit id="org.eclipse.nebula.widgets.opal.commons.feature.feature.group" version="1.0.0.201907151344"/>
 		<unit id="org.eclipse.nebula.widgets.opal.multichoice.feature.feature.group" version="1.0.0.201907151344"/>
 		<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.201907151344"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="http://download.eclipse.org/releases/2019-12"/>
+		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
+		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.14.0.v20191115-2149"/>
+		<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.14.0.v20191115-2149"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.14.0.v20191204-0601"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.14.0.v20191204-0601"/>
+		<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.400.v20191023-2007"/>
+		<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.300.v20191023-2007"/>
+		<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.600.v20191023-2007"/>
+		<unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.100.v20191024-1546"/>
+		<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.200.v20191024-1546"/>
+		<unit id="org.eclipse.emf.common.feature.group" version="2.17.0.v20190920-0401"/>
+		<unit id="org.eclipse.emf.feature.group" version="2.20.0.v20191028-0905"/>
+		<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.11.0.v20191114-1701"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.600.v20191014-2025"/>
+		<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.400.v20191120-0247"/>
+		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.20.0.v20191122-2104"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.14.0.v20191210-0610"/>
 	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>

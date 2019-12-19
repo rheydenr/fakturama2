@@ -1,0 +1,122 @@
+target "Fakturama target file" with allEnvironments
+
+location "http://download.eclipse.org/gemini/updates/dbaccess/1.1.0" {
+	org.eclipse.gemini.dbaccess.feature.feature.group
+	org.eclipse.gemini.dbaccess.h2.feature.feature.group
+	org.eclipse.gemini.dbaccess.hsqldb.feature.feature.group
+	org.eclipse.gemini.dbaccess.mysql.feature.feature.group
+}
+
+location "http://p2.mukis.de/org.eclipse.gemini.ext.di/latest" {
+	org.eclipse.gemini.ext.di.feature.feature.group
+}
+
+location "http://download.eclipse.org/gemini/jpa/updates" {
+	org.eclipse.gemini.jpa.feature.feature.group
+}
+
+location "http://download.eclipse.org/modeling/emft/texo/updates/interim" {
+	org.eclipse.emf.texo.feature.group
+}
+
+location "http://download.eclipse.org/nebula/incubation/snapshot" {
+	org.eclipse.nebula.widgets.picture.feature.feature.group
+    org.eclipse.nebula.widgets.treemapper.feature.feature.group
+    org.eclipse.nebula.widgets.formattedtext.feature.feature.group
+}
+
+location "http://download.eclipse.org/rt/eclipselink/updates" {
+	org.eclipse.persistence.sdk.feature.group [2.7.3,2.7.4)
+}
+
+//location "https://dl.bintray.com/testng-team/testng-eclipse-release/updatesites/6.10.0.201612030230" {
+//	org.testng.eclipse.feature.group
+//}
+
+location "http://download.eclipse.org/releases/2019-12" {
+	org.eclipse.draw2d.feature.group
+	org.eclipse.e4.core.tools.feature.feature.group
+	org.eclipse.e4.core.tools.feature.source.feature.group
+	org.eclipse.e4.rcp.feature.group
+	org.eclipse.e4.rcp.source.feature.group
+	org.eclipse.ecf.core.feature.feature.group
+	org.eclipse.ecf.core.ssl.feature.feature.group
+	org.eclipse.ecf.filetransfer.feature.feature.group
+	org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group
+	org.eclipse.ecf.filetransfer.ssl.feature.feature.group
+	org.eclipse.emf.common.feature.group
+	org.eclipse.emf.feature.group
+	org.eclipse.equinox.core.feature.feature.group
+	org.eclipse.equinox.executable.feature.group
+	org.eclipse.equinox.p2.core.feature.feature.group
+	org.eclipse.equinox.sdk.feature.group
+	org.eclipse.platform.feature.group
+}
+
+location "https://download.eclipse.org/tools/orbit/downloads/drops/R20190827152740/repository" {
+	ca.odell.glazedlists
+	ca.odell.glazedlists.source
+	ch.qos.logback.classic
+	ch.qos.logback.core
+	ch.qos.logback.slf4j
+	org.apache.commons.cli
+	org.apache.commons.codec
+	org.apache.commons.lang
+	org.apache.commons.logging
+	org.apache.poi
+	org.apache.poi.ooxml
+	org.apache.poi.ooxml.schemas
+	org.apache.xerces
+	org.apache.xmlbeans
+	org.hamcrest.library
+	org.junit
+	org.mockito
+	org.slf4j.api
+	org.slf4j.ext
+	org.slf4j.jul
+	org.slf4j.log4j
+	org.yaml.snakeyaml
+}
+
+location "https://download.eclipse.org/technology/babel/update-site/R0.17.0/2019-06" {
+	org.eclipse.babel.nls_eclipse_ar.feature.group
+	org.eclipse.babel.nls_eclipse_de.feature.group
+	org.eclipse.babel.nls_eclipse_el.feature.group
+	org.eclipse.babel.nls_eclipse_es.feature.group
+	org.eclipse.babel.nls_eclipse_eu.feature.group
+	org.eclipse.babel.nls_eclipse_fr.feature.group
+	org.eclipse.babel.nls_eclipse_hu.feature.group
+	org.eclipse.babel.nls_eclipse_it.feature.group
+	org.eclipse.babel.nls_eclipse_pl.feature.group
+	org.eclipse.babel.nls_eclipse_ro.feature.group
+	org.eclipse.babel.nls_eclipse_ru.feature.group
+	org.eclipse.babel.nls_eclipse_sk.feature.group
+	org.eclipse.babel.nls_eclipse_tr.feature.group
+	org.eclipse.babel.nls_eclipse_uk.feature.group
+}
+
+location "http://download.eclipse.org/nattable/releases/1.6.0/repository" {
+		org.eclipse.nebula.widgets.nattable.core.feature.feature.group
+		org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group
+		org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group
+		org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group
+		org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group
+}
+
+location "http://p2.fakturama.info/2.1.0" {
+		com.mysql.jdbc.feature.feature.group
+		com.opcoach.e4.preference.feature.feature.group
+		com.opencsv.feature.feature.group
+		org.apache.commons.feature.feature.group
+		org.hsql.jdbc.feature.feature.group
+		org.javamoney.feature.feature.group
+		org.slf4j.osgi.feature.feature.group
+}
+
+location "http://download.eclipse.org/nebula/releases/latest" {
+		org.eclipse.nebula.cwt.feature.feature.group
+		org.eclipse.nebula.widgets.cdatetime.feature.feature.group
+		org.eclipse.nebula.widgets.opal.commons.feature.feature.group
+		org.eclipse.nebula.widgets.opal.multichoice.feature.feature.group
+		org.eclipse.nebula.widgets.pgroup.feature.feature.group
+}
