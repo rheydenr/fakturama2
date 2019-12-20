@@ -19,7 +19,8 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
  osgi.enterprise,
  org.eclipse.osgi,
  org.slf4j.api,
- org.yaml.snakeyaml
+ org.yaml.snakeyaml,
+ jakarta.persistence;bundle-version="2.2.3";visibility:=reexport
 Meta-Persistence: META-INF/persistence.xml
 Service-Component: OSGI-INF/dbupdateservice.xml,
  OSGI-INF/documentaddressmanager.xml

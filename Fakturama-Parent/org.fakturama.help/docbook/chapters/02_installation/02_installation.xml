@@ -282,7 +282,6 @@
                         <emphasis role="bold">-nl ar -Dforce.rtl=true</emphasis> Arabisch
                 </listitem>
 			</itemizedlist>
-			<warning>Leider ist es aufgrund von Problemen mit dem türkischen Zeichensatz nicht möglich, Fakturama in der türkischen Sprache zu starten. Die Datenbank kann in dieser Konstellation nicht korrekt erzeugt werden, was zum Absturz des Programms führt. Wir arbeiten hier an einer entsprechenden Lösung. Als Umgehungslösung können Sie Fakturama vorläufig in der englischen Lokalisierung starten (oder jeder beliebigen anderen).</warning>
 		</sect2>
 	</section>
 </chapter>
