@@ -496,7 +496,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		top = new Composite(scrollcomposite, SWT.SCROLLBAR_OVERLAY | SWT.NONE );  //was parent before 
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1200, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setMinSize(700, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
@@ -1071,7 +1071,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		stringComboBoxLabelProvider.setCountryNames(countryNames);
 		comboCountry.setLabelProvider(stringComboBoxLabelProvider);
 		addressTabWidget.setCountryCombo(comboCountry);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
+		GridDataFactory.fillDefaults().grab(false, false).span(2, 1).applyTo(comboCountry.getCombo());
 
 		// Local Consultant
 		Label labelLocalConsultant = new Label(addressGroup, SWT.NONE);

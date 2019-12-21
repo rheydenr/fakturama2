@@ -2084,16 +2084,29 @@
 		</sect2>
 		<sect2>
 			<title>Kundennummer</title>
-			<para>Nummer des Kontaktes. Diese wird automatisch hochgezählt.</para>
+			<para>Nummer des Kontaktes. Diese wird automatisch hochgezählt. Man kann die Nummer auch 
+			manuell überschreiben. Dann wird geprüft, ob die eingegebene Nummer die nächste mögliche Nummer
+			ist. Diese Prüfung kann man über eine Einstellung auch abschalten:</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/preference_suppress_numbercheck.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata width="50%" fileref="../images/editor/preference_suppress_numbercheck.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
 			<para>Siehe <link linkend="preferences_numberrangevalues">Nummernkreise</link>
 			</para>
 		</sect2>
 		<sect2>
 			<title>Adresse</title>
-			<para>Der Reiter unterteilt sich in allgemeine Angaben wie Firmenname und/oder Name des Kunden bzw. Debitors. Daneben
+			<para>Der Reiter unterteilt sich in allgemeine Angaben wie Firmenname und/oder Name des Kontaktes. Daneben
 			gibt es einen weiteren Bereich, in dem verschiedene Adressen zu diesem Kontakt erfasst werden können. Diese Adressen
 			können über das [+]-Symbol hinzugefügt werden. Derzeit ist es leider noch nicht möglich, eine Adresse auch wieder zu löschen.
-			Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine). Lässt man
+			Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine, 
+			diese Auswahl wird in den kommenden Versionen von Fakturama vervollständigt). Lässt man
 			die Auswahl leer, kann die Adresse für beliebige Arten von Dokumenten verwendet werden. Ansonsten werden die Adressen
 			des Kontaktes bei der Adressauswahl über den Dokumentendialog gefiltert.</para>
 			<para>Einzelne Felder wie <emphasis role="bold">Anrede, Titel, Firma oder Land</emphasis> 
