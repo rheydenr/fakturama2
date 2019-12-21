@@ -7,7 +7,7 @@ location "http://download.eclipse.org/gemini/updates/dbaccess/1.1.0" {
 	org.eclipse.gemini.dbaccess.mysql.feature.feature.group
 }
 
-location "http://p2.mukis.de/org.eclipse.gemini.ext.di/latest" {
+location "http://p2.fakturama.info/gemini-di" {
 	org.eclipse.gemini.ext.di.feature.feature.group
 }
 
