@@ -21,11 +21,15 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.commands.CommandManager;
+import org.eclipse.core.commands.ParameterType;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
@@ -49,6 +53,9 @@ import com.sebulli.fakturama.handlers.OpenBrowserEditorHandler;
 import com.sebulli.fakturama.handlers.OpenContactsHandler;
 import com.sebulli.fakturama.handlers.OpenListViewsHandler;
 import com.sebulli.fakturama.handlers.WebShopCallHandler;
+import com.sebulli.fakturama.handlers.paramconverter.BooleanParameterValueConverter;
+import com.sebulli.fakturama.handlers.paramconverter.DocumentParameterConverter;
+import com.sebulli.fakturama.handlers.paramconverter.NumberParameterValueConverter;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.parts.DebitorEditor;
@@ -83,6 +90,12 @@ public class NavigationView {
     @Inject
     @Preference(value=InstanceScope.SCOPE)
     private IPreferenceStore preferences;
+    
+    @Inject
+    private CommandManager cmdMan;    	
+
+    @Inject
+    private IEclipseContext context;
 
     @Inject
     @Translation
@@ -106,6 +119,18 @@ public class NavigationView {
 
         composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout());
+        
+        // This is for test only!!!
+        ParameterType parameterType = cmdMan.getParameterType("com.sebulli.fakturama.model.Order");
+        parameterType.define("com.sebulli.fakturama.model.Order", ContextInjectionFactory.make(DocumentParameterConverter.class, context));
+		
+        ParameterType parameterTypeInteger = cmdMan.getParameterType("java.lang.Integer");
+        parameterTypeInteger.define("java.lang.Integer", new NumberParameterValueConverter());
+		
+        ParameterType parameterTypeBoolean = cmdMan.getParameterType("java.lang.Boolean");
+        parameterTypeBoolean.define("java.lang.Boolean", new BooleanParameterValueConverter());
+
+        // +++ END TEST +++
 
         // Create the first expand bar "Import"
         PGroup group = createPGroup("command.navigation.import", Icon.ICON_SHOP);
