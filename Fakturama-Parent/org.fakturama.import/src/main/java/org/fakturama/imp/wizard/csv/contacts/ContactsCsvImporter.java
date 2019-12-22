@@ -20,6 +20,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -32,7 +35,10 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.ICSVParser;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -101,7 +107,7 @@ public class ContactsCsvImporter {
 			"delivery_street", "delivery_zip", "delivery_city", "delivery_country",
 			"account_holder", "bank_name", "iban", "bic",
 			"nr", "note", "date_added",  "payment", "reliability",
-			"phone", "fax", "mobile", "email", "website", "vatnr", "vatnrvalid", "discount" };
+			"phone", "fax", "mobile", "email", "website", "vatnr", "vatnrvalid", "discount", "supplier_nr", "username" };
 
 	// The result string
 	String result = "";
@@ -150,11 +156,12 @@ public class ContactsCsvImporter {
 		int lineNr = 0;
 
 		String[] columns;
+		Path inputFile = Paths.get(fileName);
 	
 		// Open the existing file
-		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
-			 BufferedReader in = new BufferedReader(isr);
-			 CSVReader csvr = new CSVReader(in, separator, quoteChar);) {
+		try (BufferedReader in = Files.newBufferedReader(inputFile)) {
+			ICSVParser csvParser = new CSVParserBuilder().withSeparator(separator).withQuoteChar(quoteChar).build();
+			CSVReader csvr = new CSVReaderBuilder(in).withCSVParser(csvParser).build();
 			
 			// Read next CSV line
 			columns = csvr.readNext();
@@ -305,6 +312,8 @@ public class ContactsCsvImporter {
 					testContact.setReliability(ReliabilityType.getByName(prop.getProperty("reliability")));
 
 					testContact.setWebsite(prop.getProperty("website"));
+					testContact.setSupplierNumber(prop.getProperty("supplier_nr"));
+					testContact.setWebshopName(prop.getProperty("username"));
 					testContact.setVatNumber(prop.getProperty("vatnr"));
 					testContact.setVatNumberValid(BooleanUtils.toBooleanObject(prop.getProperty("vatnrvalid")));
 					testContact.setDiscount(DataUtils.getInstance().StringToDouble(prop.getProperty("discount")));

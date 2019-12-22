@@ -1100,7 +1100,7 @@ public class DocumentEditor extends Editor<Document> {
 		
     	fillSelectedAddresses();
 
-		if(BooleanUtils.isNotTrue(silentMode)) {
+		if(BooleanUtils.isNotTrue(silentMode) && !newDocument) {
 			showOrderStatisticDialog(parent);
 		}
         

@@ -17,8 +17,6 @@ import javax.persistence.PersistenceException;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.commands.CommandManager;
-import org.eclipse.core.commands.ParameterType;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -78,9 +76,6 @@ import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.StockUpdateHandler;
-import com.sebulli.fakturama.handlers.paramconverter.BooleanParameterValueConverter;
-import com.sebulli.fakturama.handlers.paramconverter.DocumentParameterConverter;
-import com.sebulli.fakturama.handlers.paramconverter.NumberParameterValueConverter;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.MessageRegistry;
 import com.sebulli.fakturama.misc.Constants;
@@ -168,9 +163,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private MPart listTablePart;
 
     private Document selectedObject;
-    
-    @Inject
-    private CommandManager cmdMan;    	
 
     @Inject
     protected MessageRegistry registry;
@@ -184,18 +176,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         if(!eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, "").isEmpty()) {
         	return null;
         }
-        // This is for test only!!!
-        ParameterType parameterType = cmdMan.getParameterType("com.sebulli.fakturama.model.Order");
-        parameterType.define("com.sebulli.fakturama.model.Order", ContextInjectionFactory.make(DocumentParameterConverter.class, context));
-		
-        ParameterType parameterTypeInteger = cmdMan.getParameterType("java.lang.Integer");
-        parameterTypeInteger.define("java.lang.Integer", new NumberParameterValueConverter());
-		
-        ParameterType parameterTypeBoolean = cmdMan.getParameterType("java.lang.Boolean");
-        parameterTypeBoolean.define("java.lang.Boolean", new BooleanParameterValueConverter());
-
-        // +++ END TEST +++
-        
         super.createPartControl(parent, Document.class, true, ID);
 
         // if another click handler is set we use it

@@ -434,6 +434,18 @@
 					<para>Rabatt, der diesem Kunden gewährt wird.</para>
 				</listitem>
 			</varlistentry>
+			<varlistentry>
+				<term>supplier_nr</term>
+				<listitem>
+					<para>Lieferantennummer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>username</term>
+				<listitem>
+					<para>Nutzername für den Webshop</para>
+				</listitem>
+			</varlistentry>
 		</variablelist>
 		<para>Es wird empfohlen, den Import zuerst mit einer Datei aus nur 2-3 Einträgen zu testen, bevor die ganze Datei importiert wird. Bei einem fehlerhaften Import muss ansonsten jeder Kontakt einzeln gelöscht werden.</para>
 		<para>Siehe auch <link linkend="importexport_export_csv_contacts">Export Adressliste als CSV-Datei</link>

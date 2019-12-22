@@ -153,11 +153,9 @@ public class ProductsCsvImporter {
 		String[] columns;
 
 		Path inputFile = Paths.get(fileName);
-		
 
 		// Open the existing file
-		try (BufferedReader in = Files.newBufferedReader(inputFile);
-			 ) {
+		try (BufferedReader in = Files.newBufferedReader(inputFile)) {
 			ICSVParser csvParser = new CSVParserBuilder().withSeparator(separator).withQuoteChar(quoteChar).build();
 			CSVReader csvr = new CSVReaderBuilder(in).withCSVParser(csvParser).build();
 
