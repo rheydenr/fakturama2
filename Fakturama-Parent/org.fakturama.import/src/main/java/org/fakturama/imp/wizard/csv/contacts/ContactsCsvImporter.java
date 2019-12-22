@@ -15,10 +15,8 @@
 package org.fakturama.imp.wizard.csv.contacts;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -263,6 +261,7 @@ public class ContactsCsvImporter {
 					address.setEmail(prop.getProperty("email"));
 //					address.setCountryCode(prop.getProperty("country")); TODO get correct country code!
 					testContact.getAddresses().add(address);
+					address.setContact(testContact);
 
 					Address deliveryAddress = addressManager.getAddressFromContact(testContact, ContactType.DELIVERY);
 					Debitor deliveryContact = deliveryAddress != null ? (Debitor) testContact : modelFactory.createDebitor();
@@ -286,6 +285,7 @@ public class ContactsCsvImporter {
 					deliveryAddress.setEmail(prop.getProperty("delivery_email"));
 //					deliveryAddress.setCountryCode(prop.getProperty("delivery_country")); // FIXME set correct country code!!!!
 					deliveryContact.getAddresses().add(deliveryAddress);
+					deliveryAddress.setContact(deliveryContact);
 
 					BankAccount account = testContact.getBankAccount() != null ? testContact.getBankAccount() : modelFactory.createBankAccount();
 					account.setValidFrom(Calendar.getInstance().getTime());

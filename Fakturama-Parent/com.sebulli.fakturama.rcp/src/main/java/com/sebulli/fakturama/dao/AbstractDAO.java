@@ -319,7 +319,11 @@ em.joinTransaction();
 		CriteriaQuery<T> select = query.select(root).where(restrictions.toArray(new Predicate[] {}));
 
 		List<T> resultList = getEntityManager().createQuery(select).getResultList();
-		if (!checkOnly) {
+		if (checkOnly) {
+			if (!resultList.isEmpty()) {
+				retval = resultList.get(0);
+			}
+		} else {
 			if (resultList.isEmpty()) {
 				((IEntity) object).setValidFrom(new Date());
 				retval = save(object);
