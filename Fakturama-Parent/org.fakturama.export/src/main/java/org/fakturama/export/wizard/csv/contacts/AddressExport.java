@@ -27,6 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.wizards.ExporterHelper;
@@ -133,7 +134,9 @@ public class AddressExport {
 					"\"vatnr\";"+
 					"\"vatnrvalid\";"+
 					"\"discount\";"+
-					"\"birthday\""+
+					"\"birthday\";"+
+					"\"supplier_nr\";"+
+					"\"username\"" +
 					NEW_LINE);
 		
 			// Get all undeleted contacts
@@ -145,7 +148,7 @@ public class AddressExport {
 				// Place the contacts information into the table
 				StringBuffer stringBuffer = new StringBuffer();
 				stringBuffer.append(contact.getId()).append(";");
-				if(contact.getCategories() != null) {
+				if(contact.getCategories() != null && StringUtils.isNotBlank(contact.getCategories().getName())) {
 					stringBuffer.append(ExporterHelper.inQuotes(CommonConverter.getCategoryName(contact.getCategories(), "/")));
 //				} else {
 //					stringBuffer.append(";");
@@ -157,7 +160,7 @@ public class AddressExport {
 					.append(ExporterHelper.inQuotes(contact.getName())).append(";")
 					.append(ExporterHelper.inQuotes(contact.getCompany())).append(";");
 				
-				Address billingAddress = addressManager.getAddressFromContact(contact, ContactType.BILLING);
+				Address billingAddress = addressManager.getAddressFromContact(contact, ContactType.BILLING).orElse(null);
 				if(billingAddress != null) {
 						stringBuffer.append(ExporterHelper.inQuotes(billingAddress.getStreet())).append(";")
 						   .append(ExporterHelper.inQuotes(billingAddress.getZip())).append(";")
@@ -172,7 +175,7 @@ public class AddressExport {
 				}
 		
 				
-				Address deliveryAddress = addressManager.getAddressFromContact(contact, ContactType.DELIVERY);
+				Address deliveryAddress = addressManager.getAddressFromContact(contact, ContactType.DELIVERY).orElse(null);
 				stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(contact.getGender()))).append(";")
 				   .append(ExporterHelper.inQuotes(contact.getTitle())).append(";")
 				   .append(ExporterHelper.inQuotes(contact.getFirstName())).append(";")
@@ -217,12 +220,15 @@ public class AddressExport {
 				stringBuffer.append(ExporterHelper.inQuotes(contact.getWebsite())).append(";")
 				   .append(ExporterHelper.inQuotes(contact.getVatNumber())).append(";")
 				   .append(BooleanUtils.isTrue(contact.getVatNumberValid())).append(";")
-				   .append(ExporterHelper.inQuotes(numberFormatterService.DoubleToDecimalFormatedValue(contact.getDiscount(), "0.00"))).append(";");
+				   .append(ExporterHelper.inQuotes(numberFormatterService.DoubleToDecimalFormatedValue(contact.getDiscount(), "0.00"))).append(";")
+				;
 				
 				if(contact.getBirthday() != null) {
 					stringBuffer.append(sdf.format(contact.getBirthday()));
 				}				
-				stringBuffer.append(";");
+				stringBuffer.append(";")
+				   .append(ExporterHelper.inQuotes(contact.getSupplierNumber())).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getWebshopName())).append(";");
 
 				bos.write(stringBuffer.toString() + NEW_LINE);
 			}
