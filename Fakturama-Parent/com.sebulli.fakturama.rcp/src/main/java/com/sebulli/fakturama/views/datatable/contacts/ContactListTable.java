@@ -322,6 +322,13 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     protected abstract MatcherEditor<T> createTextWidgetMatcherEditor();
 
     protected abstract EventList<T> getListData(boolean forceRead);
+    
+    @Override
+    protected T handleCascadeDelete(T objToDelete) {
+    	// set all addresses to deleted
+    	objToDelete.getAddresses().forEach(adr -> adr.setDeleted(true));
+    	return objToDelete;
+    }
 
     /* (non-Javadoc)
      * @see com.sebulli.fakturama.views.datatable.vats.AbstractViewDataTable#getTableId()

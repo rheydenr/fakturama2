@@ -222,7 +222,9 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
         <eReference href="Fakturama.ecore#//Contact/addresses"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="All addresses which belongs to this contact."/>
-        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation" description="WARNING: Don't try to set a Join Column Property in Annotation Model!!! There's a bug in Texo which generates two identical annotations for this."/>
+        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation" description="WARNING: Don't try to set a Join Column Property in Annotation Model!!! There's a bug in Texo which generates two identical annotations for this.">
+          <oneToMany cascadeOnDelete="true"/>
+        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Contact/customerNumber"/>

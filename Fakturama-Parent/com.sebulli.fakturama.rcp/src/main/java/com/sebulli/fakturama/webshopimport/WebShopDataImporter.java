@@ -81,7 +81,6 @@ import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
-import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -106,6 +105,7 @@ import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.WebshopStateMapping;
 import com.sebulli.fakturama.parts.DebitorEditor;
+import com.sebulli.fakturama.util.CategoryBuilder;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.webshopimport.type.AttributeType;
@@ -630,7 +630,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
             contactItem.getAddresses().add(deliveryAddress);
         }
         contactItem = contactsDAO.update(contactItem);
-        address = addressManager.getAddressFromContact(contactItem, com.sebulli.fakturama.model.ContactType.BILLING);
+        address = addressManager.getAddressFromContact(contactItem, com.sebulli.fakturama.model.ContactType.BILLING).orElse(null);
         DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromAddress(address, dataSetDocument.getBillingType());
 		dataSetDocument.getReceiver().add(documentReceiver);
 //            dataSetDocument.setAddress(contactItem.getAddress(false)); // included in contact

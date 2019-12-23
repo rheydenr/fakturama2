@@ -1,5 +1,6 @@
 package com.sebulli.fakturama.model;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface IDocumentAddressManager {
@@ -22,7 +23,7 @@ public interface IDocumentAddressManager {
 	 * @param contactType the {@link ContactType} for which the  {@link Address} should be
 	 * @return {@link Address} from {@link Contact} for the given {@link ContactType}
 	 */
-	Address getAddressFromContact(Contact contact, ContactType contactType);
+	Optional<Address> getAddressFromContact(Contact contact, ContactType contactType);
 
 	/**
 	 * Get the billing address for a given {@link Document}.

@@ -154,7 +154,7 @@ public class AddressListExport extends OOCalcExporter {
 			setCellText(row, col++, contact.getName());
 			setCellText(row, col++, contact.getCompany());
 			
-			Address billingAddress = addressManager.getAddressFromContact(contact, ContactType.BILLING);
+			Address billingAddress = addressManager.getAddressFromContact(contact, ContactType.BILLING).orElse(null);
 			if(billingAddress != null) {
 				setCellText(row, col++, billingAddress.getStreet());
 				setCellText(row, col++, billingAddress.getZip());
@@ -173,7 +173,7 @@ public class AddressListExport extends OOCalcExporter {
 			setCellText(row, col++, contact.getFirstName());
 			setCellText(row, col++, contact.getName());
 			setCellText(row, col++, contact.getCompany());
-			Address deliveryContact = addressManager.getAddressFromContact(contact, ContactType.BILLING);
+			Address deliveryContact = addressManager.getAddressFromContact(contact, ContactType.DELIVERY).orElse(null);
 			if (deliveryContact != null) {
 				setCellText(row, col++, deliveryContact.getStreet());
 				setCellText(row, col++, deliveryContact.getZip());

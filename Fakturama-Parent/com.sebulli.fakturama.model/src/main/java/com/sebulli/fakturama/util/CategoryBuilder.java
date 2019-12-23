@@ -10,7 +10,7 @@
  * 
  * Contributors: Ralf Heydenreich - initial API and implementation
  */
-package com.sebulli.fakturama.migration;
+package com.sebulli.fakturama.util;
 
 import java.util.ArrayList;
 import java.util.Date;

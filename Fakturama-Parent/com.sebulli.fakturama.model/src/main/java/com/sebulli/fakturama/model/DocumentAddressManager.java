@@ -86,13 +86,13 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 
 	@Override
 	public DocumentReceiver createDocumentReceiverForBillingType(Contact contact, BillingType billingType) {
-		Address addressFromContact = getAddressFromContact(contact, billingType.isINVOICE() ? ContactType.BILLING : ContactType.DELIVERY);
+		Optional<Address> addressFromContact = getAddressFromContact(contact, billingType.isINVOICE() ? ContactType.BILLING : ContactType.DELIVERY);
 		// copy address data
-		return createDocumentReceiver(contact, addressFromContact, billingType);
+		return createDocumentReceiver(contact, addressFromContact.orElse(null), billingType);
 	}
 
 	@Override
-	public Address getAddressFromContact(Contact contact, ContactType contactType) {
+	public Optional<Address> getAddressFromContact(Contact contact, ContactType contactType) {
 		Optional<Address> address = null;
 		if (contact != null && contactType != null) {
 			address = contact.getAddresses().stream()
@@ -104,7 +104,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 				address = Optional.ofNullable(contact.getAddresses().get(0));
 			}
 		}
-		return address.get();
+		return address;
 	}
 
 	@Override

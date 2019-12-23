@@ -149,6 +149,7 @@ import com.sebulli.fakturama.oldmodel.OldTexts;
 import com.sebulli.fakturama.oldmodel.OldVats;
 import com.sebulli.fakturama.parts.itemlist.DocumentItemListTable;
 import com.sebulli.fakturama.startup.ConfigurationManager;
+import com.sebulli.fakturama.util.CategoryBuilder;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;

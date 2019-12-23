@@ -856,17 +856,18 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     }
     
     @Override
-    	protected void handleAfterConfirmation(Document tmpDocument) {
-    	// before deletion first update stock
-    		if(BooleanUtils.isTrue(tmpDocument.getPrinted())) {
-    			tmpDocument.getItems().stream().forEach(oldItem -> {
-    					oldItem.setOriginQuantity(oldItem.getQuantity());
-    					oldItem.setQuantity(null);
-    			});
-    		}
-    			
-            StockUpdateHandler stockUpdateHandler = ContextInjectionFactory.make(StockUpdateHandler.class, context);
-            stockUpdateHandler.updateStockQuantity(top.getShell(), null, tmpDocument);
+	protected Document handleCascadeDelete(Document tmpDocument) {
+	// before deletion first update stock
+		if(BooleanUtils.isTrue(tmpDocument.getPrinted())) {
+			tmpDocument.getItems().stream().forEach(oldItem -> {
+					oldItem.setOriginQuantity(oldItem.getQuantity());
+					oldItem.setQuantity(null);
+			});
+		}
+			
+        StockUpdateHandler stockUpdateHandler = ContextInjectionFactory.make(StockUpdateHandler.class, context);
+        stockUpdateHandler.updateStockQuantity(top.getShell(), null, tmpDocument);
+        return tmpDocument;
     }
 
     @Override

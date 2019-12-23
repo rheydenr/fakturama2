@@ -24,12 +24,15 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Properties;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
@@ -50,7 +53,6 @@ import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.ContactType;
-import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
@@ -70,7 +72,7 @@ public class ContactsCsvImporter {
 	@Inject
 	@Translation
 	protected Messages msg;
-    
+
     @Inject
     protected ILogger log;
 	
@@ -92,6 +94,12 @@ public class ContactsCsvImporter {
     @Inject
     private IDocumentAddressManager addressManager;
 
+    /**
+     * Event Broker for sending update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
+
     private char quoteChar, separator;
     
 	/**
@@ -103,9 +111,10 @@ public class ContactsCsvImporter {
 	private String[] requiredHeaders = { "category", "gender", "title", "firstname", "name", "company", "street", "zip", "city", "country",
 			"delivery_gender", "delivery_title", "delivery_firstname", "delivery_name", "delivery_company",
 			"delivery_street", "delivery_zip", "delivery_city", "delivery_country",
+			"delivery_phone", "delivery_fax", "delivery_mobile", "delivery_email", 
 			"account_holder", "bank_name", "iban", "bic",
 			"nr", "note", "date_added",  "payment", "reliability",
-			"phone", "fax", "mobile", "email", "website", "vatnr", "vatnrvalid", "discount", "supplier_nr", "username" };
+			"phone", "fax", "mobile", "email", "website", "vatnr", "vatnrvalid", "discount", "supplier_nr", "username", "birthday" };
 
 	// The result string
 	String result = "";
@@ -236,19 +245,18 @@ public class ContactsCsvImporter {
 						testContact = contact;
 					}
 					
-					ContactCategory category = contactCategoriesDAO.findByName(prop.getProperty("category"));
-					if(category == null && prop.getProperty("category") != null) {
-						category = modelFactory.createContactCategory();
-						category.setName(prop.getProperty("category"));
+					String categoryString = StringUtils.stripStart(prop.getProperty("category"), "/");
+					if (categoryString != null) {
+						ContactCategory category = contactCategoriesDAO.getCategory(prop.getProperty("category"), true);
+						testContact.setCategories(category);
 					}
-					testContact.setCategories(category);
 					testContact.setGender(contactUtil.getSalutationID(prop.getProperty("gender")));
 
 					testContact.setTitle(prop.getProperty("title"));
 					testContact.setCompany(prop.getProperty("company"));
 					
 					// if previous address is given use it
-					Address tmpAddress = addressManager.getAddressFromContact(testContact, ContactType.BILLING);
+					Address tmpAddress = addressManager.getAddressFromContact(testContact, ContactType.BILLING).orElse(null);
 					if(tmpAddress != null) {
 						address = tmpAddress;
 					}
@@ -262,17 +270,10 @@ public class ContactsCsvImporter {
 //					address.setCountryCode(prop.getProperty("country")); TODO get correct country code!
 					testContact.getAddresses().add(address);
 					address.setContact(testContact);
-
-					Address deliveryAddress = addressManager.getAddressFromContact(testContact, ContactType.DELIVERY);
-					Debitor deliveryContact = deliveryAddress != null ? (Debitor) testContact : modelFactory.createDebitor();
-//					deliveryContact.setGender(contactUtil.getSalutationID(prop.getProperty("delivery_gender")));
-//					deliveryContact.setTitle(prop.getProperty("delivery_title"));
-//					deliveryContact.setFirstName(prop.getProperty("delivery_firstname"));
-//					deliveryContact.setName(prop.getProperty("delivery_name"));
-//					deliveryContact.setCompany(prop.getProperty("delivery_company"));
 					
-
-					if(deliveryAddress == null) {
+					Address deliveryAddress = addressManager.getAddressFromContact(testContact, ContactType.DELIVERY).orElse(null);
+					if(deliveryAddress.getId() == address.getId()) {
+						// recreation of delivery address, if any
 						deliveryAddress = modelFactory.createAddress();
 					}
 					deliveryAddress.setValidFrom(Calendar.getInstance().getTime());
@@ -283,9 +284,10 @@ public class ContactsCsvImporter {
 					deliveryAddress.setFax(prop.getProperty("delivery_fax"));
 					deliveryAddress.setMobile(prop.getProperty("delivery_mobile"));
 					deliveryAddress.setEmail(prop.getProperty("delivery_email"));
+					deliveryAddress.getContactTypes().add(ContactType.DELIVERY);
 //					deliveryAddress.setCountryCode(prop.getProperty("delivery_country")); // FIXME set correct country code!!!!
-					deliveryContact.getAddresses().add(deliveryAddress);
-					deliveryAddress.setContact(deliveryContact);
+					testContact.getAddresses().add(deliveryAddress);
+					deliveryAddress.setContact(testContact);
 
 					BankAccount account = testContact.getBankAccount() != null ? testContact.getBankAccount() : modelFactory.createBankAccount();
 					account.setValidFrom(Calendar.getInstance().getTime());
@@ -317,16 +319,20 @@ public class ContactsCsvImporter {
 					testContact.setVatNumber(prop.getProperty("vatnr"));
 					testContact.setVatNumberValid(BooleanUtils.toBooleanObject(prop.getProperty("vatnrvalid")));
 					testContact.setDiscount(DataUtils.getInstance().StringToDouble(prop.getProperty("discount")));
-					
+					String birthday = prop.getProperty("birthday");
+					if(StringUtils.isNotBlank(birthday)) {
+						GregorianCalendar dateFromString = dateFormatterService.getCalendarFromDateString(birthday);
+						testContact.setBirthday(dateFromString.getTime());
+					}
 					// Add the contact to the data base
+					// Update the modified contact data
+					contactsDAO.update(testContact);
 					if (DateUtils.isSameDay(testContact.getDateAdded(), Calendar.getInstance().getTime())) {
 						importedContacts++;
 					} else if (updateExisting) {
 						// Update data
 						updatedContacts++;
 					}
-					// Update the modified contact data
-					contactsDAO.update(testContact);
 				}
 			}
 			
@@ -356,6 +362,7 @@ public class ContactsCsvImporter {
 		catch (FakturamaStoringException e) {
 			log.error("can't save or update imported contact");
 		}
+		evtBroker.post(classifier == FakturamaModelPackage.DEBITOR_CLASSIFIER_ID ? "Debtor" : "Creditor", "update");
 	}
 
 	public String getResult() {
