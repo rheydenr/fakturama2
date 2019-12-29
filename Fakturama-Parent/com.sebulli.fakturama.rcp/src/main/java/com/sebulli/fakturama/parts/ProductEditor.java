@@ -52,6 +52,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
+import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -145,7 +146,7 @@ public class ProductEditor extends Editor<Product> {
 	private FormattedText textWeight;
 	private FormattedText textQuantity;
 	private FormattedText costPrice;
-	private Text textQuantityUnit;
+	private Text textQuantityUnit, allowance;
 	private CCombo comboCategory;
 	private ProductCategory oldCat;
 	private FakturamaPictureControl labelProductPicture;
@@ -454,6 +455,7 @@ public class ProductEditor extends Editor<Product> {
 		Composite invisible = new Composite(top, SWT.NONE);
 		invisible.setVisible(false);
 		GridDataFactory.fillDefaults().hint(0, 0).span(2, 1).applyTo(invisible);
+		GridLayoutFactory.swtDefaults().margins(0, 0).applyTo(invisible);
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, ContextHelpConstants.PRODUCT_EDITOR);
@@ -657,16 +659,29 @@ public class ProductEditor extends Editor<Product> {
 		// Set the tab order
 		setTabOrder(textDescription, nextWidget);
 		
-		// cost price (ALWAYS a net price!
+		// cost price (ALWAYS a net price!)
 		Label labelCostPrice = new Label(productDescGroup, SWT.NONE);
 		labelCostPrice.setText(msg.editorProductFieldCostprice);
+		
+		Composite costAndAllowance = new Composite(productDescGroup, SWT.NONE);
+		GridLayoutFactory.swtDefaults().numColumns(3).margins(0, 0).applyTo(costAndAllowance);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(costAndAllowance);
 
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCostPrice);
-		costPrice = new FormattedText(productDescGroup, SWT.BORDER);
+		costPrice = new FormattedText(costAndAllowance, SWT.BORDER);
 		MoneyFormatter costPriceFormatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
 		costPrice.setFormatter(costPriceFormatter);
 		costPrice.getControl().addKeyListener(new ReturnKeyAdapter(costPrice.getControl()));
 		GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).applyTo(costPrice.getControl());
+		
+		// cost price (ALWAYS a net price!)
+		Label labelAllowance = new Label(costAndAllowance, SWT.NONE);
+		labelAllowance.setText(msg.editorProductFieldAllowance);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAllowance);
+		
+		allowance = new Text(costAndAllowance, SWT.BORDER);
+		allowance.addKeyListener(new ReturnKeyAdapter(allowance));
+		GridDataFactory.swtDefaults().hint(120, SWT.DEFAULT).applyTo(allowance);
 
 		// product VAT
 		Label labelVat = new Label(useVat ? productDescGroup : invisible, SWT.NONE);
@@ -827,6 +842,7 @@ public class ProductEditor extends Editor<Product> {
 		}
 		
 		bindModelValue(editorProduct, costPrice, Product_.costPrice.getName(), 16);
+		bindModelValue(editorProduct, allowance, Product_.allowance.getName(), 16);
 		fillAndBindVatCombo();
 		bindModelValue(editorProduct, textWeight, Product_.weight.getName(), 16);
 		bindModelValue(editorProduct, textQuantity, Product_.quantity.getName(), 0);

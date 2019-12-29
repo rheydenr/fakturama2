@@ -62,48 +62,48 @@
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
-						<imagedata fileref="../html/license/creative_commons.png" format="PNG" scalefit="1"/>
+						<imagedata fileref="chapters/images/license/creative_commons.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata contentdepth="50%" fileref="../html/license/creative_commons.png" format="PNG" scalefit="1" width="50%"/>
+						<imagedata contentdepth="50%" fileref="chapters/images/license/creative_commons.png" format="PNG" scalefit="1" width="50%"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
 			<para><emphasis role="bold">Sie dürfen:</emphasis></para>
 					<para><inlinemediaobject>
 						<imageobject role="html">
-							<imagedata fileref="../html/license/share.png" format="PNG" scalefit="1"/>
+							<imagedata fileref="chapters/images/license/share.png" format="PNG" scalefit="1"/>
 						</imageobject>
 						<imageobject role="fo">
-							<imagedata contentdepth="30%" fileref="../html/license/share.png" format="PNG" scalefit="1" width="20pt"/>
+							<imagedata contentdepth="30%" fileref="chapters/images/license/share.png" format="PNG" scalefit="1" width="20pt"/>
 						</imageobject>
 					</inlinemediaobject>
 				das Werk bzw. den Inhalt vervielfältigen, verbreiten und öffentlich zugänglich machen</para>
 				<para><emphasis role="bold">Zu den folgenden Bedingungen:</emphasis></para>
 				<para>	<inlinemediaobject>
 						<imageobject role="html">
-							<imagedata fileref="../html/license/by.png" format="PNG" scalefit="1"/>
+							<imagedata fileref="chapters/images/license/by.png" format="PNG" scalefit="1"/>
 						</imageobject>
 						<imageobject role="fo">
-							<imagedata contentdepth="30%" fileref="../html/license/by.png" format="PNG" scalefit="1" width="20pt"/>
+							<imagedata contentdepth="30%" fileref="chapters/images/license/by.png" format="PNG" scalefit="1" width="20pt"/>
 						</imageobject>
 					</inlinemediaobject>
 					<emphasis role="bold">Namensnennung</emphasis> — Sie müssen den Namen des Autors/Rechteinhabers in der von ihm festgelegten Weise nennen.</para>
 					<para><inlinemediaobject>
 						<imageobject role="html">
-							<imagedata fileref="../html/license/nc.png" format="PNG" scalefit="1"/>
+							<imagedata fileref="chapters/images/license/nc.png" format="PNG" scalefit="1"/>
 						</imageobject>
 						<imageobject role="fo">
-							<imagedata contentdepth="30%" fileref="../html/license/nc.png" format="PNG" scalefit="1" width="20pt"/>
+							<imagedata contentdepth="30%" fileref="chapters/images/license/nc.png" format="PNG" scalefit="1" width="20pt"/>
 						</imageobject>
 					</inlinemediaobject>				
 					<emphasis role="bold">Keine kommerzielle Nutzung</emphasis> — Dieses Werk bzw. dieser Inhalt darf nicht für kommerzielle Zwecke verwendet werden.</para>
 					<para><inlinemediaobject>
 						<imageobject role="html">
-							<imagedata fileref="../html/license/nd.png" format="PNG" scalefit="1"/>
+							<imagedata fileref="chapters/images/license/nd.png" format="PNG" scalefit="1"/>
 						</imageobject>
 						<imageobject role="fo">
-							<imagedata contentdepth="30%" fileref="../html/license/nd.png" format="PNG" scalefit="1" width="20pt"/>
+							<imagedata contentdepth="30%" fileref="chapters/images/license/nd.png" format="PNG" scalefit="1" width="20pt"/>
 						</imageobject>
 					</inlinemediaobject>
 				

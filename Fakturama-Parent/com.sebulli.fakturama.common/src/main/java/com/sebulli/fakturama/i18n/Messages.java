@@ -387,7 +387,8 @@ public class Messages {
 	public String editorProductFieldGrosspriceName;
 	public String editorProductFieldGtin;
 	public String editorProductFieldPriceName;
-	public String editorProductFieldCostprice;;
+	public String editorProductFieldAllowance;
+	public String editorProductFieldCostprice;
 	public String editorProductFieldQuantityunitName;
 	public String editorProductFieldQuantityunitInvalid;
 	public String editorProductFieldQuantityunitNameShort;
