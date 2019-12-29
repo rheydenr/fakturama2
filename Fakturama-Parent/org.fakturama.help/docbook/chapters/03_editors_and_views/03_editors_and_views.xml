@@ -2025,7 +2025,7 @@
 		</sect2>
 		<sect2>
 			<title>Einkaufspreis</title>
-			<para>Der Einkaufspreis des Produktes.</para>
+			<para>Der Einkaufspreis des Produktes. Dazu kann auch noch ein Zuschlag (in % oder absolut) erfasst werden (wird derzeit aber noch nicht ausgewertet).</para>
 		</sect2>
 		<sect2>
 			<title>MwSt.</title>
