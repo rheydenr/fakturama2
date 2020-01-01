@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 import javax.persistence.metamodel.SingularAttribute;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.eclipse.core.databinding.Binding;
@@ -52,7 +53,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
-import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -328,8 +328,19 @@ public class ProductEditor extends Editor<Product> {
 		String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
 		if (StringUtils.isNumeric(tmpObjId)) {
 		    Long objId = Long.valueOf(tmpObjId);
+		    
 		    // Set the editor's data set to the editor's input
 		    this.editorProduct = productsDAO.findById(objId);
+		    
+		    // if a copy should be created, create one and take the objId as a "template"
+		    if(BooleanUtils.toBoolean((String)part.getTransientData().get(CallEditor.PARAM_COPY))) {
+		    	// clone the product and use it as new one
+		    	editorProduct = editorProduct.clone();
+		    	editorProduct.setItemNumber(numberGenerator.getNextNr(ID));
+		    	getMDirtyablePart().setDirty(true);
+		    	// TODO set options for the product to new ones
+		    	
+		    }
 		}
 		
 		// initialize prices
