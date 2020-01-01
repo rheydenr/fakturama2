@@ -1135,7 +1135,9 @@
 						<imagedata contentdepth="80%" width="40pt"  fileref="../images/application/product_new_32.png" format="PNG" scalefit="1"/>
 					</imageobject> 
 			</inlinemediaobject>Produkt</title>
-			<para>Erstellt ein neues Produkt und öffnet dieses in einem Editorfenster.</para>
+			<para>Erstellt ein neues Produkt und öffnet dieses in einem Editorfenster. Mit gedrückter STRG-Taste (bzw. CMD-Taste bei MacOS) 
+			wird das aktive Produkt dupliziert und in einem neuen Editor dargestellt (ggf. muss man dazu zunächst den Fokus direkt auf den 
+			aktiven Editor setzen).</para>
 			<para>Siehe auch <link linkend="editor_editor_product">Produkteditor</link>
 			</para>
 		</sect2>
@@ -1975,7 +1977,8 @@
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="editor_editor_product"/><title>Der Produkteditor</title>
-		<para>Abhängig von den Einstellungen sind einige Elemente ausgeblendet.</para>
+		<para>Abhängig von den Einstellungen sind einige Elemente ausgeblendet. Möchte man das aktive Produkt duplizieren, kann man wahlweise auf das Produkt-Icon
+		in der Werkzeugleiste klicken (mit gedrückter STRG- bzw. CMD-Taste) oder man drückt die Tastenkombination SHIFT + ALT + C.</para>
 		<informalfigure>
 			<mediaobject>
 				<imageobject role="html">
