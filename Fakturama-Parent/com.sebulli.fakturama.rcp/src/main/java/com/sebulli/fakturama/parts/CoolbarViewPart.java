@@ -13,11 +13,14 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
@@ -58,7 +61,10 @@ public class CoolbarViewPart {
 
 	@Inject
 	private ECommandService cmdService;
-	
+
+	@Inject
+	private EPartService partService;
+
 	@Inject
 	private EHandlerService handlerService;
 	
@@ -354,6 +360,20 @@ public class CoolbarViewPart {
 		}
 		item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				if (handlerService.canExecute(pCmd)) {
+					final IEclipseContext staticContext = EclipseContextFactory.create("fakturama-static-context");
+
+				if ((e.stateMask & SWT.MOD1) == SWT.MOD1) {
+					MPart activePart = partService.getActivePart();
+					// item has to correspond to the active editor!
+					if (activePart != null && activePart.getObject() instanceof Editor) {
+						String editorType = (String) pCmd.getParameterMap().get(CallEditor.PARAM_EDITOR_TYPE);
+						if (editorType != null && activePart.getElementId().equalsIgnoreCase(editorType)) {
+							staticContext.set(CallEditor.PARAM_COPY, Boolean.TRUE);
+							staticContext.set(CallEditor.PARAM_OBJ_ID,
+									activePart.getTransientData().get(CallEditor.PARAM_OBJ_ID));
+						}
+					}
+				}
 				/*
 				 * Dirty hack. The HandlerService first determines the active leaf in the
 				 * current context before it is executing the command. The current active leaf
@@ -365,7 +385,7 @@ public class CoolbarViewPart {
 					if(ctx != null && ctx.getActiveLeaf() != null) {
 						ctx.getActiveLeaf().remove(CallEditor.PARAM_CATEGORY);
 					}
-					handlerService.executeHandler(pCmd);
+					handlerService.executeHandler(pCmd, staticContext);
 				} else {
 					MessageDialog.openInformation(toolBar.getShell(),
 							"Action Info", "current action can't be executed!");

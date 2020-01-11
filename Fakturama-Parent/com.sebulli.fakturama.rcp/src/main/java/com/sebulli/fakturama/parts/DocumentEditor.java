@@ -930,14 +930,14 @@ public class DocumentEditor extends Editor<Document> {
     @PostConstruct
     public void init(Composite parent, @Optional @Named(PARAM_SILENT_MODE) Boolean silentMode) {
         String tmpObjId;
-		String tmpDuplicate;
+		Boolean tmpDuplicate;
     	if(BooleanUtils.isTrue(silentMode)) {
     		tmpObjId = (String) context.get(CallEditor.PARAM_OBJ_ID);
-    		tmpDuplicate = (String) context.get(CallEditor.PARAM_DUPLICATE);
+    		tmpDuplicate = (Boolean) context.get(CallEditor.PARAM_FOLLOW_UP);
     	} else {
     		this.part = (MPart) parent.getData("modelElement");
     		tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
-    		tmpDuplicate = (String) part.getTransientData().get(CallEditor.PARAM_DUPLICATE);
+    		tmpDuplicate = (Boolean) part.getTransientData().get(CallEditor.PARAM_FOLLOW_UP);
     	}
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
@@ -2915,7 +2915,7 @@ public class DocumentEditor extends Editor<Document> {
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
         params.put(CallEditor.PARAM_CATEGORY, docType.name());
-        params.put(CallEditor.PARAM_DUPLICATE, Boolean.toString(true));
+        params.put(CallEditor.PARAM_FOLLOW_UP, Boolean.TRUE);
         return params;
     }
 

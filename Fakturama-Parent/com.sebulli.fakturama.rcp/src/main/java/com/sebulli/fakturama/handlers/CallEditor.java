@@ -91,7 +91,8 @@ public class CallEditor {
      * A category (as initial assignment) for the called editor.
      */
     public static final String PARAM_CATEGORY = "com.sebulli.fakturama.editors.category";
-    public static final String PARAM_DUPLICATE = "org.fakturama.document.duplicate";
+    public static final String PARAM_FOLLOW_UP = "org.fakturama.document.followup";
+    public static final String PARAM_COPY = "org.fakturama.document.copy";
     
     /**
      * The type of the editor which has to be called.
@@ -142,27 +143,26 @@ public class CallEditor {
 
 	/**
 	 * Execute the command
-	 * @param duplicate if a document is a duplicate of an other, set this to <code>true</code>
+	 * 
+	 * @param isFollowUp if a document is a duplicate of an other, set this to <code>true</code>
+	 * @param objId the object id of the current document
+	 * @param category for Document editors only (this is the BillingType)
 	 */
 	@Execute
 	public void execute( 
 	        @Named(PARAM_EDITOR_TYPE) String editorType,
 			@Optional @Named(PARAM_OBJ_ID) String objId,
 			@Optional @Named(PARAM_CATEGORY) String category,
-            @Optional @Named(PARAM_DUPLICATE) String duplicate,
+            @Optional @Named(PARAM_FOLLOW_UP) Boolean isFollowUp,
+            @Optional @Named(PARAM_COPY) Boolean isCopy,
             @Optional @Named(PARAM_CALLING_DOC) String callingDoc,
-            @Optional @Named(PARAM_FORCE_NEW) String pForceNew,
+            @Optional @Named(PARAM_FORCE_NEW) Boolean isForceNew,
             final MApplication application
             ) throws ExecutionException {
 			// If we had a selection lets open the editor
             MPartStack documentPartStack = (MPartStack) modelService.find(DETAIL_PARTSTACK_ID, application);
-            boolean forceNew = BooleanUtils.toBoolean(pForceNew);
-            
-//            System.out.println("INFO: "  + objId);
-            
             // close other editors if set in preferences
             if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
-                
                 ParameterizedCommand closeCommand = commandService.createCommand("org.eclipse.ui.file.closeAll", null);
                 handlerService.executeHandler(closeCommand);
                 
@@ -172,20 +172,21 @@ public class CallEditor {
             Map<String, String> params = new HashMap<>();
         	
             // forceNew means we want to create a new document unconditionally
-            if(!forceNew) {
+            if(!BooleanUtils.toBoolean(isForceNew)) {
             	params.put(PARAM_OBJ_ID, objId);
             	params.put(PARAM_CALLING_DOC, callingDoc);
+            	params.put(PARAM_COPY, BooleanUtils.toStringTrueFalse(isCopy));
             }
             params.put(PARAM_CATEGORY, category);
             
             // Define  the editor and try to open it
-			MPart editorPart = createEditorPart(editorType, documentPartStack, duplicate, params);
+			MPart editorPart = createEditorPart(editorType, documentPartStack, isFollowUp, isCopy, params);
             
 			partService.showPart(editorPart, PartState.ACTIVATE);
 			
 			// clear the objId parameter because of unwanted side effects for subsequent creation of an editor
 			editorPart.getContext().remove(PARAM_OBJ_ID);
-			editorPart.getContext().remove(PARAM_DUPLICATE);
+			editorPart.getContext().remove(PARAM_FOLLOW_UP);
             evtBroker.post("EditorPart/updateCoolBar", editorType);			
 	}
 //	
@@ -197,16 +198,18 @@ public class CallEditor {
 	/**
 	 * create a new Part from a PartDescriptor if no one exists.
 	 * 
-	 * @param title
-	 * @param objId
-	 * @param category 
-	 * @return
+	 * @param type the type of the new editor
+	 * @param stack the current {@link MPartStack}
+	 * @param isFollowUp if a follow-up document should be created
+	 * @param isCopy if a copy of the active editor should be created
+	 * @param params a {@link Map} of params which should be attached to the current command
+	 * @return new {@link MPart} or existing one (if it was previously created)
 	 */
-	private MPart createEditorPart(String type, MPartStack stack, String duplicate, Map<String, String> params) {
+	private MPart createEditorPart(String type, MPartStack stack, Boolean isFollowUp, Boolean isCopy, Map<String, String> params) {
 		MPart myPart = null;
 		IEclipseContext stackContext = null;
-		// search only if not duplicated!
-		if(!BooleanUtils.toBoolean(duplicate)) {
+		// search only if not duplicated! Skip if a copy should be created.
+		if(!BooleanUtils.toBoolean(isFollowUp) && !BooleanUtils.toBoolean(isCopy)) {
 			Collection<MPart> parts = partService.getParts();
 	        if (params.get(PARAM_OBJ_ID) != null) {
 	    		// at first we look for an existing Part
@@ -230,7 +233,7 @@ public class CallEditor {
 	        }
 		}
 		
-		// if not found (or should create a duplicate) then we create a new one from a part descriptor
+		// if not found (or should create a duplicate / copy) then we create a new one from a part descriptor
 		if (myPart == null) {
 			MPartDescriptor partDescriptor = modelService.getPartDescriptor(DOCVIEW_PARTDESCRIPTOR_ID);
 			myPart = partService.createPart(DOCVIEW_PARTDESCRIPTOR_ID);
@@ -302,7 +305,7 @@ public class CallEditor {
                 DocumentType docType = DocumentTypeUtil.findByBillingType(billingType);
                 myPart.setContributionURI(BASE_CONTRIBUTION_URI + DocumentEditor.class.getName());
                 myPart.setLabel(msg.getMessageFromKey(docType.getNewText()));
-                myPart.getTransientData().put(PARAM_DUPLICATE, duplicate);
+                myPart.getTransientData().put(PARAM_FOLLOW_UP, isFollowUp);
                 break;
 			default:
 				myPart.setLabel("unknown");
