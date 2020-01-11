@@ -108,7 +108,6 @@ public class ContactUtil {
     
     private String getNameWithCompany(AddressDTO contact) {
         String line = "";
-        String manualAddress = contact.getManualAddress();
         
         if (StringUtils.isNotBlank(contact.getCompany())) {
             line = DataUtils.getInstance().getSingleLine(contact.getCompany());
@@ -121,6 +120,7 @@ public class ContactUtil {
          * Therefore we've to skip the following in case we use a manual address
          * (which is determined by a missing customer number).
          */
+        String manualAddress = contact.getManualAddress();
         if(contact.getCustomerNumber() == null && manualAddress != null) {
             String[] splitted = manualAddress.split("\\n");
             line += StringUtils.chomp(splitted[0]);
