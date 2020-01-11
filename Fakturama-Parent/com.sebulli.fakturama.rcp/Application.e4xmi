@@ -525,7 +525,7 @@
   <commands xmi:id="_xbxzwCY9EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openReceiptVouchers" commandName="%command.receiptvouchers.name" description="%command.receiptvouchers.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_FI3J4FD-EeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.lists.viewtype" name="View Type" optional="false"/>
   </commands>
-  <commands xmi:id="_A9gvoDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.command.callEditor" commandName="open editor" description="">
+  <commands xmi:id="_A9gvoDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.command.callEditor" commandName="open editor" description="Command for opening various types of editors (depending on command parameters)">
     <parameters xmi:id="_P3fboDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.rcp.cmdparam.objId" name="object Id" typeId=""/>
     <parameters xmi:id="_7Ty0cDteEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.editors.editortype" name="editor type" optional="false"/>
     <parameters xmi:id="_PGkkoK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.editors.category" name="document category (if any)"/>
