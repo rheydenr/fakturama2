@@ -186,7 +186,7 @@ public class CreateOODocumentHandler {
 				
 				// new documents need to be saved first, we don't have an id yet
 				Document tmpDoc = null;
-				if(documentEditor.getDocument().getId() > 0) {
+				if(documentEditor.getDocument().getId() > 0 && documentEditor.getDocument().getPrinted()) {
 					tmpDoc = documentsDao.findById(documentEditor.getDocument().getId(), true);
 				}
 				
