@@ -2549,7 +2549,7 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
     /**
-     * Create the ToolBar for duplicate / copy a document into another.
+     * Create the ToolBar for creating follow-up documents.
      * 
      * @param copyGroup
      */
