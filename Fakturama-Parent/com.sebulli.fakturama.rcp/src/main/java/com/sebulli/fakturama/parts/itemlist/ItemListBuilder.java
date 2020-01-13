@@ -207,7 +207,7 @@ public class ItemListBuilder {
                 item.setName(msg.commonFieldName);
                 item.setItemNumber(msg.productFieldItemno);
                 // other values are set by default values (look into model)
-                int defaultVatId = preferences.getInt(Constants.DEFAULT_VAT, 1);
+                long defaultVatId = preferences.getLong(Constants.DEFAULT_VAT, 1);
                 VAT defaultVat = vatDao.findById(defaultVatId);
                 Optional<DocumentItemDTO> maxPosItem = itemListTable.getDocumentItemsListData().stream().max(new Comparator<DocumentItemDTO>() {
                     @Override

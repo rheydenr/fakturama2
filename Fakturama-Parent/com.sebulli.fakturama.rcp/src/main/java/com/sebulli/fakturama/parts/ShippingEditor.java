@@ -286,7 +286,7 @@ public class ShippingEditor extends Editor<Shipping> {
             }
             editorShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
             editorShipping.setShippingValue(Double.valueOf(0.0));
-            int vatId = defaultValuePrefs.getInt(Constants.DEFAULT_VAT);
+            long vatId = defaultValuePrefs.getLong(Constants.DEFAULT_VAT);
             VAT vat = vatsDao.findById(vatId);  // initially set default VAT
             editorShipping.setShippingVat(vat);
             

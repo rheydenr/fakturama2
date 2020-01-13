@@ -366,7 +366,7 @@ public class ProductEditor extends Editor<Product> {
             part.setLabel(msg.commandNewProductName);
 
 			// Set the vat to the standard value
-            int vatId = defaultValuePrefs.getInt(Constants.DEFAULT_VAT);
+            long vatId = defaultValuePrefs.getLong(Constants.DEFAULT_VAT);
             VAT vat = vatDao.findById(vatId);  // initially set default VAT
 			editorProduct.setVat(vat);
 

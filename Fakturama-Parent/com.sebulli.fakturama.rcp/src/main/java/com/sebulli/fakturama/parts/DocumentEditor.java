@@ -1030,7 +1030,7 @@ public class DocumentEditor extends Editor<Document> {
 				}
 				
 				// Default payment
-				int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
+				long paymentId = defaultValuePrefs.getLong(Constants.DEFAULT_PAYMENT);
                 Payment payment = paymentsDao.findById(paymentId);
                 document.setPayment(payment);
                 if(payment != null) {
@@ -1044,7 +1044,7 @@ public class DocumentEditor extends Editor<Document> {
 			else {
 				if(document.getPayment() == null) {
 					// Default payment
-					int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
+					long paymentId = defaultValuePrefs.getLong(Constants.DEFAULT_PAYMENT);
 	                Payment payment = paymentsDao.findById(paymentId);
 	                document.setPayment(payment);
 				}
@@ -1157,9 +1157,9 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setPayDate(parentDoc.getPayDate());
 		retval.setDueDays(parentDoc.getDueDays());
 		retval.setDeposit(parentDoc.getDeposit());
-		if((parentPayment == null || !DocumentTypeUtil.findByBillingType(parentDoc.getBillingType()).canBePaid()) && documentType.canBePaid()) {
-			// set payment method to default payment if parent document is not a payable document (e.g.,, an offer or delivery document)
-			int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
+		if((parentPayment == null && !DocumentTypeUtil.findByBillingType(parentDoc.getBillingType()).canBePaid()) && documentType.canBePaid()) {
+			// set payment method to default payment if parent document is not a payable document (e.g., an offer or delivery document)
+			long paymentId = defaultValuePrefs.getLong(Constants.DEFAULT_PAYMENT);
 			parentPayment = paymentsDao.findById(paymentId);
 			
 			// reset some payment-related values
@@ -1216,13 +1216,16 @@ public class DocumentEditor extends Editor<Document> {
 
 		// lookup origin receiver for an additional address which fits to this billing type
 		Contact contactFromReceiver = contactDAO.findById(addressFromParentDoc.getOriginContactId());
-		DocumentReceiver receiver = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
-		
-//		DocumentReceiver receiver = addressFromParentDoc.clone();
-		// change type
-//		receiver.setBillingType(resultingDoc.getBillingType());
-
-		resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(addressFromParentDoc));
+		DocumentReceiver receiver;
+		if(contactFromReceiver != null) {
+			receiver = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
+		} else {
+			// if no contact was found (mostly for manually added addresses) we copy the address from origin document receiver
+			receiver = addressFromParentDoc.clone();
+			// change type
+			receiver.setBillingType(resultingDoc.getBillingType());
+		}
+		resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(receiver));
 		resultingDoc.getReceiver().add(receiver);
 	}
 
