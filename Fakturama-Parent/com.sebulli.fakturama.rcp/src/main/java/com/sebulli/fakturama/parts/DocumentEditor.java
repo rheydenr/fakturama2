@@ -948,6 +948,27 @@ public class DocumentEditor extends Editor<Document> {
             Long objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
             this.document = documentsDAO.findById(objId, true);
+            
+		    // if a copy should be created, create one and take the objId as a "template"
+		    if(BooleanUtils.toBoolean((String)part.getTransientData().get(CallEditor.PARAM_COPY))) {
+		    	// clone the product and use it as new one
+		    	switch (this.document.getBillingType()) {
+				case OFFER:
+					this.document = new DocumentTypeUtil().clone(this.document);
+					
+					// Get the next document number
+					document.setName(getNextNr());
+			    	
+			    	// in this case the document is NOT a follow-up of another!
+			    	tmpDuplicate = Boolean.FALSE;
+					break;
+
+				default:
+					break;
+				}
+		    	getMDirtyablePart().setDirty(true);
+		    	
+		    }
         }
 
 		// If the document is a duplicate of an other document,

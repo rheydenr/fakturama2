@@ -359,18 +359,23 @@ public class CoolbarViewPart {
 			log.error(e1, "Fehler!");
 		}
 		item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-				if (handlerService.canExecute(pCmd)) {
-					final IEclipseContext staticContext = EclipseContextFactory.create("fakturama-static-context");
-
+			if (handlerService.canExecute(pCmd)) {
+				final IEclipseContext staticContext = EclipseContextFactory.create("fakturama-static-context");
+				
+				// if CTRL key is pressed then we try to duplicate the current editor into a new one
 				if ((e.stateMask & SWT.MOD1) == SWT.MOD1) {
-					MPart activePart = partService.getActivePart();
-					// item has to correspond to the active editor!
-					if (activePart != null && activePart.getObject() instanceof Editor) {
-						String editorType = (String) pCmd.getParameterMap().get(CallEditor.PARAM_EDITOR_TYPE);
-						if (editorType != null && activePart.getElementId().equalsIgnoreCase(editorType)) {
-							staticContext.set(CallEditor.PARAM_COPY, Boolean.TRUE);
-							staticContext.set(CallEditor.PARAM_OBJ_ID,
-									activePart.getTransientData().get(CallEditor.PARAM_OBJ_ID));
+					// dows only work under certain circumstances
+					ParameterizedCommand duplicateCmd = cmdService.createCommand("com.sebulli.fakturama.editor.duplicate");
+					if(handlerService.canExecute(duplicateCmd)) {
+						MPart activePart = partService.getActivePart();
+						// item has to correspond to the active editor!
+						if (activePart != null && activePart.getObject() instanceof Editor) {
+							String editorType = (String) pCmd.getParameterMap().get(CallEditor.PARAM_EDITOR_TYPE);
+							if (editorType != null && activePart.getElementId().equalsIgnoreCase(editorType)) {
+								staticContext.set(CallEditor.PARAM_COPY, Boolean.TRUE);
+								staticContext.set(CallEditor.PARAM_OBJ_ID,
+										activePart.getTransientData().get(CallEditor.PARAM_OBJ_ID));
+							}
 						}
 					}
 				}
@@ -386,10 +391,10 @@ public class CoolbarViewPart {
 						ctx.getActiveLeaf().remove(CallEditor.PARAM_CATEGORY);
 					}
 					handlerService.executeHandler(pCmd, staticContext);
-				} else {
-					MessageDialog.openInformation(toolBar.getShell(),
-							"Action Info", "current action can't be executed!");
-				}
+			} else {
+				MessageDialog.openInformation(toolBar.getShell(),
+						"Action Info", "current action can't be executed!");
+			}
 		}));
         item.setImage(iconImage);
         return item;

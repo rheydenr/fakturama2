@@ -611,7 +611,7 @@
     <parameters xmi:id="_B_RUMBWEEemR8qmuWxCvLQ" elementId="org.fakturama.document.caller" name="calling document editor"/>
   </commands>
   <commands xmi:id="_70JVYBkKEems16HDe00Etw" elementId="org.fakturama.command.export.qrk" commandName="%command.export.qrk.name" description="%command.export.qrk.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
-  <commands xmi:id="_GhKykCqYEeq1a9OIflD6xg" elementId="com.sebulli.fakturama.editor.duplicate" commandName="%command.duplicate"/>
+  <commands xmi:id="_GhKykCqYEeq1a9OIflD6xg" elementId="com.sebulli.fakturama.editor.duplicate" commandName="%command.duplicate" description="duplicates the current editor into a new one"/>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
