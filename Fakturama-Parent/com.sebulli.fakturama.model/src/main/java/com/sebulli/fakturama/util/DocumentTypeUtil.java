@@ -16,33 +16,15 @@ package com.sebulli.fakturama.util;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.texo.converter.ObjectCopier;
-import org.eclipse.emf.texo.model.AbstractModelObject;
 
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
-import com.sebulli.fakturama.model.FakturamaModelFactory.DocumentModelObject;
-import com.sebulli.fakturama.model.FakturamaModelFactory.OfferModelObject;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
-import com.sebulli.fakturama.model.Offer;
 
 /**
  * Helper for {@link DocumentType}
