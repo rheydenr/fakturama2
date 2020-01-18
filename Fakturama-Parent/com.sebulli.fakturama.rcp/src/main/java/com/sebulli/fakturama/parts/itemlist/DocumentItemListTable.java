@@ -135,6 +135,7 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.converter.DateDisplayConverter;
 import com.sebulli.fakturama.parts.converter.DoublePercentageDisplayConverter;
+import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.DocumentItemUtil;

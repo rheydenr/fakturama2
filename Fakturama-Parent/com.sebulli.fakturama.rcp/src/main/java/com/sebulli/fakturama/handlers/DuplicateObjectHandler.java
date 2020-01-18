@@ -18,6 +18,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ProductEditor;
 
 public class DuplicateObjectHandler {
@@ -38,8 +40,25 @@ public class DuplicateObjectHandler {
 
 	@CanExecute
 	public boolean canExecute(@Optional @Active MPart activePart) {
-		// at the moment it only works for Product Editor
-		return activePart != null && ProductEditor.ID.equalsIgnoreCase(activePart.getElementId());
+		boolean retval = false;
+		if(activePart != null) {
+			switch (activePart.getElementId()) {
+			case ProductEditor.ID:
+				// at the moment it only works for Product Editor
+				retval = true;
+				break;
+			case DocumentEditor.ID:
+				// for documents we have tocheck if it's an Offer
+				Object currentObject = activePart.getObject();
+				if(currentObject != null && currentObject instanceof DocumentEditor) {
+					retval = DocumentType.OFFER.equals(((DocumentEditor)currentObject).getDocumentType());
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		return retval;
 	}
 
 	@Execute

@@ -80,6 +80,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CategoryComparator;
+import com.sebulli.fakturama.model.ObjectDuplicator;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
@@ -335,11 +336,9 @@ public class ProductEditor extends Editor<Product> {
 		    // if a copy should be created, create one and take the objId as a "template"
 		    if(BooleanUtils.toBoolean((String)part.getTransientData().get(CallEditor.PARAM_COPY))) {
 		    	// clone the product and use it as new one
-		    	editorProduct = editorProduct.clone();
+		    	editorProduct = new ObjectDuplicator().duplicateProduct(editorProduct);
 		    	editorProduct.setItemNumber(numberGenerator.getNextNr(ID));
 		    	getMDirtyablePart().setDirty(true);
-		    	// TODO set options for the product to new ones
-		    	
 		    }
 		}
 		

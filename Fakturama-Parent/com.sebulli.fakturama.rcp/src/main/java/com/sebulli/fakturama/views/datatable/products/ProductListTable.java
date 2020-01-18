@@ -75,7 +75,7 @@ import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ProductEditor;
-import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
+import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;

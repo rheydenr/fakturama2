@@ -11,7 +11,7 @@
  * Contributors: The Fakturama Team - initial API and implementation
  */
 
-package com.sebulli.fakturama.parts.itemlist;
+package com.sebulli.fakturama.parts.converter;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
