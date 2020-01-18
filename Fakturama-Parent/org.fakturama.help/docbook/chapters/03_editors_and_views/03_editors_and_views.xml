@@ -1051,7 +1051,9 @@
 						<imagedata contentdepth="80%" width="40pt" fileref="../images/application/order_new_32.png" format="PNG" scalefit="1"/>
 					</imageobject>
 			</inlinemediaobject> Auftrag</title>
-			<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster.</para>
+			<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster. Mit gedrückter STRG-Taste (bzw. CMD-Taste bei MacOS) 
+			wird der aktive Auftrag dupliziert und in einem neuen Editor dargestellt (ggf. muss man dazu zunächst den Fokus direkt auf den 
+			aktiven Editor setzen).</para>
 			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
 			</para>
 		</sect2>

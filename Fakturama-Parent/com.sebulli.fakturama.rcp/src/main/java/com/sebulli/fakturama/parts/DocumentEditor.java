@@ -146,6 +146,7 @@ import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
+import com.sebulli.fakturama.model.ObjectDuplicator;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.Shipping;
@@ -853,8 +854,6 @@ public class DocumentEditor extends Editor<Document> {
 
 			private void clearManualShipping(Document document) {
 				document.getAdditionalInfo().setShippingDescription(null);
-//				document.getAdditionalInfo().setShippingName(null);
-//				document.getAdditionalInfo().setShippingVatDescription(null);
 //				document.getAdditionalInfo().setShippingVatValue(null);
 			}
         });
@@ -954,10 +953,10 @@ public class DocumentEditor extends Editor<Document> {
 		    	// clone the product and use it as new one
 		    	switch (this.document.getBillingType()) {
 				case OFFER:
-					this.document = new DocumentTypeUtil().clone(this.document);
+					this.document = new ObjectDuplicator().duplicateDocument(this.document);
 					
 					// Get the next document number
-					document.setName(getNextNr());
+					document.setName(numberGenerator.getNextNr(getEditorID()));
 			    	
 			    	// in this case the document is NOT a follow-up of another!
 			    	tmpDuplicate = Boolean.FALSE;
