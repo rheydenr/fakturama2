@@ -1516,5 +1516,12 @@ TODO:
 		</addColumn>
 	</changeSet>
 	
+	<changeSet author="rheydenr" id="20200118-001"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_PRODUCT">
+			<column name="NOTE" type="LONGTEXT" />
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
     

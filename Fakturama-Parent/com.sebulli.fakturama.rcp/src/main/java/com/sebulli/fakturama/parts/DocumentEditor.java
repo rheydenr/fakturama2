@@ -956,7 +956,7 @@ public class DocumentEditor extends Editor<Document> {
 					this.document = new ObjectDuplicator().duplicateDocument(this.document);
 					
 					// Get the next document number
-					document.setName(numberGenerator.getNextNr(getEditorID()));
+					document.setName(getNumberGenerator().getNextNr(getEditorID()));
 			    	
 			    	// in this case the document is NOT a follow-up of another!
 			    	tmpDuplicate = Boolean.FALSE;

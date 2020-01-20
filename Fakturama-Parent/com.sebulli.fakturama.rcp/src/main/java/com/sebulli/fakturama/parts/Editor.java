@@ -631,7 +631,7 @@ public abstract class Editor<T extends IEntity> {
 
     protected abstract Class<T> getModelClass();
 
-	private NumberGenerator getNumberGenerator() {
+	protected NumberGenerator getNumberGenerator() {
 		if(numberGenerator == null) {
 			numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
 		}
