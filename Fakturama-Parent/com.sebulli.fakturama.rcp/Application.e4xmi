@@ -274,6 +274,9 @@
             <tags>NoMove</tags>
             <variables>datalists</variables>
             <menus xsi:type="menu:PopupMenu" xmi:id="_C8AVIK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup" label="Document list popup">
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_FYsHwDvUEeqkls-bTq04QA" elementId="com.sebulli.fakturama.document.popup.opendoc" label="%command.open.document" tooltip="" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                <parameters xmi:id="_R-ZZIDvWEeqkls-bTq04QA" elementId="com.sebulli.fakturama.rcp.parameter.85" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+              </children>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_9Hy-sLPGEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markaspending" visible="false" label="%main.menu.edit.markaspending" iconURI="icon://COMMAND_ORDER_PENDING" command="_bFPksLPZEeS-Jtapb6hhEg">
                 <tags>orderActive</tags>
                 <parameters xmi:id="_QPtG0LSPEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.rcp.parameter.33" name="com.sebulli.fakturama.command.order.markas.status" value="PENDING"/>

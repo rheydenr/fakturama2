@@ -93,6 +93,7 @@ public class Messages {
 	public String commandNewReceiptvoucherTooltip;
 	public String commandNewTooltip;
 	public String commandOpenContactTooltip;
+	public String commandOpenDocument;
 	public String commandOpenParcelName;
 	public String commandOpenWwwName;
 	public String commandParcelserviceName;
