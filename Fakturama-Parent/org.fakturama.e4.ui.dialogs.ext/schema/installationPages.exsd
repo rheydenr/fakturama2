@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.ui.e4.about.dialog" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.fakturama.e4.ui.dialogs.ext" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.ui.e4.about.dialog" id="installationPages" name="Installation Dialog Pages"/>
+         <meta.schema plugin="org.fakturama.e4.ui.dialogs.ext" id="installationPages" name="Installation Dialog Pages"/>
       </appinfo>
       <documentation>
          &lt;p&gt;The Eclipse UI provides an AboutDialog that can be branded and reused by client product plugins.  This dialog typically shows the product splash image and other descriptive information about the product. The about dialog includes a button that allows the user to launch a secondary dialog, the &lt;b&gt;Installation Details&lt;/b&gt; dialog.&lt;/p&gt;

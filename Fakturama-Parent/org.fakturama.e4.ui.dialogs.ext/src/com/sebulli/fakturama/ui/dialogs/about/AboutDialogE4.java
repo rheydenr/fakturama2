@@ -20,6 +20,8 @@ import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.IProduct;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
@@ -64,6 +66,9 @@ import com.sebulli.fakturama.ui.internal.dialog.AboutFeaturesDialog;
  * Displays information about the product.
  */
 public class AboutDialogE4 extends TrayDialog {
+	@Inject
+	private IEclipseContext context;
+	
 	private final static int MAX_IMAGE_WIDTH_FOR_TEXT = 250;
 
 	private final static int DETAILS_ID = IDialogConstants.CLIENT_ID + 1;
@@ -124,7 +129,7 @@ public class AboutDialogE4 extends TrayDialog {
 					// FIXME ServiceLocator not used
 					// IWorkbenchWindow workbenchWindow =
 					// PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-					InstallationDialog dialog = new InstallationDialog(getShell());
+					InstallationDialog dialog = ContextInjectionFactory.make(InstallationDialog.class, context);
 					dialog.setModalParent(AboutDialogE4.this);
 					dialog.open();
 				}

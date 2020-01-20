@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.ui.e4.about.dialog" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.fakturama.e4.ui.dialogs.ext" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.ui.e4.about.dialog" id="systemSummarySections" name="System Summary Sections"/>
+         <meta.schema plugin="org.fakturama.e4.ui.dialogs.ext" id="systemSummarySections" name="System Summary Sections"/>
       </appinfo>
       <documentation>
          The Eclipse UI provides an AboutDialog that can be branded and reused by client product plugins.  This dialog includes SystemSummary information that contains configuration details.  By extending the org.eclipse.ui.systemSummarySections extension point clients are able to put their own information into the log.

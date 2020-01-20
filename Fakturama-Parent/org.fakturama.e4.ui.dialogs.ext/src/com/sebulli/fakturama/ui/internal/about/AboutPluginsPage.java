@@ -294,7 +294,7 @@ public class AboutPluginsPage extends ProductInfoPage {
 			WorkbenchMessages.AboutPluginsDialog_version, WorkbenchMessages.AboutPluginsDialog_pluginId,
 
 	};
-	private Bundle[] bundles = FrameworkUtil.getBundle(getClass()).getBundleContext().getBundles();
+	private Bundle[] bundles = FrameworkUtil.getBundle(AboutPluginsPage.class).getBundleContext().getBundles();
 	private AboutBundleData[] bundleInfos;
 	private SashForm sashForm;
 	private BundleSigningInfo signingArea;

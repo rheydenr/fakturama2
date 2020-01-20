@@ -12,6 +12,10 @@
  *******************************************************************************/
 package com.sebulli.fakturama.ui.internal.dialog;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
@@ -26,10 +30,13 @@ import com.sebulli.fakturama.ui.internal.about.ProductInfoDialog;
  * PRIVATE this class is internal to the ide
  */
 public class AboutPluginsDialog extends ProductInfoDialog {
+	@Inject
+	private IEclipseContext context;
+	
 	public AboutPluginsDialog(Shell parentShell, String productName, Bundle[] bundles, String title, String message,
 			String helpContextId) {
 		super(parentShell);
-		AboutPluginsPage page = new AboutPluginsPage();
+		AboutPluginsPage page = ContextInjectionFactory.make(AboutPluginsPage.class, context);
 		page.setHelpContextId(helpContextId);
 		page.setBundles(bundles);
 		page.setMessage(message);

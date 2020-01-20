@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -59,15 +61,16 @@ import com.sebulli.fakturama.ui.internal.registry.IWorkbenchRegistryConstants;
  * 
  */
 public class InstallationDialog extends TrayDialog implements IInstallationPageContainer {
+	
+	
+	
 	class ButtonManager {
 
 		private Composite composite;
 		private Map<String, List<Button>> buttonMap = new HashMap<String, List<Button>>(); // page
 																							// id->Collection
 																							// of
-																							// page
-
-		// buttons
+																							// page buttons
 
 		public ButtonManager(Composite composite) {
 			this.composite = composite;
@@ -152,6 +155,7 @@ public class InstallationDialog extends TrayDialog implements IInstallationPageC
 	 * @param parentShell
 	 * @param locator
 	 */
+	@Inject
 	public InstallationDialog(Shell parentShell) {
 		super(parentShell);
 	}

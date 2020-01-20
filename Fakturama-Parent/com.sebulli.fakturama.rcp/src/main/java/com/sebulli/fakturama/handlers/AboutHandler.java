@@ -15,10 +15,10 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Shell;
 
-import com.sebulli.fakturama.dialogs.about.AboutDialogE4;
-import com.sebulli.fakturama.dialogs.about.E4AboutDialog;
-import com.sebulli.fakturama.ui.E4ApplicationInfo;
 import com.sebulli.fakturama.ui.IE4ApplicationInfo;
+import com.sebulli.fakturama.ui.dialogs.about.AboutDialogE4;
+//import com.sebulli.fakturama.ui.dialogs.about.deprecated.E4AboutDialog;
+//import com.sebulli.fakturama.ui.internal.E4ApplicationInfo;
 
 public class AboutHandler {
 
@@ -30,9 +30,9 @@ public class AboutHandler {
 		// (while creating the workbench window)
 		//       String applicationName = WorkbenchPlugin.getDefault().getAppName();
 
-		IE4ApplicationInfo applicationInfo = ContextInjectionFactory.make(E4ApplicationInfo.class, context);
-		
-		context.set(IE4ApplicationInfo.class, applicationInfo);
+//		IE4ApplicationInfo applicationInfo = ContextInjectionFactory.make(E4ApplicationInfo.class, context);
+//		
+//		context.set(IE4ApplicationInfo.class, applicationInfo);
 		AboutDialogE4 dlg = ContextInjectionFactory.make(AboutDialogE4.class, context);
 //		E4AboutDialog dlg = ContextInjectionFactory.make(E4AboutDialog.class, context);
 		dlg.open();

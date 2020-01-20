@@ -7,8 +7,18 @@
          point="org.eclipse.e4.ui.about.dialog.installationPages">
       <page
             class="com.sebulli.fakturama.ui.internal.about.AboutPluginsPage"
-            id="org.fakturama.e4.ui.dialogs.ext.pluginPage"
+            id="PluginPage"
             name="%installationPage.plugins.name">
+      </page>
+      <page
+            class="com.sebulli.fakturama.ui.internal.about.AboutSystemPage"
+            id="SystemPage"
+            name="%installationPage.system.name">
+      </page>
+      <page
+            class="com.sebulli.fakturama.ui.internal.about.AboutFeaturesPage"
+            id="FeaturePage"
+            name="%installationPage.feature.name">
       </page>
    </extension>
    <extension

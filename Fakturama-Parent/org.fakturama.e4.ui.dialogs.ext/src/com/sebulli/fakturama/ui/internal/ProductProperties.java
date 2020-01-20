@@ -15,12 +15,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProduct;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
 
@@ -57,31 +59,20 @@ public class ProductProperties extends BrandingProperties implements IProductCon
 
 	private static final String ABOUT_MAPPINGS = "$nl$/about.mappings"; //$NON-NLS-1$
 
-	private static HashMap mappingsMap = new HashMap(4);
+	private static Map mappingsMap = new HashMap(4);
 
 	private static String[] loadMappings(Bundle definingBundle) {
-		URL location = Platform.find(definingBundle, new Path(ABOUT_MAPPINGS));
+		URL location = FileLocator.find(definingBundle, new Path(ABOUT_MAPPINGS));
 		PropertyResourceBundle bundle = null;
-		InputStream is;
 		if (location != null) {
-			is = null;
-			try {
-				is = location.openStream();
+			try (InputStream is = location.openStream()) {
 				bundle = new PropertyResourceBundle(is);
 			} catch (IOException e) {
 				bundle = null;
-			} finally {
-				try {
-					if (is != null) {
-						is.close();
-					}
-				} catch (IOException e) {
-					// do nothing if we fail to close
-				}
 			}
 		}
 
-		ArrayList mappingsList = new ArrayList();
+		List<String> mappingsList = new ArrayList<>();
 		if (bundle != null) {
 			boolean found = true;
 			int i = 0;
@@ -304,6 +295,7 @@ public class ProductProperties extends BrandingProperties implements IProductCon
 	 * If this property is given, then it supercedes <code>WINDOW_IMAGE</code>.
 	 * </p>
 	 */
+	@SuppressWarnings("deprecation")
 	public static ImageDescriptor[] getWindowImages(IProduct product) {
 		String property = product.getProperty(WINDOW_IMAGES);
 
