@@ -13,13 +13,24 @@
 
 package com.sebulli.fakturama;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.core.runtime.IBundleGroup;
+import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.update.configurator.IPlatformConfiguration;
+import org.eclipse.update.internal.configurator.FeatureEntry;
+import org.eclipse.update.internal.configurator.PlatformConfiguration;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 import com.sebulli.fakturama.misc.Constants;
 
@@ -30,7 +41,7 @@ import com.sebulli.fakturama.misc.Constants;
  * 
  * @author Gerd Bartelt
  */
-public class Activator implements BundleActivator {
+public class Activator implements BundleActivator, IBundleGroupProvider {
 
 
 	// The bundle ID (Bundle-SymbolicName)
@@ -38,7 +49,9 @@ public class Activator implements BundleActivator {
 
     // The shared instance
     private static BundleContext context;
-	
+    ServiceRegistration<?> bundleGroupProviderSR; 
+	private PlatformConfiguration configuration;
+	 
     /**
      * Returns the shared instance
      * 
@@ -68,8 +81,44 @@ public class Activator implements BundleActivator {
 
         // background for Browser
 		JFaceResources.getColorRegistry().put(Constants.COLOR_WHITE, new RGB(0xff, 0xff, 0xff));
-   }
+		registerBundleGroupProvider();
+	}
+	
+	private void registerBundleGroupProvider() {
+		final String serviceName = IBundleGroupProvider.class.getName();
+		try {
+			//don't register the service if this bundle has already registered it declaratively
+			ServiceReference<?>[] refs = getContext().getServiceReferences(serviceName, null);
+			if (refs != null) {
+				for (int i = 0; i < refs.length; i++)
+					if (PLUGIN_ID.equals(refs[i].getBundle().getSymbolicName()))
+						return;
+			}
+		} catch (InvalidSyntaxException e) {
+			//can't happen because we don't pass a filter
+		}
+		bundleGroupProviderSR = getContext().registerService(serviceName, this, null);
+	} 
+	
+	@Override
+	public String getName() {
+		return "Bundle Group Provider";
+	} 
+	
+	@Override
+	public IBundleGroup[] getBundleGroups() {
+		if (configuration == null)
+			return new IBundleGroup[0];
 
+		IPlatformConfiguration.IFeatureEntry[] features = configuration.getConfiguredFeatureEntries();
+		List<IBundleGroup> bundleGroups = new ArrayList<>(features.length);
+		for (int i = 0; i < features.length; i++) {
+			if (features[i] instanceof FeatureEntry && ((FeatureEntry) features[i]).hasBranding())
+				bundleGroups.add((IBundleGroup) features[i]);
+		}
+		return bundleGroups.toArray(new IBundleGroup[bundleGroups.size()]);
+	}
+ 
     /*
      * (non-Javadoc)
      * 
