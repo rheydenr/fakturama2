@@ -23,7 +23,7 @@ import org.eclipse.osgi.util.NLS;
  *
  */
 public class WorkbenchMessages extends NLS {
-	private static final String BUNDLE_NAME = "org.eclipse.e4.ui.internal.messages";//$NON-NLS-1$
+	private static final String BUNDLE_NAME = "com.sebulli.fakturama.ui.internal.messages";//$NON-NLS-1$
 
 	public static String ThemingDisabled;
 

@@ -6,7 +6,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
-import com.sebulli.fakturama.dialogs.about.E4ProductProperties;
+import com.sebulli.fakturama.ui.dialogs.about.deprecated.E4ProductProperties;
 
 /**
  * Stores information about the product.  This class replaces the old AboutInfo.

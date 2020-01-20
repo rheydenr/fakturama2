@@ -51,10 +51,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-import com.sebulli.fakturama.dialogs.about.AboutBundleData;
-import com.sebulli.fakturama.dialogs.about.AboutUtils;
 import com.sebulli.fakturama.ui.internal.DialogPlugin;
 import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
+import com.sebulli.fakturama.ui.internal.about.AboutBundleData;
+import com.sebulli.fakturama.ui.internal.about.AboutUtils;
 
 /**
  * @since 3.3

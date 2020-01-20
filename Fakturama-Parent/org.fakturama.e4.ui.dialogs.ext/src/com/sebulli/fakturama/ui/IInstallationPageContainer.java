@@ -13,6 +13,8 @@ package com.sebulli.fakturama.ui;
 
 import org.eclipse.swt.widgets.Button;
 
+import com.sebulli.fakturama.ui.internal.InstallationPage;
+
 /**
  * Interface for a container that hosts one or more installation pages (
  * {@link InstallationPage}).

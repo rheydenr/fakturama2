@@ -16,9 +16,9 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 
-import com.sebulli.fakturama.dialogs.about.AboutPluginsPage;
-import com.sebulli.fakturama.dialogs.about.ProductInfoDialog;
 import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
+import com.sebulli.fakturama.ui.internal.about.AboutPluginsPage;
+import com.sebulli.fakturama.ui.internal.about.ProductInfoDialog;
 
 /**
  * Displays information about the product plugins.

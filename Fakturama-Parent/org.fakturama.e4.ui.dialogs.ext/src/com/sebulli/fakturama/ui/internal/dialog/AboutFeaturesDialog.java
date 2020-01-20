@@ -15,11 +15,11 @@ package com.sebulli.fakturama.ui.internal.dialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 
-import com.sebulli.fakturama.dialogs.about.AboutBundleGroupData;
-import com.sebulli.fakturama.dialogs.about.AboutFeaturesPage;
-import com.sebulli.fakturama.dialogs.about.ProductInfoDialog;
 import com.sebulli.fakturama.ui.internal.IWorkbenchHelpContextIds;
 import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
+import com.sebulli.fakturama.ui.internal.about.AboutBundleGroupData;
+import com.sebulli.fakturama.ui.internal.about.AboutFeaturesPage;
+import com.sebulli.fakturama.ui.internal.about.ProductInfoDialog;
 
 /**
  * Displays information about the product plugins.
