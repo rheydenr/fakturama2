@@ -1,7 +1,6 @@
 package com.sebulli.fakturama.dialogs.about;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +9,6 @@ import java.util.StringTokenizer;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
-
-import com.sebulli.fakturama.browser.DefaultWorkbenchBrowserSupport;
-import com.sebulli.fakturama.browser.E4PartInitException;
-import com.sebulli.fakturama.browser.IWebBrowser;
-import com.sebulli.fakturama.browser.IWorkbenchBrowserSupport;
 
 /**
  * Manages links in styled text.
@@ -126,15 +120,15 @@ public class AboutUtils {
 			href = "file:///" + href; //$NON-NLS-1$
 		}
 		
-		IWorkbenchBrowserSupport support = new DefaultWorkbenchBrowserSupport();
-		try {
-			IWebBrowser browser = support.getExternalBrowser();
-			browser.openURL(new URL(urlEncodeForSpaces(href.toCharArray())));
-		} catch (MalformedURLException e) {
-			openWebBrowserError(shell, href, e);
-		} catch (E4PartInitException e) {
-			openWebBrowserError(shell, href, e);
-		}
+//		IWorkbenchBrowserSupport support = new DefaultWorkbenchBrowserSupport();
+//		try {
+//			IWebBrowser browser = support.getExternalBrowser();
+//			browser.openURL(new URL(urlEncodeForSpaces(href.toCharArray())));
+//		} catch (MalformedURLException e) {
+//			openWebBrowserError(shell, href, e);
+//		} catch (E4PartInitException e) {
+//			openWebBrowserError(shell, href, e);
+//		}
 	}
 
 	/**

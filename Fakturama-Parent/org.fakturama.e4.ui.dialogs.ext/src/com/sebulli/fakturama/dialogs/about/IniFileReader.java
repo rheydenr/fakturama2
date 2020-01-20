@@ -20,8 +20,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-
-import com.sebulli.fakturama.Activator;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * Reads the information found in an "INI" file. This file must be in a
@@ -82,7 +81,8 @@ public class IniFileReader {
 			return OK_STATUS;
 			
 		// attempt to locate the corresponding plugin
-		bundle = Activator.getContext().getBundle(pluginId);
+		bundle = FrameworkUtil.getBundle(getClass());
+//		bundle = Activator.getContext().getBundle(pluginId);
 		if (bundle == null || bundle.getState() == Bundle.UNINSTALLED || bundle.getState() == Bundle.INSTALLED) {
 			bundle = null; // make it null for other test down the road
 			String message = NLS.bind("Messages.IniFileReader_MissingDesc", (new String[] { featureId }));
@@ -200,7 +200,7 @@ public class IniFileReader {
 		return (String)bundle.getHeaders().get(Constants.BUNDLE_VENDOR);
 	}
 	
-	/*
+	/**
 	 * Returns a resource string corresponding to the given argument 
 	 * value and bundle.
 	 * If the argument value specifies a resource key, the string

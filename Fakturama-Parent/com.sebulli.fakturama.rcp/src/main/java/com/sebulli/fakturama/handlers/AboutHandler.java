@@ -28,7 +28,7 @@ public class AboutHandler {
 		// the (formerly) first call to this was in org.eclipse.ui.internal.Workbench:
 		// (while creating the workbench window)
 		//       String applicationName = WorkbenchPlugin.getDefault().getAppName();
-		
+
 		IE4ApplicationInfo applicationInfo = ContextInjectionFactory.make(E4ApplicationInfo.class, context);
 		
 		context.set(IE4ApplicationInfo.class, applicationInfo);

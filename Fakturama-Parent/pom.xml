@@ -16,6 +16,8 @@
 		<encoding>UTF-8</encoding>
 	</properties>
 	<modules>
+	    <module>org.fakturama.e4.ui.dialogs.ext</module>
+	    
 	    <module>com.sebulli.fakturama.rcp</module>
 	    <module>com.sebulli.fakturama.model</module>
 	    <module>com.sebulli.fakturama.site</module>
