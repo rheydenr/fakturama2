@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Pablo Cabrera <pablo.cabrera@mulesoft.com> - Bug 428355
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal.about;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.io.IOException;
 import java.net.URL;

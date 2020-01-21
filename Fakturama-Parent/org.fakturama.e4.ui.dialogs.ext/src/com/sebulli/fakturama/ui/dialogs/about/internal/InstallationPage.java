@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.swt.SWT;

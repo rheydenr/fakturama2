@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  ******************************************************************************/
 
-package com.sebulli.fakturama.ui.internal.about;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,10 +50,6 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import com.sebulli.fakturama.ui.IInstallationPageContainer;
-import com.sebulli.fakturama.ui.internal.ConfigurationInfo;
-import com.sebulli.fakturama.ui.internal.DialogPlugin;
-import com.sebulli.fakturama.ui.internal.InstallationPage;
-import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
 import com.sebulli.fakturama.ui.internal.registry.IWorkbenchRegistryConstants;
 
 /**

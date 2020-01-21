@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
 
-import com.sebulli.fakturama.ui.dialogs.about.IE4ProductConstants;
+import com.sebulli.fakturama.ui.dialogs.IE4ProductConstants;
 
 /**
  * A class that converts the strings returned by
@@ -28,7 +28,7 @@ import com.sebulli.fakturama.ui.dialogs.about.IE4ProductConstants;
  * provided in IProductConstants. Clients adding their own properties could
  * choose to subclass this.
  *
- * @see org.eclipse.IE4ProductConstants.branding.IProductConstants
+ * @see com.sebulli.fakturama.ui.dialogs.about.deprecated.IE4ProductConstants.branding.IProductConstants
  * @since 3.0
  */
 public class E4ProductProperties extends E4BrandingProperties implements

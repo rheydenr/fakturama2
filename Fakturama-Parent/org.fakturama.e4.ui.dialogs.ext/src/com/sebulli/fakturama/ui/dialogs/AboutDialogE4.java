@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package com.sebulli.fakturama.ui.dialogs.about;
+package com.sebulli.fakturama.ui.dialogs;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -53,14 +53,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import com.sebulli.fakturama.ui.internal.ProductProperties;
-import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
-import com.sebulli.fakturama.ui.internal.about.AboutBundleGroupData;
-import com.sebulli.fakturama.ui.internal.about.AboutFeaturesButtonManager;
-import com.sebulli.fakturama.ui.internal.about.AboutItem;
-import com.sebulli.fakturama.ui.internal.about.AboutTextManager;
-import com.sebulli.fakturama.ui.internal.about.InstallationDialog;
-import com.sebulli.fakturama.ui.internal.dialog.AboutFeaturesDialog;
+import com.sebulli.fakturama.ui.dialogs.about.AboutFeaturesDialog;
+import com.sebulli.fakturama.ui.dialogs.about.internal.AboutBundleGroupData;
+import com.sebulli.fakturama.ui.dialogs.about.internal.AboutFeaturesButtonManager;
+import com.sebulli.fakturama.ui.dialogs.about.internal.AboutItem;
+import com.sebulli.fakturama.ui.dialogs.about.internal.AboutTextManager;
+import com.sebulli.fakturama.ui.dialogs.about.internal.InstallationDialog;
+import com.sebulli.fakturama.ui.dialogs.about.internal.ProductProperties;
+import com.sebulli.fakturama.ui.dialogs.about.internal.WorkbenchMessages;
 
 /**
  * Displays information about the product.

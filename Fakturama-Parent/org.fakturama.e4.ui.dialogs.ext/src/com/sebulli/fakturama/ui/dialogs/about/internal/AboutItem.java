@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal.about;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 /**
  * Holds the information for text appearing in the about dialog

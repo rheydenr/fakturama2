@@ -13,7 +13,7 @@
  * 		Fix for Bug 2369 [Workbench] Would like to be able to save workspace without exiting
  * 		Implemented workbench auto-save to correctly restore state in case of crash.
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import org.eclipse.osgi.util.NLS;
 

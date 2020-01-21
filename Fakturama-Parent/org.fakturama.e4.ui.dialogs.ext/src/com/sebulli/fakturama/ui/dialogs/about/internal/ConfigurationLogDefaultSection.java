@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.ui.internal.about;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -25,7 +25,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 import com.sebulli.fakturama.ui.ISystemSummarySection;
-import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
 
 /**
  * This class puts basic platform information into the system summary log. This

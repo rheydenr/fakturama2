@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;

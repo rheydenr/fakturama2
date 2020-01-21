@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +27,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
 
 import com.ibm.icu.text.MessageFormat;
-import com.sebulli.fakturama.ui.branding.IProductConstants;
+import com.sebulli.fakturama.ui.dialogs.about.deprecated.IProductConstants;
 
 /**
  * A class that converts the strings returned by
@@ -36,7 +36,7 @@ import com.sebulli.fakturama.ui.branding.IProductConstants;
  * IProductConstants. Clients adding their own properties could choose to
  * subclass this.
  * 
- * @see org.eclipse.e4.ui.branding.IProductConstants
+ * @see com.sebulli.fakturama.ui.dialogs.about.deprecated.branding.IProductConstants
  * @since 3.0
  */
 public class ProductProperties extends BrandingProperties implements IProductConstants {

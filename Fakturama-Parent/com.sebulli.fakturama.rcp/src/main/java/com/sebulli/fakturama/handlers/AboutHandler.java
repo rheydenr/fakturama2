@@ -16,9 +16,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.ui.IE4ApplicationInfo;
-import com.sebulli.fakturama.ui.dialogs.about.AboutDialogE4;
-//import com.sebulli.fakturama.ui.dialogs.about.deprecated.E4AboutDialog;
-//import com.sebulli.fakturama.ui.internal.E4ApplicationInfo;
+import com.sebulli.fakturama.ui.dialogs.AboutDialogE4;
 
 public class AboutHandler {
 

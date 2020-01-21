@@ -11,7 +11,7 @@
  *     		Help > Welcome missing F1 context
  *******************************************************************************/
 
-package com.sebulli.fakturama.ui.internal;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 /**
  * Help context ids for the workbench.

@@ -11,7 +11,7 @@
  * 		font should be activated and used by other components.
  *      Robin Stocker <robin@nibor.org> - Add filter text field
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal.about;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.io.IOException;
 import java.net.URL;
@@ -70,9 +70,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.sebulli.fakturama.ui.BundleSigningInfo;
-import com.sebulli.fakturama.ui.internal.DialogPlugin;
-import com.sebulli.fakturama.ui.internal.IWorkbenchHelpContextIds;
-import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
 
 /**
  * Displays information about the product plugins.

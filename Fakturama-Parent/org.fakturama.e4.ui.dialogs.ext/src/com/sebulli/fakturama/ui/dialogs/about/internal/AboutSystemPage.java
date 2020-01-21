@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.ui.internal.about;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.io.File;
 
@@ -17,9 +17,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-
-import com.sebulli.fakturama.ui.internal.ConfigurationInfo;
-import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
 
 /**
  * Displays system information about the eclipse application. The content of

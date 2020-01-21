@@ -13,7 +13,7 @@
  *      [About] 'Features' tab in 'Eclipse SDK Installation Details' dialog 
  *      does not display sort direction
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal.about;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,9 +49,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.osgi.framework.Bundle;
 
-import com.sebulli.fakturama.ui.internal.IWorkbenchHelpContextIds;
-import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
-import com.sebulli.fakturama.ui.internal.dialog.AboutPluginsDialog;
+import com.sebulli.fakturama.ui.dialogs.about.AboutPluginsDialog;
 
 /**
  * Displays information about the product plugins.

@@ -6,8 +6,6 @@ import java.util.Hashtable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import com.sebulli.fakturama.ui.dialogs.about.IniFileReader;
-
 
 /**
  * The information within this object is obtained from the about INI file.

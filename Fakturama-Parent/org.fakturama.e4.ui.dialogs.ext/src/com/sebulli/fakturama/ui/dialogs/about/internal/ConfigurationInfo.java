@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  ******************************************************************************/
 
-package com.sebulli.fakturama.ui.internal;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,7 +27,6 @@ import org.eclipse.swt.custom.BusyIndicator;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.DateFormat;
 import com.sebulli.fakturama.ui.ISystemSummarySection;
-import com.sebulli.fakturama.ui.internal.about.AboutUtils;
 import com.sebulli.fakturama.ui.internal.registry.IWorkbenchRegistryConstants;
 
 /**

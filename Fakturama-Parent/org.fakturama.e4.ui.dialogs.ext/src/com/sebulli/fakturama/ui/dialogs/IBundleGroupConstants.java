@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.ui.dialogs.about;
+package com.sebulli.fakturama.ui.dialogs;
 
 /**
  * These constants define the set of properties that the UI expects to

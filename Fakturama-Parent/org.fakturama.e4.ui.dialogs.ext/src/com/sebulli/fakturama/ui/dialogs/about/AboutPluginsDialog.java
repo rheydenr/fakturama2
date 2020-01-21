@@ -10,7 +10,7 @@
  *  	Sebastian Davids <sdavids@gmx.de> - Fix for bug 19346 - Dialog
  * 		font should be activated and used by other components.
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal.dialog;
+package com.sebulli.fakturama.ui.dialogs.about;
 
 import javax.inject.Inject;
 
@@ -20,9 +20,9 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 
-import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
-import com.sebulli.fakturama.ui.internal.about.AboutPluginsPage;
-import com.sebulli.fakturama.ui.internal.about.ProductInfoDialog;
+import com.sebulli.fakturama.ui.dialogs.about.internal.AboutPluginsPage;
+import com.sebulli.fakturama.ui.dialogs.about.internal.ProductInfoDialog;
+import com.sebulli.fakturama.ui.dialogs.about.internal.WorkbenchMessages;
 
 /**
  * Displays information about the product plugins.

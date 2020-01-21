@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sebulli.fakturama.ui.internal;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

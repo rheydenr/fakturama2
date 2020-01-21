@@ -9,7 +9,7 @@ import java.util.zip.CheckedInputStream;
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-import com.sebulli.fakturama.ui.dialogs.about.IBundleGroupConstants;
+import com.sebulli.fakturama.ui.dialogs.IBundleGroupConstants;
 
 /**
  * A small class to manage the information related to IBundleGroup's.

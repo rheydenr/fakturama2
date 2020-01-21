@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal.about;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -21,8 +21,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
-
-import com.sebulli.fakturama.ui.internal.WorkbenchMessages;
 
 /**
  * A small class to manage the about dialog information for a single bundle.
