@@ -27,7 +27,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
 
 import com.ibm.icu.text.MessageFormat;
-import com.sebulli.fakturama.ui.dialogs.about.deprecated.IProductConstants;
 
 /**
  * A class that converts the strings returned by
@@ -36,7 +35,7 @@ import com.sebulli.fakturama.ui.dialogs.about.deprecated.IProductConstants;
  * IProductConstants. Clients adding their own properties could choose to
  * subclass this.
  * 
- * @see com.sebulli.fakturama.ui.dialogs.about.deprecated.branding.IProductConstants
+ * @see com.sebulli.fakturama.ui.dialogs.about.internal.branding.IProductConstants
  * @since 3.0
  */
 public class ProductProperties extends BrandingProperties implements IProductConstants {

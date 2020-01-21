@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package com.sebulli.fakturama.ui.dialogs.about.deprecated;
+package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 /**
  * These constants define the set of properties that the UI expects to be
