@@ -251,4 +251,17 @@ This Agreement is governed by the laws of the State of New York and the intellec
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.fakturama.e4.ui.dialogs.ext"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.fakturama.exporter.zugferd"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
 </feature>

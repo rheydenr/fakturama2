@@ -9,7 +9,8 @@ Require-Bundle: com.sebulli.fakturama.common;bundle-version="2.0.0",
  javax.inject;bundle-version="1.0.0",
  org.eclipse.equinox.ds;bundle-version="1.4.200",
  org.eclipse.core.runtime;bundle-version="3.10.0",
- org.eclipse.jface;bundle-version="3.13.0"
+ org.eclipse.jface;bundle-version="3.13.0",
+ org.fakturama.e4.ui.dialogs.ext;bundle-version="2.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.bidimap,
@@ -36,10 +37,7 @@ Import-Package: org.apache.commons.collections4,
  org.eclipse.swt.widgets,
  org.osgi.framework,
  org.osgi.service.log
-Export-Package: org.fakturama.wizards;version="2.1.0",
- org.fakturama.wizards.internal.dialogs,
- org.fakturama.wizards.internal.registry,
- org.fakturama.wizards.model
+Export-Package: org.fakturama.wizards;version="2.1.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.fakturama.wizards.Activator
 Automatic-Module-Name: org.fakturama.wizards
