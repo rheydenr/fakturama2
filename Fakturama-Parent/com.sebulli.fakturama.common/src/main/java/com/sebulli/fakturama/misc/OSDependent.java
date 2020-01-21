@@ -17,7 +17,7 @@ package com.sebulli.fakturama.misc;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.util.Util;
 
 /**
  * These are the OS-dependent settings.
@@ -26,38 +26,34 @@ import org.eclipse.swt.SWT;
  */
 public class OSDependent {
 
-    // valid OS strings:  "win32", "motif", "gtk", "photon", "carbon", "cocoa", "wpf"
-	private static final String platform = SWT.getPlatform();
- 
-    
 	/**
 	 * Test, if it is a Mac OSX
 	 * 
+	 * @deprecated use {@link Util#isMac()} instead
 	 * @return TRUE, if it one
 	 */
 	public static boolean isMacOSX() {
-        return platform.equalsIgnoreCase("photon")
-		       || platform.equalsIgnoreCase("carbon")
-		       || platform.equalsIgnoreCase("cocoa");
+        return Util.isMac() || Util.isPhoton();
 	}
 
 	/**
 	 * Test, if it is a Linux system
 	 * 
+	 * @deprecated use {@link Util#isLinux()} instead
 	 * @return TRUE, if it one
 	 */
 	public static boolean isLinux() {
-		return platform.equalsIgnoreCase("motif")
-		        || platform.equalsIgnoreCase("gtk");
+		return  Util.isMotif() || Util.isLinux();
 	}
 
 	/**
 	 * Test, if it is a Windows System
 	 * 
 	 * @return TRUE, if it one
+	 * @deprecated use {@link Util#isWindows()} instead
 	 */
 	public static boolean isWin() {
-		return platform.startsWith("win");
+		return Util.isWindows();
 	}
 
 	/**
@@ -94,7 +90,7 @@ public class OSDependent {
 			return getProgramFolder() + "libreoffice";
 
 		if (isWin())
-			return getProgramFolder() + "LibreOffice 5";
+			return getProgramFolder() + "LibreOffice 6";
 
 		return "";
 
@@ -121,28 +117,6 @@ public class OSDependent {
 
 		return retval;
 	}
-//
-//	/**
-//	 * Test, if it is allowed to add an about menu to the menu bar. In some OS
-//	 * the about menu is set to the menu bar by the OS. So, it is not necessary
-//	 * to add it twice.
-//	 * 
-//	 * @return TRUE, if it is necessary
-//	 */
-//	public static boolean canAddAboutMenuItem() {
-//		return !isMacOSX();
-//	}
-
-	/**
-	 * Test, if it is allowed to add an preference menu to the menu bar. In some
-	 * OS the about menu is set to the menu bar by the OS. So, it is not
-	 * necessary to add it twice.
-	 * 
-	 * @return TRUE, if it is necessary
-	 */
-	public static boolean canAddPreferenceAboutMenu() {
-		return !isMacOSX();
-	}
 
 	/**
 	 * Test, if OpenOffice is in an app archive instead a program folder.
@@ -152,6 +126,4 @@ public class OSDependent {
 	public static boolean isOOApp() {
 		return isMacOSX();
 	}
-
-	// getNewline is now System.lineSeparator()
 }

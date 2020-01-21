@@ -69,6 +69,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -131,7 +132,6 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.INumberFormatterService;
-import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
@@ -3123,7 +3123,7 @@ public class DocumentEditor extends Editor<Document> {
 	final private boolean copyExists(final Document document, final BillingType targetype) {
 		boolean retval = false;
 		// under Linux the focus is removed and we get an exception (see issue #601)	
-		if (!OSDependent.isLinux() && document != null && document.getTransactionId() != null) {
+		if (!Util.isLinux() && document != null && document.getTransactionId() != null) {
 			Document copyDoc = null;
 			// dunning is an extra case
 			if (targetype.isDUNNING()) {
