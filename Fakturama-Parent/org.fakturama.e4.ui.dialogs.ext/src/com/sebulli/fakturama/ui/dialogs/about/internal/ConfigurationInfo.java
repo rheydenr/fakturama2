@@ -137,11 +137,11 @@ public final class ConfigurationInfo {
 
 	public static IConfigurationElement[] getSortedExtensions(IConfigurationElement[] configElements) {
 
-		Arrays.sort(configElements, new Comparator() {
+		Arrays.sort(configElements, new Comparator<IConfigurationElement>() {
 			Collator collator = Collator.getInstance(Locale.getDefault());
 
 			@Override
-			public int compare(Object a, Object b) {
+			public int compare(IConfigurationElement a, IConfigurationElement b) {
 				IConfigurationElement element1 = (IConfigurationElement) a;
 				IConfigurationElement element2 = (IConfigurationElement) b;
 

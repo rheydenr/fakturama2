@@ -497,13 +497,13 @@ public class AboutPluginsPage extends ProductInfoPage {
 			return null;
 		}
 
-		URL aboutUrl = Platform.find(bundle, baseNLPath.append(PLUGININFO), null);
+		URL aboutUrl = FileLocator.find(bundle, baseNLPath.append(PLUGININFO), null);
 		if (!makeLocal) {
 			return aboutUrl;
 		}
 		if (aboutUrl != null) {
 			try {
-				URL result = Platform.asLocalURL(aboutUrl);
+				URL result = FileLocator.toFileURL(aboutUrl);
 				try {
 					// Make local all content in the "about" directory.
 					// This is needed to handle jar'ed plug-ins.
@@ -511,7 +511,7 @@ public class AboutPluginsPage extends ProductInfoPage {
 					// subdirs.
 					URL about = new URL(aboutUrl, "about_files"); //$NON-NLS-1$
 					if (about != null) {
-						Platform.asLocalURL(about);
+						FileLocator.toFileURL(about);
 					}
 				} catch (IOException e) {
 					// skip the about dir if its not found or there are other

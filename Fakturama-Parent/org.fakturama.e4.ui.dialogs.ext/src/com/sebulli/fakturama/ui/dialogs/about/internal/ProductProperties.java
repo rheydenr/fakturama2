@@ -59,7 +59,7 @@ public class ProductProperties extends BrandingProperties implements IProductCon
 
 	private static final String ABOUT_MAPPINGS = "$nl$/about.mappings"; //$NON-NLS-1$
 
-	private static Map mappingsMap = new HashMap(4);
+	private static Map<Bundle, String[]> mappingsMap = new HashMap<>(4);
 
 	private static String[] loadMappings(Bundle definingBundle) {
 		URL location = FileLocator.find(definingBundle, new Path(ABOUT_MAPPINGS));

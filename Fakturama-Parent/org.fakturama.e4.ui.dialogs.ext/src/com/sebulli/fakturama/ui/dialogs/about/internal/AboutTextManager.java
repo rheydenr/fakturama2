@@ -169,7 +169,7 @@ public class AboutTextManager {
                 StyledText text = (StyledText) e.widget;
                 int offset = -1;
                 try {
-                    offset = text.getOffsetAtLocation(new Point(e.x, e.y));
+                    offset = text.getOffsetAtPoint(new Point(e.x, e.y));
                 } catch (IllegalArgumentException ex) {
                     // leave value as -1
                 }

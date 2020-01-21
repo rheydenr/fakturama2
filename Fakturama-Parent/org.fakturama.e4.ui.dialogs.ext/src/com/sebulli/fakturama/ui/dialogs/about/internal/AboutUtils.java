@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -113,7 +114,7 @@ public class AboutUtils {
 	public static boolean openBrowser(Shell shell, URL url) {
 		if (url != null) {
 			try {
-				url = Platform.asLocalURL(url);
+				url = FileLocator.toFileURL(url);
 			} catch (IOException e) {
 				return false;
 			}

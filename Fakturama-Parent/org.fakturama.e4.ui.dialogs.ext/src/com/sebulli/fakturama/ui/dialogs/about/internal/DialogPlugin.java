@@ -22,7 +22,7 @@ public class DialogPlugin implements BundleActivator {
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		context = null;
+		this.context = null;
 	}
 
 	public static BundleContext getContext() {

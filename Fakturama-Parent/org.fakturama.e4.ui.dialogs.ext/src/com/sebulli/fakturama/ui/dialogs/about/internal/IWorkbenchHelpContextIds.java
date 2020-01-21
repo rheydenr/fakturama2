@@ -24,7 +24,7 @@ package com.sebulli.fakturama.ui.dialogs.about.internal;
  *        remove all IDE-specific constants from here
  */
 public interface IWorkbenchHelpContextIds {
-	public static final String PREFIX = "org.eclipse.ui.e4.e4.dialogs" + "."; //$NON-NLS-1$
+	public static final String PREFIX = "org.eclipse.ui.e4.dialogs" + "."; //$NON-NLS-1$
 
 	// Missing context help
 	public static final String MISSING = PREFIX + "missing"; //$NON-NLS-1$

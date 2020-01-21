@@ -167,7 +167,7 @@ public class BundleSigningInfo {
 						else {
 							StringBuffer buffer = new StringBuffer();
 							for (Iterator i = certs[0].entrySet().iterator(); i.hasNext();) {
-								Map.Entry entry = (Entry) i.next();
+								Map.Entry<String, String> entry = (Entry) i.next();
 								buffer.append(entry.getKey());
 								buffer.append('=');
 								buffer.append(entry.getValue());
