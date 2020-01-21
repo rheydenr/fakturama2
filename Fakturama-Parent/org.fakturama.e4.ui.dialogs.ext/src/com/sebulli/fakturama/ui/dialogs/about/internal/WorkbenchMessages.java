@@ -102,6 +102,12 @@ public class WorkbenchMessages extends NLS {
 	public static String AboutSystemPage_FetchJobTitle;
 
 	public static String AboutSystemPage_RetrievingSystemInfo;
+	
+	// ==============================================================================
+	// Drill Actions
+	// ==============================================================================
+	public static String ICategory_other;
+	public static String ICategory_general;
 
 	// ==============================================================================
 	// Dialogs

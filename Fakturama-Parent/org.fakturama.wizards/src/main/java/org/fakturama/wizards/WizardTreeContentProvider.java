@@ -6,7 +6,8 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.fakturama.wizards.internal.dialogs.WizardCollectionElement;
-import org.fakturama.wizards.model.AdaptableList;
+
+import com.sebulli.fakturama.ui.dialogs.model.AdaptableList;
 
 /**
  * Provider used by the NewWizardNewPage.

@@ -5,7 +5,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.IWizardNode;
 import org.eclipse.jface.wizard.WizardSelectionPage;
-import org.fakturama.wizards.model.AdaptableList;
+
+import com.sebulli.fakturama.ui.dialogs.model.AdaptableList;
 
 /**
  * Page for selecting a wizard from a group of available wizards.

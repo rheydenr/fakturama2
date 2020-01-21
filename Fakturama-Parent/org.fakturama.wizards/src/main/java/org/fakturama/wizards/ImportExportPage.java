@@ -26,8 +26,8 @@ import org.fakturama.wizards.internal.dialogs.WizardActivityFilter;
 import org.fakturama.wizards.internal.dialogs.WizardPatternFilter;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardSelectionPage;
-import org.fakturama.wizards.model.AdaptableList;
 
+import com.sebulli.fakturama.ui.dialogs.model.AdaptableList;
 import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**

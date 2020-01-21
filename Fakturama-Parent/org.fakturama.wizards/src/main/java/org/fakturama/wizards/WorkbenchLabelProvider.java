@@ -14,7 +14,8 @@ import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.fakturama.wizards.model.IWorkbenchAdapter;
+
+import com.sebulli.fakturama.ui.dialogs.model.IWorkbenchAdapter;
 
 /**
  * Provides basic labels for adaptable objects that have the
