@@ -35,6 +35,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.Util;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -42,7 +43,6 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -220,7 +220,7 @@ public class FileOrganizer {
 	 */
 	private boolean isAbsolutePath(String fileNamePlaceholder) {
 		boolean retval = false;
-		if(OSDependent.isWin()) {
+		if(Util.isWindows()) {
 			retval = fileNamePlaceholder.matches("^\\w:.*");
 		} else {
 			// detect if the beginning of the given path is an existing one

@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.util.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -41,14 +42,12 @@ import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 
 import com.sebulli.fakturama.dto.AccountEntry;
-import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
-import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.model.Voucher;
 
 /**
@@ -71,9 +70,6 @@ public class OOCalcExporter {
     
     @Inject
     private INumberFormatterService numberformatter;
-    
-    @Inject
-    private ILocaleService localeService;
 
     @Inject
     protected ILogger log;
@@ -445,7 +441,7 @@ public class OOCalcExporter {
 		String[] filterNames = new String[] { "OpenOffice Calc Files", exportMessages.wizardCommonMaskAllfiles + " (*)" };
 		String[] filterExtensions = new String[] { "*.ods", "*" };
 		String filterPath = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "/");
-		if (OSDependent.isWin()) {
+		if (Util.isWindows()) {
 			filterNames = new String[] { "OpenOffice Calc Files", exportMessages.wizardCommonMaskAllfiles + " (*.*)" };
 			filterExtensions = new String[] { "*.ods", "*.*" };
 			filterPath = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, "c:\\");
