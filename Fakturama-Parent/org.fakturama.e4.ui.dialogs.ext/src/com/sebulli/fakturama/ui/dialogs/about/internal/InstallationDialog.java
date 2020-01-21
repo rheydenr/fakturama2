@@ -50,7 +50,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import com.sebulli.fakturama.ui.IInstallationPageContainer;
-import com.sebulli.fakturama.ui.internal.registry.IWorkbenchRegistryConstants;
+import com.sebulli.fakturama.ui.dialogs.about.internal.registry.IWorkbenchRegistryConstants;
 
 /**
  * @since 3.5

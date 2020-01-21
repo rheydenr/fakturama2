@@ -12,7 +12,7 @@
  *     Markus Alexander Kuppe, Versant Corporation - bug #215797
  *     Semion Chichelnitsky (semion@il.ibm.com) - bug 208564
  *******************************************************************************/
-package com.sebulli.fakturama.ui.internal.registry;
+package com.sebulli.fakturama.ui.dialogs.about.internal.registry;
 
 /**
  * Interface containing various registry constants (tag and attribute names).
