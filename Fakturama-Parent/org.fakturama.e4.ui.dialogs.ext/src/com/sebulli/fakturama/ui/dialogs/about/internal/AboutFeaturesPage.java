@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.osgi.framework.Bundle;
 
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 import com.sebulli.fakturama.ui.dialogs.about.AboutPluginsDialog;
 
 /**

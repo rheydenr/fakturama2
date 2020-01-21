@@ -25,6 +25,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 import com.sebulli.fakturama.ui.ISystemSummarySection;
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 
 /**
  * This class puts basic platform information into the system summary log. This

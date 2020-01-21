@@ -13,7 +13,7 @@
  * 		Fix for Bug 2369 [Workbench] Would like to be able to save workspace without exiting
  * 		Implemented workbench auto-save to correctly restore state in case of crash.
  *******************************************************************************/
-package com.sebulli.fakturama.ui.dialogs.about.internal;
+package com.sebulli.fakturama.ui.dialogs;
 
 import org.eclipse.osgi.util.NLS;
 
@@ -25,7 +25,7 @@ import org.eclipse.osgi.util.NLS;
  *
  */
 public class WorkbenchMessages extends NLS {
-	private static final String BUNDLE_NAME = "com.sebulli.fakturama.ui.dialogs.about.internal.messages";    //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "com.sebulli.fakturama.ui.dialogs.messages";    //$NON-NLS-1$
 
 	public static String BundleSigningTray_Cant_Find_Service;
 
@@ -108,6 +108,46 @@ public class WorkbenchMessages extends NLS {
 	// ==============================================================================
 	public static String ICategory_other;
 	public static String ICategory_general;
+	
+	// ==============================================================================
+	// Wizards
+	// ==============================================================================
+	public static String NewWizard_title;
+	public static String NewWizardNewPage_description;
+	public static String NewWizardNewPage_wizardsLabel;
+	public static String NewWizardNewPage_showAll;
+	public static String WizardList_description;
+	public static String Select;
+	public static String NewWizardSelectionPage_description;
+	public static String NewWizardShortcutAction_errorTitle;
+	public static String NewWizardShortcutAction_errorMessage;
+
+	public static String NewWizardsRegistryReader_otherCategory;
+	public static String NewWizardDropDown_text;
+
+	public static String WizardHandler_menuLabel;
+	public static String WorkbenchWizard_errorMessage;
+	public static String WorkbenchWizard_errorTitle;
+	public static String WizardTransferPage_selectAll;
+	public static String WizardTransferPage_deselectAll;
+	public static String TypesFiltering_title;
+	public static String TypesFiltering_message;
+	public static String TypesFiltering_otherExtensions;
+	public static String TypesFiltering_typeDelimiter;
+
+	// --- Import/Export ---
+	public static String ImportExportPage_chooseImportWizard;
+	public static String ImportExportPage_chooseExportWizard;
+
+	// --- Import ---
+	public static String ImportWizard_title;
+	public static String ImportWizard_selectWizard;
+
+	// --- Export ---
+	public static String ExportWizard_title;
+	public static String ExportWizard_selectWizard;
+	// --- New Project ---
+	public static String NewProject_title;
 
 	// ==============================================================================
 	// Dialogs

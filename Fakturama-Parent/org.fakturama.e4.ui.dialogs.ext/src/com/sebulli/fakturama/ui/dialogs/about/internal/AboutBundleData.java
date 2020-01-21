@@ -22,6 +22,8 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
+
 /**
  * A small class to manage the about dialog information for a single bundle.
  * 

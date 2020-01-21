@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
+
 /**
  * Displays system information about the eclipse application. The content of
  * what is displayed is selectable through the

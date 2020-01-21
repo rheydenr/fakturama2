@@ -1,4 +1,4 @@
-package org.fakturama.wizards.internal.registry;
+package com.sebulli.fakturama.ui.dialogs.registry;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,8 +11,6 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.osgi.service.log.LogService;
-
-import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  *	Template implementation of a registry reader that creates objects

@@ -1,4 +1,4 @@
-package org.fakturama.wizards;
+package org.fakturama.wizards.internal;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -10,7 +10,11 @@ import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardNode;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Point;
+import org.fakturama.wizards.IE4WizardDescriptor;
+import org.fakturama.wizards.IWorkbenchWizard;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardSelectionPage;
+
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 
 /**
  * A wizard node represents a "potential" wizard. Wizard nodes
@@ -145,8 +149,8 @@ public abstract class AbstractWorkbenchWizardNode implements IWizardNode {
                 });
 
         if (statuses[0] != null) {
-//            parentWizardPage
-//					.setErrorMessage(WorkbenchMessages.WorkbenchWizard_errorMessage);
+            parentWizardPage
+					.setErrorMessage(WorkbenchMessages.WorkbenchWizard_errorMessage);
 //			StatusAdapter statusAdapter = new StatusAdapter(statuses[0]);
 //			statusAdapter.addAdapter(Shell.class, parentWizardPage.getShell());
 //			statusAdapter.setProperty(StatusAdapter.TITLE_PROPERTY,
@@ -162,7 +166,7 @@ public abstract class AbstractWorkbenchWizardNode implements IWizardNode {
         //wizard node
         currentSelection = wizardElement.adaptedSelection(currentSelection);
 
-//        workbenchWizard[0].init(getWorkbench(), currentSelection);
+        workbenchWizard[0].init(getWorkbench(), currentSelection);
 
         wizard = workbenchWizard[0];
         return wizard;

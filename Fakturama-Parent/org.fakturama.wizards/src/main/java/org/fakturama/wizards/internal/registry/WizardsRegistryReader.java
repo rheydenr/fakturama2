@@ -22,9 +22,11 @@ import org.fakturama.wizards.internal.dialogs.WizardCollectionElement;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
 import org.osgi.service.log.LogService;
 
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 import com.sebulli.fakturama.ui.dialogs.exceptions.WorkbenchException;
 import com.sebulli.fakturama.ui.dialogs.registry.Category;
 import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
+import com.sebulli.fakturama.ui.dialogs.registry.RegistryReader;
 
 /**
  *  Instances access the registry that is provided at creation time
@@ -61,7 +63,7 @@ public class WizardsRegistryReader extends RegistryReader {
      */
     final public static String GENERAL_WIZARD_CATEGORY = "org.eclipse.ui.Basic";	//$NON-NLS-1$
 
-    final private static String UNCATEGORIZED_WIZARD_CATEGORY_LABEL = "other";// WorkbenchMessages.NewWizardsRegistryReader_otherCategory;
+    final private static String UNCATEGORIZED_WIZARD_CATEGORY_LABEL = WorkbenchMessages.NewWizardsRegistryReader_otherCategory;
     
     private final static String CATEGORY_SEPARATOR = "/";//$NON-NLS-1$
 

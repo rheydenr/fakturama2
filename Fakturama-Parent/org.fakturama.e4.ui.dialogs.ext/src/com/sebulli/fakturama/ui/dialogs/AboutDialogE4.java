@@ -60,7 +60,6 @@ import com.sebulli.fakturama.ui.dialogs.about.internal.AboutItem;
 import com.sebulli.fakturama.ui.dialogs.about.internal.AboutTextManager;
 import com.sebulli.fakturama.ui.dialogs.about.internal.InstallationDialog;
 import com.sebulli.fakturama.ui.dialogs.about.internal.ProductProperties;
-import com.sebulli.fakturama.ui.dialogs.about.internal.WorkbenchMessages;
 
 /**
  * Displays information about the product.

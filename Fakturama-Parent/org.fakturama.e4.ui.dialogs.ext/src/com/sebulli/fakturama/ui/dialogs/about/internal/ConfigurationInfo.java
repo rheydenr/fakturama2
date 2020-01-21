@@ -27,6 +27,7 @@ import org.eclipse.swt.custom.BusyIndicator;
 import com.ibm.icu.text.Collator;
 import com.ibm.icu.text.DateFormat;
 import com.sebulli.fakturama.ui.ISystemSummarySection;
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**

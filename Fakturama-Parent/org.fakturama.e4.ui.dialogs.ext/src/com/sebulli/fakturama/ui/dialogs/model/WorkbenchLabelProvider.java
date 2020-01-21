@@ -1,4 +1,4 @@
-package org.fakturama.wizards;
+package com.sebulli.fakturama.ui.dialogs.model;
 
 import org.eclipse.core.runtime.Adapters;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -14,8 +14,6 @@ import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-
-import com.sebulli.fakturama.ui.dialogs.model.IWorkbenchAdapter;
 
 /**
  * Provides basic labels for adaptable objects that have the

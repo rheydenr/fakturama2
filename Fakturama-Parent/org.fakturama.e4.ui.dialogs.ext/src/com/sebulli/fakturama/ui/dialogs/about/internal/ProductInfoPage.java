@@ -18,6 +18,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
+
 /**
  * Abstract superclass of about dialog installation pages. The ProductInfoPage
  * is set up so that the page can be hosted as one of many pages in the

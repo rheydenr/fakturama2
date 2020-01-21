@@ -1,4 +1,4 @@
-package org.fakturama.wizards;
+package org.fakturama.wizards.internal;
 
 import org.eclipse.jface.viewers.IBasicPropertyConstants;
 import org.eclipse.jface.viewers.ViewerComparator;

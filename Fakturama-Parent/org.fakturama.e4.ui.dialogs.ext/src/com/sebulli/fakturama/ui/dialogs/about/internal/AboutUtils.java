@@ -33,6 +33,8 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.FrameworkUtil;
 
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
+
 /**
  * Manages links in styled text.
  */

@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-import com.sebulli.fakturama.ui.dialogs.about.internal.WorkbenchMessages;
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 import com.sebulli.fakturama.ui.dialogs.exceptions.WorkbenchException;
 import com.sebulli.fakturama.ui.dialogs.model.IWorkbenchAdapter;
 

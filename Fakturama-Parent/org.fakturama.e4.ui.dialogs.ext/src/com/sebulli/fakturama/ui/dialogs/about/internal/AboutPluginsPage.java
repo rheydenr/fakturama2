@@ -67,6 +67,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.sebulli.fakturama.ui.BundleSigningInfo;
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 
 /**
  * Displays information about the product plugins.
