@@ -242,7 +242,7 @@ em.joinTransaction();
      * @param id the primary key to search
      * @return found object
      */
-    public T findById(long id) {
+    public T findById(Long id) {
         return findById(id, false);
     }
 
@@ -258,7 +258,11 @@ em.joinTransaction();
      *  object with database content
      * @return found object
      */
-    public T findById(long id, boolean forceReadFromDatabase) {
+    public T findById(Long id, boolean forceReadFromDatabase) {
+    	if(id == null) {
+    		return null;
+    	}
+    	
     	T find = getEntityManager().find(getEntityClass(), id);
     	if(forceReadFromDatabase) {
     	    getEntityManager().refresh(find);

@@ -93,7 +93,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 
 	@Override
 	public Optional<Address> getAddressFromContact(Contact contact, ContactType contactType) {
-		Optional<Address> address = null;
+		Optional<Address> address;
 		if (contact != null && contactType != null) {
 			address = contact.getAddresses().stream()
 					.filter(rcv -> rcv.getContactTypes().isEmpty() || rcv.getContactTypes().contains(contactType))
@@ -103,6 +103,8 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 			if(!address.isPresent()) {
 				address = Optional.ofNullable(contact.getAddresses().get(0));
 			}
+		} else {
+			address = Optional.empty();
 		}
 		return address;
 	}

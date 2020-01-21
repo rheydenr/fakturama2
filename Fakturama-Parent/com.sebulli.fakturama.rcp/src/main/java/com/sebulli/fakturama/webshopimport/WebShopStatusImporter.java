@@ -13,12 +13,14 @@ import java.net.URLEncoder;
 import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.xml.sax.SAXParseException;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
@@ -160,7 +162,14 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
             //T: Status message importing data from web shop
         	setRunResult(msg.importWebshopErrorNodata + "\n" + shopURL + "\n" + mex.getMessage());
 		}
-        catch (Exception e) {
+        catch (UnmarshalException e) {
+        	setRunResult(msg.importWebshopErrorCantopen + "\n" + shopURL + "\n"
+    				+ "Message: " + e.getCause() + "\n", e);
+
+        if (webshopexport != null)
+        	setRunResult(getRunResult().getErrorMessage() + "\n\n" + webshopexport, e);
+        }
+    	catch (Exception e) {
             //T: Status message importing data from web shop
         	setRunResult(msg.importWebshopErrorCantopen + "\n" + shopURL + "\n"
         				+ "Message: " + e.getLocalizedMessage()+ "\n", e);

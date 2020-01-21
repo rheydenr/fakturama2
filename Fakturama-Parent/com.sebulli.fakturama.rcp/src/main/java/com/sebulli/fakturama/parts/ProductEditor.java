@@ -17,6 +17,7 @@ package com.sebulli.fakturama.parts;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -30,6 +31,7 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 import javax.persistence.metamodel.SingularAttribute;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.eclipse.core.databinding.Binding;
@@ -52,7 +54,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
-import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -80,6 +81,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CategoryComparator;
+import com.sebulli.fakturama.model.ObjectDuplicator;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.Product_;
@@ -151,6 +153,7 @@ public class ProductEditor extends Editor<Product> {
 	private ProductCategory oldCat;
 	private FakturamaPictureControl labelProductPicture;
 	private Composite photoComposite;
+	private Text note;
 
 	// Widgets (and variables) for the scaled price.
 	private Label[] labelBlock = new Label[MAX_NUMBER_OF_PRICES];
@@ -160,7 +163,6 @@ public class ProductEditor extends Editor<Product> {
 	private MonetaryAmount[] net;
 	private MonetaryAmount defaultPrice = Money.of(Double.valueOf(0.0), DataUtils.getInstance().getDefaultCurrencyUnit());
 	private int scaledPrices;
-	
 
 	// These flags are set by the preference settings.
 	// They define if elements of the editor are displayed or not.
@@ -328,8 +330,17 @@ public class ProductEditor extends Editor<Product> {
 		String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
 		if (StringUtils.isNumeric(tmpObjId)) {
 		    Long objId = Long.valueOf(tmpObjId);
+		    
 		    // Set the editor's data set to the editor's input
 		    this.editorProduct = productsDAO.findById(objId);
+		    
+		    // if a copy should be created, create one and take the objId as a "template"
+		    if(BooleanUtils.toBoolean((String)part.getTransientData().get(CallEditor.PARAM_COPY))) {
+		    	// clone the product and use it as new one
+		    	editorProduct = new ObjectDuplicator().duplicateProduct(editorProduct);
+		    	editorProduct.setItemNumber(numberGenerator.getNextNr(ID));
+		    	getMDirtyablePart().setDirty(true);
+		    }
 		}
 		
 		// initialize prices
@@ -355,7 +366,7 @@ public class ProductEditor extends Editor<Product> {
             part.setLabel(msg.commandNewProductName);
 
 			// Set the vat to the standard value
-            int vatId = defaultValuePrefs.getInt(Constants.DEFAULT_VAT);
+            long vatId = defaultValuePrefs.getLong(Constants.DEFAULT_VAT);
             VAT vat = vatDao.findById(vatId);  // initially set default VAT
 			editorProduct.setVat(vat);
 
@@ -398,7 +409,7 @@ public class ProductEditor extends Editor<Product> {
 				}
 			}
 		}
-		catch (Exception e) {
+		catch (IOException e) {
 			// Show an error icon, if the picture is not found
 			try {
 				Image prodImage = resourceManager.getProgramImage(display, ProgramImages.NOT_FOUND_PICTURE);
@@ -418,7 +429,8 @@ public class ProductEditor extends Editor<Product> {
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createPartControl(final Composite parent) {
-
+//		final LayoutSpyDialog popupDialog = new LayoutSpyDialog(shell);
+//		popupDialog.open();
 		// Get a reference to the display
 		display = parent.getDisplay();
 
@@ -473,7 +485,6 @@ public class ProductEditor extends Editor<Product> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelItemNr);
 		textItemNr = new Text(useItemNr ? productDescGroup : invisible, SWT.BORDER);
 		textItemNr.addKeyListener(new ReturnKeyAdapter(textItemNr));
-		bindModelValue(editorProduct, textItemNr, Product_.itemNumber.getName(), 64);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(textItemNr);
 
 		// Product name
@@ -789,6 +800,16 @@ public class ProductEditor extends Editor<Product> {
 	            getMDirtyablePart().setDirty(true);
 	        }
 		});
+		
+		// Product note
+		Group noteGroup = new Group(top, SWT.NONE);
+		noteGroup.setText("Note");
+		GridLayoutFactory.swtDefaults().applyTo(noteGroup);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(noteGroup);
+		
+		note = new Text(noteGroup, SWT.BORDER | SWT.MULTI);
+		note.addKeyListener(new ReturnKeyAdapter(note));
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(note);
         
     	oldCat = editorProduct.getCategories();        
 
@@ -812,6 +833,7 @@ public class ProductEditor extends Editor<Product> {
     protected void bindModel() {
 		part.getTransientData().put(BIND_MODE_INDICATOR, Boolean.TRUE);
 
+		bindModelValue(editorProduct, textItemNr, Product_.itemNumber.getName(), 64);
 		bindModelValue(editorProduct, textName, Product_.name.getName(), 64);
 		fillAndBindCategoryCombo();
 		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
@@ -849,6 +871,7 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, udf01, Product_.cdf01.getName(), 64);
 		bindModelValue(editorProduct, udf02, Product_.cdf02.getName(), 64);
 		bindModelValue(editorProduct, udf03, Product_.cdf03.getName(), 64);
+		bindModelValue(editorProduct, note, Product_.note.getName(), 2048);
 		
 		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
