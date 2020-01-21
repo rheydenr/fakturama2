@@ -6,17 +6,17 @@
    <extension
          point="org.eclipse.e4.ui.about.dialog.installationPages">
       <page
-            class="com.sebulli.fakturama.ui.internal.about.AboutPluginsPage"
+            class="com.sebulli.fakturama.ui.dialogs.about.internal.AboutPluginsPage"
             id="PluginPage"
             name="%installationPage.plugins.name">
       </page>
       <page
-            class="com.sebulli.fakturama.ui.internal.about.AboutSystemPage"
+            class="com.sebulli.fakturama.ui.dialogs.about.internal.AboutSystemPage"
             id="SystemPage"
             name="%installationPage.system.name">
       </page>
       <page
-            class="com.sebulli.fakturama.ui.internal.about.AboutFeaturesPage"
+            class="com.sebulli.fakturama.ui.dialogs.about.internal.AboutFeaturesPage"
             id="FeaturePage"
             name="%installationPage.feature.name">
       </page>
@@ -24,7 +24,7 @@
    <extension
          point="org.eclipse.e4.ui.about.dialog.systemSummarySections">
       <section
-            class="com.sebulli.fakturama.ui.internal.about.ConfigurationLogDefaultSection"
+            class="com.sebulli.fakturama.ui.dialogs.about.internal.ConfigurationLogDefaultSection"
             id="logSection"
             sectionTitle="sectionTitle">
       </section>

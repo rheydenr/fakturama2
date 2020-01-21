@@ -33,7 +33,6 @@ import org.eclipse.e4.ui.dialogs.filteredtree.BasicUIJob;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.ConfigureColumns;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -51,8 +50,6 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -211,13 +208,11 @@ public class AboutPluginsPage extends ProductInfoPage {
 
 			if (columnIndex == 0) {
 
-				ImageRegistry imageRegistry = JFaceResources.getImageRegistry();
-
 				if (element instanceof AboutBundleData) {
 					final AboutBundleData data = (AboutBundleData) element;
 					if (data.isSignedDetermined()) {
 
-						return imageRegistry.get(data.isSigned() ? SIGNED_YES : SIGNED_NO);
+						return JFaceResources.getImage(data.isSigned() ? SIGNED_YES : SIGNED_NO);
 					}
 
 					synchronized (resolveQueue) {
@@ -225,7 +220,7 @@ public class AboutPluginsPage extends ProductInfoPage {
 					}
 					resolveJob.schedule();
 
-					return imageRegistry.get(UNKNOWN);
+					return JFaceResources.getImage(UNKNOWN);
 				}
 			}
 
@@ -445,12 +440,9 @@ public class AboutPluginsPage extends ProductInfoPage {
 		vendorInfo.setLabelProvider(new BundleTableLabelProvider());
 
 		final BundlePatternFilter searchFilter = new BundlePatternFilter();
-		filterText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
+		filterText.addModifyListener(e -> {
 				searchFilter.setPattern(filterText.getText());
 				vendorInfo.refresh();
-			}
 		});
 		vendorInfo.addFilter(searchFilter);
 

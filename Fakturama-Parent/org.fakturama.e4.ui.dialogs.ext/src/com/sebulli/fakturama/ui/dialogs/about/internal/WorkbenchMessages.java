@@ -15,6 +15,8 @@
  *******************************************************************************/
 package com.sebulli.fakturama.ui.dialogs.about.internal;
 
+import java.util.spi.LocaleServiceProvider;
+
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -23,7 +25,7 @@ import org.eclipse.osgi.util.NLS;
  *
  */
 public class WorkbenchMessages extends NLS {
-	private static final String BUNDLE_NAME = "com.sebulli.fakturama.ui.internal.messages";//$NON-NLS-1$
+	private static final String BUNDLE_NAME = "com.sebulli.fakturama.ui.dialogs.about.internal.messages";    //$NON-NLS-1$
 
 	public static String ThemingDisabled;
 

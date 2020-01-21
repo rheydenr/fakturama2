@@ -17,8 +17,6 @@ package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +27,11 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.ConfigureColumns;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -83,9 +80,6 @@ public class AboutFeaturesPage extends ProductInfoPage {
 	private AboutTextManager textManager;
 
 	private Composite infoArea;
-
-	// FIXME use JFaceResources instead ???
-	private Map<ImageDescriptor, Image> cachedImages = new HashMap<ImageDescriptor, Image>();
 
 	private AboutBundleGroupData[] bundleGroupInfos;
 
@@ -172,12 +166,6 @@ public class AboutFeaturesPage extends ProductInfoPage {
 	@Override
 	public void createControl(Composite parent) {
 		initializeDialogUnits(parent);
-		parent.getShell().addDisposeListener(new DisposeListener() {
-			@Override
-			public void widgetDisposed(DisposeEvent arg0) {
-				disposeImages();
-			}
-		});
 
 		// FIXME HelpSystem
 		// PlatformUI.getWorkbench().getHelpSystem().setHelp(parent,
@@ -307,14 +295,6 @@ public class AboutFeaturesPage extends ProductInfoPage {
 		}
 	}
 
-	private void disposeImages() {
-		Iterator<Image> iter = cachedImages.values().iterator();
-		while (iter.hasNext()) {
-			Image image = iter.next();
-			image.dispose();
-		}
-	}
-
 	/**
 	 * Update the button enablement
 	 */
@@ -352,10 +332,10 @@ public class AboutFeaturesPage extends ProductInfoPage {
 		}
 
 		ImageDescriptor desc = info.getFeatureImage();
-		Image image = cachedImages.get(desc);
+		Image image = JFaceResources.getImage(info.getId());
 		if (image == null && desc != null) {
 			image = desc.createImage();
-			cachedImages.put(desc, image);
+			JFaceResources.getImageRegistry().put(info.getId(), desc);
 		}
 		imageLabel.setImage(image);
 
