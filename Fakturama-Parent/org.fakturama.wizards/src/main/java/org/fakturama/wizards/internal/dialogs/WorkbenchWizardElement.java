@@ -29,9 +29,10 @@ import org.fakturama.wizards.IE4WizardCategory;
 import org.fakturama.wizards.IE4WizardDescriptor;
 import org.fakturama.wizards.IWorkbenchWizard;
 import org.fakturama.wizards.internal.WorkbenchAdapter;
-import org.fakturama.wizards.internal.registry.IWorkbenchRegistryConstants;
 import org.fakturama.wizards.internal.registry.RegistryReader;
 import org.fakturama.wizards.model.IWorkbenchAdapter;
+
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  * Instances represent registered wizards.

@@ -1,5 +1,6 @@
 package org.fakturama.wizards;
 
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -14,8 +15,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.fakturama.wizards.model.IWorkbenchAdapter;
-
-import com.sebulli.fakturama.misc.Util;
 
 /**
  * Provides basic labels for adaptable objects that have the
@@ -113,7 +112,7 @@ public class WorkbenchLabelProvider extends LabelProvider implements
      * object is not adaptable. 
      */
     protected final IWorkbenchAdapter getAdapter(Object o) {
-        return (IWorkbenchAdapter)Util.getAdapter(o, IWorkbenchAdapter.class);
+        return Adapters.adapt(o, IWorkbenchAdapter.class);
     }
 
 	/**

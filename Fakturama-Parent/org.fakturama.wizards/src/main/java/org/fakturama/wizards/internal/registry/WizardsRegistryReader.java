@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.fakturama.wizards.IE4WizardDescriptor;
@@ -22,7 +23,7 @@ import org.fakturama.wizards.internal.dialogs.WizardCollectionElement;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
 import org.osgi.service.log.LogService;
 
-import com.sebulli.fakturama.misc.Util;
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  *  Instances access the registry that is provided at creation time
@@ -267,7 +268,7 @@ public class WizardsRegistryReader extends RegistryReader {
 		}
 
         if (parent != null) {
-			createCollectionElement(parent, (IConfigurationElement) Util.getAdapter(category,
+			createCollectionElement(parent, Adapters.adapt(category,
 					IConfigurationElement.class));
 		}
     }

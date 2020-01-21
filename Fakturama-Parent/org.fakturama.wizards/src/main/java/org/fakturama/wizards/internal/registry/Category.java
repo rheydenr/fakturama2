@@ -10,6 +10,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.fakturama.wizards.WorkbenchException;
 import org.fakturama.wizards.model.IWorkbenchAdapter;
 
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
+
 /**
  * Category provides for hierarchical grouping of elements
  * registered in the registry. One extension normally defines
