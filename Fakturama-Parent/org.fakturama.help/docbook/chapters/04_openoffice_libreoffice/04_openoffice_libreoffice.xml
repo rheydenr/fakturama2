@@ -823,7 +823,7 @@ id="04_openoffice_libreoffice">
 						<entry><para>Datumsangaben können mit diesem Formatparameter angepasst werden. Als Format können gültige Platzhalter aus <link xl:href="https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</link> verwendet werden.</para>
 							<para>Beispiel:</para>
 							<para>
-								<emphasis role="bold">DOCUMENT.SERVICEDATE$DFORMAT:MMMM YYYY</emphasis> November 2017</para>
+								<emphasis role="bold">&lt;DOCUMENT.SERVICEDATE$DFORMAT:MMMM YYYY&gt;</emphasis> wird zu November 2017</para>
 						</entry>
 					</row>
 					<row>
@@ -832,7 +832,39 @@ id="04_openoffice_libreoffice">
 							<para>Bei Produktbildern kann die Bildgröße (Breite und Höhe in Pixel) angegeben werden.</para>
 							<para>Beispiel:</para>
 							<para>
-								<emphasis role="bold">ITEM.PICTURE$WIDTH:200$HEIGHT:150</emphasis> Produktbild wird 200 x 150 Pixel groß.</para>
+								<emphasis role="bold">&lt;ITEM.PICTURE$WIDTH:200$HEIGHT:150&gt;</emphasis> Produktbild wird 200 x 150 Pixel groß.</para>
+						</entry>
+					</row>
+					<row>
+						<entry>FIRST</entry>
+						<entry><para>Liefert die ersten <emphasis role="italics">n</emphasis> Zeichen des Platzhalterwertes. Die Zählung beginnt bei 1.</para>
+							<para>Beispiel:</para>
+							<para>
+								<emphasis role="bold">&lt;ITEM.NR$FIRST:3&gt;</emphasis> wird zu "123", falls die komplette Artikelnummer (ITEM.NR) "12345678" lautet.</para>
+						</entry>
+					</row>
+					<row>
+						<entry>LAST</entry>
+						<entry><para>Liefert die letzten <emphasis role="italics">n</emphasis> Zeichen des Platzhalterwertes. Die Zählung beginnt bei 1.</para>
+							<para>Beispiel:</para>
+							<para>
+								<emphasis role="bold">&lt;ITEM.NR$LAST:3&gt;</emphasis> wird zu "678", falls die komplette Artikelnummer (ITEM.NR) "12345678" lautet.</para>
+						</entry>
+					</row>
+					<row>
+						<entry>RANGE</entry>
+						<entry><para>Liefert den durch <emphasis role="italics">n</emphasis> und <emphasis role="italics">m</emphasis> angegebenen Bereich des Platzhalterwertes. Die Zählung beginnt bei 1.</para>
+							<para>Beispiel:</para>
+							<para>
+								<emphasis role="bold">&lt;ITEM.NR$RANGE:3,5&gt;</emphasis> wird zu "345", falls die komplette Artikelnummer (ITEM.NR) "12345678" lautet.</para>
+						</entry>
+					</row>
+					<row>
+						<entry>EXRANGE</entry>
+						<entry><para>Der durch <emphasis role="italics">n</emphasis> und <emphasis role="italics">m</emphasis> angegebene Bereich des Platzhalterwertes wird entfernt. Die Zählung beginnt bei 1.</para>
+							<para>Beispiel:</para>
+							<para>
+								<emphasis role="bold">&lt;ITEM.NR$EXRANGE:3,5&gt;</emphasis> wird zu "12678", falls die komplette Artikelnummer (ITEM.NR) "12345678" lautet.</para>
 						</entry>
 					</row>
 				</tbody>

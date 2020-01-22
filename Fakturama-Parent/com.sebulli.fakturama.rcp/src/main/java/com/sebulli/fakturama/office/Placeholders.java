@@ -415,45 +415,46 @@ public class Placeholders {
 	 * @return
 	 * 		The value mofified by the parameters
 	 */
-	String interpretParameters(String placeholder, String value) {
+	String interpretParameters(final String placeholder, final String pValue) {
 		String par;
+		String retval = pValue;
 		
-		if (value == null)
-			return value;
+		if (retval == null)
+			return retval;
 		
 		// The parameters "PRE" and "POST" are only used, if the
 		// placeholder value is not empty
-		if (!value.isEmpty()) {
+		if (!retval.isEmpty()) {
 			
 			// Parameter "PRE"
 			par = extractParam(placeholder,"PRE");
 			if (!par.isEmpty())
-					value =  removeQuotationMarks(par) + value;
+					retval =  removeQuotationMarks(par) + retval;
 
 			// Parameter "POST"
 			par = extractParam(placeholder,"POST");
 			if (!par.isEmpty())
-					value += removeQuotationMarks(par);
+					retval += removeQuotationMarks(par);
 
 			// Parameter "INONELINE"
 			par = extractParam(placeholder,"INONELINE");
 			if (!par.isEmpty())
-				value = StringInOneLine(value, removeQuotationMarks(par));
+				retval = StringInOneLine(retval, removeQuotationMarks(par));
 
 			// Parameter "REPLACE"
 			par = extractParam(placeholder,"REPLACE");
 			if (!par.isEmpty())
-				value = replaceValues(removeQuotationMarks(par) , value);
+				retval = replaceValues(removeQuotationMarks(par) , retval);
 
 			// Parameter "FORMAT"
 			par = extractParam(placeholder,"FORMAT");
 			if (!par.isEmpty()) {
 				try {
-					Double parsedDouble = localizedNumberFormat.parse(value).doubleValue();
-					value = numberFormatterService.DoubleToDecimalFormatedValue(parsedDouble, par);
+					Double parsedDouble = localizedNumberFormat.parse(retval).doubleValue();
+					retval = numberFormatterService.DoubleToDecimalFormatedValue(parsedDouble, par);
 				}
 				catch (ParseException e) {
-					value = "### NVL ###";
+					retval = "### NVL ###";
 				}
 			}
 
@@ -461,11 +462,67 @@ public class Placeholders {
 			par = extractParam(placeholder, "DFORMAT");
 			if (!par.isEmpty()) {
 				try {
-					GregorianCalendar checkDate = dateFormatterService.getCalendarFromDateString(value);
+					GregorianCalendar checkDate = dateFormatterService.getCalendarFromDateString(retval);
 					SimpleDateFormat sdf = new SimpleDateFormat(par);
-					value = sdf.format(checkDate.getTime());
+					retval = sdf.format(checkDate.getTime());
 				} catch (IllegalArgumentException e) {
-					value = "### NVL ###";
+					retval = "### NVL ###";
+				}
+			}
+			
+			// extract first n characters from string
+			par = extractParam(placeholder, "FIRST");
+			if (!par.isEmpty()) {
+				Integer length = extractLengthFromParameter(par, retval.length());
+				if (length.compareTo(Integer.valueOf(0)) >= 0) {
+					int len = length.compareTo(retval.length()) < 0 ? length : retval.length();
+					retval = retval.substring(0, len);
+				}
+			}
+			
+			// extract last n characters from string
+			par = extractParam(placeholder, "LAST");
+			if (!par.isEmpty()) {
+				Integer length = extractLengthFromParameter(par, retval.length());
+				if (length.compareTo(Integer.valueOf(0)) >= 0) {
+					int len = length.compareTo(retval.length()) < 0 ? length : retval.length();
+					retval = retval.substring(retval.length() - len);
+				}
+			}
+			
+			// extract range from n to m characters from string
+			par = extractParam(placeholder, "RANGE");
+			if(!par.isEmpty()) {
+				String[] boundaries = par.split(",");
+				if(boundaries.length == 2) {
+					// for customer convenience we start counting from 1
+					Integer start = extractLengthFromParameter(boundaries[0], 0) - 1;
+					Integer end = extractLengthFromParameter(boundaries[1], retval.length());
+					if (end.compareTo(Integer.valueOf(0)) >= 0 ) {
+						int len = end.compareTo(retval.length()) < 0 ? end : retval.length();
+						retval = len == 0 ? "" : retval.substring(start, len);
+					}
+				}
+			}
+			
+			// extract without range from n to m characters from string
+			par = extractParam(placeholder, "EXRANGE");
+			if (!par.isEmpty()) {
+				String[] boundaries = par.split(",");
+				if (boundaries.length == 2) {
+					// for customer convenience we start counting from 1
+					Integer start = extractLengthFromParameter(boundaries[0], 0) - 1;
+					Integer end = extractLengthFromParameter(boundaries[1], retval.length());
+					if (end.compareTo(Integer.valueOf(0)) >= 0) {
+						int len = end.compareTo(retval.length()) < 0 ? end : retval.length();
+						if (len == 0) {
+							retval = "";
+						} else {
+							String first = retval.substring(0, Math.max(0, start));
+							String last = retval.substring(len, retval.length());
+							retval = first + last;
+						}
+					}
 				}
 			}
 		}
@@ -473,12 +530,22 @@ public class Placeholders {
 			// Parameter "EMPTY"
 			par = extractParam(placeholder,"EMPTY");
 			if (!par.isEmpty())
-					value = removeQuotationMarks(par);
+				retval = removeQuotationMarks(par);
 		}
 		
 		// Encode some special characters
-		value = encodeEntities(value);
-		return value;
+		retval = encodeEntities(retval);
+		return retval;
+	}
+
+	private Integer extractLengthFromParameter(String par, Integer defaultValue) {
+		Integer length;
+		try {
+			length = Integer.parseInt(par);
+		} catch (NumberFormatException e) {
+			length = defaultValue;
+		}
+		return length;
 	}
 	
 	/**
