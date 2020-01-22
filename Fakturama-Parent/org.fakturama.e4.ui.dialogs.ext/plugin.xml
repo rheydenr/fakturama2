@@ -26,7 +26,7 @@
       <section
             class="com.sebulli.fakturama.ui.dialogs.about.internal.ConfigurationLogDefaultSection"
             id="logSection"
-            sectionTitle="sectionTitle">
+            sectionTitle="system configuration">
       </section>
    </extension>
 </plugin>

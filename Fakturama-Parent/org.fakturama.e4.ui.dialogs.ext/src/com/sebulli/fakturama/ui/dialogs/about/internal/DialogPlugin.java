@@ -17,12 +17,12 @@ public class DialogPlugin implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-		this.context = context;
+		DialogPlugin.context = context;
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		this.context = null;
+		DialogPlugin.context = null;
 	}
 
 	public static BundleContext getContext() {
