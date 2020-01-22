@@ -8,11 +8,8 @@ Automatic-Module-Name: org.eclipse.e4.ui.dialogs.ext
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.inject;version="1.0.0"
-Export-Package: com.sebulli.fakturama.ui,
- com.sebulli.fakturama.ui.dialogs,
- com.sebulli.fakturama.ui.dialogs.about,
+Export-Package: com.sebulli.fakturama.ui.dialogs,
  com.sebulli.fakturama.ui.dialogs.exceptions,
- com.sebulli.fakturama.ui.dialogs.model,
  com.sebulli.fakturama.ui.dialogs.registry
 Require-Bundle: org.eclipse.jface,
  org.eclipse.core.runtime;bundle-version="3.17.0",
@@ -22,3 +19,4 @@ Require-Bundle: org.eclipse.jface,
  org.eclipse.e4.core.contexts;bundle-version="1.8.300",
  org.eclipse.e4.core.di;bundle-version="1.7.500"
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: com.sebulli.fakturama.ui.dialogs.about.internal.e3.DialogPlugin

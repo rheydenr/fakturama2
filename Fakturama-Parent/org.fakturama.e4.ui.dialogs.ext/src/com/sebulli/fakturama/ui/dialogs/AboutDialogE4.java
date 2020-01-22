@@ -53,13 +53,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import com.sebulli.fakturama.ui.dialogs.about.AboutFeaturesDialog;
-import com.sebulli.fakturama.ui.dialogs.about.internal.AboutBundleGroupData;
-import com.sebulli.fakturama.ui.dialogs.about.internal.AboutFeaturesButtonManager;
-import com.sebulli.fakturama.ui.dialogs.about.internal.AboutItem;
-import com.sebulli.fakturama.ui.dialogs.about.internal.AboutTextManager;
-import com.sebulli.fakturama.ui.dialogs.about.internal.InstallationDialog;
-import com.sebulli.fakturama.ui.dialogs.about.internal.ProductProperties;
+import com.sebulli.fakturama.ui.dialogs.about.internal.e3.AboutBundleGroupData;
+import com.sebulli.fakturama.ui.dialogs.about.internal.e3.AboutFeaturesButtonManager;
+import com.sebulli.fakturama.ui.dialogs.about.internal.e3.AboutFeaturesDialog;
+import com.sebulli.fakturama.ui.dialogs.about.internal.e3.AboutItem;
+import com.sebulli.fakturama.ui.dialogs.about.internal.e3.AboutTextManager;
+import com.sebulli.fakturama.ui.dialogs.about.internal.e3.InstallationDialog;
+import com.sebulli.fakturama.ui.dialogs.about.internal.e3.ProductProperties;
 
 /**
  * Displays information about the product.

@@ -22,17 +22,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.fakturama.wizards.internal.AbstractWorkbenchWizardNode;
+import org.fakturama.wizards.internal.AdaptableList;
 import org.fakturama.wizards.internal.DataTransferWizardCollectionComparator;
 import org.fakturama.wizards.internal.WizardTreeContentProvider;
 import org.fakturama.wizards.internal.dialogs.WizardActivityFilter;
 import org.fakturama.wizards.internal.dialogs.WizardPatternFilter;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardSelectionPage;
+import org.fakturama.wizards.internal.dialogs.model.WorkbenchLabelProvider;
 
 import com.sebulli.fakturama.ui.dialogs.DialogUtil;
 import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
-import com.sebulli.fakturama.ui.dialogs.model.AdaptableList;
-import com.sebulli.fakturama.ui.dialogs.model.WorkbenchLabelProvider;
 import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**

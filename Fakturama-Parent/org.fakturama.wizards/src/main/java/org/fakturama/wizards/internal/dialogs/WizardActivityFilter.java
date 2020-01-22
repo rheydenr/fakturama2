@@ -5,8 +5,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.fakturama.wizards.activities.WorkbenchActivityHelper;
-
-import com.sebulli.fakturama.ui.dialogs.model.AdaptableList;
+import org.fakturama.wizards.internal.AdaptableList;
 
 /**
  * Viewer filter designed to work with the new wizard page (and its input/content provider).
