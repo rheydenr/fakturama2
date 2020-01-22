@@ -11,13 +11,14 @@
 package com.sebulli.fakturama.ui.dialogs.about.internal;
 
 import java.awt.Desktop;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -227,16 +228,16 @@ public class AboutUtils {
 	public static void openErrorLogBrowser(Shell shell) {
 		String filename = Platform.getLogFileLocation().toOSString();
 
-		File log = new File(filename);
-		if (log.exists()) {
+		Path log = Paths.get(filename);
+		if (Files.exists(log)) {
 			// Make a copy of the file with a temporary name.
 			// Working around an issue with windows file associations/browser
 			// malfunction whereby the browser doesn't open on ".log" and we
 			// aren't returned an error.
 			// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=97783
-			File logCopy = makeDisplayCopy(log);
+			Path logCopy = makeDisplayCopy(log);
 			if (logCopy != null) {
-				AboutUtils.openLink(shell, "file:///" + logCopy.getAbsolutePath()); //$NON-NLS-1$
+				AboutUtils.openLink(shell, logCopy.toUri().toString()); //$NON-NLS-1$
 				return;
 			}
 			// Couldn't make copy, try to open the original log.
@@ -261,7 +262,7 @@ public class AboutUtils {
 	 * 
 	 * @return the file, or <code>null</code>
 	 */
-	private static File makeDisplayCopy(File file) {
+	private static Path makeDisplayCopy(Path file) {
 
 		IPath path = Platform.getStateLocation(FrameworkUtil.getBundle(AboutUtils.class));
 
@@ -272,36 +273,14 @@ public class AboutUtils {
 			return null;
 		}
 		path = path.append(ERROR_LOG_COPY_FILENAME);
-		File copy = path.toFile();
-		FileReader in = null;
-		FileWriter out = null;
+		Path copy = path.toFile().toPath();
+		
 		try {
-			in = new FileReader(file);
-			// don't append data, overwrite what was there
-			out = new FileWriter(copy);
-			char buffer[] = new char[4096];
-			int count;
-			while ((count = in.read(buffer, 0, buffer.length)) > 0) {
-				out.write(buffer, 0, count);
-			}
+			return Files.copy(file, copy, StandardCopyOption.REPLACE_EXISTING);
 		} catch (FileNotFoundException e) {
 			return null;
 		} catch (IOException e) {
 			return null;
-		} finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-				if (out != null) {
-					out.close();
-				}
-			} catch (IOException e) {
-				return null;
-			}
 		}
-		return copy;
-
 	}
-
 }
