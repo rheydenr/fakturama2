@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: E4 dialog extensions
 Bundle-SymbolicName: org.fakturama.e4.ui.dialogs.ext;singleton:=true
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.1.0
 Bundle-Vendor: Fakturama Team
 Automatic-Module-Name: org.eclipse.e4.ui.dialogs.ext
 Bundle-Localization: plugin
@@ -18,6 +18,7 @@ Require-Bundle: org.eclipse.jface,
  com.ibm.icu;bundle-version="64.2.0",
  org.eclipse.e4.ui.dialogs;bundle-version="1.1.600",
  org.eclipse.e4.core.contexts;bundle-version="1.8.300",
- org.eclipse.e4.core.di;bundle-version="1.7.500"
+ org.eclipse.e4.core.di;bundle-version="1.7.500",
+ org.eclipse.e4.ui.workbench
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.sebulli.fakturama.ui.dialogs.about.internal.e3.DialogPlugin

@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.ui.dialogs;
+package org.fakturama.wizards.internal.dialogs;
 
 import org.eclipse.swt.widgets.Composite;
 

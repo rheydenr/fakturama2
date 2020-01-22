@@ -24,9 +24,7 @@ import org.osgi.service.log.LogService;
 
 import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 import com.sebulli.fakturama.ui.dialogs.exceptions.WorkbenchException;
-import com.sebulli.fakturama.ui.dialogs.registry.Category;
 import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
-import com.sebulli.fakturama.ui.dialogs.registry.RegistryReader;
 
 /**
  *  Instances access the registry that is provided at creation time

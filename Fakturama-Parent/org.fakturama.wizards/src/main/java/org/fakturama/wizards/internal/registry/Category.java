@@ -1,4 +1,4 @@
-package com.sebulli.fakturama.ui.dialogs.registry;
+package org.fakturama.wizards.internal.registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 import com.sebulli.fakturama.ui.dialogs.exceptions.WorkbenchException;
 import com.sebulli.fakturama.ui.dialogs.model.IWorkbenchAdapter;
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  * Category provides for hierarchical grouping of elements

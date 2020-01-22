@@ -1,8 +1,4 @@
-package com.sebulli.fakturama.ui.dialogs.registry;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
+package org.fakturama.wizards.internal.registry;
 
 import javax.inject.Inject;
 
@@ -10,7 +6,10 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.e4.ui.internal.workbench.ExtensionsSort;
 import org.osgi.service.log.LogService;
+
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  *	Template implementation of a registry reader that creates objects
@@ -82,31 +81,31 @@ public abstract class RegistryReader {
     protected  void logUnknownElement(IConfigurationElement element) {
         logError(element, "Unknown extension tag found: " + element.getName());//$NON-NLS-1$
     }
-
-    /**
-     * Apply a reproducible order to the list of extensions
-     * provided, such that the order will not change as
-     * extensions are added or removed.
-     * @param extensions the extensions to order
-     * @return ordered extensions
-     */
-    public static IExtension[] orderExtensions(IExtension[] extensions) {
-        // By default, the order is based on plugin id sorted
-        // in ascending order. The order for a plugin providing
-        // more than one extension for an extension point is
-        // dependent in the order listed in the XML file.
-        IExtension[] sortedExtension = new IExtension[extensions.length];
-        System.arraycopy(extensions, 0, sortedExtension, 0, extensions.length);
-        Comparator<IExtension> comparer = new Comparator<IExtension>() {
-            public int compare(IExtension arg0, IExtension arg1) {
-                String s1 = arg0.getNamespaceIdentifier();
-                String s2 = arg1.getNamespaceIdentifier();
-                return s1.compareToIgnoreCase(s2);
-            }
-        };
-        Collections.sort(Arrays.asList(sortedExtension), comparer);
-        return sortedExtension;
-    }
+//
+//    /**
+//     * Apply a reproducible order to the list of extensions
+//     * provided, such that the order will not change as
+//     * extensions are added or removed.
+//     * @param extensions the extensions to order
+//     * @return ordered extensions
+//     */
+//    public static IExtension[] orderExtensions(IExtension[] extensions) {
+//        // By default, the order is based on plugin id sorted
+//        // in ascending order. The order for a plugin providing
+//        // more than one extension for an extension point is
+//        // dependent in the order listed in the XML file.
+//        IExtension[] sortedExtension = new IExtension[extensions.length];
+//        System.arraycopy(extensions, 0, sortedExtension, 0, extensions.length);
+//        Comparator<IExtension> comparer = new Comparator<IExtension>() {
+//            public int compare(IExtension arg0, IExtension arg1) {
+//                String s1 = arg0.getNamespaceIdentifier();
+//                String s2 = arg1.getNamespaceIdentifier();
+//                return s1.compareToIgnoreCase(s2);
+//            }
+//        };
+//        Collections.sort(Arrays.asList(sortedExtension), comparer);
+//        return sortedExtension;
+//    }
 
     /**
      * Implement this method to read element's attributes.
@@ -166,7 +165,7 @@ public abstract class RegistryReader {
 			return;
 		}
         IExtension[] extensions = point.getExtensions();
-        extensions = orderExtensions(extensions);
+        extensions = new ExtensionsSort().sort(extensions);
         for (int i = 0; i < extensions.length; i++) {
 			readExtension(extensions[i]);
 		}
