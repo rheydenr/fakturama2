@@ -203,11 +203,6 @@ public class CallEditor {
 			editorPart.getContext().remove(PARAM_FOLLOW_UP);
             evtBroker.post("EditorPart/updateCoolBar", editorType);			
 	}
-//	
-//	@CanExecute
-//	public boolean canExecute(@Named(PARAM_EDITOR_TYPE) String editorType) {
-//	    return true; // we can *always* create a new editor!
-//	}
 	
 	/**
 	 * create a new Part from a PartDescriptor if no one exists.

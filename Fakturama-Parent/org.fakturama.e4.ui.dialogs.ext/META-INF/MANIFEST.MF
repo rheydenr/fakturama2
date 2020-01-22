@@ -10,6 +10,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.inject;version="1.0.0"
 Export-Package: com.sebulli.fakturama.ui.dialogs,
  com.sebulli.fakturama.ui.dialogs.exceptions,
+ com.sebulli.fakturama.ui.dialogs.model,
  com.sebulli.fakturama.ui.dialogs.registry
 Require-Bundle: org.eclipse.jface,
  org.eclipse.core.runtime;bundle-version="3.17.0",

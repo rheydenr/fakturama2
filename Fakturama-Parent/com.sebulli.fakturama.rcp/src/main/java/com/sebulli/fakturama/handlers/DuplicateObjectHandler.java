@@ -48,7 +48,7 @@ public class DuplicateObjectHandler {
 				retval = true;
 				break;
 			case DocumentEditor.ID:
-				// for documents we have tocheck if it's an Offer
+				// for documents we have to check if it's an Offer
 				Object currentObject = activePart.getObject();
 				if(currentObject != null && currentObject instanceof DocumentEditor) {
 					retval = DocumentType.OFFER.equals(((DocumentEditor)currentObject).getDocumentType());
