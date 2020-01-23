@@ -1,6 +1,6 @@
 0=Fakturama
 1=${releaseName}
-2=2019
+2=2020
 3=Gerd Bartelt\n\
 Oliver Groth\n\
 Ralf Heydenreich\n\
@@ -15,3 +15,4 @@ Christoph Kieffer\n\
 Konstantin Stamatopoulos\n\
 Monika Viste\n
 5=${buildId}
+6=$java.version$

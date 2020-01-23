@@ -218,6 +218,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 	private UpdateValueStrategy<IStatus, String> emailValidationStrategy = new UpdateValueStrategy<IStatus, String>();
 
+	private Map<Integer, String> salutationMap;
+
 	/**
 	 * Saves the contents of this part
 	 * 
@@ -842,14 +844,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(tabAddress);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(tabAddress);
 		
-		// now do some helpful initializations (needed for combo boxes)
-        Map<String, String> countryNames = localeUtil.getLocaleCountryMap();
-		
-		Map<Integer, String> salutationList = new HashMap<>();
-		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
-		    salutationList.put(i, contactUtil.getSalutationString(i));
-		} 
-
 		// Controls in the group "address"
 
 		// Company
@@ -882,8 +876,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		comboSalutationViewer.setLabelProvider(new EntityLabelProvider());
 		comboSalutationViewer.setInput(allSalutations);
  */
-		comboSalutationViewer.setInput(salutationList);
-		comboSalutationViewer.setLabelProvider(new NumberLabelProvider<Integer, String>(salutationList));
+		comboSalutationViewer.setInput(getSalutationMap());
+		comboSalutationViewer.setLabelProvider(new NumberLabelProvider<Integer, String>(getSalutationMap()));
 		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboSalutationViewer.getControl());
 
 		// Title
@@ -977,8 +971,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				CTabItem newAddressTab = createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress + " #" + (addressTabFolder.getItemCount()),
-						invisible, createAddressPanel(), countryNames, salutationList);
-//				newAddressTab.setShowClose(true);
+						invisible, createAddressPanel());
 				bindAddressWidgetForIndex(newAddressTab, addressTabFolder.getItemCount() - 1);
 				
 				addressTabFolder.setSelection(newAddressTab);
@@ -987,16 +980,31 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		addressTabFolder.setTopRight(plusButton);
 
 		// create an inner tab for each BillingType
-		CTabItem addressTab = createAddressTabForBillingType(msg.editorContactLabelMaintab, invisible, createAddressPanel(), countryNames, salutationList);
+		// hint: The main tab is not closable!
+		CTabItem addressTab = createAddressTabForBillingType(msg.editorContactLabelMaintab, invisible, createAddressPanel(), SWT.NONE);
 		addressTabFolder.setSelection(addressTab);
 		if(editorContact.getAddresses().size() > 1) {
 			for (int i = 1; i < editorContact.getAddresses().size(); i++) {
-				createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress + " #" + i, invisible, createAddressPanel(), countryNames, salutationList);
+				createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress + " #" + i, invisible, createAddressPanel());
 			}
 		}
-	    
+//		
+//		addressTabFolder.addCTabFolder2Listener(CTabFolder2Listener.closeAdapter(e -> {
+//			e.doit = MessageDialog.openQuestion(top.getShell(), msg.dialogMessageboxTitleWarning, "Möchten Sie die ausgewählte Adresse wirklich entfernen?");
+//		}));
+
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(addressTabFolder);
 		addressTabFolder.setFocus();
+	}
+
+	private Map<Integer, String> getSalutationMap() {
+		if(salutationMap == null || salutationMap.isEmpty()) {
+			salutationMap = new HashMap<>();
+			for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
+			    salutationMap.put(i, contactUtil.getSalutationString(i));
+			}
+		}
+		return salutationMap;
 	}
 
 	private Composite createAddressPanel() {
@@ -1006,9 +1014,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		return addressGroup;
 	}
 
-	private CTabItem createAddressTabForBillingType(String name, Composite invisible, Composite addressGroup, Map<String, String> countryNames,
-			Map<Integer, String> salutationList) {
-		CTabItem addressForBillingType = new CTabItem(addressTabFolder, SWT.NONE);
+	private CTabItem createAddressTabForBillingType(String name, Composite invisible, Composite addressGroup) {
+		// FIXME at the moment closing a CTab raises a CCE, therefore this is commented out for the moment 
+		int style = SWT.NONE/* | SWT.CLOSE */;
+		return createAddressTabForBillingType(name, invisible, addressGroup, style);
+	}
+	
+	private CTabItem createAddressTabForBillingType(String name, Composite invisible, Composite addressGroup, int style) {
+		CTabItem addressForBillingType = new CTabItem(addressTabFolder, style);
 		AddressTabWidget addressTabWidget = new AddressTabWidget();
 		addressForBillingType.setText(name);
 		
@@ -1066,9 +1079,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		ComboViewer comboCountry = new ComboViewer(useCountry ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
 		comboCountry.setContentProvider(new StringHashMapContentProvider());
-		comboCountry.setInput(countryNames);
+		comboCountry.setInput(localeUtil.getLocaleCountryMap());
 		StringComboBoxLabelProvider stringComboBoxLabelProvider = ContextInjectionFactory.make(StringComboBoxLabelProvider.class, context);
-		stringComboBoxLabelProvider.setCountryNames(countryNames);
+		stringComboBoxLabelProvider.setCountryNames(localeUtil.getLocaleCountryMap());
 		comboCountry.setLabelProvider(stringComboBoxLabelProvider);
 		addressTabWidget.setCountryCombo(comboCountry);
 		GridDataFactory.fillDefaults().grab(false, false).span(2, 1).applyTo(comboCountry.getCombo());
