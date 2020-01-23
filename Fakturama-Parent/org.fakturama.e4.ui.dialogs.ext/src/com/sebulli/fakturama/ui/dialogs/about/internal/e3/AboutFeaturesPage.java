@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
@@ -56,7 +55,7 @@ import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
  */
 public class AboutFeaturesPage extends ProductInfoPage {
 
-	// used as the page id when this page is launched in its own dialog
+	/** used as the page id when this page is launched in its own dialog */
 	private static final String ID = "productInfo.features"; //$NON-NLS-1$
 	/**
 	 * Table height in dialog units (value 150).
@@ -94,8 +93,6 @@ public class AboutFeaturesPage extends ProductInfoPage {
 	private AboutBundleGroupData lastSelection = null;
 
 	private Button pluginsButton, moreButton;
-
-	private static Map featuresMap;
 
 	public void setBundleGroupInfos(AboutBundleGroupData[] bundleGroupInfos) {
 		this.bundleGroupInfos = bundleGroupInfos;
@@ -302,18 +299,6 @@ public class AboutFeaturesPage extends ProductInfoPage {
 		if (info == null) {
 			moreButton.setEnabled(false);
 			pluginsButton.setEnabled(false);
-			return;
-		}
-
-		// Creating the feature map is too much just to determine enablement, so
-		// if
-		// it doesn't already exist, just enable the buttons. If this was the
-		// wrong
-		// choice, then when the button is actually pressed an dialog will be
-		// opened.
-		if (featuresMap == null) {
-			moreButton.setEnabled(true);
-			pluginsButton.setEnabled(true);
 			return;
 		}
 
