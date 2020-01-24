@@ -20,9 +20,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -54,6 +59,9 @@ import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
  * outside the workbench.
  */
 public class AboutFeaturesPage extends ProductInfoPage {
+	
+	@Inject
+	private IEclipseContext context;
 
 	/** used as the page id when this page is launched in its own dialog */
 	private static final String ID = "productInfo.features"; //$NON-NLS-1$
@@ -141,11 +149,17 @@ public class AboutFeaturesPage extends ProductInfoPage {
 		AboutBundleGroupData info = (AboutBundleGroupData) items[0].getData();
 		IBundleGroup bundleGroup = info.getBundleGroup();
 		Bundle[] bundles = bundleGroup == null ? new Bundle[0] : bundleGroup.getBundles();
+		
+		IEclipseContext localContext = EclipseContextFactory.create("about-dialog");
+		localContext.set(AboutPluginsDialog.ABOUT_TITLE, WorkbenchMessages.AboutFeaturesDialog_pluginInfoTitle);
+		localContext.set(AboutPluginsDialog.ABOUT_MESSAGE, NLS.bind(
+						WorkbenchMessages.AboutFeaturesDialog_pluginInfoMessage, bundleGroup.getIdentifier()));
+		localContext.set(AboutPluginsDialog.ABOUT_HELPID, IWorkbenchHelpContextIds.ABOUT_FEATURES_PLUGINS_DIALOG);
+		localContext.set(AboutPluginsDialog.ABOUT_BUNDLES, bundles);
+		localContext.set(AboutPluginsDialog.ABOUT_PRODUCTNAME, getProductName());
 
-		AboutPluginsDialog d = new AboutPluginsDialog(getShell(), getProductName(), bundles,
-				WorkbenchMessages.AboutFeaturesDialog_pluginInfoTitle, NLS.bind(
-						WorkbenchMessages.AboutFeaturesDialog_pluginInfoMessage, bundleGroup.getIdentifier()),
-				IWorkbenchHelpContextIds.ABOUT_FEATURES_PLUGINS_DIALOG);
+		AboutPluginsDialog d = new AboutPluginsDialog(getShell());//ContextInjectionFactory.make(AboutPluginsDialog.class, localContext);
+		ContextInjectionFactory.inject(d, localContext);
 		d.open();
 	}
 
