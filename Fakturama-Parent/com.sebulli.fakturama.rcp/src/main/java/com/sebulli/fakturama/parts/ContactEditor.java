@@ -33,6 +33,7 @@ import javax.persistence.metamodel.ListAttribute;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.commons.validator.routines.IBANValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -217,6 +218,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
 
 	private UpdateValueStrategy<IStatus, String> emailValidationStrategy = new UpdateValueStrategy<IStatus, String>();
+	private UpdateValueStrategy<IStatus, String> ibanValidationStrategy = new UpdateValueStrategy<IStatus, String>();
 
 	private Map<Integer, String> salutationMap;
 
@@ -380,8 +382,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 				return ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
 			}
 		});
-	    
-	    
+		
+		ibanValidationStrategy.setBeforeSetValidator((String iban) -> {
+			if (StringUtils.isBlank(iban) || IBANValidator.getInstance().isValid(iban)) {
+				return ValidationStatus.ok();
+			} else {
+				return ValidationStatus.error(msg.editorContactFieldIbanValidationerror);
+			}
+		});
 	    
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
@@ -633,7 +641,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// IBAN Bank code
 		Label labelIBAN = new Label(tabBank, SWT.NONE);
 		//T: Bank code
-		labelIBAN.setText(msg.exporterDataIban);
+		labelIBAN.setText(msg.editorContactFieldIban);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelIBAN);
 		txtIBAN = new Text(tabBank, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtIBAN);
@@ -1188,7 +1196,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtAccount, Contact_.bankAccount.getName() +"." +BankAccount_.name.getName(), 32);
 		bindModelValue(editorContact, txtBankCode, Contact_.bankAccount.getName() +"." +BankAccount_.bankCode.getName(), 32);
 		bindModelValue(editorContact, txtBankName, Contact_.bankAccount.getName() +"." +BankAccount_.bankName.getName(), 64);
-		bindModelValue(editorContact, txtIBAN, Contact_.bankAccount.getName() +"." +BankAccount_.iban.getName(), 32);
+
+		Binding binding = bindModelValue(editorContact, txtIBAN, Contact_.bankAccount.getName() +"." +BankAccount_.iban.getName(), 32, ibanValidationStrategy, null);
+		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
+
 		bindModelValue(editorContact, txtBIC, Contact_.bankAccount.getName() +"." +BankAccount_.bic.getName(), 32);
         bindModelValue(editorContact,txtMandatRef, Contact_.mandateReference.getName(), 32);
 

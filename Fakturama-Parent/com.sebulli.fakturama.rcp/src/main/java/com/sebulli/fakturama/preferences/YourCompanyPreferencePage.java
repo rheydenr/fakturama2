@@ -101,7 +101,7 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_BANK, msg.pageCompanyBankname, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
-		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_IBAN, msg.exporterDataIban, getFieldEditorParent()));
+		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_IBAN, msg.editorContactFieldIban, getFieldEditorParent()));
 		
 		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_BIC, msg.exporterDataBic, getFieldEditorParent()));

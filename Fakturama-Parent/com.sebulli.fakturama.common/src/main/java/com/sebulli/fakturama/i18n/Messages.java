@@ -178,6 +178,8 @@ public class Messages {
 
 	public String editorContactFieldEmailCantlaunch;
 	public String editorContactFieldEmailValidationerror;
+	public String editorContactFieldIban;
+	public String editorContactFieldIbanValidationerror;
 	public String editorContactFieldSalesequalizationtaxName;
 	public String editorContactFieldWebsiteCantopen;
 	public String editorContactFieldLocalconsultant;
@@ -432,7 +434,6 @@ public class Messages {
 	public String exporterDataDocno;
 	public String exporterDataEarnings;
 	public String exporterDataEmail;
-	public String exporterDataIban;
 	public String exporterDataInvoicedate;
 	public String exporterDataInvoiceno;
 	public String exporterDataInvoicesUnpaid;
