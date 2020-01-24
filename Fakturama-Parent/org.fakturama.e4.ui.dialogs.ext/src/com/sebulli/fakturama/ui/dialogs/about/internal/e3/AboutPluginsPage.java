@@ -21,8 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -31,7 +29,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.dialogs.filteredtree.BasicUIJob;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -83,10 +80,6 @@ public class AboutPluginsPage extends ProductInfoPage {
 	private static final String SIGNED_YES = "SIGNED_YES";
 
 	private static final String SIGNED_NO = "SIGNED_NO";
-	
-	// get UISynchronize injected as field
-	@Inject UISynchronize sync;
-
 
 	public class BundleTableLabelProvider extends LabelProvider implements ITableLabelProvider {
 		/**

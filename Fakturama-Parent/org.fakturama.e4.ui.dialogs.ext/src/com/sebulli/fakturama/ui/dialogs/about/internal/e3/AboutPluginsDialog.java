@@ -12,6 +12,7 @@
  *******************************************************************************/
 package com.sebulli.fakturama.ui.dialogs.about.internal.e3;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -28,16 +29,27 @@ import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
  * PRIVATE this class is internal to the ide
  */
 public class AboutPluginsDialog extends ProductInfoDialog {
+	static final String ABOUT_PRODUCTNAME = "about.productname";
+	static final String ABOUT_TITLE = "about.title";
+	static final String ABOUT_MESSAGE = "about.message";
+	static final String ABOUT_BUNDLES = "about.bundles";
+	static final String ABOUT_HELPID = "about.helpid";
+	
 	@Inject
 	private IEclipseContext context;
 	
-	public AboutPluginsDialog(Shell parentShell, String productName, Bundle[] bundles, String title, String message,
-			String helpContextId) {
+	public AboutPluginsDialog(Shell parentShell) {
 		super(parentShell);
+	}
+	
+	@PostConstruct
+	public void init( ) {
 		AboutPluginsPage page = ContextInjectionFactory.make(AboutPluginsPage.class, context);
-		page.setHelpContextId(helpContextId);
-		page.setBundles(bundles);
-		page.setMessage(message);
+		page.setHelpContextId((String) context.get(ABOUT_HELPID));
+		page.setBundles((Bundle[]) context.get(ABOUT_BUNDLES));
+		page.setMessage((String) context.get(ABOUT_MESSAGE));
+		this.title = (String) context.get(ABOUT_TITLE);
+		String productName = (String) context.get(ABOUT_PRODUCTNAME);
 		if (title == null && page.getProductName() != null)
 			title = NLS.bind(WorkbenchMessages.AboutPluginsDialog_shellTitle, productName);
 		initializeDialog(page, title, helpContextId);

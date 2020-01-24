@@ -117,7 +117,7 @@ public class AddressListExport extends OOCalcExporter {
 		setCellTextInBold(row, col++, msg.exporterDataEmail + deliveryAddress);
 		setCellTextInBold(row, col++, msg.commonFieldAccountholder);
 		setCellTextInBold(row, col++, msg.editorContactFieldBankName);
-		setCellTextInBold(row, col++, msg.exporterDataIban);
+		setCellTextInBold(row, col++, msg.editorContactFieldIban);
 		setCellTextInBold(row, col++, msg.exporterDataBic);
 		setCellTextInBold(row, col++, msg.editorContactLabelNotice);
 		setCellTextInBold(row, col++, msg.commonFieldDate);
