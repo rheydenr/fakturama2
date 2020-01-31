@@ -303,7 +303,7 @@ public class FileOrganizer {
 	 *            The workspace path
 	 * @param document
 	 *            The document
-	 * @param isPDF
+	 * @param targetFormat
 	 *            PDF or ODT
 	 * @param copyFile copy files instead of moving them
 	 * @return True, if it was successful
