@@ -224,8 +224,7 @@ public class FileOrganizer {
 			retval = fileNamePlaceholder.matches("^\\w:.*");
 		} else {
 			// detect if the beginning of the given path is an existing one
-			Path tmpPath = Paths.get(StringUtils.substringBefore(fileNamePlaceholder, "/"));
-			retval = !tmpPath.toString().isEmpty() && Files.exists(tmpPath);
+			retval = fileNamePlaceholder.matches("^/.*");
 		}
 		return retval;
 	}
