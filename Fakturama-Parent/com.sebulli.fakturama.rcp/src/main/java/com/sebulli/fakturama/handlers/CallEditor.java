@@ -16,7 +16,6 @@ package com.sebulli.fakturama.handlers;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -49,7 +48,6 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
-import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.CreditorEditor;
@@ -180,14 +178,7 @@ public class CallEditor {
         	
             // forceNew means we want to create a new document unconditionally
             if(!BooleanUtils.toBoolean(isForceNew)) {
-            	
-            	@SuppressWarnings({ "unchecked" })
-				List<IEntity> selection = (List<IEntity>)selectionService.getSelection();
-				if(selection != null && !selection.isEmpty()) {
-					params.put(PARAM_OBJ_ID, Long.toString((Long) selection.get(0).getId()));
-				} else {
-					params.put(PARAM_OBJ_ID, objId);
-				}
+				params.put(PARAM_OBJ_ID, objId);
             	params.put(PARAM_CALLING_DOC, callingDoc);
             	params.put(PARAM_COPY, BooleanUtils.toStringTrueFalse(isCopy));
             }
@@ -218,6 +209,7 @@ public class CallEditor {
 		MPart myPart = null;
 		IEclipseContext stackContext = null;
 		// search only if not duplicated! Skip if a copy should be created.
+		
 		if(!BooleanUtils.toBoolean(isFollowUp) && !BooleanUtils.toBoolean(isCopy)) {
 			Collection<MPart> parts = partService.getParts();
 	        if (params.get(PARAM_OBJ_ID) != null) {
@@ -227,12 +219,9 @@ public class CallEditor {
 	            	 * Problem: Open a part and then exit the application. Start the application again and try to open (from list view)
 	            	 * the SAME document/payment/shipping/whatever. Since the context is null, a new document window is opened :-(
 	            	 */
+	            	
 	    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type)/* && mPart.getContext() != null*/) {
 	    				String object = (String) mPart.getTransientData().get(PARAM_OBJ_ID);
-//	    				if(object == null) {
-//	    					// try another info container :-)
-//	    					object = (String) mPart.getTransientData().get(PARAM_OBJ_ID);
-//	    				}
 	    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
 	    					myPart = mPart;
 	    					break;
@@ -241,7 +230,7 @@ public class CallEditor {
 	    		}
 	        }
 		}
-		
+
 		// if not found (or should create a duplicate / copy) then we create a new one from a part descriptor
 		if (myPart == null) {
 			MPartDescriptor partDescriptor = modelService.getPartDescriptor(DOCVIEW_PARTDESCRIPTOR_ID);
