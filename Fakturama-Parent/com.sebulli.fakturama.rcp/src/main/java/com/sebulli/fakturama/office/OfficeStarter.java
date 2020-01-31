@@ -53,18 +53,6 @@ public class OfficeStarter {
     }
 
     /**
-     * Returns, if the Application exists
-     * 
-     * @param preferencePath
-     *            The path from the preference store
-     * @return TRUE, if it exists.
-     */
-    public boolean isValidPath(String preferencePath) {
-        Path file = OSDependent.getOOBinary(preferencePath);
-        return file != null && Files.exists(file);
-    }
-
-    /**
      * Checks the OpenOffice (LibreOffice) path if it's valid. Displays an error message if it's not the case.
      *  
      * @return
@@ -84,16 +72,16 @@ public class OfficeStarter {
         String preferencePath = preferences.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
 
         // Show a message (and exit), if there is no OpenOffice found
-        if (!isValidPath(preferencePath)) {
-        	if(!silentMode) {
+        
+        ooPath = OSDependent.getOOBinary(preferencePath);
+        if(ooPath == null) {
+        	if(silentMode) {
+        		System.err.println(MessageFormat.format(msg.officePathInvalid, preferencePath));
+        	} else {
 	            MessageDialog.openWarning(shell, msg.viewErrorlogName,
 	            //T: Format: OpenOffice path ... is invalid.
 	                    MessageFormat.format(msg.officePathInvalid, preferencePath));
-        	} else {
-        		System.err.println(MessageFormat.format(msg.officePathInvalid, preferencePath));
         	}
-        } else {
-        	ooPath = OSDependent.getOOBinary(preferencePath);
         }
         return ooPath;
 	}

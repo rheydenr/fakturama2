@@ -14,6 +14,7 @@
 
 package com.sebulli.fakturama.misc;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -97,10 +98,10 @@ public class OSDependent {
 	}
 
 	/**
-	 * Returns the OpenOffice binary
+	 * Returns the OpenOffice binary. Checks if the Application exists.
 	 * 
 	 * @param path
-	 *            of the OpenOffice folder
+	 *            of the OpenOffice folder (from the preference store)
 	 * @return Full Path of the the binary.
 	 */
 	public static Path getOOBinary(String path) {
@@ -112,9 +113,17 @@ public class OSDependent {
 		if (isLinux())
 		    retval = Paths.get(path, "/program/soffice");
 
-		if (isWin())
-		    retval = Paths.get(path, "program", "soffice.exe");
-
+		if (isWin()) {
+	        // in case of linked files the file suffix may have changed
+			String[] suffixes = new String[] {"exe", "bat", "com", "lnk"};
+			for (String suffix : suffixes) {
+				retval = Paths.get(path, "program", "soffice." + suffix);
+				if(retval != null && Files.exists(retval)) {
+					break;
+				}
+			}
+		}
+		
 		return retval;
 	}
 
