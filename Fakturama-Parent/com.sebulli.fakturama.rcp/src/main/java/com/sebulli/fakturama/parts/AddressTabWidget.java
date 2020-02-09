@@ -14,7 +14,7 @@ import com.sebulli.fakturama.model.ContactType;
  *
  */
 final class AddressTabWidget {
-	private Text localConsultant, street, zip, city, cityAddon, phone, fax, mobile, email;
+	private Text localConsultant, nameAddon, street, zip, city, cityAddon, addressAddon, phone, additionalPhone, fax, mobile, email;
 	private ComboViewer countryCombo;
 	private MultiChoice<ContactType> contactTypeWidget;
 
@@ -105,5 +105,29 @@ final class AddressTabWidget {
 	public void setEmail(Text email) {
 		this.email = email;
 	}
+
+    public Text getNameAddon() {
+        return nameAddon;
+    }
+
+    public void setNameAddon(Text nameAddon) {
+        this.nameAddon = nameAddon;
+    }
+
+    public Text getAddressAddon() {
+        return addressAddon;
+    }
+
+    public void setAddressAddon(Text addressAddon) {
+        this.addressAddon = addressAddon;
+    }
+
+    public Text getAdditionalPhone() {
+        return additionalPhone;
+    }
+
+    public void setAdditionalPhone(Text additionalPhone) {
+        this.additionalPhone = additionalPhone;
+    }
 
 }

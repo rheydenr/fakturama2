@@ -172,7 +172,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private ComboViewer comboReliability;
 	private Text txtSupplierNr;
 	private Text txtWebsite;
-	private Text txtWebshopName, txtAlias;
+	private Text txtWebshopName, txtAlias, txtRegisterNumber;
 	private Text txtVatNr;
 	private Text txtGln;
 	private FormattedText txtDiscount;
@@ -698,6 +698,13 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		txtGln.setToolTipText(msg.contactFieldGlnTooltip);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtGln);
 		
+		// Register Number
+		Label labelRegisterNumber = new Label(tabMisc, SWT.NONE);
+		labelRegisterNumber.setText(msg.contactFieldRegisterNumber);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelRegisterNumber);
+		txtRegisterNumber = new Text(tabMisc, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtRegisterNumber);
+		
 		// WebShop name  
 		Label labelWebshopName = new Label(tabMisc, SWT.NONE);
 		labelWebshopName.setText(msg.exporterDataWebshopname);
@@ -1024,6 +1031,17 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		CTabItem addressForBillingType = new CTabItem(addressTabFolder, style);
 		AddressTabWidget addressTabWidget = new AddressTabWidget();
 		addressForBillingType.setText(name);
+        
+        // Name Addon
+        Label labelNameAddon = new Label(addressGroup, SWT.NONE);
+        //T: Label in the contact editor
+        labelNameAddon.setText(msg.editorContactFieldNameAddon);
+        labelNameAddon.setToolTipText(msg.editorContactFieldNameAddonTooltip);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNameAddon);
+        Text txtNameAddon = new Text(addressGroup, SWT.BORDER);
+        txtNameAddon.setToolTipText(msg.editorContactFieldNameAddonTooltip);
+        addressTabWidget.setNameAddon(txtNameAddon);
+        GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtNameAddon);
 		
 		// Street
 		Label labelStreet = new Label(addressGroup, SWT.NONE);
@@ -1095,6 +1113,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		Text txtlocalConsultant = new Text(addressGroup, SWT.BORDER);
 		addressTabWidget.setLocalConsultant(txtlocalConsultant);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtlocalConsultant);
+        
+        // Address Addon
+        Label labelAddressAddon = new Label(addressGroup, SWT.NONE);
+        //T: Label in the contact editor
+        labelAddressAddon.setText(msg.editorContactFieldAddressAddon);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAddressAddon);
+        Text txtAddressAddon = new Text(addressGroup, SWT.BORDER);
+        addressTabWidget.setAddressAddon(txtAddressAddon);
+        GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtAddressAddon);
 		
 		final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
 		final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
@@ -1124,6 +1151,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		Text txtPhone = new Text(addressGroup, SWT.BORDER);
 		addressTabWidget.setPhone(txtPhone);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtPhone);
+        
+        // additional Phone
+        Label labelAdditionalPhone = new Label(addressGroup, SWT.NONE);
+        //T: Label in the contact editor
+        labelAdditionalPhone.setText(msg.editorContactFieldAdditionalPhone);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAdditionalPhone);
+        Text txtAdditionalPhone = new Text(addressGroup, SWT.BORDER);
+        addressTabWidget.setAdditionalPhone(txtAdditionalPhone);
+        GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtAdditionalPhone);
 
 		// Telefax
 		Label labelFax = new Label(addressGroup, SWT.NONE);
@@ -1203,6 +1239,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, comboReliability, Contact_.reliability.getName());
 		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 32);
 		bindModelValue(editorContact, txtGln, Contact_.gln.getName(), 32);
+		bindModelValue(editorContact, txtRegisterNumber, Contact_.registerNumber.getName(), 64);
 		bindModelValue(editorContact, txtDiscount, Contact_.discount.getName(), 16);
         bindModelValue(editorContact, comboUseNetGross, Contact_.useNetGross.getName());
 		bindModelValue(editorContact, textNote, Contact_.note.getName(), 10000);
@@ -1221,6 +1258,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	    }
 	    
 	    AddressTabWidget currentAddressTabWidget = addressTabWidgets.get(index);
+		bindModelValue(currentAddress, currentAddressTabWidget.getAddressAddon(), Address_.addressAddon.getName(), 64);
+		bindModelValue(currentAddress, currentAddressTabWidget.getNameAddon(), Address_.nameAddon.getName(), 64);
 		bindModelValue(currentAddress, currentAddressTabWidget.getLocalConsultant(), Address_.localConsultant.getName(), 64);
 	    bindModelValue(currentAddress, currentAddressTabWidget.getStreet(), Address_.street.getName(), 64);
 	    bindModelValue(currentAddress, currentAddressTabWidget.getZip(), Address_.zip.getName(), 16);
@@ -1234,6 +1273,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
 		
 		bindModelValue(currentAddress, currentAddressTabWidget.getPhone(), Address_.phone.getName(), 32);
+		bindModelValue(currentAddress, currentAddressTabWidget.getAdditionalPhone(), Address_.additionalPhone.getName(), 32);
 		bindModelValue(currentAddress, currentAddressTabWidget.getFax(), Address_.fax.getName(), 32);
 		bindModelValue(currentAddress, currentAddressTabWidget.getMobile(), Address_.mobile.getName(), 32);
 	}
