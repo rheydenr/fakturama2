@@ -397,7 +397,7 @@ public class ZugferdExporter {
 
 	private CrossIndustryDocument createInvoiceFromDataset(Document invoice, ConformanceLevel zugferdProfile) {
 		// Recalculate the sum of the document before exporting
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
+		DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, eclipseContext);
 	    DocumentSummary documentSummary = documentSummaryCalculator.calculate(invoice);
 
 		Boolean testMode = BooleanUtils.toBooleanObject(eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_TEST, "TRUE"));
@@ -570,7 +570,7 @@ public class ZugferdExporter {
 		tradeTransaction.setApplicableSupplyChainTradeSettlement(tradeSettlement);
 
 		// Get the VAT summary of the UniDataSet document
-		VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+		VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, eclipseContext);
 		vatSummarySetManager.add(invoice, Double.valueOf(1.0));
 		for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
 			// für jeden Steuerbetrag muß es einen eigenen Eintrag geben

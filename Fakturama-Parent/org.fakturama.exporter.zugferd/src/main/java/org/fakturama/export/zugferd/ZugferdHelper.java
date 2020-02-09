@@ -94,7 +94,7 @@ public class ZugferdHelper {
 		dc.addCreator(creator);
 		dc.setAboutAsSimple(""); //$NON-NLS-1$
 
-		XMPBasicSchema xsb = xmp.createAndAddXMPBasicSchema();;
+		XMPBasicSchema xsb = xmp.createAndAddXMPBasicSchema();
 		xsb.setAboutAsSimple(""); //$NON-NLS-1$
 
 		xsb.setCreatorTool("Fakturama invoicing software");
@@ -143,7 +143,7 @@ public class ZugferdHelper {
 		OutputStream outputStreamMeta = metadata.createOutputStream();
 		new XmpSerializer().serialize(xmp, outputStreamMeta, true);
 		outputStreamMeta.close();
-		} catch (IOException | XmpParsingException | BadFieldValueException | TransformerException exception) {
+        } catch (IOException | XmpParsingException  | BadFieldValueException | TransformerException exception) {
 			throw new FakturamaStoringException("error creating ZUGFeRD document", exception);
 		}
 		return doc;
@@ -168,9 +168,12 @@ public class ZugferdHelper {
 		try(InputStream zfExtensionIs = fileResource.openStream();) {
 			DomXmpParser builder = new DomXmpParser();
 			builder.setStrictParsing(true);
+			
 			XMPMetadata defaultXmp = builder.parse(zfExtensionIs);
 			metadata.addSchema(defaultXmp.getPDFExtensionSchema());
+
 			XMPSchemaZugferd zf = new XMPSchemaZugferd(metadata, level, "1.0");
+			zf.setAboutAsSimple(""); //$NON-NLS-1$
 			metadata.addSchema(zf);
 		} catch (IOException | NullPointerException e) {
 			throw new FakturamaStoringException("can't parse XMP file", e);
