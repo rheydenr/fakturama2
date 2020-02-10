@@ -15,6 +15,7 @@
 package org.fakturama.export.zugferd;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -38,6 +39,7 @@ import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
 import org.osgi.framework.Bundle;
@@ -63,8 +65,7 @@ public class ZugferdHelper {
 	public static PDDocument makeA3Acompliant(String pdfFile, ConformanceLevel level) throws IOException, TransformerException {
 		PDDocument doc = PDDocument.load(pdfFile);
 			PDDocumentCatalog cat = doc.getDocumentCatalog();
-			PDMetadata metadata = new PDMetadata(doc);
-			cat.setMetadata(metadata);
+			PDMetadata metadata = cat.getMetadata();
 			// we're using the jempbox org.apache.jempbox.xmp.XMPMetadata version,
 			// not the xmpbox one
 			XMPMetadata xmp = new XMPMetadata();
@@ -84,8 +85,7 @@ public class ZugferdHelper {
 
 			xsb.setCreatorTool("Fakturama invoicing software");
 			xsb.setCreateDate(GregorianCalendar.getInstance());
-			// PDDocumentInformation pdi=doc.getDocumentInformation();
-			PDDocumentInformation pdi = new PDDocumentInformation();
+			PDDocumentInformation pdi=doc.getDocumentInformation();
 			pdi.setProducer(producer);
 			pdi.setAuthor(creator);
 			doc.setDocumentInformation(pdi);
@@ -96,27 +96,25 @@ public class ZugferdHelper {
 
 			/*
 			// Mandatory: PDF/A3-a is tagged PDF which has to be expressed using a
-			// MarkInfo dictionary (PDF A/3 Standard sec. 6.7.2.2)
+			// MarkInfo dictionary (PDF A/3 Standard sec. 6.7.2.2)*/
 			PDMarkInfo markinfo = new PDMarkInfo();
 			markinfo.setMarked(true);
 			doc.getDocumentCatalog().setMarkInfo(markinfo);
-	*/
+	
 	/*
-	 * 	 
-			To be on the safe side, we use level B without Markinfo because we can not 
-			guarantee that the user  correctly tagged the templates for the PDF. 
-
+		To be on the safe side, we use level B without Markinfo because we can not 
+		guarantee that the user  correctly tagged the templates for the PDF. 
 	 * */
-			pdfaid.setConformance("B");/* //$NON-NLS-1$
-			 * All files are PDF/A-3, setConformance
-			 * refers to the level conformance, e.g.
-			 * PDF/A-3-B where B means only visually
-			 * preservable, U means visually and unicode
-			 * preservable and A -like in this case-
-			 * means full compliance, i.e. visually,
-			 * unicode and structurally preservable
-			 * 
-			 */
+			pdfaid.setConformance("B");//$NON-NLS-1$
+        /*  * All files are PDF/A-3, setConformance
+         * refers to the level conformance, e.g.
+         * PDF/A-3-B where B means only visually
+         * preservable, U means visually and unicode
+         * preservable and A -like in this case-
+         * means full compliance, i.e. visually,
+         * unicode and structurally preservable
+         * 
+         */
 			pdfaid.setPart(3);
 
 				addZugferdXMP(xmp, level); /*
@@ -127,6 +125,14 @@ public class ZugferdHelper {
 									 */
 
 			metadata.importXMPMetadata(xmp);
+			
+//			XmpSerializer serializer = new XmpSerializer();
+//			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//			serializer.serialize(xmp, baos, true);
+//			metadata.importXMPMetadata(baos.toByteArray());
+//			doc.getDocumentCatalog().setMetadata(metadata);			
+			
+			
 			return doc;
 		}
 
@@ -161,7 +167,6 @@ public class ZugferdHelper {
 		XMPSchemaPDFAExtensions pdfaex = new XMPSchemaPDFAExtensions(metadata);
 		pdfaex.setAbout(""); //$NON-NLS-1$
 		metadata.addSchema(pdfaex);
-        
 	}
 
 	/**
