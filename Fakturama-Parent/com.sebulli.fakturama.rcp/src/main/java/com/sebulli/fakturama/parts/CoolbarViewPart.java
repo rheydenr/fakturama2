@@ -397,6 +397,7 @@ public class CoolbarViewPart {
 					
 					// clear SelectionService so that following calls don't get confused (esp. CallEditor)
 					selectionService.setSelection(null);
+					staticContext.set(ESelectionService.class, selectionService);
 					handlerService.executeHandler(pCmd, staticContext);
 			} else {
 				MessageDialog.openInformation(toolBar.getShell(),

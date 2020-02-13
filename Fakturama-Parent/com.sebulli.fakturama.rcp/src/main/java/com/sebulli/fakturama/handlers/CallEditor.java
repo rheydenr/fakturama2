@@ -16,6 +16,7 @@ package com.sebulli.fakturama.handlers;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -43,11 +44,13 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.osgi.framework.FrameworkUtil;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.parts.ContactEditor;
 import com.sebulli.fakturama.parts.CreditorEditor;
@@ -178,7 +181,14 @@ public class CallEditor {
         	
             // forceNew means we want to create a new document unconditionally
             if(!BooleanUtils.toBoolean(isForceNew)) {
-				params.put(PARAM_OBJ_ID, objId);
+
+                @SuppressWarnings({ "unchecked" })
+                List<IEntity> selection = (List<IEntity>)selectionService.getSelection();
+                if(selection != null && !selection.isEmpty()) {
+                    params.put(PARAM_OBJ_ID, Long.toString((Long) selection.get(0).getId()));
+                } else {
+                    params.put(PARAM_OBJ_ID, objId);
+                }
             	params.put(PARAM_CALLING_DOC, callingDoc);
             	params.put(PARAM_COPY, BooleanUtils.toStringTrueFalse(isCopy));
             }
