@@ -78,6 +78,30 @@ TODO:
 		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT"/>
 	</changeSet>
 
+    <!--  update wrong contact type fields (copied from changelog-2.0 since it didn't work correctly)-->
+	<changeSet author="rheydenr" id="20190915-025">
+		<update tableName="FKT_CONTACT">
+			<column name="CONTACTTYPE" value="0" />
+			<where>CONTACTTYPE IS NULL</where>
+		</update>
+		
+		<createTable remarks="only a temp table" tableName="TMP_FKT_CONT">
+			<column name="id" type="int(10)" />
+		</createTable>
+	
+		<sql>INSERT INTO TMP_FKT_CONT SELECT
+			c2.ID FROM FKT_CONTACT c1, FKT_CONTACT c2
+			WHERE c1.FK_ALTERNATECONTACT = c2.ID
+			AND c2.CUSTOMERNUMBER IS NULL
+		</sql>
+		
+        <sql>UPDATE FKT_CONTACT SET CONTACTTYPE=1 WHERE ID in (SELECT
+            ID FROM TMP_FKT_CONT)
+        </sql>
+		
+	   <dropTable tableName="TMP_FKT_CONT"/>
+	</changeSet>
+
 	<changeSet author="rheydenr" id="20190915-030">
 		<comment>rename category columns (foreign key columns)</comment>
 		<renameColumn newColumnName="FK_PARENT_CATEGORY"
@@ -471,7 +495,7 @@ TODO:
 		</sql>
 	</changeSet>
 
-	<changeSet author="rheydenr" id="20190915-052">
+ 	<changeSet author="rheydenr" id="20190915-052">
 		<comment>update addresses (merge delivery contacts into existing billing contacts)</comment>
 		<sql dbms="MariaDB, MySQL">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
 		SELECT t.BILLING_ADDRESS_ID,
@@ -588,7 +612,7 @@ TODO:
 		    DELIVERY_CONTACT_FK_ADDRESS = s.FK_ADDRESS;
 		</sql>
 			
-		<sql dbms="h2, HyperSQL">
+		<sql dbms="h2, hsqldb">
 			MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
 			USING FKT_CONTACT s
 			ON t.BILLING_CONTACT_FK_ALTERNATECONTACT = s.id
@@ -727,7 +751,7 @@ TODO:
 			    DELIVERY_ADDRESS_ZIP = s.ZIP;
 		</sql>
 
-		<sql dbms="h2, HyperSQL">MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
+		<sql dbms="h2, hsqldb">MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
 			USING FKT_ADDRESS s
 			ON t.DELIVERY_CONTACT_FK_ADDRESS = s.id
 			WHEN MATCHED THEN
