@@ -233,8 +233,6 @@ public class CoolbarViewPart {
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
         params.put(CallEditor.PARAM_CATEGORY, docType.name());
-		// if called from CoolBar it is *always* a new one...
-        params.put(CallEditor.PARAM_FORCE_NEW, Boolean.TRUE);
         return params;
     }
 
@@ -373,11 +371,14 @@ public class CoolbarViewPart {
 							String editorType = (String) pCmd.getParameterMap().get(CallEditor.PARAM_EDITOR_TYPE);
 							if (editorType != null && activePart.getElementId().equalsIgnoreCase(editorType)) {
 								staticContext.set(CallEditor.PARAM_COPY, Boolean.TRUE);
+								staticContext.set(CallEditor.PARAM_FORCE_NEW, Boolean.FALSE);
 								staticContext.set(CallEditor.PARAM_OBJ_ID,
 										activePart.getTransientData().get(CallEditor.PARAM_OBJ_ID));
 							}
 						}
 					}
+				} else {
+                    staticContext.set(CallEditor.PARAM_FORCE_NEW, Boolean.TRUE);
 				}
 				/*
 				 * Dirty hack. The HandlerService first determines the active leaf in the
