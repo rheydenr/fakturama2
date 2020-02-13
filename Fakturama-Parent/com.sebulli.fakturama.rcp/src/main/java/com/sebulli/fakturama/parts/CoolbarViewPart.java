@@ -21,7 +21,6 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
@@ -68,9 +67,6 @@ public class CoolbarViewPart {
 
 	@Inject
 	private EHandlerService handlerService;
-	
-	@Inject
-	private ESelectionService selectionService;
 	
     @Inject
     private IPreferenceStore preferences;
@@ -238,7 +234,7 @@ public class CoolbarViewPart {
         params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
         params.put(CallEditor.PARAM_CATEGORY, docType.name());
 		// if called from CoolBar it is *always* a new one...
-        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
+        params.put(CallEditor.PARAM_FORCE_NEW, Boolean.TRUE);
         return params;
     }
 
@@ -396,8 +392,6 @@ public class CoolbarViewPart {
 					}
 					
 					// clear SelectionService so that following calls don't get confused (esp. CallEditor)
-					selectionService.setSelection(null);
-					staticContext.set(ESelectionService.class, selectionService);
 					handlerService.executeHandler(pCmd, staticContext);
 			} else {
 				MessageDialog.openInformation(toolBar.getShell(),

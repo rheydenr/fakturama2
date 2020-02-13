@@ -119,7 +119,7 @@
 				<imageobject role="fo">
 					<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 				</imageobject>
-			</inlinemediaobject>(Installer_Fakturama_x_x_x.dmg) als Disk-Image von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter. Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: 
+			</inlinemediaobject>(Installer_Fakturama_macos_x64_x_x_x.dmg) als Disk-Image von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter. Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: 
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
