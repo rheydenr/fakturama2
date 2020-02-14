@@ -81,11 +81,11 @@ TODO:
     <!--  update wrong contact type fields (copied from changelog-2.0 since it didn't work correctly)-->
 	<changeSet author="rheydenr" id="20190915-025">
 		<update tableName="FKT_CONTACT">
-			<column name="CONTACTTYPE" value="0" />
+			<column name="CONTACTTYPE" value="0"  type="int(10)"/>
 			<where>CONTACTTYPE IS NULL</where>
 		</update>
-		
-		<createTable remarks="only a temp table" tableName="TMP_FKT_CONT">
+		 
+ 		<createTable remarks="only a temp table" tableName="TMP_FKT_CONT">
 			<column name="id" type="int(10)" />
 		</createTable>
 	
@@ -94,12 +94,12 @@ TODO:
 			WHERE c1.FK_ALTERNATECONTACT = c2.ID
 			AND c2.CUSTOMERNUMBER IS NULL
 		</sql>
-		
         <sql>UPDATE FKT_CONTACT SET CONTACTTYPE=1 WHERE ID in (SELECT
             ID FROM TMP_FKT_CONT)
         </sql>
 		
-	   <dropTable tableName="TMP_FKT_CONT"/>
+	   <dropTable tableName="TMP_FKT_CONT"/>		
+	   
 	</changeSet>
 
 	<changeSet author="rheydenr" id="20190915-030">
@@ -491,7 +491,8 @@ TODO:
 			FROM FKT_CONTACT c1
 			LEFT JOIN FKT_ADDRESS a1
 			ON c1.fk_address = a1.id
-			WHERE c1.CONTACTTYPE = 0 /* Billing contacts */;
+			WHERE c1.CONTACTTYPE = 0 
+			AND a1.id is not null /* Billing contacts */;
 		</sql>
 	</changeSet>
 
