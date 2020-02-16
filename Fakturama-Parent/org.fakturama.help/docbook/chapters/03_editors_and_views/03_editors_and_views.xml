@@ -1562,7 +1562,7 @@
 					<imagedata fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
 				</imageobject>
 				<imageobject role="fo">
-					<imagedata contentdepth="265%" fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
+					<imagedata contentdepth="200%" fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
 				</imageobject>
 			</mediaobject>
 		</informalfigure>
