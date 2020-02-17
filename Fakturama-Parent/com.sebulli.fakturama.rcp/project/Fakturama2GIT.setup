@@ -463,7 +463,7 @@
     <setupTask
         xsi:type="setup:EclipseIniTask"
         option="-Doomph.redirection.fakturama.2.git"
-        value="=https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/com.sebulli.fakturama.rcp/project/Fakturama2GIT.setup ->${git.clone.fakturama2.location|uri}/Fakturama-Parent/com.sebulli.fakturama.rcp/Fakturama2GIT.setup"
+        value="=https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/com.sebulli.fakturama.rcp/project/Fakturama2GIT.setup ->${git.clone.fakturama2.location|uri}/Fakturama-Parent/com.sebulli.fakturama.rcp/project/Fakturama2GIT.setup"
         vm="true">
       <description>Set an Oomph redirection system property to redirect the logical location of this setup to its physical location in the Git clone.</description>
     </setupTask>
