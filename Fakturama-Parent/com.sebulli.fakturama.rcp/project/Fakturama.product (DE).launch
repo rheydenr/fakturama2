@@ -30,6 +30,7 @@
     <stringAttribute key="pde.version" value="3.3"/>
     <stringAttribute key="product" value="com.sebulli.fakturama.rcp.product"/>
     <stringAttribute key="productFile" value="\com.sebulli.fakturama.site\com.sebulli.fakturama.product"/>
+    <booleanAttribute key="restart" value="true"/>
     <setAttribute key="selected_target_bundles">
         <setEntry value="ca.odell.glazedlists@default:default"/>
         <setEntry value="ch.qos.logback.classic@2:default"/>

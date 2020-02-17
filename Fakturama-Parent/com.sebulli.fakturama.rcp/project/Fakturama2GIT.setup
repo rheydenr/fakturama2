@@ -67,7 +67,7 @@
       xsi:type="setup:VariableTask"
       id="org.fakturama.install.targetplatform"
       name="eclipse.target.platform"
-      defaultValue="2019-09"
+      defaultValue="2019-12"
       storageURI="scope://Workspace"
       label="Eclipse Target Platform">
     <description>basic IDE target platform</description>
@@ -170,9 +170,9 @@
           name="org.eclipse.swt.win32.win32.x86_64"
           filter="(&amp;(osgi.arch=x86_64)(osgi.os=win32)(osgi.ws=win32))"/>
       <repositoryList
-          name="2019-09">
+          name="2019-12">
         <repository
-            url="http://download.eclipse.org/releases/2019-09"/>
+            url="http://download.eclipse.org/releases/2019-12"/>
       </repositoryList>
     </targlet>
     <targlet
@@ -204,7 +204,7 @@
           name="com.opencsv.feature.feature.group"/>
       <repositoryList>
         <repository
-            url="https://p2.fakturama.info"/>
+            url="http://p2.fakturama.info/2.1.0"/>
         <repository
             url="http://p2.mukis.de/org.eclipse.gemini.ext.di/latest"/>
         <repository
@@ -215,7 +215,7 @@
         name="EclipseLink">
       <requirement
           name="org.eclipse.persistence.sdk.feature.group"
-          versionRange="[2.7.3,2.7.4)"/>
+          versionRange="[2.7.3,2.7.5)"/>
       <repositoryList>
         <repository
             url="http://download.eclipse.org/rt/eclipselink/updates"/>
@@ -272,7 +272,7 @@
           name="org.eclipse.babel.nls_eclipse_uk.feature.group"/>
       <repositoryList>
         <repository
-            url="https://download.eclipse.org/technology/babel/update-site/R0.17.0/2019-06"/>
+            url="https://download.eclipse.org/technology/babel/update-site/R0.17.1/2019-06"/>
       </repositoryList>
     </targlet>
     <targlet
