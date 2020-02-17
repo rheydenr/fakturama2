@@ -250,7 +250,7 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	
 	@Override
 	public boolean isPageComplete() {
-		return /*singlePage && */getEndDate().after(getStartDate()) ;
+		return doNotUseTimePeriod || getEndDate().after(getStartDate()) ;
 	}
 	
 }

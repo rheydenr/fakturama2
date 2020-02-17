@@ -166,7 +166,7 @@ public abstract class AbstractWorkbenchWizardNode implements IWizardNode {
         //wizard node
         currentSelection = wizardElement.adaptedSelection(currentSelection);
 
-        workbenchWizard[0].init(getWorkbench(), currentSelection);
+//        workbenchWizard[0].init(getWorkbench(), currentSelection);
 
         wizard = workbenchWizard[0];
         return wizard;
