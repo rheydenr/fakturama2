@@ -203,6 +203,18 @@
         <eAttribute href="Fakturama.ecore#//Address/contactTypes"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" documentation="Denotes what kind of address it is (i.e., an address for billing, for delivery etc). If no ContactType is set this address is valid for all types."/>
       </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Address/addressAddon"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Additional information to the address. Here you can store e.g. a delivery info or any other hint which should be printed in the delivery document."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Address/additionalPhone"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="An additional phone number."/>
+      </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//Address/nameAddon"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="This field could contain a branch location name or any other additional information for that address."/>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//Contact"/>

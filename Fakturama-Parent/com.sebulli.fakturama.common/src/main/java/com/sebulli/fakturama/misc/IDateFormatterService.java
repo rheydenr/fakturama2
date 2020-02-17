@@ -24,16 +24,16 @@ import org.eclipse.swt.widgets.DateTime;
  *
  */
 public interface IDateFormatterService {
-
-	/**
-	 * Convert a date and time string from the format YYYY-MM-DD HH:MM:SS to to
-	 * localized format.
-	 * 
-	 * @param s
-	 *            Date and time String
-	 * @return Date and time as formated String
-	 */
-	String DateAndTimeAsLocalString(String s);
+//
+//	/**
+//	 * Convert a date and time string from the format YYYY-MM-DD HH:MM:SS to to
+//	 * localized format.
+//	 * 
+//	 * @param s
+//	 *            Date and time String
+//	 * @return Date and time as formated String
+//	 */
+//	String DateAndTimeAsLocalString(String s);
 
 	/**
 	 * Convert a date string into the format ISO 8601 YYYY-MM-DD.
@@ -58,12 +58,12 @@ public interface IDateFormatterService {
 	 */
 	String DateAndTimeOfNowAsISO8601String();
 
-	/**
-	 * Returns the date and time of now in a localized format.
-	 * 
-	 * @return Date and time as formated String
-	 */
-	String DateAndTimeOfNowAsLocalString();
+//	/**
+//	 * Returns the date and time of now in a localized format.
+//	 * 
+//	 * @return Date and time as formated String
+//	 */
+//	String DateAndTimeOfNowAsLocalString();
 
 	/**
 	 * Convert date strings from the following format to a calendar
@@ -111,13 +111,13 @@ public interface IDateFormatterService {
 	 */
 	String getDateAndTimeAsString(Calendar calendar);
 
-	/**
-	 * Get the date from a SWT DateTime widget in the format: YYYY-MM-DD
-	 * 
-	 * @param dtDate
-	 *            SWT DateTime widget
-	 * @return Date as formated String
-	 */
-	String getDateTimeAsString(DateTime dtDate);
+//	/**
+//	 * Get the date from a SWT DateTime widget in the format: YYYY-MM-DD
+//	 * 
+//	 * @param dtDate
+//	 *            SWT DateTime widget
+//	 * @return Date as formated String
+//	 */
+//	String getDateTimeAsString(DateTime dtDate);
 
 }

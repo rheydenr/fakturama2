@@ -55,8 +55,7 @@ public class DocumentSummaryCalculator {
 
 	
 	public DocumentSummaryCalculator(boolean useSET) {
-		this.useSET = useSET;
-		this.currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
+	    this(useSET, DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 	
 	public DocumentSummaryCalculator(CurrencyUnit currencyCode) {

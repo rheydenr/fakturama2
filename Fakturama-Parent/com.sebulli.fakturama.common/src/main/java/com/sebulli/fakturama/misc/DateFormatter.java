@@ -13,7 +13,6 @@
  */
 package com.sebulli.fakturama.misc;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -24,7 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.eclipse.swt.widgets.DateTime;
+import com.ibm.icu.text.DateFormat;
 
 /**
  * Date formatting with various possibilities.
@@ -55,30 +54,25 @@ public class DateFormatter implements IDateFormatterService {
 	// return df.format(calendar.getTime());
 	// }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sebulli.fakturama.misc.IDataFormatter#DateAndTimeAsLocalString(java.lang.
-	 * String)
-	 */
-	@Override
-	public String DateAndTimeAsLocalString(String s) {
-		String retval = "";
-		if (s == null) {
-			return retval;
-		}
-		GregorianCalendar calendar = new GregorianCalendar();
-		try {
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			calendar.setTime(formatter.parse(s));
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
-			retval = df.format(calendar.getTime());
-		} catch (ParseException e) {
-			// Logger.logError(e, "Error parsing Date and Time");
-		}
-		return retval;
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see
+//	 * com.sebulli.fakturama.misc.IDataFormatter#DateAndTimeAsLocalString(java.lang.
+//	 * String)
+//	 */
+//	@Override
+//	public String DateAndTimeAsLocalString(String s) {
+//		String retval = "";
+//		if (s == null) {
+//			return retval;
+//		}
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        TemporalAccessor parsedDateTime = formatter.parse(s);
+//        LocalDateTime localDateTime = LocalDateTime.from(parsedDateTime);
+//        retval = localDateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.MEDIUM));
+//        return retval;
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -181,22 +175,23 @@ public class DateFormatter implements IDateFormatterService {
 	@Override
 	public GregorianCalendar getCalendarFromDateString(String date) {
 		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.clear();
 
 		// try to parse the input date string
 		try {
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		    java.text.DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			calendar.setTime(formatter.parse(date));
 		} catch (ParseException e) {
 
 			// use also localized formats
 			try {
-				DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+				java.text.DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
 				calendar.setTime(formatter.parse(date));
 			} catch (ParseException e2) {
 
 				// use also localized formats
 				try {
-					DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+				    java.text.DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 					calendar.setTime(formatter.parse(date));
 				} catch (ParseException e3) {
 					// Logger.logError(e3, "Error parsing Date:" + date);
@@ -206,28 +201,28 @@ public class DateFormatter implements IDateFormatterService {
 		return calendar;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sebulli.fakturama.misc.IDataFormatter#DateAndTimeOfNowAsLocalString()
-	 */
-	@Override
-	public String DateAndTimeOfNowAsLocalString() {
-		GregorianCalendar calendar = new GregorianCalendar();
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-		return df.format(calendar.getTime());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sebulli.fakturama.misc.IDataFormatter#getDateTimeAsString()
-	 */
-    @Override
-	public String getDateTimeAsString(DateTime dtDate) {
-        return String.format("%04d-%02d-%02d", dtDate.getYear(), dtDate.getMonth() + 1, dtDate.getDay());
-    }
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see
+//	 * com.sebulli.fakturama.misc.IDataFormatter#DateAndTimeOfNowAsLocalString()
+//	 */
+//	@Override
+//	public String DateAndTimeOfNowAsLocalString() {
+//		GregorianCalendar calendar = new GregorianCalendar();
+//		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+//		return df.format(calendar.getTime());
+//	}
+//
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see
+//	 * com.sebulli.fakturama.misc.IDataFormatter#getDateTimeAsString()
+//	 */
+//    @Override
+//	public String getDateTimeAsString(DateTime dtDate) {
+//        return String.format("%04d-%02d-%02d", dtDate.getYear(), dtDate.getMonth() + 1, dtDate.getDay());
+//    }
 
 }

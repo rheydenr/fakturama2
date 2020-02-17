@@ -21,7 +21,6 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
@@ -68,9 +67,6 @@ public class CoolbarViewPart {
 
 	@Inject
 	private EHandlerService handlerService;
-	
-	@Inject
-	private ESelectionService selectionService;
 	
     @Inject
     private IPreferenceStore preferences;
@@ -237,8 +233,6 @@ public class CoolbarViewPart {
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
         params.put(CallEditor.PARAM_CATEGORY, docType.name());
-		// if called from CoolBar it is *always* a new one...
-        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
         return params;
     }
 
@@ -377,11 +371,14 @@ public class CoolbarViewPart {
 							String editorType = (String) pCmd.getParameterMap().get(CallEditor.PARAM_EDITOR_TYPE);
 							if (editorType != null && activePart.getElementId().equalsIgnoreCase(editorType)) {
 								staticContext.set(CallEditor.PARAM_COPY, Boolean.TRUE);
+								staticContext.set(CallEditor.PARAM_FORCE_NEW, Boolean.FALSE);
 								staticContext.set(CallEditor.PARAM_OBJ_ID,
 										activePart.getTransientData().get(CallEditor.PARAM_OBJ_ID));
 							}
 						}
 					}
+				} else {
+                    staticContext.set(CallEditor.PARAM_FORCE_NEW, Boolean.TRUE);
 				}
 				/*
 				 * Dirty hack. The HandlerService first determines the active leaf in the
@@ -396,7 +393,6 @@ public class CoolbarViewPart {
 					}
 					
 					// clear SelectionService so that following calls don't get confused (esp. CallEditor)
-					selectionService.setSelection(null);
 					handlerService.executeHandler(pCmd, staticContext);
 			} else {
 				MessageDialog.openInformation(toolBar.getShell(),

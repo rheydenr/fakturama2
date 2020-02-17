@@ -1,90 +1,56 @@
-/*
+/* 
  * Fakturama - Free Invoicing Software - http://www.fakturama.org
  * 
  * Copyright (C) 2014 Ralf Heydenreich
  * 
- * All rights reserved. This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License v1.0 which
- * accompanies this distribution, and is available at
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: This code was copied with friendly permission from
- * gnuaccounting.org. - Jochen Staerk
+ * Contributors:
+ *   This code was copied with friendly permission from gnuaccounting.org. 
+ *   - Jochen Staerk
  */
 package org.fakturama.export.zugferd;
 
-import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.schema.PDFAExtensionSchema;
-import org.apache.xmpbox.type.Cardinality;
-import org.apache.xmpbox.type.PropertyType;
-import org.apache.xmpbox.type.StructuredType;
-import org.apache.xmpbox.type.Types;
+import org.apache.jempbox.impl.XMLUtil;
+import org.apache.jempbox.xmp.XMPSchemaBasic;
+import org.w3c.dom.Element;
 
-@StructuredType(preferedPrefix = "zf", namespace = "urn:ferd:pdfa:CrossIndustryDocument:invoice:1p0#")
-public class XMPSchemaZugferd extends PDFAExtensionSchema {
+	public class XMPSchemaZugferd extends XMPSchemaBasic {
 
-	/**
-     * 
-     */
-	public static final String ZUGFERD_XML_DEFAULT_NAME = "ZUGFeRD-invoice.xml";
+		/**
+		 * This is what needs to be added to the RDF metadata - basically the name of the embedded 
+		 * Zugferd file
+		 * */
+		public XMPSchemaZugferd(org.apache.jempbox.xmp.XMPMetadata parent, ConformanceLevel level) {
+			super(parent);
 
-	/** The Constant CONFORMANCE_LEVEL. */
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String CONFORMANCE_LEVEL = "ConformanceLevel";
+			schema.setAttributeNS(NS_NAMESPACE, "xmlns:zf", //$NON-NLS-1$
+					"urn:ferd:pdfa:invoice:rc#"); //$NON-NLS-1$
+// the superclass includes this two namespaces we don't need
+			schema.removeAttributeNS(NS_NAMESPACE, "xapGImg"); //$NON-NLS-1$
+			schema.removeAttributeNS(NS_NAMESPACE, "xmp"); //$NON-NLS-1$
+			Element textNode = schema.getOwnerDocument().createElement(
+					"zf:DocumentType"); //$NON-NLS-1$
+			XMLUtil.setStringValue(textNode, "INVOICE"); //$NON-NLS-1$
+			schema.appendChild(textNode);
 
-	/** The Constant DOCUMENT_FILE_NAME. */
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String DOCUMENT_FILE_NAME = "DocumentFileName";
+			textNode = schema.getOwnerDocument().createElement(
+					"zf:DocumentFileName"); //$NON-NLS-1$
+			XMLUtil.setStringValue(textNode, "ZUGFeRD-invoice.xml"); //$NON-NLS-1$
+			schema.appendChild(textNode);
 
-	/** The Constant DOCUMENT_TYPE. */
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String DOCUMENT_TYPE = "DocumentType";
+			textNode = schema.getOwnerDocument().createElement("zf:Version"); //$NON-NLS-1$
+			XMLUtil.setStringValue(textNode, "1.0"); //$NON-NLS-1$
+			schema.appendChild(textNode);
 
-	/** The Constant VERSION. */
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String VERSION = "Version";
+			textNode = schema.getOwnerDocument().createElement(
+					"zf:ConformanceLevel"); //$NON-NLS-1$
+			XMLUtil.setStringValue(textNode, level.name()); //$NON-NLS-1$
+			schema.appendChild(textNode);
 
-	@PropertyType(type = Types.PDFAType, card = Cardinality.Seq)
-	public static final String VALUE_TYPE = "valueType";
-	
-	public XMPSchemaZugferd(XMPMetadata parent, ConformanceLevel level) {
-		this(parent, ZUGFERD_XML_DEFAULT_NAME, "INVOICE", "1.0", level);
+		}
+
 	}
-	
-	public XMPSchemaZugferd(XMPMetadata parent, ConformanceLevel level, String version) {
-		this(parent, ZUGFERD_XML_DEFAULT_NAME, "INVOICE", version, level);
-	}
-	
-	public XMPSchemaZugferd(XMPMetadata parent, String documentFileName, String documentType, String version, ConformanceLevel conformanceLevel) {
-		super(parent);
-		setDocumentFileName(documentFileName);
-		setDocumentType("INVOICE");
-		setVersion(version);
-		setConformanceLevel(conformanceLevel.name());
-	}
-
-	/**
-	 * This is what needs to be added to the RDF metadata - basically the name
-	 * of the embedded Zugferd file
-	 * */
-	public XMPSchemaZugferd(XMPMetadata parent) {
-		this(parent, ZUGFERD_XML_DEFAULT_NAME, "INVOICE", "1.0", ConformanceLevel.BASIC);
-	}
-
-	public void setConformanceLevel(String conformanceLevel) {
-		setTextPropertyValue(CONFORMANCE_LEVEL, conformanceLevel);
-	}
-
-	public void setDocumentFileName(String documentFileName) {
-		setTextPropertyValue(DOCUMENT_FILE_NAME, documentFileName);
-	}
-
-	public void setDocumentType(String documentType) {
-		setTextPropertyValue(DOCUMENT_TYPE, documentType);
-	}
-
-	public void setVersion(String version) {
-		setTextPropertyValue(VERSION, version);
-	}
-
-}

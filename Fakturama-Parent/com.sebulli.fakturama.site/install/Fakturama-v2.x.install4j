@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.1.6" transformSequenceNumber="5">
   <directoryPresets config="./linux_32bit" />
-  <application name="Fakturama2" distributionSourceDir="" applicationId="5777-4828-1295-4178" mediaDir="./install" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.0-${compiler:sys.date}" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8 x64">
+  <application name="Fakturama" distributionSourceDir="" applicationId="5777-4828-1295-4178" mediaDir="./install" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="true" pack200Compression="true" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.0" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="de" customLocalizationFile="" />
       <additionalLanguages>
@@ -31,36 +31,23 @@
     <filesets>
       <fileset name="Installer MacOS" id="32" customizedId="" />
       <fileset name="Installer Win 64bit" id="41" customizedId="" />
-      <fileset name="Installer Linux 32bit" id="49" customizedId="" />
       <fileset name="Installer Linux 64bit" id="54" customizedId="" />
     </filesets>
     <roots>
       <root id="33" fileset="32" location="" />
       <root id="42" fileset="41" location="" />
-      <root id="50" fileset="49" location="" />
       <root id="55" fileset="54" location="" />
     </roots>
     <mountPoints>
-      <mountPoint id="22" root="" location="" mode="755" />
       <mountPoint id="34" root="33" location="" mode="755" />
       <mountPoint id="43" root="42" location="" mode="755" />
-      <mountPoint id="51" root="50" location="" mode="755" />
       <mountPoint id="56" root="55" location="" mode="755" />
     </mountPoints>
     <entries>
-      <dirEntry mountPoint="22" file="../target/products/Fakturama.ID/win32/win32/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86" excludeSuffixes="" dirMode="755" overrideDirMode="false">
-        <exclude />
-      </dirEntry>
       <dirEntry mountPoint="34" file="../target/products/Fakturama.ID/macosx/cocoa/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
       <dirEntry mountPoint="43" file="../target/products/Fakturama.ID/win32/win32/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="x86_64" excludeSuffixes="" dirMode="755" overrideDirMode="false">
-        <exclude />
-      </dirEntry>
-      <dirEntry mountPoint="51" file="../target/products/Fakturama.ID/linux/gtk/x86" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="fakturama2" excludeSuffixes="" dirMode="755" overrideDirMode="false">
-        <exclude />
-      </dirEntry>
-      <dirEntry mountPoint="51" file="linux_32bit/fakturama/usr/share" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="share" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
       <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="fakturama2" excludeSuffixes="" dirMode="755" overrideDirMode="false">
@@ -73,10 +60,8 @@
     <components />
   </files>
   <launchers>
-    <launcher name="Fakturama.exe (win32)" id="25" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama.exe" />
     <launcher name="Fakturama (Mac)" id="35" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama.app/Contents/MacOS/Fakturama" />
     <launcher name="Fakturama.exe (win64)" id="44" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama.exe" />
-    <launcher name="Fakturama (Linux 32bit)" id="52" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="fakturama2/Fakturama" />
     <launcher name="Fakturama (Linux 64bit)" id="58" customizedId="" external="true" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" externalFile="Fakturama" />
   </launchers>
   <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="" useAutoUpdateBaseUrl="false" autoUpdateBaseUrl="">
@@ -527,37 +512,12 @@
     </applications>
   </installerGui>
   <mediaSets>
-    <windows name="Windows" id="24" customizedId="" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" installDir="Fakturama" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="true" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
-      <excludedComponents />
-      <includedDownloadableComponents />
-      <excludedLaunchers>
-        <launcher id="35" />
-        <launcher id="44" />
-        <launcher id="52" />
-        <launcher id="58" />
-      </excludedLaunchers>
-      <excludedBeans />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude>
-        <entry location=".i4j_fileset_32" fileType="regular" />
-        <entry location=".i4j_fileset_41" fileType="regular" />
-        <entry location=".i4j_fileset_49" fileType="regular" />
-        <entry location=".i4j_fileset_54" fileType="regular" />
-      </exclude>
-      <variables />
-      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
-        <commentFiles />
-        <customAttributes />
-      </autoUpdate>
-    </windows>
     <macosFolder name="Mac OS X Folder" id="36" customizedId="" mediaFileName="" installDir="Fakturama" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" signLaunchers="false">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
-        <launcher id="25" />
         <launcher id="35" />
         <launcher id="44" />
-        <launcher id="52" />
         <launcher id="58" />
       </excludedLaunchers>
       <excludedBeans />
@@ -579,9 +539,7 @@
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
-        <launcher id="25" />
         <launcher id="35" />
-        <launcher id="52" />
         <launcher id="58" />
       </excludedLaunchers>
       <excludedBeans />
@@ -598,40 +556,12 @@
         <customAttributes />
       </autoUpdate>
     </windows>
-    <unixInstaller name="Unix Installer" id="53" customizedId="" mediaFileName="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="true" customInstallBaseDir="" contentFilesType="1">
-      <excludedComponents />
-      <includedDownloadableComponents />
-      <excludedLaunchers>
-        <launcher id="25" />
-        <launcher id="35" />
-        <launcher id="44" />
-        <launcher id="58" />
-      </excludedLaunchers>
-      <excludedBeans />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude>
-        <entry location=".i4j_fileset_" fileType="regular" />
-        <entry location=".i4j_fileset_32" fileType="regular" />
-        <entry location=".i4j_fileset_41" fileType="regular" />
-        <entry location=".i4j_fileset_54" fileType="regular" />
-      </exclude>
-      <variables />
-      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
-        <commentFiles />
-        <customAttributes />
-      </autoUpdate>
-      <installerScript mode="1" file="">
-        <content />
-      </installerScript>
-    </unixInstaller>
     <unixInstaller name="Unix Installer (Linux 64bit)" id="59" customizedId="" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
-        <launcher id="25" />
         <launcher id="35" />
         <launcher id="44" />
-        <launcher id="52" />
       </excludedLaunchers>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -654,10 +584,8 @@
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
-        <launcher id="25" />
         <launcher id="35" />
         <launcher id="44" />
-        <launcher id="52" />
       </excludedLaunchers>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -689,10 +617,8 @@
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedLaunchers>
-        <launcher id="25" />
         <launcher id="35" />
         <launcher id="44" />
-        <launcher id="52" />
       </excludedLaunchers>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -701,41 +627,6 @@
         <entry location=".i4j_fileset_32" fileType="regular" />
         <entry location=".i4j_fileset_41" fileType="regular" />
         <entry location=".i4j_fileset_49" fileType="regular" />
-      </exclude>
-      <variables />
-      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
-        <commentFiles />
-        <customAttributes />
-      </autoUpdate>
-      <preInstallScript mode="1" file="">
-        <content />
-      </preInstallScript>
-      <postInstallScript mode="2" file="./linux_32bit/make_executable.sh">
-        <content />
-      </postInstallScript>
-      <preUninstallScript mode="1" file="">
-        <content />
-      </preUninstallScript>
-      <postUninstallScript mode="1" file="">
-        <content />
-      </postUninstallScript>
-    </linuxDeb>
-    <linuxDeb name="Linux Deb Archive (32bit)" id="123" customizedId="" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" installDir="/usr/share" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" bzip="true" description="Free and Open Source Invoicing Software" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="i386">
-      <excludedComponents />
-      <includedDownloadableComponents />
-      <excludedLaunchers>
-        <launcher id="25" />
-        <launcher id="35" />
-        <launcher id="44" />
-        <launcher id="58" />
-      </excludedLaunchers>
-      <excludedBeans />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude>
-        <entry location=".i4j_fileset_" fileType="regular" />
-        <entry location=".i4j_fileset_32" fileType="regular" />
-        <entry location=".i4j_fileset_41" fileType="regular" />
-        <entry location=".i4j_fileset_54" fileType="regular" />
       </exclude>
       <variables />
       <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">

@@ -50,6 +50,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -349,7 +350,7 @@ public class ZugferdExporter {
 			org.w3c.dom.Document zugferdXml = (org.w3c.dom.Document) res.getNode();
 			printDocument(zugferdXml, buffo);
 
-			PDDocument retvalPDFA3 = ZugferdHelper.makeA3Acompliant(pdfFile, zugferdProfile, zugferdXml, invoice.getName());
+            PDDocument retvalPDFA3 = ZugferdHelper.makeA3Acompliant(pdfFile, zugferdProfile/*, zugferdXml, invoice.getName()*/);
 
 			// embed XML
 			pdfa3 = ZugferdHelper.attachZugferdFile(retvalPDFA3, buffo.toByteArray());
@@ -379,7 +380,7 @@ public class ZugferdExporter {
 				retval = false;
 			}
 		}
-		catch (JAXBException | IOException | TransformerException | FakturamaStoringException exception) {
+        catch (JAXBException | IOException | TransformerException | /*FakturamaStoringException |*/ COSVisitorException exception) {
 			log.error(exception, "error creating ZUGFeRD document: " + exception.getMessage());
 			retval = false;
 		} finally {
@@ -397,7 +398,7 @@ public class ZugferdExporter {
 
 	private CrossIndustryDocument createInvoiceFromDataset(Document invoice, ConformanceLevel zugferdProfile) {
 		// Recalculate the sum of the document before exporting
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
+		DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, eclipseContext);
 	    DocumentSummary documentSummary = documentSummaryCalculator.calculate(invoice);
 
 		Boolean testMode = BooleanUtils.toBooleanObject(eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_TEST, "TRUE"));
@@ -570,7 +571,7 @@ public class ZugferdExporter {
 		tradeTransaction.setApplicableSupplyChainTradeSettlement(tradeSettlement);
 
 		// Get the VAT summary of the UniDataSet document
-		VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+		VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, eclipseContext);
 		vatSummarySetManager.add(invoice, Double.valueOf(1.0));
 		for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
 			// für jeden Steuerbetrag muß es einen eigenen Eintrag geben
