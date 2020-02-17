@@ -362,6 +362,8 @@
     <targlet
         name="Workspace dependencies"
         includeBinaryEquivalents="false">
+      <requirement
+          name="com.sebulli.fakturama.feature.group"/>
       <sourceLocator
           rootFolder="${git.clone.fakturama2.location}"
           locateNestedProjects="true"/>
