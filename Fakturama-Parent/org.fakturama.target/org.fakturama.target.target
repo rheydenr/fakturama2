@@ -18,9 +18,9 @@
 <repository location="http://download.eclipse.org/modeling/emft/texo/updates/interim"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="1.0.0.201806070735"/>
-<unit id="org.eclipse.nebula.widgets.treemapper.feature.feature.group" version="0.1.0.201806070735"/>
-<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="1.0.0.201806070735"/>
+<unit id="org.eclipse.nebula.widgets.picture.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.nebula.widgets.treemapper.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.nebula.widgets.formattedtext.feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/nebula/incubation/snapshot"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
