@@ -33,7 +33,7 @@ public class DocumentReceiverDAO extends AbstractDAO<DocumentReceiver> {
     public boolean isSETEnabled(Document document) {
 		DocumentReceiver billingAdress = addressManager.getBillingAdress(document);
 		Boolean useSalesEqualizationTax = Boolean.FALSE;
-		if(billingAdress != null && billingAdress.getOriginContactId() != null) {
+		if(billingAdress != null && billingAdress.getOriginContactId() != null && billingAdress.getOriginContactId() > 0) {
 			Contact originContact = contactsDAO.findById(billingAdress.getOriginContactId());
 			useSalesEqualizationTax = originContact.getUseSalesEqualizationTax();
 		}

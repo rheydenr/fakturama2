@@ -24,17 +24,18 @@ public enum DocumentItemListDescriptor {
     OPTIONAL("optional", "common.field.optional", 1, 5),          // $Optional
     QUANTITY("quantity", "common.field.quantity.short", 2, 10),
     QUNIT("quantityUnit", "editor.document.field.qunit", 3, 10),
-    ITEMNUMBER("itemNumber", "product.field.itemno", 4, 20),
-    PICTURE("pictureName", "common.field.picture", 5, 20), // $ProductPictureSmall
-    VESTINGDATESTART("vestingPeriodStart", "editor.document.field.vestingperiod.start.short", 6, 20),
-    VESTINGDATEEND("vestingPeriodEnd", "editor.document.field.vestingperiod.end.short", 7, 20),
-    NAME("name", "common.field.name", 8, 3),
-    DESCRIPTION("description", "common.field.description", 9, 3),
-    VAT("itemVat", "common.field.vat", 10, 10), // $ItemVatPercent
-    SALESEQUALIZATIONTAX("itemVat.salesEqualizationTax", "data.tax.salesequalizationtax.short", 11, 3),
-    UNITPRICE("price", "common.field.unitprice", 12, 10), // was $ItemGrossPrice if $useGross is set, else "price"
-    DISCOUNT("itemRebate", "common.field.discount", 13, 5),
-    TOTALPRICE("", "common.field.price", 14, 10)  // was $ItemGrossTotal if $useGross is set, else $ItemNetTotal
+    WEIGHT("weight", "exporter.data.weight", 4, 10),
+    ITEMNUMBER("itemNumber", "product.field.itemno", 5, 20),
+    PICTURE("picture", "common.field.picture", 6, 20), // $ProductPictureSmall
+    VESTINGDATESTART("vestingPeriodStart", "editor.document.field.vestingperiod.start.short", 7, 20),
+    VESTINGDATEEND("vestingPeriodEnd", "editor.document.field.vestingperiod.end.short", 8, 20),
+    NAME("name", "common.field.name", 9, 3),
+    DESCRIPTION("description", "common.field.description", 10, 3),
+    VAT("itemVat", "common.field.vat", 11, 10), // $ItemVatPercent
+    SALESEQUALIZATIONTAX("itemVat.salesEqualizationTax", "data.tax.salesequalizationtax.short", 12, 3),
+    UNITPRICE("price", "common.field.unitprice", 13, 10), // was $ItemGrossPrice if $useGross is set, else "price"
+    DISCOUNT("itemRebate", "common.field.discount", 14, 5),
+    TOTALPRICE("$totalPrice", "common.field.price", 15, 10)  // was $ItemGrossTotal if $useGross is set, else $ItemNetTotal
     ;
 
     private String propertyName, messageKey;

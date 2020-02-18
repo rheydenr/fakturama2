@@ -101,7 +101,7 @@ public class VoucherItemListBuilder {
 
             // Add a new item with default properties
             public void mouseDown(MouseEvent e) {
-                int defaultVatId = preferences.getInt(Constants.DEFAULT_VAT, 1);
+                long defaultVatId = preferences.getLong(Constants.DEFAULT_VAT, 1);
                 // Use the standard VAT value
                 VAT defaultVat = vatsDao.findById(defaultVatId);
                 VoucherItem item = createNewVoucherItem(msg.commonFieldName, "", Double.valueOf(0.0), defaultVat, container.getVoucherType());

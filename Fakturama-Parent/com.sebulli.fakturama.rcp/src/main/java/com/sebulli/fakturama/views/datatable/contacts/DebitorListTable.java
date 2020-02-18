@@ -64,7 +64,7 @@ public class DebitorListTable extends ContactListTable<Debitor> {
     protected EventList<Debitor> getListData(boolean forceRead) {
         return GlazedLists.eventList(debitorDAO.findForListView());
     }
-
+    
     @Override
     protected MatcherEditor<Debitor> createTextWidgetMatcherEditor() {
         /*

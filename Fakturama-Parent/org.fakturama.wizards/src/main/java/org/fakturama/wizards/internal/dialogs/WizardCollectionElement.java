@@ -12,12 +12,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.fakturama.wizards.IE4WizardCategory;
 import org.fakturama.wizards.IE4WizardDescriptor;
-import org.fakturama.wizards.internal.registry.IWorkbenchRegistryConstants;
-import org.fakturama.wizards.model.AdaptableList;
-import org.fakturama.wizards.model.IWorkbenchAdapter;
+import org.fakturama.wizards.internal.AdaptableList;
 
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
+import com.sebulli.fakturama.ui.dialogs.model.IWorkbenchAdapter;
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  * Instances of this class are a collection of WizardCollectionElements,

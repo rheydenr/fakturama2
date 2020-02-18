@@ -57,6 +57,7 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
@@ -68,6 +69,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -76,6 +78,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
+import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
@@ -129,7 +132,6 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.INumberFormatterService;
-import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
@@ -144,6 +146,7 @@ import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
+import com.sebulli.fakturama.model.ObjectDuplicator;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.Shipping;
@@ -264,9 +267,7 @@ public class DocumentEditor extends Editor<Document> {
 	private ComboViewer comboViewerNoVat;
 	private ComboViewer comboNetGross;
 	private Text txtInvoiceRef;
-	private Text txtMessage;
-	private Text txtMessage2;
-	private Text txtMessage3;
+	private Text txtMessage, txtMessage2, txtMessage3;
 	private Button bPaid;
 	private Composite paidContainer;
 	private Composite paidDataContainer = null;
@@ -283,6 +284,7 @@ public class DocumentEditor extends Editor<Document> {
 	private FormattedText vatValue;
 	private FormattedText totalValue;
 	private Label netLabel;
+	private FormattedText tara; 
 
 	// These flags are set by the preference settings.
 	// They define, if elements of the editor are displayed, or not.
@@ -324,6 +326,8 @@ public class DocumentEditor extends Editor<Document> {
 	private Text selectedMessageField;
 	private Group copyGroup;
 	private List<Document> pendingDeliveryMerges;
+	private Label netWeight;
+	private Label totalWeight;
 	
 	/**
 	 * Mark this document as printed
@@ -536,7 +540,7 @@ public class DocumentEditor extends Editor<Document> {
         
         // reset dirty flag
         setDirty(false);
-        ((MPart)getMDirtyablePart()).getProperties().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
+        ((MPart)getMDirtyablePart()).getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
         return Boolean.TRUE;
 	}
     
@@ -587,6 +591,7 @@ public class DocumentEditor extends Editor<Document> {
 		bindModelValue(document, dtDate, Document_.documentDate.getName());
 		bindModelValue(document, comboNetGross, Document_.netGross.getName());
 		bindModelValue(document, txtCustomerRef, Document_.customerRef.getName(), 250);
+		bindModelValue(document, tara, Document_.tara.getName(), 50);
 		
 		DocumentReceiver mainTypeReceiver = addressManager.getAdressForBillingType(document, document.getBillingType());
 		
@@ -849,8 +854,6 @@ public class DocumentEditor extends Editor<Document> {
 
 			private void clearManualShipping(Document document) {
 				document.getAdditionalInfo().setShippingDescription(null);
-//				document.getAdditionalInfo().setShippingName(null);
-//				document.getAdditionalInfo().setShippingVatDescription(null);
 //				document.getAdditionalInfo().setShippingVatValue(null);
 			}
         });
@@ -859,7 +862,7 @@ public class DocumentEditor extends Editor<Document> {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// if the shipping combo box value is changed manually we have to cut off the shipping from document
-				// and set it to the additionalinfos object
+				// and set it to the additionalInfos object
 				if(e != null) {
 					ISelection selection = comboViewerShipping.getSelection();
 					// an empty selection signals that the user has typed an own value
@@ -878,7 +881,7 @@ public class DocumentEditor extends Editor<Document> {
         // Fill the shipping combo with the shipping values.
         List<Shipping> allShippings = shippingsDAO.findAll();
         comboViewerShipping.setInput(allShippings);
-        	document.setShipping(tmpShipping);
+        document.setShipping(tmpShipping);
         if(tmpShipping == null && document.getAdditionalInfo().getShippingDescription() != null) {
         	// shipping was set manually => we have to do some magic :-)
         	comboShipping.setText(document.getAdditionalInfo().getShippingDescription());
@@ -926,14 +929,14 @@ public class DocumentEditor extends Editor<Document> {
     @PostConstruct
     public void init(Composite parent, @Optional @Named(PARAM_SILENT_MODE) Boolean silentMode) {
         String tmpObjId;
-		String tmpDuplicate;
+		Boolean tmpDuplicate;
     	if(BooleanUtils.isTrue(silentMode)) {
     		tmpObjId = (String) context.get(CallEditor.PARAM_OBJ_ID);
-    		tmpDuplicate = (String) context.get(CallEditor.PARAM_DUPLICATE);
+    		tmpDuplicate = (Boolean) context.get(CallEditor.PARAM_FOLLOW_UP);
     	} else {
     		this.part = (MPart) parent.getData("modelElement");
-    		tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
-    		tmpDuplicate = (String) part.getProperties().get(CallEditor.PARAM_DUPLICATE);
+    		tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
+    		tmpDuplicate = (Boolean) part.getTransientData().get(CallEditor.PARAM_FOLLOW_UP);
     	}
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
@@ -944,6 +947,27 @@ public class DocumentEditor extends Editor<Document> {
             Long objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
             this.document = documentsDAO.findById(objId, true);
+            
+		    // if a copy should be created, create one and take the objId as a "template"
+		    if(BooleanUtils.toBoolean((String)part.getTransientData().get(CallEditor.PARAM_COPY))) {
+		    	// clone the product and use it as new one
+		    	switch (this.document.getBillingType()) {
+				case OFFER:
+					this.document = new ObjectDuplicator().duplicateDocument(this.document);
+					
+					// Get the next document number
+					document.setName(getNumberGenerator().getNextNr(getEditorID()));
+			    	
+			    	// in this case the document is NOT a follow-up of another!
+			    	tmpDuplicate = Boolean.FALSE;
+					break;
+
+				default:
+					break;
+				}
+		    	getMDirtyablePart().setDirty(true);
+		    	
+		    }
         }
 
 		// If the document is a duplicate of an other document,
@@ -961,7 +985,7 @@ public class DocumentEditor extends Editor<Document> {
 			// .. get the document type (=the category) to ..
 			String category = BooleanUtils.isTrue(silentMode) 
 					? (String) context.get(CallEditor.PARAM_CATEGORY) 
-					: (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+					: (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
 			BillingType billingType = category != null ? BillingType.get(category) : BillingType.NONE;
 			if (billingType.isNONE()) {
 				billingType = BillingType.ORDER;
@@ -1026,7 +1050,7 @@ public class DocumentEditor extends Editor<Document> {
 				}
 				
 				// Default payment
-				int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
+				long paymentId = defaultValuePrefs.getLong(Constants.DEFAULT_PAYMENT);
                 Payment payment = paymentsDao.findById(paymentId);
                 document.setPayment(payment);
                 if(payment != null) {
@@ -1040,7 +1064,7 @@ public class DocumentEditor extends Editor<Document> {
 			else {
 				if(document.getPayment() == null) {
 					// Default payment
-					int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
+					long paymentId = defaultValuePrefs.getLong(Constants.DEFAULT_PAYMENT);
 	                Payment payment = paymentsDao.findById(paymentId);
 	                document.setPayment(payment);
 				}
@@ -1096,7 +1120,7 @@ public class DocumentEditor extends Editor<Document> {
 		
     	fillSelectedAddresses();
 
-		if(BooleanUtils.isNotTrue(silentMode)) {
+		if(BooleanUtils.isNotTrue(silentMode) && !newDocument) {
 			showOrderStatisticDialog(parent);
 		}
         
@@ -1141,6 +1165,7 @@ public class DocumentEditor extends Editor<Document> {
 		// TODO Check if parentDoc is equal to field "document"
 		Document retval = DocumentTypeUtil.createDocumentByBillingType(pTargetType);
 		retval.setSourceDocument(parentDoc);
+		createReceiverInformationFromParentDoc(retval);
 		// what about additionalInfo?
 		retval.setShipping(parentDoc.getShipping());
 		retval.setShippingValue(parentDoc.getShipping() != null ? parentDoc.getShipping().getShippingValue() : parentDoc.getShippingValue());
@@ -1152,9 +1177,9 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setPayDate(parentDoc.getPayDate());
 		retval.setDueDays(parentDoc.getDueDays());
 		retval.setDeposit(parentDoc.getDeposit());
-		if((parentPayment == null || !DocumentTypeUtil.findByBillingType(parentDoc.getBillingType()).canBePaid()) && documentType.canBePaid()) {
-			// set payment method to default payment if parent document is not a payable document (e.g.,, an offer or delivery document)
-			int paymentId = defaultValuePrefs.getInt(Constants.DEFAULT_PAYMENT);
+		if((parentPayment == null && !DocumentTypeUtil.findByBillingType(parentDoc.getBillingType()).canBePaid()) && documentType.canBePaid()) {
+			// set payment method to default payment if parent document is not a payable document (e.g., an offer or delivery document)
+			long paymentId = defaultValuePrefs.getLong(Constants.DEFAULT_PAYMENT);
 			parentPayment = paymentsDao.findById(paymentId);
 			
 			// reset some payment-related values
@@ -1172,8 +1197,6 @@ public class DocumentEditor extends Editor<Document> {
 			retval.setTransactionId(parentDoc.getTransactionId());
 		}
 		
-		createReceiverInformationFromParentDoc(parentDoc, retval);
-		
 		retval.setCustomerRef(parentDoc.getCustomerRef());
 		retval.setServiceDate(parentDoc.getServiceDate());
 		retval.setOrderDate(parentDoc.getOrderDate());
@@ -1185,10 +1208,9 @@ public class DocumentEditor extends Editor<Document> {
 
 		// copy items
 		for (DocumentItem item : parentDoc.getItems()) {
-			DocumentItem newItem = modelFactory.createDocumentItem();
 			// ok, looks a bit odd, but I've generated a (very simple!) copy method which
 			// returns a new object. TODO refactor the generation method (see Template!)
-			newItem = item.clone();
+			DocumentItem newItem = item.clone();
 			retval.addToItems(newItem);
 		}
 		retval.setItemsRebate(parentDoc.getItemsRebate());
@@ -1206,13 +1228,24 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 * @param resultingDoc the document for which the receiver's information should be created
 	 */
-	private void createReceiverInformationFromParentDoc(Document parentDoc, Document resultingDoc) {
-		DocumentReceiver receiver = modelFactory.createDocumentReceiver();
+	private void createReceiverInformationFromParentDoc(Document resultingDoc) {
+		Document parentDoc = resultingDoc.getSourceDocument();
 		
 		// determine parentDoc's Contact
-		receiver.setConsultant(addressManager.getAdressForBillingType(parentDoc, parentDoc.getBillingType()).getConsultant());
+		DocumentReceiver addressFromParentDoc = addressManager.getAdressForBillingType(parentDoc, parentDoc.getBillingType());
 
-		resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(addressManager.getAdressForBillingType(resultingDoc, parentDoc.getBillingType())));
+		// lookup origin receiver for an additional address which fits to this billing type
+		Contact contactFromReceiver = contactDAO.findById(addressFromParentDoc.getOriginContactId());
+		DocumentReceiver receiver;
+		if(contactFromReceiver != null) {
+			receiver = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
+		} else {
+			// if no contact was found (mostly for manually added addresses) we copy the address from origin document receiver
+			receiver = addressFromParentDoc.clone();
+			// change type
+			receiver.setBillingType(resultingDoc.getBillingType());
+		}
+		resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(receiver));
 		resultingDoc.getReceiver().add(receiver);
 	}
 
@@ -1348,6 +1381,15 @@ public class DocumentEditor extends Editor<Document> {
 			totalValue.setValue(documentSummary.getTotalGross());
 			totalValue.getControl().setToolTipText(msg.documentOrderStatePaid + ": " + document.getPaidValue());
 		}
+		
+		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
+			// set weight widgets
+			double netWeightValue = itemListTable.getDocumentItemsListData().stream()
+					.mapToDouble(DocumentItemDTO::getWeight).sum();
+			netWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue));
+			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
+			totalWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue));
+		}
 	}
 
 	/**
@@ -1379,12 +1421,11 @@ public class DocumentEditor extends Editor<Document> {
 		if (addr != null && address_changed && addr.getOriginContactId() != null) {
 			// useNetGross can be null (from database!)
 			Contact contact = contactDAO.findById(addr.getOriginContactId());
-			if (contact.getUseNetGross() != null 
-					&& contact.getUseNetGross() == DocumentSummary.ROUND_NET_VALUES) {
+			if (DocumentSummary.ROUND_NET_VALUES == contact.getUseNetGross()) {
 				useGross = false;
 				netgross = DocumentSummary.ROUND_NET_VALUES;
 			} else if (addr == null 
-					|| contact.getUseNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
+					|| DocumentSummary.ROUND_GROSS_VALUES == contact.getUseNetGross()) {
 				useGross = true;
 				netgross = DocumentSummary.ROUND_GROSS_VALUES;
 			}
@@ -1808,7 +1849,7 @@ public class DocumentEditor extends Editor<Document> {
 						.filter(a -> a.getContactTypes().contains(contactType)).findAny();
 				if (alternateAddress.isPresent()) {
 					DocumentReceiver documentReceiver = addressManager
-							.createDocumentReceiverFromContact(alternateAddress.get(), billingTypeToCheck);
+							.createDocumentReceiverFromAddress(alternateAddress.get(), billingTypeToCheck);
 					document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver);
 					java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(
 							billingTypeToCheck);
@@ -1868,7 +1909,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1200, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setMinSize(1200, 700);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
@@ -2159,9 +2200,6 @@ public class DocumentEditor extends Editor<Document> {
 		    comboViewerNoVat.getCombo().select(0);
 		}
 
-//		Composite groupComposite = new Composite(top, SWT.BORDER);
-//		GridLayoutFactory.fillDefaults().margins(10, 10).applyTo(groupComposite);
-//		GridDataFactory.fillDefaults().span(1, 2).minSize(250, SWT.DEFAULT).align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(groupComposite);
 		copyGroup = new Group(top, SWT.SHADOW_ETCHED_OUT);
 		
 		//T: Document Editor
@@ -2289,14 +2327,11 @@ public class DocumentEditor extends Editor<Document> {
 			}
 		}
 		
-		
 		GridDataFactory.fillDefaults().minSize(100, 80).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(addressAndIconComposite);
 //		addressAndIconComposite.setSelection(0);
-		
-//		showHideWarningIcon();
 
 		DocumentType documentType = getDocumentType();
-		/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
+/* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
 		// Add the item table, if the document is one with items.
 		if (documentType.hasItems()) {
 		    ItemListBuilder itemListBuilder = ContextInjectionFactory.make(ItemListBuilder.class, context);
@@ -2309,7 +2344,39 @@ public class DocumentEditor extends Editor<Document> {
 		        .build();
 		}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
-
+		
+		Composite taraComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) ? top : invisible, SWT.NONE | SWT.RIGHT);
+		GridLayoutFactory.fillDefaults().applyTo(taraComposite);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraComposite);
+		Label taraLabel = new Label(taraComposite, SWT.NONE);
+		taraLabel.setText(msg.editorDocumentFieldTara);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraLabel);
+		
+		Composite weightComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) ? top : invisible, SWT.NONE);
+		GridLayoutFactory.fillDefaults().numColumns(5).applyTo(weightComposite);
+		GridDataFactory.swtDefaults().span(3, 1).applyTo(weightComposite);
+		tara = new FormattedText(weightComposite, SWT.BORDER | SWT.RIGHT);
+		tara.setFormatter(new DoubleFormatter());
+		tara.getControl().addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				calculate();
+			}
+		});
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(tara.getControl());
+		
+		Label netWeightLabel = new Label(weightComposite, SWT.NONE);
+		netWeightLabel.setText(msg.editorDocumentFieldNetweight);
+		netWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
+		netWeight.setAlignment(SWT.RIGHT);
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(netWeight);
+		
+		Label totalWeightLabel = new Label(weightComposite, SWT.NONE);
+		totalWeightLabel.setText(msg.editorDocumentFieldTotalweight);
+		totalWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
+		totalWeight.setAlignment(SWT.RIGHT);
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(totalWeight);
+		
 		// Container for the message label and the add button
 		Composite addMessageButtonComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(addMessageButtonComposite);
@@ -2473,7 +2540,7 @@ public class DocumentEditor extends Editor<Document> {
 		// initially both objects are equal
 		currentAddress.setData(ORIGIN_RECEIVER, AddressDTO.from(documentReceiver));
 		selectedAddresses.put(documentReceiver.getBillingType(), documentReceiver);
-		addressTabItem.setToolTipText("'ne Adresse ");
+//		addressTabItem.setToolTipText("'ne Adresse ");
 		
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(currentAddress);
 		addressTabItem.setControl(currentAddress);
@@ -2502,7 +2569,7 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
     /**
-     * Create the ToolBar for duplicate / copy a document into another.
+     * Create the ToolBar for creating follow-up documents.
      * 
      * @param copyGroup
      */
@@ -2731,7 +2798,7 @@ public class DocumentEditor extends Editor<Document> {
 		shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
    
 		// Shipping combo		
-		comboShipping = new Combo(shippingComposite, SWT.BORDER/* | SWT.READ_ONLY*/);
+		comboShipping = new Combo(shippingComposite, SWT.BORDER);
 		comboShipping.setToolTipText(msg.editorDocumentFieldShippingTooltip);
 		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboShipping);
    
@@ -2871,7 +2938,7 @@ public class DocumentEditor extends Editor<Document> {
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
         params.put(CallEditor.PARAM_CATEGORY, docType.name());
-        params.put(CallEditor.PARAM_DUPLICATE, Boolean.toString(true));
+        params.put(CallEditor.PARAM_FOLLOW_UP, Boolean.TRUE);
         return params;
     }
 
@@ -2891,7 +2958,7 @@ public class DocumentEditor extends Editor<Document> {
             boolean isChanged = false;
             String topic = StringUtils.defaultString(event.getTopic());
             String subTopic = "";
-            String[] topicName = topic.split("/");
+            String[] topicName = topic.split(UIEvents.TOPIC_SEP);
             if (topicName.length > 1) {
                 subTopic = topicName[1];
             }
@@ -2907,7 +2974,7 @@ public class DocumentEditor extends Editor<Document> {
                 }
 
                 // this selected contact is from now on the main receiver for this document
-                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromContact(address, document.getBillingType());
+                DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromAddress(address, document.getBillingType());
                 
                 /*
                  * If a Contact is selected as DocumentReceiver it has to be added to the current Document. But if another
@@ -3079,7 +3146,7 @@ public class DocumentEditor extends Editor<Document> {
 	final private boolean copyExists(final Document document, final BillingType targetype) {
 		boolean retval = false;
 		// under Linux the focus is removed and we get an exception (see issue #601)	
-		if (!OSDependent.isLinux() && document != null && document.getTransactionId() != null) {
+		if (!Util.isLinux() && document != null && document.getTransactionId() != null) {
 			Document copyDoc = null;
 			// dunning is an extra case
 			if (targetype.isDUNNING()) {

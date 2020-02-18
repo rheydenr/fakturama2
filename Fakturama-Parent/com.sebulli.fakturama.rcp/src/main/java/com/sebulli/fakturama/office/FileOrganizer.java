@@ -35,6 +35,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.Util;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -42,7 +43,6 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.misc.OSDependent;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -128,6 +128,7 @@ public class FileOrganizer {
 		DocumentReceiver documentContact = document.getReceiver().stream().filter(r -> r.getBillingType() == null || r.getBillingType().isINVOICE() || r.getBillingType().isDELIVERY()).findFirst().get();
 		String name = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getName()));
 		String companyOrName = replaceIllegalCharacters(contactUtil.getCompanyOrLastname(documentContact));
+		String alias = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getAlias()));
 
 		// Replace the placeholders
 		String customerRef = replaceIllegalCharacters(document.getCustomerRef());
@@ -140,6 +141,9 @@ public class FileOrganizer {
 				.replaceAll("\\{name\\}", name)
 				.replaceAll("\\{firstname\\}", replaceIllegalCharacters(documentContact.getFirstName()))
 				.replaceAll("\\{companyorname\\}", companyOrName)
+				.replaceAll("\\{company\\}", replaceIllegalCharacters(StringUtils.defaultString(documentContact.getCompany())))
+				.replaceAll("\\{alias\\}", alias)
+				.replaceAll("\\{version\\}", String.format("%03d", document.getVersion()))
 				.replaceAll("\\{custno\\}", 
 					StringUtils.defaultString(documentContact.getCustomerNumber()));
 
@@ -216,7 +220,7 @@ public class FileOrganizer {
 	 */
 	private boolean isAbsolutePath(String fileNamePlaceholder) {
 		boolean retval = false;
-		if(OSDependent.isWin()) {
+		if(Util.isWindows()) {
 			retval = fileNamePlaceholder.matches("^\\w:.*");
 		} else {
 			// detect if the beginning of the given path is an existing one

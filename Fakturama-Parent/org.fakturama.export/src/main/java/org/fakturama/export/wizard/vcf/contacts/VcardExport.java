@@ -184,7 +184,7 @@ public class VcardExport {
 				if(contact.getBirthday() != null) {
 					writeVCard("BDAY:", sdf.format(contact.getBirthday()));
 				}
-				Address address = addressManager.getAddressFromContact(contact,ContactType.BILLING);
+				Address address = addressManager.getAddressFromContact(contact,ContactType.BILLING).orElse(null);
 				if(address != null
 						&& (StringUtils.isNotBlank(contact.getCompany()) 
 								|| StringUtils.isNotBlank(address.getStreet()) 
@@ -207,7 +207,7 @@ public class VcardExport {
 					writeVCard("EMAIL;internet:",address.getEmail());
 				}
 				
-				address = addressManager.getAddressFromContact(contact, ContactType.DELIVERY);
+				address = addressManager.getAddressFromContact(contact, ContactType.DELIVERY).orElse(null);
 				if(address != null) {
 					String countryCode = address.getCountryCode();
 					String displayCountry = "";

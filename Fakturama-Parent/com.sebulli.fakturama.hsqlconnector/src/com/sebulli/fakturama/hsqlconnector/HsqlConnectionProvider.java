@@ -2,16 +2,22 @@ package com.sebulli.fakturama.hsqlconnector;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.sql.DataSource;
+
 import org.hsqldb.Database;
 import org.hsqldb.persist.HsqlProperties;
 import org.hsqldb.server.Server;
 import org.hsqldb.server.ServerAcl.AclFormatException;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.jdbc.DataSourceFactory;
 
 import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbconnector.IDbConnection;
@@ -81,21 +87,43 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 	
 	@Override
 	public Connection getConnection() {
-		Connection c = null;
+		BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
+		DataSourceFactory factory;	
+	    Connection connection = null;
 		try {
-			c = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost:"+DEFAULT_HSQL_DATABASEPORT+"/"+server.getDatabaseName(0, false), "SA", "");
-		} catch (SQLException e) {
+			ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(
+					org.osgi.service.jdbc.DataSourceFactory.class.getName(), "(osgi.jdbc.driver.class=org.hsqldb.jdbc.JDBCDriver)");
+			ServiceReference<DataSourceFactory> serviceReference;
+			if(allServiceReferences.length > 0) {
+				serviceReference = (ServiceReference<DataSourceFactory>) allServiceReferences[0];
+			} else {
+				serviceReference = null;
+				System.err.println("No service reference found for database connection!");
+			}
+			factory = bundleContext.getService(serviceReference);
+		    Properties prop = new Properties();
+		    String url = "jdbc:hsqldb:hsql://localhost:"+DEFAULT_HSQL_DATABASEPORT+"/"+server.getDatabaseName(0, false);
+		    prop.put(DataSourceFactory.JDBC_DATABASE_NAME, "test");
+		    prop.put(DataSourceFactory.JDBC_URL, url);
+		    prop.put(DataSourceFactory.JDBC_USER, "SA");
+		    DataSource source = factory.createDataSource(prop);
+			connection = source.getConnection();
+		} catch (InvalidSyntaxException | SQLException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 
-		return c;
+		return connection;
 	}
 
 	@Override
 	public void stopServer() {
 		server.shutdownCatalogs(Database.CLOSEMODE_COMPACT);
 		server.stop();
+		
+//		// #0000604: Create a database backup
+//		BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
+		
 		BackupManager bm = new BackupManager();
 		bm.createBackup(workspace);
 	}

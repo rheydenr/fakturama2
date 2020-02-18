@@ -313,7 +313,7 @@ public«IF this.abstract-» abstract«ENDIF-» class «this.simpleClassName-»
 	 public String toString() {
 	 	return  "«this.name»"
 	 	«FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation-»
-			«IF !featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many-»
+			«IF !featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many && !featureAnnotation.EStructuralFeature.volatile-»
 		 		+ " «featureAnnotation.name»: [" +  «featureAnnotation.getter»() + "]"
 	  		«ENDIF-»
 	 	«ENDFOREACH-»;

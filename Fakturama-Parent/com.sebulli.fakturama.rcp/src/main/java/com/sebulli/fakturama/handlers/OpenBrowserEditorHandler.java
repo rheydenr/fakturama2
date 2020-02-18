@@ -118,7 +118,7 @@ public class OpenBrowserEditorHandler {
             myPart = partService.createPart(CallEditor.DOCVIEW_PARTDESCRIPTOR_ID);
             myPart.setElementId(BrowserEditor.ID);
             myPart.setContext(EclipseContextFactory.create());
-            myPart.getProperties().put(PARAM_URL, url);
+            myPart.getTransientData().put(PARAM_URL, url);
             myPart.setContributionURI(CallEditor.BASE_CONTRIBUTION_URI + BrowserEditor.class.getName());
             // Sets the URL as input for the editor.
             if (isFakturamaProjectUrl)
@@ -128,7 +128,7 @@ public class OpenBrowserEditorHandler {
                 //T: Short description of start page 
                 myPart.setLabel(msg.commandBrowserOpenStartpage);
 
-            myPart.getProperties().put(PARAM_USE_PROJECT_URL, Boolean.toString(isFakturamaProjectUrl));
+            myPart.getTransientData().put(PARAM_USE_PROJECT_URL, Boolean.toString(isFakturamaProjectUrl));
             if(stack == null) {
                 stack = (MPartStack) partService.createPart(CallEditor.DOCVIEW_PART_ID);
             }

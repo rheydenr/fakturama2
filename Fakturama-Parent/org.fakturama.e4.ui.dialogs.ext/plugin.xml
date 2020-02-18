@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="org.eclipse.e4.ui.about.dialog.installationPages" name="installationPages" schema="schema/installationPages.exsd"/>
+   <extension-point id="org.eclipse.e4.ui.about.dialog.systemSummarySections" name="systemSummarySections" schema="schema/systemSummarySections.exsd"/>
+   <extension
+         point="org.eclipse.e4.ui.about.dialog.installationPages">
+      <page
+            class="com.sebulli.fakturama.ui.dialogs.about.internal.e3.AboutPluginsPage"
+            id="PluginPage"
+            name="%installationPage.plugins.name">
+      </page>
+      <page
+            class="com.sebulli.fakturama.ui.dialogs.about.internal.e3.AboutSystemPage"
+            id="SystemPage"
+            name="%installationPage.system.name">
+      </page>
+      <page
+            class="com.sebulli.fakturama.ui.dialogs.about.internal.e3.AboutFeaturesPage"
+            id="FeaturePage"
+            name="%installationPage.feature.name">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.e4.ui.about.dialog.systemSummarySections">
+      <section
+            class="com.sebulli.fakturama.ui.dialogs.about.internal.e3.ConfigurationLogDefaultSection"
+            id="logSection"
+            sectionTitle="system configuration">
+      </section>
+   </extension>
+</plugin>

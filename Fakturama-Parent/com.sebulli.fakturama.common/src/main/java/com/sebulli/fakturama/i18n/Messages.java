@@ -93,6 +93,7 @@ public class Messages {
 	public String commandNewReceiptvoucherTooltip;
 	public String commandNewTooltip;
 	public String commandOpenContactTooltip;
+	public String commandOpenDocument;
 	public String commandOpenParcelName;
 	public String commandOpenWwwName;
 	public String commandParcelserviceName;
@@ -180,9 +181,9 @@ public class Messages {
 	public String editorContactFieldSalesequalizationtaxName;
 	public String editorContactFieldWebsiteCantopen;
 	public String editorContactFieldLocalconsultant;
+	public String editorContactFieldAlias;
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
-	public String editorDocumentDialogNodefaultvalue;
 
 	public String Data653;
 	public String dataDefaultContactFormatExcludedcountries;
@@ -295,6 +296,7 @@ public class Messages {
 	public String editorContactLabelAdditionaladdress;
 	public String editorContactLabelMaintab;
 	public String editorDocumentAdditemTooltip;
+	public String editorDocumentCopyitemTooltip;
 	public String editorDocumentCheckboxPaidTooltip;
 	public String editorDocumentCollectiveinvoiceTooltip;
 	public String editorDocumentCreateduplicate;
@@ -303,6 +305,7 @@ public class Messages {
 	public String editorDocumentDeleteitemTooltip;
 	public String editorDocumentDialogGrossvalues;
 	public String editorDocumentDialogNetvalues;
+	public String editorDocumentDialogNodefaultvalue;
 	public String editorDocumentDialogWarningDocumentexists;
 	public String editorDocumentDialogWarningCopyexists;
 	public String editorDocumentDiscountTooltip;
@@ -340,6 +343,10 @@ public class Messages {
 	public String editorDocumentFieldServicedateTooltip;
 	public String editorDocumentFieldShipping;
 	public String editorDocumentFieldShippingTooltip;
+	public String editorDocumentFieldNetweight;
+	public String editorDocumentFieldTara;
+	public String editorDocumentFieldTotalweight;
+	
 	public String editorDocumentItems;
 	public String editorDocumentNetgrossTooltip;
 	public String editorDocumentPaidvalue;
@@ -381,10 +388,13 @@ public class Messages {
 	public String editorProductFieldGrosspriceName;
 	public String editorProductFieldGtin;
 	public String editorProductFieldPriceName;
-	public String editorProductFieldCostprice;;
+	public String editorProductFieldAllowance;
+	public String editorProductFieldCostprice;
 	public String editorProductFieldQuantityunitName;
 	public String editorProductFieldQuantityunitInvalid;
 	public String editorProductFieldQuantityunitNameShort;
+	public String editorProductFieldSupplierItemnumber;
+	public String editorProductFieldSupplierItemnumberTooltip;
 	public String editorProductLabelFrom;
 	public String editorProductNameTooltip;
 	public String editorProductVatName;

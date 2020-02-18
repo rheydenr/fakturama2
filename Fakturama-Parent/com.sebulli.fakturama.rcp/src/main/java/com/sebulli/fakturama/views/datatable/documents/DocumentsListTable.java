@@ -17,8 +17,6 @@ import javax.persistence.PersistenceException;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.commands.CommandManager;
-import org.eclipse.core.commands.ParameterType;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -78,9 +76,6 @@ import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.handlers.StockUpdateHandler;
-import com.sebulli.fakturama.handlers.paramconverter.BooleanParameterValueConverter;
-import com.sebulli.fakturama.handlers.paramconverter.DocumentParameterConverter;
-import com.sebulli.fakturama.handlers.paramconverter.NumberParameterValueConverter;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.MessageRegistry;
 import com.sebulli.fakturama.misc.Constants;
@@ -168,9 +163,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     private MPart listTablePart;
 
     private Document selectedObject;
-    
-    @Inject
-    private CommandManager cmdMan;    	
 
     @Inject
     protected MessageRegistry registry;
@@ -184,23 +176,11 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         if(!eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, "").isEmpty()) {
         	return null;
         }
-        // This is for test only!!!
-        ParameterType parameterType = cmdMan.getParameterType("com.sebulli.fakturama.model.Order");
-        parameterType.define("com.sebulli.fakturama.model.Order", ContextInjectionFactory.make(DocumentParameterConverter.class, context));
-		
-        ParameterType parameterTypeInteger = cmdMan.getParameterType("java.lang.Integer");
-        parameterTypeInteger.define("java.lang.Integer", new NumberParameterValueConverter());
-		
-        ParameterType parameterTypeBoolean = cmdMan.getParameterType("java.lang.Boolean");
-        parameterTypeBoolean.define("java.lang.Boolean", new BooleanParameterValueConverter());
-
-        // +++ END TEST +++
-        
         super.createPartControl(parent, Document.class, true, ID);
 
         // if another click handler is set we use it
         // Listen to double clicks
-        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
+        Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
             hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
         } else {
@@ -281,7 +261,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
                     params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
-                    params.put(CallEditor.PARAM_DUPLICATE, null);  // could be set from a previous call
+                    params.put(CallEditor.PARAM_FOLLOW_UP, null);  // could be set from a previous call
                     params.putAll(getAdditionalParameters());
                     parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                     handlerService.executeHandler(parameterizedCommand);
@@ -443,7 +423,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     
     protected NatTable createListTable(Composite searchAndTableComposite) {
         // fill the underlying data source (GlazedList)
-    	if(this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER) != null) {
+    	if(this.listTablePart.getTransientData().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER) != null) {
     		// if a click handler is set we are in "dialog" mode which only uses delivery notes.
     		documentListData = GlazedLists.eventList(documentsDAO.findAllDeliveriesWithoutInvoice());
     	} else {
@@ -515,7 +495,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
     @Override
     protected TopicTreeViewer<DummyStringCategory> createCategoryTreeViewer(Composite top) {
-        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
+        Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
         	topicTreeViewer = null;
         } else {
@@ -524,8 +504,12 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 	        //    	topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
 	        try {
 				categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
-//				topicTreeViewer = ContextInjectionFactory.make(TopicTreeViewer.class, context);
-				topicTreeViewer = new TopicTreeViewer<DummyStringCategory>(top, msg, true, false);
+
+		        context.set(TopicTreeViewer.PARENT_COMPOSITE, top);
+		        context.set(TopicTreeViewer.USE_DOCUMENT_AND_CONTACT_FILTER, true);
+		        context.set(TopicTreeViewer.USE_ALL, false);
+				
+				topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
 				topicTreeViewer.setAddressManager(addressManager);
 				topicTreeViewer.disableSorting();
 				topicTreeViewer.setInput(categories);
@@ -872,17 +856,18 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     }
     
     @Override
-    	protected void handleAfterConfirmation(Document tmpDocument) {
-    	// before deletion first update stock
-    		if(BooleanUtils.isTrue(tmpDocument.getPrinted())) {
-    			tmpDocument.getItems().stream().forEach(oldItem -> {
-    					oldItem.setOriginQuantity(oldItem.getQuantity());
-    					oldItem.setQuantity(null);
-    			});
-    		}
-    			
-            StockUpdateHandler stockUpdateHandler = ContextInjectionFactory.make(StockUpdateHandler.class, context);
-            stockUpdateHandler.updateStockQuantity(top.getShell(), null, tmpDocument);
+	protected Document handleCascadeDelete(Document tmpDocument) {
+	// before deletion first update stock
+		if(BooleanUtils.isTrue(tmpDocument.getPrinted())) {
+			tmpDocument.getItems().stream().forEach(oldItem -> {
+					oldItem.setOriginQuantity(oldItem.getQuantity());
+					oldItem.setQuantity(null);
+			});
+		}
+			
+        StockUpdateHandler stockUpdateHandler = ContextInjectionFactory.make(StockUpdateHandler.class, context);
+        stockUpdateHandler.updateStockQuantity(top.getShell(), null, tmpDocument);
+        return tmpDocument;
     }
 
     @Override

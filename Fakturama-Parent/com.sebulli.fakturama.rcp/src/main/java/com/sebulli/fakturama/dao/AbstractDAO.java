@@ -242,7 +242,7 @@ em.joinTransaction();
      * @param id the primary key to search
      * @return found object
      */
-    public T findById(long id) {
+    public T findById(Long id) {
         return findById(id, false);
     }
 
@@ -258,7 +258,11 @@ em.joinTransaction();
      *  object with database content
      * @return found object
      */
-    public T findById(long id, boolean forceReadFromDatabase) {
+    public T findById(Long id, boolean forceReadFromDatabase) {
+    	if(id == null) {
+    		return null;
+    	}
+    	
     	T find = getEntityManager().find(getEntityClass(), id);
     	if(forceReadFromDatabase) {
     	    getEntityManager().refresh(find);
@@ -319,7 +323,11 @@ em.joinTransaction();
 		CriteriaQuery<T> select = query.select(root).where(restrictions.toArray(new Predicate[] {}));
 
 		List<T> resultList = getEntityManager().createQuery(select).getResultList();
-		if (!checkOnly) {
+		if (checkOnly) {
+			if (!resultList.isEmpty()) {
+				retval = resultList.get(0);
+			}
+		} else {
 			if (resultList.isEmpty()) {
 				((IEntity) object).setValidFrom(new Date());
 				retval = save(object);
@@ -365,7 +373,7 @@ em.joinTransaction();
         QueryByExamplePolicy policy = new QueryByExamplePolicy();
         policy.addSpecialOperation(String.class, "containsSubstring");
         policy.setAttributesToAlwaysInclude(getAlwaysIncludeAttributes());
-        policy.setShouldUseEqualityForNulls(true);
+        policy.setShouldUseEqualityForNulls(false);
         return policy;
     }
     

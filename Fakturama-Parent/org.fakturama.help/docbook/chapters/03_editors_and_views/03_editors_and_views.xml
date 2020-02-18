@@ -1051,7 +1051,9 @@
 						<imagedata contentdepth="80%" width="40pt" fileref="../images/application/order_new_32.png" format="PNG" scalefit="1"/>
 					</imageobject>
 			</inlinemediaobject> Auftrag</title>
-			<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster.</para>
+			<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster. Mit gedrückter STRG-Taste (bzw. CMD-Taste bei MacOS) 
+			wird der aktive Auftrag dupliziert und in einem neuen Editor dargestellt (ggf. muss man dazu zunächst den Fokus direkt auf den 
+			aktiven Editor setzen).</para>
 			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
 			</para>
 		</sect2>
@@ -1135,7 +1137,9 @@
 						<imagedata contentdepth="80%" width="40pt"  fileref="../images/application/product_new_32.png" format="PNG" scalefit="1"/>
 					</imageobject> 
 			</inlinemediaobject>Produkt</title>
-			<para>Erstellt ein neues Produkt und öffnet dieses in einem Editorfenster.</para>
+			<para>Erstellt ein neues Produkt und öffnet dieses in einem Editorfenster. Mit gedrückter STRG-Taste (bzw. CMD-Taste bei MacOS) 
+			wird das aktive Produkt dupliziert und in einem neuen Editor dargestellt (ggf. muss man dazu zunächst den Fokus direkt auf den 
+			aktiven Editor setzen).</para>
 			<para>Siehe auch <link linkend="editor_editor_product">Produkteditor</link>
 			</para>
 		</sect2>
@@ -1833,6 +1837,21 @@
 						<para>Löscht den ausgewählten Artikel.</para>
 					</listitem>
 				</varlistentry>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="40%" fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+						<para>Dupliziert den oder die ausgewählten Artikel.</para>
+					</listitem>
+				</varlistentry>
 			</variablelist>
 			<para>
 				<anchor xreflabel="" xml:id="editor_document_previewpicture"/>In der Artikelliste kann zusätzlich ein Vorschaubild angezeigt werden. Ein Klick auf dieses öffnet eine vergrößerte Ansicht des Produktbildes.</para>
@@ -1960,7 +1979,8 @@
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="editor_editor_product"/><title>Der Produkteditor</title>
-		<para>Abhängig von den Einstellungen sind einige Elemente ausgeblendet.</para>
+		<para>Abhängig von den Einstellungen sind einige Elemente ausgeblendet. Möchte man das aktive Produkt duplizieren, kann man wahlweise auf das Produkt-Icon
+		in der Werkzeugleiste klicken (mit gedrückter STRG- bzw. CMD-Taste) oder man drückt die Tastenkombination SHIFT + ALT + C.</para>
 		<informalfigure>
 			<mediaobject>
 				<imageobject role="html">
@@ -2010,7 +2030,7 @@
 		</sect2>
 		<sect2>
 			<title>Einkaufspreis</title>
-			<para>Der Einkaufspreis des Produktes.</para>
+			<para>Der Einkaufspreis des Produktes. Dazu kann auch noch ein Zuschlag (in % oder absolut) erfasst werden (wird derzeit aber noch nicht ausgewertet).</para>
 		</sect2>
 		<sect2>
 			<title>MwSt.</title>
@@ -2069,16 +2089,29 @@
 		</sect2>
 		<sect2>
 			<title>Kundennummer</title>
-			<para>Nummer des Kontaktes. Diese wird automatisch hochgezählt.</para>
+			<para>Nummer des Kontaktes. Diese wird automatisch hochgezählt. Man kann die Nummer auch 
+			manuell überschreiben. Dann wird geprüft, ob die eingegebene Nummer die nächste mögliche Nummer
+			ist. Diese Prüfung kann man über eine Einstellung auch abschalten:</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/preference_suppress_numbercheck.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata width="50%" fileref="../images/editor/preference_suppress_numbercheck.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
 			<para>Siehe <link linkend="preferences_numberrangevalues">Nummernkreise</link>
 			</para>
 		</sect2>
 		<sect2>
 			<title>Adresse</title>
-			<para>Der Reiter unterteilt sich in allgemeine Angaben wie Firmenname und/oder Name des Kunden bzw. Debitors. Daneben
+			<para>Der Reiter unterteilt sich in allgemeine Angaben wie Firmenname und/oder Name des Kontaktes. Daneben
 			gibt es einen weiteren Bereich, in dem verschiedene Adressen zu diesem Kontakt erfasst werden können. Diese Adressen
 			können über das [+]-Symbol hinzugefügt werden. Derzeit ist es leider noch nicht möglich, eine Adresse auch wieder zu löschen.
-			Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine). Lässt man
+			Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine, 
+			diese Auswahl wird in den kommenden Versionen von Fakturama vervollständigt). Lässt man
 			die Auswahl leer, kann die Adresse für beliebige Arten von Dokumenten verwendet werden. Ansonsten werden die Adressen
 			des Kontaktes bei der Adressauswahl über den Dokumentendialog gefiltert.</para>
 			<para>Einzelne Felder wie <emphasis role="bold">Anrede, Titel, Firma oder Land</emphasis> 
@@ -2121,7 +2154,7 @@
 		</sect3>
 		<sect3>
 			<title>Zusätzliche Kontaktdaten</title>
-			<para>Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
+			<para>Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN, Aliasname und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
 			<para>Das Eingabefeld für die Webseite ist interaktiv. Hat man hier eine gültige URL eingegeben (beginnend mit "http://" oder "https://"), kann man bei gedrückter STRG-Taste 
 			und Mausklick auf das Feld die Seite direkt im Browser aufrufen. Das gilt auch für das E-Mail-Feld. Hier wird die Standard-E-Mail-Anwendung des Systems verwendet und ein
 			neues E-Mail-Fenster geöffnet.</para>

@@ -37,7 +37,6 @@ public class BodyLayerStack<T extends IEntity> extends AbstractIndexLayerTransfo
     private final SelectionLayer selectionLayer;
     private SortedList<T> sortedList;
     private RowReorderLayer rowReorderLayer;
-    private DetailGlazedListsEventLayer<T> glazedListsEventLayer;
 	private ViewportLayer viewportLayer;
 
     public BodyLayerStack(EventList<T> eventList, IColumnPropertyAccessor<T> columnPropertyAccessor) {
@@ -61,15 +60,15 @@ public class BodyLayerStack<T extends IEntity> extends AbstractIndexLayerTransfo
         this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
 
         this.bodyDataProvider = new ListDataProvider<T>(sortedList, columnPropertyAccessor);
-        this.bodyDataLayer = new DataLayer(bodyDataProvider);
-
-//        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
-
-        glazedListsEventLayer = new DetailGlazedListsEventLayer<T>(bodyDataLayer, sortedList);
+        this.bodyDataLayer = new DataLayer(getBodyDataProvider());
         
         // add a label accumulator to be able to register converter
         // this is crucial for using custom values display
-        glazedListsEventLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        this.bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator());
+        
+//        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
+        
+        DetailGlazedListsEventLayer<T> glazedListsEventLayer = new DetailGlazedListsEventLayer<T>(bodyDataLayer, sortedList);
         rowReorderLayer = new RowReorderLayer(glazedListsEventLayer);
         // this is for the correct coloring of alternating rows
         rowReorderLayer.setConfigLabelAccumulator(new AlternatingRowConfigLabelAccumulator());
@@ -82,12 +81,7 @@ public class BodyLayerStack<T extends IEntity> extends AbstractIndexLayerTransfo
         // Select complete rows
         selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<T>());
         
-        viewportLayer = new ViewportLayer(selectionLayer);
-        // as the selection mouse bindings are registered for the region label
-        // GridRegion.BODY we need to set that region label to the viewport so
-        // the selection via mouse is working correctly
-//        viewportLayer.setRegionName(GridRegion.BODY);
-
+        viewportLayer = new ViewportLayer(getSelectionLayer());
         setUnderlyingLayer(viewportLayer);
 
         registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
@@ -120,13 +114,6 @@ public class BodyLayerStack<T extends IEntity> extends AbstractIndexLayerTransfo
      */
     public RowReorderLayer getRowReorderLayer() {
         return rowReorderLayer;
-    }
-
-    /**
-     * @return the glazedListsEventLayer
-     */
-    public DetailGlazedListsEventLayer<T> getGlazedListsEventLayer() {
-        return glazedListsEventLayer;
     }
 
 	/**

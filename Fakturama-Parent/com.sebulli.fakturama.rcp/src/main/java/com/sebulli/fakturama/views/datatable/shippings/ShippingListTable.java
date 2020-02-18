@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
@@ -281,8 +282,10 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
 
     @Override
     protected TopicTreeViewer<ShippingCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<ShippingCategory>(top, msg, false, true);
-//    	topicTreeViewer = (TopicTreeViewer<ShippingCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+        context.set(TopicTreeViewer.PARENT_COMPOSITE, top);
+        context.set(TopicTreeViewer.USE_DOCUMENT_AND_CONTACT_FILTER, false);
+        context.set(TopicTreeViewer.USE_ALL, true);
+    	topicTreeViewer = (TopicTreeViewer<ShippingCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(shippingCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());

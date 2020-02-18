@@ -25,7 +25,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 	}
 
 	/**
-	 * Create a new {@link DocumentReceiver} from a {@link Contact} for a given
+	 * Create a new {@link DocumentReceiver} from a contact address for a given
 	 * {@link BillingType}. Nearly all fields are copied from {@link Contact} except
 	 * <code>manualAddress</code>.
 	 * 
@@ -34,7 +34,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 	 * @return {@link DocumentReceiver}
 	 */
 	@Override
-	public DocumentReceiver createDocumentReceiverFromContact(Address address, BillingType billingType) {
+	public DocumentReceiver createDocumentReceiverFromAddress(Address address, BillingType billingType) {
 		Contact contact = address.getContact();
 		return createDocumentReceiver(contact, address, billingType);
 	}
@@ -77,6 +77,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		documentReceiver.setSupplierNumber(contact.getSupplierNumber());
 		documentReceiver.setMandateReference(contact.getMandateReference());
 		documentReceiver.setGln(contact.getGln());
+		documentReceiver.setAlias(contact.getAlias());
 //		documentReceiver.setBankAccount(contact.getBankAccount());
 //		documentReceiver.setUseSalesEqualizationTax(contact.getUseSalesEqualizationTax());
 
@@ -85,14 +86,14 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 
 	@Override
 	public DocumentReceiver createDocumentReceiverForBillingType(Contact contact, BillingType billingType) {
-		Address addressFromContact = getAddressFromContact(contact, billingType.isINVOICE() ? ContactType.BILLING : ContactType.DELIVERY);
+		Optional<Address> addressFromContact = getAddressFromContact(contact, billingType.isINVOICE() ? ContactType.BILLING : ContactType.DELIVERY);
 		// copy address data
-		return createDocumentReceiver(contact, addressFromContact, billingType);
+		return createDocumentReceiver(contact, addressFromContact.orElse(null), billingType);
 	}
 
 	@Override
-	public Address getAddressFromContact(Contact contact, ContactType contactType) {
-		Optional<Address> address = null;
+	public Optional<Address> getAddressFromContact(Contact contact, ContactType contactType) {
+		Optional<Address> address;
 		if (contact != null && contactType != null) {
 			address = contact.getAddresses().stream()
 					.filter(rcv -> rcv.getContactTypes().isEmpty() || rcv.getContactTypes().contains(contactType))
@@ -102,8 +103,10 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 			if(!address.isPresent()) {
 				address = Optional.ofNullable(contact.getAddresses().get(0));
 			}
+		} else {
+			address = Optional.empty();
 		}
-		return address.get();
+		return address;
 	}
 
 	@Override

@@ -55,10 +55,10 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -115,7 +115,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	protected EPartService partService;
 	protected MPart part;
 	protected Composite top;
-	protected Combo comboCategory;
+	protected CCombo comboCategory;
 	protected CDateTime dtDate;
 	
 	@Inject
@@ -224,7 +224,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        
 	        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 	
-	        comboCategory = new Combo(top, SWT.BORDER);
+	        comboCategory = new CCombo(top, SWT.BORDER);
 	        comboCategory.setToolTipText(msg.commonFieldAccountTooltip);
 //	        fillAndBindCategoryCombo();
 	        GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
@@ -470,13 +470,13 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	    this.part.setIconURI(getEditorIconURI());
 	    this.currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
 	
-	    String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+	    String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
 	    if (StringUtils.isNumeric(tmpObjId)) {
 	        Long objId = Long.valueOf(tmpObjId);
 	        // Set the editor's data set to the editor's input
 	        this.voucher = getModelRepository().findById(objId);
 	    }
-	    String tmpVoucherType = (String) part.getProperties().get(CallEditor.PARAM_VOUCHERTYPE);
+	    String tmpVoucherType = (String) part.getTransientData().get(CallEditor.PARAM_VOUCHERTYPE);
 	    if(tmpVoucherType != null) {
 	    	voucherType = VoucherType.getByName(tmpVoucherType);
 	    }
@@ -614,7 +614,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        // the event has already all given params in it since we created them as Map
 	        String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
 	        // at first we have to check if the message is for us
-	        String voucherTempId =  part.getProperties().get(PART_ID); 
+	        String voucherTempId =  (String) part.getTransientData().get(PART_ID); 
 	        if (!StringUtils.equals(targetDocumentName, voucherTempId)) {
 	            // if not, silently ignore this event
 	            return;
@@ -640,7 +640,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	    // the event has already all given params in it since we created them as Map
 	    String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
 	    // at first we have to check if the message is for us
-	    String voucherTempId =  part.getProperties().get(PART_ID); 
+	    String voucherTempId =  (String) part.getTransientData().get(PART_ID); 
 	    if (!StringUtils.equals(targetDocumentName, voucherTempId)) {
 	        // if not, silently ignore this event
 	        return;

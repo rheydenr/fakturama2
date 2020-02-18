@@ -2,7 +2,7 @@
 <feature
       id="org.javamoney.feature"
       label="Javamoney"
-      version="1.0.1"
+      version="1.0.2"
       provider-name="org.javamoney">
 
    <description url="http://javamoney.github.io/">

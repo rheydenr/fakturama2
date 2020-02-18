@@ -8,8 +8,7 @@
 	<properties>
 		<tycho.version>1.5.0</tycho.version>
 		<tycho-extras.version>1.5.0</tycho-extras.version>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.release>8</maven.compiler.release>
 		<maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
 		<buildTimestamp>${maven.build.timestamp}</buildTimestamp>
 		<buildId>${buildTimestamp}</buildId>
@@ -17,6 +16,8 @@
 		<encoding>UTF-8</encoding>
 	</properties>
 	<modules>
+	    <module>org.fakturama.e4.ui.dialogs.ext</module>
+	    
 	    <module>com.sebulli.fakturama.rcp</module>
 	    <module>com.sebulli.fakturama.model</module>
 	    <module>com.sebulli.fakturama.site</module>
@@ -32,7 +33,6 @@
 	    <module>org.fakturama.export</module>
 	    <module>org.fakturama.import</module>
 	    <module>org.fakturama.import.feature</module>
-        
 	    <module>org.fakturama.wizards</module>
 	    <module>org.fakturama.exporter.zugferd.feature</module>
 	    <module>org.fakturama.exporter.zugferd</module>
@@ -140,7 +140,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.3</version>
 				<configuration>
 					<preparationGoals>org.eclipse.tycho:tycho-versions-plugin:${tycho-version}:update-eclipse-metadata
 						org.apache.maven.plugins:maven-scm-plugin:1.11.2:add
@@ -180,7 +179,7 @@
 		<repository>
 			<id>eclipse-2019</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/2019-03</url>
+			<url>http://download.eclipse.org/releases/2019-12</url>
 		</repository>
 	</repositories>
 

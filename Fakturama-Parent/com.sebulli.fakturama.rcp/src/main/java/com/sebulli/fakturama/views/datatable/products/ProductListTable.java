@@ -75,7 +75,7 @@ import com.sebulli.fakturama.model.Product_;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ProductEditor;
-import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
+import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
@@ -140,7 +140,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         this.listTablePart = listTablePart;
         super.createPartControl(parent, Product.class, true, ID);
         // Listen to double clicks
-        Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_PRODUCTS_CLICKHANDLER);
+        Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_PRODUCTS_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
         	getGridLayer().getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
             
@@ -418,8 +418,10 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 
     @Override
     protected TopicTreeViewer<ProductCategory> createCategoryTreeViewer(Composite top) {
-        topicTreeViewer = new TopicTreeViewer<ProductCategory>(top, msg, false, true);
-//    	topicTreeViewer = (TopicTreeViewer<ProductCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
+        context.set(TopicTreeViewer.PARENT_COMPOSITE, top);
+        context.set(TopicTreeViewer.USE_DOCUMENT_AND_CONTACT_FILTER, false);
+        context.set(TopicTreeViewer.USE_ALL, true);
+    	topicTreeViewer = (TopicTreeViewer<ProductCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
         categories = GlazedLists.eventList(productCategoriesDAO.findAll());
         topicTreeViewer.setInput(categories);
         // TODO boolean useDocumentAndContactFilter, boolean useAll könnte man eigentlich zusammenfassen.

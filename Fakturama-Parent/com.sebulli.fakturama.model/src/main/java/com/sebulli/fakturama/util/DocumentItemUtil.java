@@ -52,6 +52,7 @@ public class DocumentItemUtil {
 		    newItem.setName(product.getName());
 		    newItem.setProduct(product);
 		    newItem.setItemNumber(product.getItemNumber());
+		    newItem.setSupplierItemNumber(product.getSupplierItemNumber());
 		    newItem.setItemType(ItemType.POSITION);
 		    newItem.setQuantity(documentType.getSign() * Double.valueOf(1));
 		    // if quantity unit has a special meaning we have to consider that

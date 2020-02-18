@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Apache Collections
 Bundle-SymbolicName: org.apache.commons.collections;singleton:=true
 Bundle-Version: 4.3.0
-Bundle-ClassPath: lib/commons-collections4-4.3.jar
+Bundle-ClassPath: lib/commons-collections4-4.4.jar
 Bundle-Vendor: Apache.org
 Export-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.bag,
@@ -17,6 +17,7 @@ Export-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.map,
  org.apache.commons.collections4.multimap,
  org.apache.commons.collections4.multiset,
+ org.apache.commons.collections4.properties,
  org.apache.commons.collections4.queue,
  org.apache.commons.collections4.sequence,
  org.apache.commons.collections4.set,

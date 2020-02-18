@@ -38,6 +38,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -86,7 +87,6 @@ import org.eclipse.nebula.widgets.nattable.selection.EditTraversalStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.ITraversalStrategy;
 import org.eclipse.nebula.widgets.nattable.selection.MoveCellSelectionCommandHandler;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
-import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
@@ -135,6 +135,7 @@ import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.converter.DateDisplayConverter;
 import com.sebulli.fakturama.parts.converter.DoublePercentageDisplayConverter;
+import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.DocumentItemUtil;
@@ -219,7 +220,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
-    private SelectionLayer selectionLayer;
+//    private SelectionLayer selectionLayer;
     
     private ProductUtil productUtil;
     private DocumentItemUtil documentItemUtil;
@@ -313,8 +314,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 			    			}
 			    		})
 				.build();
-////		
-//		getGridLayer().getSelectionLayer().getSelectedRowPositions();
 
 		return retval;
 	}
@@ -378,65 +377,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
  */
     
     protected NatTable createListTable(Composite tableComposite) {  
-        Integer columnIndex = Integer.valueOf(0);
         // fill the underlying data source (GlazedLists)
         initItemsList();
 
-        // Create the table columns 
-        // get the visible properties to show in list view along with their position index
-        final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = new DualHashBidiMap<>();
-        
-        //if(eclipsePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_ITEM_POS)) {
-        //    propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.POSITION);
-        //}
-
-        if (containsOptionalItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
-           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.OPTIONAL);
-        }
-
-        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUANTITY);
-        
-        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUNIT)) {
-           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUNIT);
-        }
-        
-        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR)) {
-           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.ITEMNUMBER);
-        }
-        
-        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
-           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.PICTURE);
-        }        
-
-        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0) {
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATESTART);
-         }        
-        
-        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 1) {
-        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATEEND);
-        }        
-        
-        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
-        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
-
-        if (documentType.hasPrice() 
-        		|| document.getBillingType().isDELIVERY() && getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE)) {
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
-	        
-	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX) && useSET) {
-	        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.SALESEQUALIZATIONTAX);
-	        }        
-            
-            // "$ItemGrossPrice" (if useGross = true) or "price" (if useGross = false)
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.UNITPRICE);
-            
-            if (containsDiscountedItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM)) {
-                propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DISCOUNT);
-            } 
-            
-            // useGross = true => "$ItemGrossTotal", useGross = false => "$ItemNetTotal"
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.TOTALPRICE);
-        }
+        final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = createColumns();
         
         List<DocumentItemListDescriptor> tmpList2 = new ArrayList<DocumentItemListDescriptor>(propertyNamesList.values());
         String[] propertyNames = tmpList2.stream().map(DocumentItemListDescriptor::getPropertyName).collect(Collectors.toList()).toArray(new String[]{});
@@ -468,6 +412,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                    break;
 	                case OPTIONAL:
 	                case QUNIT:
+	                case WEIGHT:
 	                case ITEMNUMBER:
 	                case NAME:
 	                case DESCRIPTION:
@@ -507,8 +452,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                			? new Price(rowObject.getDocumentItem(), useSET).getUnitGrossRounded() 
 	                			: new Price(rowObject.getDocumentItem(), useSET).getUnitNetRounded();
 	                	retval = amount.getNumber().doubleValue();
-	                	
-	                    //retval = (Double) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
 	                    break;
 	                case TOTALPRICE:
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"
@@ -576,6 +519,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     rowObject.getDocumentItem().setQuantityUnit((String) newValue);
                     calculate = false; // no recalculation needed
                     break;
+                case WEIGHT:
+                	Double newWeight = ObjectUtils.defaultIfNull((Double) newValue, Double.valueOf(0.0));
+                	rowObject.getDocumentItem().setWeight(newWeight);
+                	break;
                 case ITEMNUMBER:
                     rowObject.getDocumentItem().setItemNumber((String) newValue);
                     calculate = false; // no recalculation needed
@@ -656,7 +603,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
 	                rowObject.setDocumentItemDirty(false);
 	                
-	                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+	                evtBroker.post(DocumentEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "itemChanged", event);
                 }
             }
 
@@ -685,23 +632,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 		gridListLayer = new EntityGridListLayer<>(getDocumentItemsListData(), propertyNames,
 				derivedColumnPropertyAccessor, rowIdAccessor, configRegistry, msg, true);
 		
-		DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
-        
         // set default percentage width 
-        tableDataLayer.setColumnPercentageSizing(true);
-        
-        // DON'T DO THIS! This leads to an unpredictable and very annoying behavior of the items list columns (sometimes the columns are 
-        // sized to only a few pixels)
-//        propertyNamesList.forEach(
-//                (Integer colIndex, DocumentItemListDescriptor descriptor) -> tableDataLayer.setColumnWidthPercentageByPosition(
-//                		colIndex, descriptor.getDefaultWidth()));
-        
-        // Custom selection configuration
-        selectionLayer = gridListLayer.getSelectionLayer();
-        
+		gridListLayer.getBodyDataLayer().setColumnPercentageSizing(true);
+
         //set ISelectionProvider
         final RowSelectionProvider<DocumentItemDTO> selectionProvider = 
-                new RowSelectionProvider<DocumentItemDTO>(selectionLayer, gridListLayer.getBodyDataProvider());
+                new RowSelectionProvider<DocumentItemDTO>(gridListLayer.getSelectionLayer(), gridListLayer.getBodyDataProvider());
         
         //add a listener to the selection provider, in an Eclipse application you would do this
         //e.g. getSite().getPage().addSelectionListener()
@@ -721,7 +657,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently.
         BidiMap<DocumentItemListDescriptor, Integer> reverseMap = propertyNamesList.inverseBidiMap();
-        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
+        ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyDataLayer());
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.POSITION, POSITIONNUMBER_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.OPTIONAL, OPTIONAL_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.PICTURE, PICTURE_CELL_LABEL);
@@ -738,6 +674,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.ITEMNUMBER, TEXT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.NAME, TEXT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.QUANTITY, DECIMAL_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.WEIGHT, DECIMAL_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.QUNIT, TEXT_CELL_LABEL);
 
         // Register label accumulator
@@ -757,12 +694,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 }
             }
         );
-        final NatTable natTable = new NatTable(tableComposite /*, 
+        final NatTable natTable = new NatTable(tableComposite , /*
                 SWT.NO_REDRAW_RESIZE| SWT.DOUBLE_BUFFERED | SWT.BORDER,
                 // FIXME: Doesn't work! 
-                gridListLayer.getViewportLayer()*/, 
-                gridListLayer.getGridLayer(), false);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+               ,gridListLayer.getViewportLayer()  */
+		 gridListLayer.getGridLayer() , false);
+        GridDataFactory.fillDefaults().grab(false, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
 
         // register a MoveCellSelectionCommandHandler with
@@ -780,6 +717,67 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         
         return natTable;
     }
+
+
+	private BidiMap<Integer, DocumentItemListDescriptor> createColumns() {
+		// Create the table columns 
+        // get the visible properties to show in list view along with their position index
+        Integer columnIndex = Integer.valueOf(0);
+        final BidiMap<Integer, DocumentItemListDescriptor> propertyNamesList = new DualHashBidiMap<>();
+
+        if (containsOptionalItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_OPTIONALITEMS_USE) && (documentType == DocumentType.OFFER)) {
+           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.OPTIONAL);
+        }
+
+        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUANTITY);
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_QUNIT)) {
+           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.QUNIT);
+        }
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
+        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.WEIGHT);
+        }
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_ITEMNR)) {
+           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.ITEMNUMBER);
+        }
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
+           propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.PICTURE);
+        }        
+
+        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 0) {
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATESTART);
+         }        
+        
+        if (getEclipsePrefs().getInt(Constants.PREFERENCES_DOCUMENT_USE_VESTINGPERIOD) > 1) {
+        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VESTINGDATEEND);
+        }        
+        
+        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
+        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
+
+        if (documentType.hasPrice() 
+        		|| document.getBillingType().isDELIVERY() && getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE)) {
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
+	        
+	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX) && useSET) {
+	        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.SALESEQUALIZATIONTAX);
+	        }        
+            
+            // "$ItemGrossPrice" (if useGross = true) or "price" (if useGross = false)
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.UNITPRICE);
+            
+            if (containsDiscountedItems || getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_EACH_ITEM)) {
+                propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DISCOUNT);
+            } 
+            
+            // useGross = true => "$ItemGrossTotal", useGross = false => "$ItemNetTotal"
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.TOTALPRICE);
+        }
+		return propertyNamesList;
+	}
 
 	@Override
 	protected void createDefaultContextMenu() {
@@ -841,10 +839,10 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
         
-        selectionLayer.getSelectionModel().setMultipleSelectionAllowed(true);
+        gridListLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
         
-        E4SelectionListener<DocumentItemDTO> esl = new E4SelectionListener<>(selectionService, selectionLayer, gridListLayer.getBodyDataProvider());
-        selectionLayer.addLayerListener(esl);
+        E4SelectionListener<DocumentItemDTO> esl = new E4SelectionListener<>(selectionService, gridListLayer.getSelectionLayer(), gridListLayer.getBodyDataProvider());
+        gridListLayer.getSelectionLayer().addLayerListener(esl);
 
         // register right click as a selection event for the whole row
         natTable.getUiBindingRegistry().registerFirstMouseDownBinding(
@@ -856,7 +854,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     @Override
                     public void run(NatTable natTable, MouseEvent event) {
                         int rowPosition = natTable.getRowPositionByY(event.y);
-                        if(!selectionLayer.isRowPositionSelected(rowPosition)) {
+                        if(!gridListLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
                             selectRowAction.run(natTable, event);
                         }                   
                     }
@@ -909,9 +907,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // with a discounted price was found
         Optional<DocumentItemDTO> discountedValue = getDocumentItemsListData().stream().filter(item -> item.getDocumentItem().getItemRebate() != null && item.getDocumentItem().getItemRebate().compareTo(Double.valueOf(0.0)) != 0).findFirst();
         containsDiscountedItems = discountedValue.isPresent();
-
-        // Renumber all Items ==> WHY???
-//        renumberItems();
     }
     
     @Override
@@ -966,21 +961,57 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         	
         	boolean isRemoved = documentItemsListData.removeAll(selectedEntries);
             if(isRemoved) {
-            	renumberItems();
-                // Recalculate the total sum of the document if necessary
-                // do it via the messaging system and send a message to DocumentEditor
-                Map<String, Object> event = new HashMap<>();
-                event.put(DocumentEditor.DOCUMENT_ID, document.getName());
-                event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
-                evtBroker.post(DocumentEditor.EDITOR_ID + "/itemChanged", event);
+            	informEditor();
             }
         } else {
             log.debug("no rows selected!");
         }
     }
 
+	private void informEditor() {
+		renumberItems();
+		// Recalculate the total sum of the document if necessary
+		// do it via the messaging system and send a message to DocumentEditor
+		Map<String, Object> event = new HashMap<>();
+		event.put(DocumentEditor.DOCUMENT_ID, document.getName());
+		event.put(DocumentEditor.DOCUMENT_RECALCULATE, true);
+		evtBroker.post(DocumentEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "itemChanged", event);
+	}
 
-    /**
+	public void copySelectedEntry() {
+    	@SuppressWarnings("unchecked")
+		Collection<DocumentItemDTO> selectedEntries = (Collection<DocumentItemDTO>)selectionService.getSelection(DocumentEditor.ID);
+        if(selectedEntries != null && selectedEntries.size() > 0) {
+        	
+        	// at first, close an open cell editor, if any
+        	if(natTable.getActiveCellEditor() != null) {
+        		natTable.getActiveCellEditor().close();
+        	}
+        	
+        	boolean isAdded = false;
+        	
+        	for (DocumentItemDTO documentItemDTO : selectedEntries) {
+        		DocumentItem newDocumentItem = documentItemDTO.getDocumentItem().clone();
+        		
+        		// some modifications...
+        		newDocumentItem.setDateAdded(null);
+        		newDocumentItem.setModified(null);
+        		newDocumentItem.setModifiedBy(null);
+        		
+				DocumentItemDTO itemCopy = new DocumentItemDTO(newDocumentItem);
+				isAdded = documentItemsListData.add(itemCopy);
+			}
+        	
+            if(isAdded) {
+            	informEditor();
+            }
+        	
+        } else {
+            log.debug("no rows selected!");
+        }
+	}
+
+	/**
      * Set the "novat" in all items. If a document is marked as "novat", the {@link VAT}
      * of all items is displayed as "0.0%"
      * @param noVat <code>true</code> if no {@link VAT} should be used
@@ -1381,20 +1412,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     protected AbstractDAO<DocumentItemDTO> getEntityDAO() {
         throw new UnsupportedOperationException("Inside a list table there's no extra DAO.");
     }
-//
-//	/**
-//	 * @return the useGross
-//	 */
-//	public final boolean isUseGross() {
-//		return useGross;
-//	}
-//
-//	/**
-//	 * @param useGross the useGross to set
-//	 */
-//	public final void setUseGross(boolean useGross) {
-//		this.useGross = useGross;
-//	}
 
 	/**
 	 * @return the container

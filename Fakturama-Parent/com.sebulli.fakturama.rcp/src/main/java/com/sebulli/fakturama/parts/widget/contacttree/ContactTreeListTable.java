@@ -221,7 +221,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 		this.listTablePart = listTablePart;
 		// if another click handler is set we use it
 		// Listen to double clicks
-		Object commandId = this.listTablePart.getProperties().get(Constants.PROPERTY_CONTACTS_CLICKHANDLER);
+		Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_CONTACTS_CLICKHANDLER);
 		if (commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
 			hookDoubleClickCommand(natTable, /* gridLayer.getGridLayer(), */ (String) commandId);
 		} else {

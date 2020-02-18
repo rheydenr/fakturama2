@@ -175,13 +175,13 @@
   </children>
   <handlers xmi:id="_vRIHkEsnEeOZ37-tYt-QvQ" elementId="org.fakturama.print.oofile.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.CreateOODocumentHandler" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
   <handlers xmi:id="_RmPTwetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.handler.file.save" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SaveHandler" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
-  <handlers xmi:id="_xRyIYCTLEeS9z6SQNducwg" elementId="org.eclipse.ui.handler.file.saveAll" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.SaveAllHandler" command="_jH3nYCTLEeS9z6SQNducwg"/>
+  <handlers xmi:id="_xRyIYCTLEeS9z6SQNducwg" elementId="org.eclipse.ui.handler.file.saveAll" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.SaveAllHandler" command="_jH3nYCTLEeS9z6SQNducwg"/>
   <handlers xmi:id="_HpX4IMn6EeWTOb3yCbo1Ow" elementId="main.menu.file.export.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/org.fakturama.wizard.export.handler.ExportHandler" command="_RAuAAEf5EeO7mNzAwIZUXQ"/>
   <handlers xmi:id="_gMaCcCnIEeahtpCtp7Z8KQ" elementId="main.menu.file.import.handler" contributionURI="bundleclass://com.sebulli.fakturama.rcp/org.fakturama.wizard.imp.handler.ImportHandler" command="_-9DrwGbyEeWmqtjz1q2EEA"/>
   <handlers xmi:id="_7foj0CTIEeS9z6SQNducwg" elementId="com.sebulli.fakturama.preferences.handler" contributionURI="bundleclass://com.opcoach.e4.preferences/com.opcoach.e4.preferences.handlers.E4PreferencesHandler" command="_EDLOIDtZEeOcltwCzP-ZbQ"/>
   <handlers xmi:id="_2U0uoCvVEeSxtNFFgqSUpw" elementId="org.eclipse.ui.handler.file.closeall" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.CloseAllHandler" command="_pBm00CvEEeSxtNFFgqSUpw"/>
   <handlers xmi:id="_Lbcy0CvFEeSxtNFFgqSUpw" elementId="org.eclipse.ui.handler.file.close" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.CloseHandler" command="_RmrPQCTQEeS9z6SQNducwg"/>
-  <handlers xmi:id="_RmPTv-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.quitCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.QuitHandler" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
+  <handlers xmi:id="_RmPTv-tOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.quitCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.ExitHandler" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
   <handlers xmi:id="_6ClWICDaEeSlDJPSSzlhCQ" elementId="com.sebulli.fakturama.rcp.handler.delete" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.DeleteHandler" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
   <handlers xmi:id="_FOmckIZTEeWRb8xKRQdEJg" elementId="com.sebulli.fakturama.handler.documents.reorganize" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.ReorganizeDocuments" command="_uB33QIZSEeWRb8xKRQdEJg"/>
   <handlers xmi:id="_RmPTwutOEeKo5Ms1QUgPTw" elementId="com.sebulli.fakturama.handler.aboutCommand" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.AboutHandler" command="_RmPT0utOEeKo5Ms1QUgPTw"/>
@@ -213,16 +213,18 @@
   <handlers xmi:id="_ww_VsG4_EeixJ7qGG0_Y8A" elementId="org.fakturama.handler.stockupdate" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.StockUpdateHandler" command="_hvS4IG4_EeixJ7qGG0_Y8A"/>
   <handlers xmi:id="_Ia1wIBkLEems16HDe00Etw" elementId="org.fakturama.handler.export.qrk" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.QRKExportHandler" command="_70JVYBkKEems16HDe00Etw"/>
   <handlers xmi:id="_Q5xkoBWEEemR8qmuWxCvLQ" elementId="org.fakturama.handler.exportcsv4dp" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.exporter.ExportCSV4DP" command="_TznVABWDEemR8qmuWxCvLQ"/>
+  <handlers xmi:id="_NhxukCqYEeq1a9OIflD6xg" elementId="com.sebulli.fakturama.handler.duplicate" contributionURI="bundleclass://com.sebulli.fakturama.rcp/com.sebulli.fakturama.handlers.DuplicateObjectHandler" command="_GhKykCqYEeq1a9OIflD6xg"/>
   <bindingTables xmi:id="_RmPTxetOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.bindingtable.dialogAndWindow" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" bindingContext="_RmPTy-tOEeKo5Ms1QUgPTw">
     <bindings xmi:id="_RmPTxutOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.exit.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+Q" command="_RmPTz-tOEeKo5Ms1QUgPTw"/>
     <bindings xmi:id="_RmPTyOtOEeKo5Ms1QUgPTw" elementId="org.eclipse.ui.file.save.key" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M1+S" command="_RmPT0etOEeKo5Ms1QUgPTw"/>
-    <bindings xmi:id="_RmPTyutOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.binding" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="ALT+SHIFT+F9" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+    <bindings xmi:id="_RmPTyutOEeKo5Ms1QUgPTw" elementId="e4.tooling.livemodel.binding" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" keySequence="M3+M2+F9" command="_A9gvoDtXEeOcltwCzP-ZbQ">
       <parameters xmi:id="_QC3lkNDnEeSGJqXpDrkN-w" elementId="com.sebulli.fakturama.rcp.parameter.57" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
       <parameters xmi:id="_YDkFkNDnEeSGJqXpDrkN-w" elementId="com.sebulli.fakturama.rcp.parameter.58" name="com.sebulli.fakturama.editors.category" value="INVOICE"/>
     </bindings>
     <bindings xmi:id="__D9s4E8GEeOddfJz0XevPw" elementId="org.fakturama.print.oofile.key" keySequence="M1+P" command="_eJYjgEsnEeOZ37-tYt-QvQ"/>
     <bindings xmi:id="_JrWiQOfbEeWRUaWo1qt8mA" elementId="org.eclipse.ui.key.file.close" keySequence="M1+W" command="_RmrPQCTQEeS9z6SQNducwg"/>
-    <bindings xmi:id="_ff0UIOfbEeWRUaWo1qt8mA" elementId="org.eclipse.ui.key.file.closeall" keySequence="M1+SHIFT+W" command="_pBm00CvEEeSxtNFFgqSUpw"/>
+    <bindings xmi:id="_ff0UIOfbEeWRUaWo1qt8mA" elementId="org.eclipse.ui.key.file.closeall" keySequence="M1+M2+W" command="_pBm00CvEEeSxtNFFgqSUpw"/>
+    <bindings xmi:id="_9rmqoCqYEeq1a9OIflD6xg" elementId="org.fakturama.rcp.keybinding.duplicate" keySequence="M3+M2+C" command="_GhKykCqYEeq1a9OIflD6xg"/>
   </bindingTables>
   <bindingTables xmi:id="_smR5cGFOEeShb_NtiSSU9w" elementId="com.sebulli.fakturama.rcp.bindingtable.viewlist" bindingContext="_c7LSgGFOEeShb_NtiSSU9w">
     <bindings xmi:id="_x7JsYGFOEeShb_NtiSSU9w" elementId="fakturama.keybinding.listview.deleteentry" keySequence="M1+D" command="_ayiaoCDaEeSlDJPSSzlhCQ"/>
@@ -272,6 +274,9 @@
             <tags>NoMove</tags>
             <variables>datalists</variables>
             <menus xsi:type="menu:PopupMenu" xmi:id="_C8AVIK_6EeSfWdSrXviqYA" elementId="com.sebulli.fakturama.document.popup" label="Document list popup">
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_FYsHwDvUEeqkls-bTq04QA" elementId="com.sebulli.fakturama.document.popup.opendoc" label="%command.open.document" tooltip="" command="_A9gvoDtXEeOcltwCzP-ZbQ">
+                <parameters xmi:id="_R-ZZIDvWEeqkls-bTq04QA" elementId="com.sebulli.fakturama.rcp.parameter.85" name="com.sebulli.fakturama.editors.editortype" value="com.sebulli.fakturama.editors.documentEditor"/>
+              </children>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_9Hy-sLPGEeS-Jtapb6hhEg" elementId="com.sebulli.fakturama.document.popup.markaspending" visible="false" label="%main.menu.edit.markaspending" iconURI="icon://COMMAND_ORDER_PENDING" command="_bFPksLPZEeS-Jtapb6hhEg">
                 <tags>orderActive</tags>
                 <parameters xmi:id="_QPtG0LSPEeSK9NoBo1DjbA" elementId="com.sebulli.fakturama.rcp.parameter.33" name="com.sebulli.fakturama.command.order.markas.status" value="PENDING"/>
@@ -523,13 +528,14 @@
   <commands xmi:id="_xbxzwCY9EeSOztFzZzvbWw" elementId="com.sebulli.fakturama.command.openReceiptVouchers" commandName="%command.receiptvouchers.name" description="%command.receiptvouchers.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_FI3J4FD-EeWYUbHCtLGOiQ" elementId="com.sebulli.fakturama.lists.viewtype" name="View Type" optional="false"/>
   </commands>
-  <commands xmi:id="_A9gvoDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.command.callEditor" commandName="open editor" description="">
+  <commands xmi:id="_A9gvoDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.command.callEditor" commandName="open editor" description="Command for opening various types of editors (depending on command parameters)">
     <parameters xmi:id="_P3fboDtXEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.rcp.cmdparam.objId" name="object Id" typeId=""/>
     <parameters xmi:id="_7Ty0cDteEeOcltwCzP-ZbQ" elementId="com.sebulli.fakturama.editors.editortype" name="editor type" optional="false"/>
     <parameters xmi:id="_PGkkoK_mEeSyr9uiNFXo7g" elementId="com.sebulli.fakturama.editors.category" name="document category (if any)"/>
-    <parameters xmi:id="_9F6N8L9vEeSGvuNl8B-b9A" elementId="org.fakturama.document.duplicate" name="document is a duplicate of an other document"/>
+    <parameters xmi:id="_9F6N8L9vEeSGvuNl8B-b9A" elementId="org.fakturama.document.followup" name="document is a follow-up document of an other document" typeId="java.lang.Boolean"/>
     <parameters xmi:id="_LK9-cA7gEeWUIKlpoQDe6Q" elementId="org.fakturama.document.caller" name="calling document editor"/>
-    <parameters xmi:id="_lXWsEOfXEeWRUaWo1qt8mA" elementId="org.fakturama.rcp.forcenew" name="force to create a new document" typeId=""/>
+    <parameters xmi:id="_lXWsEOfXEeWRUaWo1qt8mA" elementId="org.fakturama.document.copy" name="document is a copy of another document" typeId="java.lang.Boolean"/>
+    <parameters xmi:id="_YG7eUCwXEeqZLq0-rbZbkw" elementId="org.fakturama.rcp.forcenew" name="force to create a new document" typeId="java.lang.Boolean"/>
   </commands>
   <commands xmi:id="_MFWfwEy7EeOA3qmx22wNtw" elementId="command.new.product" commandName="%toolbar.new.product.name" description="%command.new.product.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_6BSUcGMEEeWIcrS-VkgIGw" elementId="com.sebulli.fakturama.editors.editortype" name="Prouduct type"/>
@@ -608,6 +614,7 @@
     <parameters xmi:id="_B_RUMBWEEemR8qmuWxCvLQ" elementId="org.fakturama.document.caller" name="calling document editor"/>
   </commands>
   <commands xmi:id="_70JVYBkKEems16HDe00Etw" elementId="org.fakturama.command.export.qrk" commandName="%command.export.qrk.name" description="%command.export.qrk.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ"/>
+  <commands xmi:id="_GhKykCqYEeq1a9OIflD6xg" elementId="com.sebulli.fakturama.editor.duplicate" commandName="%command.duplicate" description="duplicates the current editor into a new one"/>
   <addons xmi:id="_RmPT1etOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.core.commands.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_RmPT1utOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.contexts.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_RmPT1-tOEeKo5Ms1QUgPTw" elementId="org.eclipse.e4.ui.bindings.service" contributorURI="platform:/plugin/com.sebulli.fakturama.rcp" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

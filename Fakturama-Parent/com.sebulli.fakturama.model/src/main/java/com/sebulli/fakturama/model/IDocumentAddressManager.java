@@ -1,5 +1,6 @@
 package com.sebulli.fakturama.model;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface IDocumentAddressManager {
@@ -12,7 +13,7 @@ public interface IDocumentAddressManager {
 	 * @param billingType {@link BillingType} of {@link DocumentReceiver}
 	 * @return {@link DocumentReceiver}
 	 */
-	DocumentReceiver createDocumentReceiverFromContact(Address address, BillingType billingType);
+	DocumentReceiver createDocumentReceiverFromAddress(Address address, BillingType billingType);
 
 	/**
 	 * Gets the first(!) fitting  {@link Address} from {@link Contact} for the given {@link ContactType}.
@@ -22,7 +23,7 @@ public interface IDocumentAddressManager {
 	 * @param contactType the {@link ContactType} for which the  {@link Address} should be
 	 * @return {@link Address} from {@link Contact} for the given {@link ContactType}
 	 */
-	Address getAddressFromContact(Contact contact, ContactType contactType);
+	Optional<Address> getAddressFromContact(Contact contact, ContactType contactType);
 
 	/**
 	 * Get the billing address for a given {@link Document}.

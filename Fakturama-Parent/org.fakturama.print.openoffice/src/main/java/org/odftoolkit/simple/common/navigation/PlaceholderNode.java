@@ -234,13 +234,13 @@ public class PlaceholderNode extends Selection {
         Iterator<Node> it = substitutes.descendingIterator();
         while(it.hasNext()) {
         	Node node = (Node)it.next();
+        	Node lineBreak;
 	        if(insertedNode == null) {
-	        	Node lineBreak = parentNode.getParentNode().insertBefore(new TextLineBreakElement((OdfFileDom) parentNode.getOwnerDocument()), parentNode.getNextSibling());
-	        	insertedNode = parentNode.getParentNode().insertBefore(node, lineBreak);
+				lineBreak = parentNode.getParentNode().insertBefore(new TextLineBreakElement((OdfFileDom) parentNode.getOwnerDocument()), parentNode.getNextSibling());
 	        } else {
-	        	Node lineBreak = parentNode.getParentNode().insertBefore(new TextLineBreakElement((OdfFileDom) parentNode.getOwnerDocument()), insertedNode);
-	        	insertedNode = parentNode.getParentNode().insertBefore(node, lineBreak);
+	        	lineBreak = parentNode.getParentNode().insertBefore(new TextLineBreakElement((OdfFileDom) parentNode.getOwnerDocument()), insertedNode);
 	        }
+	        insertedNode = parentNode.getParentNode().insertBefore(node, lineBreak);
         }
         // ...then remove the origin "placeholder" node...
         parentNode.removeChild(getNode());

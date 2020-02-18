@@ -102,7 +102,7 @@ public class SelectTextDialog extends AbstractSelectionDialog<TextModule> {
         context.set(IEventBroker.class, evtBroker);
         MPart part = modelService.createModelElement(MPart.class);
         part.setContext(context);
-        part.getProperties().put(Constants.PROPERTY_TEXTMODULES_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
+        part.getTransientData().put(Constants.PROPERTY_TEXTMODULES_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
         context.set(MPart.class, part);
         textListTable = ContextInjectionFactory.make(TextListTable.class, context);
 

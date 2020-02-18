@@ -1467,5 +1467,61 @@ TODO:
 	<changeSet id="20190615-201" author="rheydenr">
 		<tagDatabase tag="version_2.1"/>
 	</changeSet>
+
+	<changeSet author="rheydenr" id="20191211-001"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_PRODUCT">
+			<column name="SUPPLIERITEMNUMBER" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20191211-002"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_DOCUMENTITEM">
+			<column name="SUPPLIERITEMNUMBER" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20191211-003"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_CONTACT">
+			<column name="T_ALIAS" type="varchar(255)" />
+		</addColumn>
+		<addColumn tableName="FKT_DOCUMENTRECEIVER">
+			<column name="T_ALIAS" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20191211-004"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<dropColumn tableName="FKT_DOCUMENTITEM">
+			<column name="TARA" />
+		</dropColumn>
+		<addColumn tableName="FKT_DOCUMENT">
+			<column name="TARA" type="DOUBLE"/>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20191218-001"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_DOCUMENT">
+			<column name="VERSION" type="BIGINT" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20191228-001"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_PRODUCT">
+			<column name="ALLOWANCE" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20200118-001"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_PRODUCT">
+			<column name="NOTE" type="LONGTEXT" />
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
     

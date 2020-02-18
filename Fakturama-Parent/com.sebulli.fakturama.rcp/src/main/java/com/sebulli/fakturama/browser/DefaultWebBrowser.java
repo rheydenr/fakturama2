@@ -8,6 +8,8 @@ import org.eclipse.jface.util.Util;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
 
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
+
 /**
  * The default implementation of the web browser instance.
  * <p>
@@ -63,7 +65,7 @@ public class DefaultWebBrowser extends AbstractWebBrowser {
 				Runtime.getRuntime().exec("/usr/bin/open " + localHref); //$NON-NLS-1$
 			} catch (IOException e) {
 				throw new E4PartInitException(
-						"WorkbenchMessages.ProductInfoDialog_unableToOpenWebBrowser",
+						WorkbenchMessages.ProductInfoDialog_unableToOpenWebBrowser,
 						e);
 			}
 		} else {
@@ -178,8 +180,8 @@ public class DefaultWebBrowser extends AbstractWebBrowser {
 				MessageDialog
 						.openError(
 								null,
-								"WorkbenchMessages.ProductInfoDialog_errorTitle",
-								"WorkbenchMessages.ProductInfoDialog_unableToOpenWebBrowser");
+								WorkbenchMessages.ProductInfoDialog_errorTitle,
+								WorkbenchMessages.ProductInfoDialog_unableToOpenWebBrowser);
 			}
 		});
 	}

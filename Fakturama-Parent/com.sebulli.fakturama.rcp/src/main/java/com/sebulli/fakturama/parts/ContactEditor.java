@@ -46,6 +46,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
@@ -63,6 +64,7 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -170,11 +172,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private ComboViewer comboReliability;
 	private Text txtSupplierNr;
 	private Text txtWebsite;
-	private Text txtWebshopName;
+	private Text txtWebshopName, txtAlias;
 	private Text txtVatNr;
 	private Text txtGln;
 	private FormattedText txtDiscount;
-	private Combo comboCategory;
+	private CCombo comboCategory;
 	private ComboViewer comboUseNetGross;
 
 	// These flags are set by the preference settings.
@@ -334,7 +336,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         Map<String, Object> eventParams = new HashMap<>();
         // the transientData HashMap contains the target document number
         // (was set in MouseEvent handler)
-        String callerDocument = (String) part.getProperties().get(CallEditor.PARAM_CALLING_DOC);
+        String callerDocument = (String) part.getTransientData().get(CallEditor.PARAM_CALLING_DOC);
         if(callerDocument != null) {
             eventParams.put(DocumentEditor.DOCUMENT_ID, callerDocument);
             eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(editorContact.getId()));
@@ -381,7 +383,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(getEditorIconURI());
-        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+        String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
@@ -455,7 +457,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
      */
     @Inject
     @Optional
-    public void handleForceClose(@UIEventTopic(ContactEditor.EDITOR_ID + "/forceClose") Event event) {
+    public void handleForceClose(@UIEventTopic(ContactEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "forceClose") Event event) {
         // the event has already all given params in it since we created them as Map
         String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
         // at first we have to check if the message is for us
@@ -493,7 +495,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		top = new Composite(scrollcomposite, SWT.SCROLLBAR_OVERLAY | SWT.NONE );  //was parent before 
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(700, 500);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setMinSize(700, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
@@ -651,8 +653,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		labelCategory.setToolTipText(msg.editorContactFieldCategoryTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-//		createCategoryCombo();
-        comboCategory = new Combo(tabMisc, SWT.BORDER);
+        comboCategory = new CCombo(tabMisc, SWT.BORDER);
         comboCategory.setToolTipText(labelCategory.getToolTipText());
         GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(comboCategory);
 
@@ -676,7 +677,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		
 		// FAK-382 clickable URL
 		txtWebsite.addMouseListener(new UrlCallHandler(txtWebsite, log));
-		
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(txtWebsite);
 
 		// Suppliernumber
@@ -701,6 +701,13 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWebshopName);
 		txtWebshopName = new Text(tabMisc, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebshopName);
+		
+		// Alias for this contact 
+		Label labelAlias = new Label(tabMisc, SWT.NONE);
+		labelAlias.setText(msg.editorContactFieldAlias);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAlias);
+		txtAlias = new Text(tabMisc, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAlias);
 		
 		// VAT number
 		Label labelVatNr = new Label(tabMisc, SWT.NONE);
@@ -1063,7 +1070,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		stringComboBoxLabelProvider.setCountryNames(countryNames);
 		comboCountry.setLabelProvider(stringComboBoxLabelProvider);
 		addressTabWidget.setCountryCombo(comboCountry);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
+		GridDataFactory.fillDefaults().grab(false, false).span(2, 1).applyTo(comboCountry.getCombo());
 
 		// Local Consultant
 		Label labelLocalConsultant = new Label(addressGroup, SWT.NONE);
@@ -1177,6 +1184,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 64);
 		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 64);
 		bindModelValue(editorContact, txtWebshopName, Contact_.webshopName.getName(), 64);
+		bindModelValue(editorContact, txtAlias, Contact_.alias.getName(), 64);
 
 		bindModelValue(editorContact, comboReliability, Contact_.reliability.getName());
 		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 32);

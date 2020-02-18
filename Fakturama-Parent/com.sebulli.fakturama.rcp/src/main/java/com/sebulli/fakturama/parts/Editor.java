@@ -31,6 +31,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
@@ -51,6 +52,7 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.FormattedTextObservableValue;
 import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -380,14 +382,27 @@ public abstract class Editor<T extends IEntity> {
          * ATTENTION! Dont't be attempted to put the Listener code in this if statement.
          * Otherwise you get ALWAYS a dirty editor!
          */
+        boolean observeModelChangeManually = false;
         if(source instanceof Combo) {
-            uiWidget = WidgetProperties.comboSelection().observe((Combo) source);
+			uiWidget = WidgetProperties.comboSelection().observe((Combo) source);
+			observeModelChangeManually = true;
+        } else if(source instanceof CCombo) {
+			uiWidget = WidgetProperties.ccomboSelection().observe((CCombo) source);
+			((CCombo) source).addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+						getMDirtyablePart().setDirty(true);
+				}
+			});
+			observeModelChangeManually = true;
         } else if (source instanceof Button) {
             uiWidget = WidgetProperties.buttonSelection().observe((Button) source);
+            observeModelChangeManually = true;
         } else if (source instanceof Spinner) {
             uiWidget = WidgetProperties.spinnerSelection().observe((Spinner) source);
         } else if(source instanceof CDateTime) {
             uiWidget = new CDateTimeObservableValue((CDateTime) source);
+            observeModelChangeManually = true;
         } else {
 //            uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
             uiWidget = WidgetProperties.text(SWT.Modify).observe(source);
@@ -399,26 +414,14 @@ public abstract class Editor<T extends IEntity> {
             retval = getCtx().bindValue(uiWidget, model);
         }    
         
-        if(source instanceof Combo) {
-            ((Combo)source).addModifyListener(e -> {
+        if(observeModelChangeManually) {
+        	model.addValueChangeListener(e -> {
             	// because of the Linux event fireworks bug :-(
             	if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null 
-            			&& (((Combo)source).getSelectionIndex() != ((Combo)e.getSource()).getSelectionIndex() || ((Combo)e.getSource()).getSelectionIndex() == -1)) {
-				    getMDirtyablePart().setDirty(true);
+            			&& e.diff.getNewValue() != e.diff.getOldValue()) {
+            		getMDirtyablePart().setDirty(true);
 				}
             });
-        } else if(source instanceof CDateTime) {
-            ((CDateTime)source).addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-            	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
-                    getMDirtyablePart().setDirty(true);
-            	}
-            }));
-        } else if(source instanceof Button) {
-        	((Button)source).addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-            	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
-        			getMDirtyablePart().setDirty(true);
-            	}
-        	}));
         }
         
         return retval;
