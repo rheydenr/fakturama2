@@ -250,11 +250,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			return Boolean.FALSE;
 		}
 
-	    // check for a new contact
-		if (newContact) {
-
+	    // check the number for a new contact (but only if check is not suppressed)
+		if (newContact && !defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_SUPPRESS_CONTACTNUMER_CHECK)) {
 			// Check, if the contact number is the next one
-			int result = setNextFreeNumberInPrefStore(txtNr.getText(), Contact_.customerNumber.getName());
+			int result = getNumberGenerator().setNextFreeNumberInPrefStore(txtNr.getText(), getEditorID());
 
 			// It's not the next free ID
 			if (result == ERROR_NOT_NEXT_ID) {
@@ -416,7 +415,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			editorContact.setUseNetGross((short)0);
 
 			// Get the next contact number
-			editorContact.setCustomerNumber(getNextNr());
+			editorContact.setCustomerNumber(getNumberGenerator().getNextNr(getEditorID()));
 			
             // a new contact is always dirty...
             // setDirty(true);

@@ -672,6 +672,7 @@ public class Messages {
 	public String preferencesContactUsegender;
 	public String preferencesContactUsemiscpage;
 	public String preferencesContactUsenotepage;
+	public String preferencesContactSuppressnumbercheck;
 	public String preferencesContactUsetitle;
 	public String preferencesDocument;
 	public String preferencesDocumentAdddelnotenumber;

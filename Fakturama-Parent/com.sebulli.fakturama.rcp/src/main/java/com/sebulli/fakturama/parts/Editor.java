@@ -108,8 +108,7 @@ public abstract class Editor<T extends IEntity> {
     @Inject
     protected IEclipseContext context;
     
-    @Inject @Optional
-    protected NumberGenerator numberGenerator;
+    private NumberGenerator numberGenerator;
 
 	@Inject
 	@Translation
@@ -296,7 +295,6 @@ public abstract class Editor<T extends IEntity> {
 		public void focus() {
 			stdButton.setFocus();
 		}
-
 	}
 
 	/**
@@ -308,30 +306,6 @@ public abstract class Editor<T extends IEntity> {
 		if (stdComposite != null)
 //			stdComposite.setStdText();
 			stdComposite.focus();
-	}
-
-	/**
-	 * Get the next document number
-	 * 
-	 * @return The next document number
-	 * @deprecated use {@link NumberGenerator#getNextNr(String)}
-	 */
-	protected String getNextNr() {
-		return getNumberGenerator().getNextNr(getEditorID());
-	}
-
-	/**
-	 * Set the next free document number in the preference store. But check if
-	 * the documents number is the next free one.
-	 * 
-	 * @param s
-	 *            The document number as string.
-	 * @return Errorcode, if the document number is correctly set to the next
-	 *         free number.
-	 * @deprecated use {@link NumberGenerator#setNextFreeNumberInPrefStore(String, String, String)}
-	 */
-	protected int setNextFreeNumberInPrefStore(String value, String key) {
-		return getNumberGenerator().setNextFreeNumberInPrefStore(value, getEditorID());
 	}
 	
     /**
@@ -631,7 +605,7 @@ public abstract class Editor<T extends IEntity> {
 
     protected abstract Class<T> getModelClass();
 
-	protected NumberGenerator getNumberGenerator() {
+	public NumberGenerator getNumberGenerator() {
 		if(numberGenerator == null) {
 			numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
 		}
