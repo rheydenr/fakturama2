@@ -175,16 +175,26 @@ public class CallEditor {
                 
 //            	partService.getParts().forEach(part -> { if(part.getTags().contains(EPartService.REMOVE_ON_HIDE_TAG)) {partService.hidePart(part);}});
             }
-
+            
             Map<String, String> params = new HashMap<>();
-        	
+        	System.err.println("==> " + objId+ " / SEL-LISTNR (Call): " + selectionService);
             // forceNew means we want to create a new document unconditionally
             if(!BooleanUtils.toBoolean(isForceNew)) {
+                
+                Object selObj = selectionService.getSelection();
+                Long id = null;
+                if (selObj instanceof List) {
+                    @SuppressWarnings({ "unchecked" })
+                    List<IEntity> selection = (List<IEntity>) selectionService.getSelection();
+                    if (!selection.isEmpty()) {
+                        id = (Long) selection.get(0).getId();
+                    }
+                } else {
+                    id = (Long)selObj;
+                }
 
-                @SuppressWarnings({ "unchecked" })
-                List<IEntity> selection = (List<IEntity>)selectionService.getSelection();
-                if(selection != null && !selection.isEmpty()) {
-                    params.put(PARAM_OBJ_ID, Long.toString((Long) selection.get(0).getId()));
+                if(id != null) {
+                    params.put(PARAM_OBJ_ID, Long.toString(id));
                 } else {
                     params.put(PARAM_OBJ_ID, objId);
                 }
@@ -218,9 +228,10 @@ public class CallEditor {
 		MPart myPart = null;
 		IEclipseContext stackContext = null;
 		// search only if not duplicated! Skip if a copy should be created.
-		
+		System.err.println("OBJ_ID: " + params.get(PARAM_OBJ_ID));
 		if(!BooleanUtils.toBoolean(isFollowUp) && !BooleanUtils.toBoolean(isCopy)) {
 			Collection<MPart> parts = partService.getParts();
+//			System.err.println("PARTS: " + parts.size()) ;
 	        if (params.get(PARAM_OBJ_ID) != null) {
 	    		// at first we look for an existing Part
 	            for (MPart mPart : parts) {
@@ -232,6 +243,7 @@ public class CallEditor {
 	    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type)/* && mPart.getContext() != null*/) {
 	    				String object = (String) mPart.getTransientData().get(PARAM_OBJ_ID);
 	    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
+        System.err.println("MYPART: " + (mPart != null? mPart.getObject() : "null") + "; obj: " + object);
 	    					myPart = mPart;
 	    					break;
 	    				}
@@ -239,6 +251,7 @@ public class CallEditor {
 	    		}
 	        }
 		}
+        
 
 		// if not found (or should create a duplicate / copy) then we create a new one from a part descriptor
 		if (myPart == null) {

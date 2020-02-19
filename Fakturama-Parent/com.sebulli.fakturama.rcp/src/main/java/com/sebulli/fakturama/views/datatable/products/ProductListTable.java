@@ -28,8 +28,10 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -133,11 +135,13 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 	private ProductMatcher currentFilter;
 
 	private BidiMap<Integer, ProductListDescriptor> prodListDescriptors;
+    private MApplication application;
 
     @PostConstruct
-    public Control createPartControl(Composite parent, MPart listTablePart) {
+    public Control createPartControl(Composite parent, MPart listTablePart, MApplication application) {
     	log.info("create Product list part");
         this.listTablePart = listTablePart;
+        this.application = application;
         super.createPartControl(parent, Product.class, true, ID);
         // Listen to double clicks
         Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_PRODUCTS_CLICKHANDLER);
@@ -173,6 +177,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         }
         Product[] retArr = selectedObjects.toArray(new Product[selectedObjects.size()]);
         selectionService.setSelection(selectedObjects);
+        application.getContext().get(ESelectionService.class).setSelection(selectedObjects);
         return retArr;
     }
     
@@ -211,9 +216,10 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                 // in E4 we create a new Part (or use an existing one with the same ID)
                 // from PartDescriptor
                 Map<String, Object> params = new HashMap<>();
+                
                 ParameterizedCommand parameterizedCommand;
                 if(commandId != null) {
-                    // If we don't give a target document number the event will  be catched by *all*
+                    // If we don't give a target document number the event will  be caught by *all*
                     // open editors which listens to this event. This is (obviously :-) ) not
                     // the intended behavior...
                     Map<String, Object> eventParams = new HashMap<>();
@@ -234,7 +240,10 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                 } else {
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
+                    
+                    application.getContext().get(ESelectionService.class).setSelection(selectedObject.getId());
                     params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+                    params.put(CallEditor.PARAM_FOLLOW_UP, null);  // could be set from a previous call
                     parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                     handlerService.executeHandler(parameterizedCommand);
                 }

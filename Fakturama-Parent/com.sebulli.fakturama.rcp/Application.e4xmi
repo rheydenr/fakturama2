@@ -538,7 +538,7 @@
     <parameters xmi:id="_YG7eUCwXEeqZLq0-rbZbkw" elementId="org.fakturama.rcp.forcenew" name="force to create a new document" typeId="java.lang.Boolean"/>
   </commands>
   <commands xmi:id="_MFWfwEy7EeOA3qmx22wNtw" elementId="command.new.product" commandName="%toolbar.new.product.name" description="%command.new.product.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
-    <parameters xmi:id="_6BSUcGMEEeWIcrS-VkgIGw" elementId="com.sebulli.fakturama.editors.editortype" name="Prouduct type"/>
+    <parameters xmi:id="_6BSUcGMEEeWIcrS-VkgIGw" elementId="com.sebulli.fakturama.editors.editortype" name="Product type"/>
   </commands>
   <commands xmi:id="_c8eN4Ey7EeOA3qmx22wNtw" elementId="command.new.contact" commandName="%toolbar.new.contact.name" description="%command.new.contact.tooltip" category="_no8mgEstEeOZ37-tYt-QvQ">
     <parameters xmi:id="_6EuHkOhxEeSelNaW6sEw-A" elementId="com.sebulli.fakturama.editors.editortype" name="Contact Type"/>
