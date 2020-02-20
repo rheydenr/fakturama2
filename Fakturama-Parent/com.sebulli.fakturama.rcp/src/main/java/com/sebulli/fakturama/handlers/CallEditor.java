@@ -177,7 +177,7 @@ public class CallEditor {
             }
             
             Map<String, String> params = new HashMap<>();
-        	System.err.println("==> " + objId+ " / SEL-LISTNR (Call): " + selectionService);
+//        	System.err.println("==> " + objId+ " / SEL-LISTNR (Call): " + selectionService);
             // forceNew means we want to create a new document unconditionally
             if(!BooleanUtils.toBoolean(isForceNew)) {
                 
@@ -228,7 +228,7 @@ public class CallEditor {
 		MPart myPart = null;
 		IEclipseContext stackContext = null;
 		// search only if not duplicated! Skip if a copy should be created.
-		System.err.println("OBJ_ID: " + params.get(PARAM_OBJ_ID));
+//		System.err.println("OBJ_ID: " + params.get(PARAM_OBJ_ID));
 		if(!BooleanUtils.toBoolean(isFollowUp) && !BooleanUtils.toBoolean(isCopy)) {
 			Collection<MPart> parts = partService.getParts();
 //			System.err.println("PARTS: " + parts.size()) ;
@@ -243,7 +243,7 @@ public class CallEditor {
 	    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type)/* && mPart.getContext() != null*/) {
 	    				String object = (String) mPart.getTransientData().get(PARAM_OBJ_ID);
 	    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
-        System.err.println("MYPART: " + (mPart != null? mPart.getObject() : "null") + "; obj: " + object);
+//        System.err.prisntln("MYPART: " + (mPart != null? mPart.getObject() : "null") + "; obj: " + object);
 	    					myPart = mPart;
 	    					break;
 	    				}
