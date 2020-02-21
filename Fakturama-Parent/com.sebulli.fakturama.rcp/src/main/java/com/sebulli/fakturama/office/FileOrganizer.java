@@ -102,7 +102,7 @@ public class FileOrganizer {
 			     .replaceAll("\\n", "_")
 			     .replaceAll("\\t", "_");
 		}
-		return s;
+		return StringUtils.defaultString(s);
 	}
 
 	/**
