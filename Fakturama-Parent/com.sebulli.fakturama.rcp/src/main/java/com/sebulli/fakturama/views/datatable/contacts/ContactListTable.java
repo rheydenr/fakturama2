@@ -181,6 +181,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
                     params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+                    context.getParent().get(ESelectionService.class).setSelection(null);
                     parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                     handlerService.executeHandler(parameterizedCommand);
                 }
