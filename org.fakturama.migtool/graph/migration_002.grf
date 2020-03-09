@@ -130,7 +130,7 @@
 </Record>
 </Metadata>
 <Metadata id="Metadata6">
-<Record fieldDelimiter=";" name="fkt_individualdocumentinfo" recordDelimiter="\n" type="delimited">
+<Record fieldDelimiter=";" name="fkt_individualdocumentinfo" previewAttachmentCharset="UTF-8" recordDelimiter="\n" type="delimited">
 <Field name="ID" size="20" type="long"/>
 <Field format="yyyy-MM-dd" name="DATEADDED" size="10" type="date"/>
 <Field name="DELETED" size="1" type="boolean"/>
@@ -142,12 +142,10 @@
 <Field name="PAYMENTDESCRIPTION" size="2048" type="string"/>
 <Field name="PAYMENTNAME" size="255" type="string"/>
 <Field name="PAYMENTTEXT" size="4096" type="string"/>
-<Field name="SHIPPINGAUTOVAT" size="11" type="integer"/>
 <Field name="SHIPPINGDESCRIPTION" size="2048" type="string"/>
 <Field name="SHIPPINGNAME" size="255" type="string"/>
-<Field name="SHIPPINGVALUE" size="22" type="number"/>
 <Field name="SHIPPINGVATDESCRIPTION" size="2048" type="string"/>
-<Field name="SHIPPINGVATVALUE" size="22" type="number"/>
+<Field name="SHIPPINGVATVALUE" size="22" type="decimal"/>
 <Field format="yyyy-MM-dd" name="VALIDFROM" size="10" type="date"/>
 <Field format="yyyy-MM-dd" name="VALIDTO" size="10" type="date"/>
 </Record>
@@ -227,8 +225,60 @@
 <Field name="FK_WEBSHOP" size="20" type="long"/>
 </Record>
 </Metadata>
+<Metadata id="Metadata8">
+<Record fieldDelimiter=";" name="SYSTEM_SUBQUERY" recordDelimiter="\n" type="delimited">
+<Field name="ID" size="64" type="long"/>
+<Field name="DTYPE" size="31" type="string"/>
+<Field name="ADDRESSFIRSTLINE" size="255" type="string"/>
+<Field name="BILLINGTYPE" size="32" type="integer"/>
+<Field name="CONSULTANT" size="255" type="string"/>
+<Field name="CUSTOMERREF" size="255" type="string"/>
+<Field format="yyyy-MM-dd" name="DATEADDED" size="10" type="date"/>
+<Field name="DELETED" type="boolean"/>
+<Field name="DEPOSIT" type="boolean"/>
+<Field format="yyyy-MM-dd" name="DOCUMENTDATE" size="10" type="date"/>
+<Field name="DUEDAYS" size="32" type="integer"/>
+<Field name="ITEMSREBATE" size="64" type="number"/>
+<Field name="MESSAGE" type="string"/>
+<Field name="MESSAGE2" type="string"/>
+<Field name="MESSAGE3" type="string"/>
+<Field format="yyyy-MM-dd" name="MODIFIED" size="10" type="date"/>
+<Field name="MODIFIEDBY" size="255" type="string"/>
+<Field name="NAME" size="255" type="string"/>
+<Field name="NETGROSS" size="32" type="integer"/>
+<Field name="ODTPATH" size="255" type="string"/>
+<Field format="yyyy-MM-dd" name="ORDERDATE" size="10" type="date"/>
+<Field name="PAID" type="boolean"/>
+<Field name="PAIDVALUE" size="64" type="number"/>
+<Field format="yyyy-MM-dd" name="PAYDATE" size="10" type="date"/>
+<Field name="PDFPATH" size="255" type="string"/>
+<Field name="PRINTTEMPLATE" size="255" type="string"/>
+<Field name="PRINTED" type="boolean"/>
+<Field name="PROGRESS" size="32" type="integer"/>
+<Field format="yyyy-MM-dd" name="SERVICEDATE" size="10" type="date"/>
+<Field name="SHIPPINGAUTOVAT" size="255" type="string"/>
+<Field name="SHIPPINGVALUE" size="64" type="number"/>
+<Field name="TOTALVALUE" size="64" type="number"/>
+<Field name="TRANSACTIONID" size="32" type="integer"/>
+<Field format="yyyy-MM-dd" name="VALIDFROM" size="10" type="date"/>
+<Field format="yyyy-MM-dd" name="VALIDTO" size="10" type="date"/>
+<Field format="yyyy-MM-dd" name="VESTINGPERIODEND" size="10" type="date"/>
+<Field format="yyyy-MM-dd" name="VESTINGPERIODSTART" size="10" type="date"/>
+<Field format="yyyy-MM-dd" name="WEBSHOPDATE" size="10" type="date"/>
+<Field name="WEBSHOPID" size="255" type="string"/>
+<Field name="FK_INDIVIDUALINFO" size="64" type="long"/>
+<Field name="FK_CONTACT" size="64" type="long"/>
+<Field name="FK_DELIVERYCONTACT" size="64" type="long"/>
+<Field name="DOCUMENT_INVOICEREFERENCE" size="64" type="long"/>
+<Field name="FK_NOVATREF" size="64" type="long"/>
+<Field name="FK_PAYMENT" size="64" type="long"/>
+<Field name="FK_SHIPPING" size="64" type="long"/>
+<Field name="FK_SRCDOCUMENT" size="64" type="long"/>
+<Field name="ALLOWANCE" size="64" type="number"/>
+</Record>
+</Metadata>
 <Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fktest" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fktestuser" type="JDBC" user="fktestuser"/>
-<Connection database="HSQLDB" dbURL="jdbc:hsqldb:hsql://localhost/Fakturama2" id="JDBC0" jdbcSpecific="HSQLDB" name="hsqldb" type="JDBC" user="sa"/>
+<Connection database="HSQLDB" dbURL="jdbc:hsqldb:hsql://localhost:9002/Fakturama2" id="JDBC0" jdbcSpecific="HSQLDB" name="hsqldb" type="JDBC" user="sa"/>
 <GraphParameters>
 <GraphParameterFile fileURL="workspace.prm"/>
 </GraphParameters>
@@ -262,7 +312,7 @@
 <Edge fromNode="FKT_WEBSHOPSTATEMAPPING:0" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE2:0"/>
 </Phase>
 <Phase number="2">
-<Node dbConnection="JDBC1" dbTable="fkt_individualdocumentinfo" fieldMap="$ID:=ID;$DATEADDED:=DATEADDED;$DELETED:=DELETED;$MODIFIED:=MODIFIED;$MODIFIEDBY:=MODIFIEDBY;$NAME:=NAME;$NOVATDESCRIPTION:=NOVATDESCRIPTION;$NOVATNAME:=NOVATNAME;$PAYMENTDESCRIPTION:=PAYMENTDESCRIPTION;$PAYMENTNAME:=PAYMENTNAME;$PAYMENTTEXT:=PAYMENTTEXT;$SHIPPINGAUTOVAT:=SHIPPINGAUTOVAT;$SHIPPINGDESCRIPTION:=SHIPPINGDESCRIPTION;$SHIPPINGNAME:=SHIPPINGNAME;$SHIPPINGVALUE:=SHIPPINGVALUE;$SHIPPINGVATDESCRIPTION:=SHIPPINGVATDESCRIPTION;$SHIPPINGVATVALUE:=SHIPPINGVATVALUE;$VALIDFROM:=VALIDFROM;$VALIDTO:=VALIDTO;" guiName="DBOutputTable" guiX="245" guiY="468" id="DBOUTPUT_TABLE6" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC1" dbTable="fkt_individualdocumentinfo" fieldMap="$ID:=ID;$DATEADDED:=DATEADDED;$DELETED:=DELETED;$MODIFIED:=MODIFIED;$MODIFIEDBY:=MODIFIEDBY;$NAME:=NAME;$NOVATDESCRIPTION:=NOVATDESCRIPTION;$NOVATNAME:=NOVATNAME;$PAYMENTDESCRIPTION:=PAYMENTDESCRIPTION;$PAYMENTNAME:=PAYMENTNAME;$PAYMENTTEXT:=PAYMENTTEXT;$SHIPPINGDESCRIPTION:=SHIPPINGDESCRIPTION;$SHIPPINGNAME:=SHIPPINGNAME;$SHIPPINGVATDESCRIPTION:=SHIPPINGVATDESCRIPTION;$SHIPPINGVATVALUE:=SHIPPINGVATVALUE;$VALIDFROM:=VALIDFROM;$VALIDTO:=VALIDTO;" guiName="DBOutputTable" guiX="245" guiY="468" id="DBOUTPUT_TABLE6" type="DB_OUTPUT_TABLE"/>
 <Node dbConnection="JDBC0" guiName="fkt_individualdocumentinfo" guiX="20" guiY="468" id="FKT_INDIVIDUALDOCUMENTINFO" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_INDIVIDUALDOCUMENTINFO]]></attr>
 </Node>
