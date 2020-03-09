@@ -123,7 +123,4 @@
 <Edge fromNode="FKT_SHIPPING:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" metadata="Metadata7" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE9:0"/>
 <Edge fromNode="FKT_TEXTMODULE:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE8:0"/>
 </Phase>
-<Phase number="2">
-<Node dbConnection="JDBC1" enabled="enabled" guiName="DBExecute" guiX="508" guiY="864" id="DB_EXECUTE0" type="DB_EXECUTE" url="${PROJECT}/enable_fk.sql"/>
-</Phase>
 </Graph>
