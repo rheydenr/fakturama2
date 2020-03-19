@@ -994,7 +994,8 @@ public class MigrationManager {
 			contact.setTitle(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryTitle(), oldContact.getTitle()));
 			contact.setValidFrom(new Date());
 			contact.setBirthday(billingtype.isDELIVERY() ? getSaveParsedDate(oldContact.getBirthday()) :  getSaveParsedDate(oldContact.getDeliveryBirthday()));
-//			contact.setBirthday(LocalDate.parse(oldContact.getBirthday()));
+			contact.setWebsite(oldContact.getWebsite());
+			contact.setSupplierNumber(oldContact.getSuppliernumber());
 //		}
 // else there's no delivery contact!
 		return contact;
@@ -1014,6 +1015,11 @@ public class MigrationManager {
 		address.setEmail(oldContact.getEmail());
 		address.setFax(oldContact.getFax());
 		address.setMobile(oldContact.getMobile());
+		
+		// for delivery addresses the company field will be migrated to name field
+		if(billingtype.isDELIVERY()) {
+		    address.setName(oldContact.getCompany());
+		}
 		
 		// create local consultant
 		if(oldContact.getFirstname() != null && oldContact.getName() != null) {

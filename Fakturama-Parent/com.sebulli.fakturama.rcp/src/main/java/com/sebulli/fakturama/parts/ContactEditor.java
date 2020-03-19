@@ -1258,7 +1258,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	    
 	    AddressTabWidget currentAddressTabWidget = addressTabWidgets.get(index);
 		bindModelValue(currentAddress, currentAddressTabWidget.getAddressAddon(), Address_.addressAddon.getName(), 64);
-		bindModelValue(currentAddress, currentAddressTabWidget.getNameAddon(), Address_.nameAddon.getName(), 64);
+		bindModelValue(currentAddress, currentAddressTabWidget.getNameAddon(), Address_.name.getName(), 64);
 		bindModelValue(currentAddress, currentAddressTabWidget.getLocalConsultant(), Address_.localConsultant.getName(), 64);
 	    bindModelValue(currentAddress, currentAddressTabWidget.getStreet(), Address_.street.getName(), 64);
 	    bindModelValue(currentAddress, currentAddressTabWidget.getZip(), Address_.zip.getName(), 16);

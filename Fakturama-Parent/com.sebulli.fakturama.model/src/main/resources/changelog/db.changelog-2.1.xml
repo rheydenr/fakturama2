@@ -153,6 +153,7 @@ TODO:
 			<column name="PHONE" type="VARCHAR(255)"/>
 			<column name="STREET" type="VARCHAR(255)"/>
 			<column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
+			<column name="T_ALIAS" type="varchar(255)" />
 			<column name="TITLE" type="VARCHAR(255)"/>
 			<column name="VALIDFROM" type="date"/>
 			<column name="VALIDTO" type="date"/>
@@ -232,8 +233,10 @@ TODO:
 			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
 			<column name="NOTE" type="LONGTEXT"/>
+			<column name="REGISTERNUMBER" type="VARCHAR(255)" />
 			<column name="RELIABILITY" type="VARCHAR(255)"/>
 			<column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
+			<column name="T_ALIAS" type="varchar(255)" />
 			<column name="TITLE" type="VARCHAR(255)"/>
 			<column name="USENETGROSS" type="SMALLINT"/>
 			<column defaultValueBoolean="false" name="USESALESEQUALIZATIONTAX" type="BOOLEAN"/>
@@ -253,6 +256,8 @@ TODO:
 			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
 				<constraints primaryKey="true"/>
 			</column>
+			<column name="ADDITIONALPHONE" type="VARCHAR(255)" />
+			<column name="ADDRESSADDON" type="VARCHAR(255)" />
 			<column name="CITY" type="VARCHAR(255)"/>
 			<column name="CITYADDON" type="VARCHAR(255)"/>
 			<column name="COUNTRYCODE" type="VARCHAR(255)"/>
@@ -498,7 +503,7 @@ TODO:
 
  	<changeSet author="rheydenr" id="20190915-052">
 		<comment>update addresses (merge delivery contacts into existing billing contacts)</comment>
-		<sql dbms="MariaDB, MySQL">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
+		<sql dbms="mysql,mariadb">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
 		SELECT t.BILLING_ADDRESS_ID,
 		    t.BILLING_ADDRESS_CITY,
 		    t.BILLING_ADDRESS_CITYADDON,
@@ -613,7 +618,7 @@ TODO:
 		    DELIVERY_CONTACT_FK_ADDRESS = s.FK_ADDRESS;
 		</sql>
 			
-		<sql dbms="h2, hsqldb">
+		<sql dbms="h2,hsqldb">
 			MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
 			USING FKT_CONTACT s
 			ON t.BILLING_CONTACT_FK_ALTERNATECONTACT = s.id
@@ -646,7 +651,7 @@ TODO:
 	<changeSet author="rheydenr" id="20190915-053">
 		<comment>merge delivery addresses</comment>
 
-		<sql dbms="MariaDB, MySQL">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
+		<sql dbms="mysql,mariadb">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
 		SELECT t.BILLING_ADDRESS_ID,
 		    t.BILLING_ADDRESS_CITY,
 		    t.BILLING_ADDRESS_CITYADDON,
@@ -1489,14 +1494,12 @@ TODO:
         <addForeignKeyConstraint baseColumnNames="FK_WEBSHOP" baseTableName="FKT_WEBSHOPSTATEMAPPING" constraintName="FK_FKT_WEBSHOPSTATEMAPPING_FK_WEBSHOP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_WEBSHOP"/>
     </changeSet>	
 
-	<changeSet id="20190615-201" author="rheydenr">
-		<tagDatabase tag="version_2.1"/>
-	</changeSet>
-
 	<changeSet author="rheydenr" id="20191211-001"
 		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
 		<addColumn tableName="FKT_PRODUCT">
 			<column name="SUPPLIERITEMNUMBER" type="varchar(255)" />
+			<column name="ALLOWANCE" type="varchar(255)" />
+			<column name="NOTE" type="LONGTEXT" />
 		</addColumn>
 	</changeSet>
 	
@@ -1505,64 +1508,31 @@ TODO:
 		<addColumn tableName="FKT_DOCUMENTITEM">
 			<column name="SUPPLIERITEMNUMBER" type="varchar(255)" />
 		</addColumn>
-	</changeSet>
-	
-	<changeSet author="rheydenr" id="20191211-003"
-		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_CONTACT">
-			<column name="T_ALIAS" type="varchar(255)" />
-		</addColumn>
-		<addColumn tableName="FKT_DOCUMENTRECEIVER">
-			<column name="T_ALIAS" type="varchar(255)" />
-		</addColumn>
+		<dropColumn tableName="FKT_DOCUMENTITEM">
+			<column name="TARA" />
+		</dropColumn>
 	</changeSet>
 	
 	<changeSet author="rheydenr" id="20191211-004"
 		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<dropColumn tableName="FKT_DOCUMENTITEM">
-			<column name="TARA" />
-		</dropColumn>
 		<addColumn tableName="FKT_DOCUMENT">
 			<column name="TARA" type="DOUBLE"/>
-		</addColumn>
-	</changeSet>
-	
-	<changeSet author="rheydenr" id="20191218-001"
-		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_DOCUMENT">
 			<column name="VERSION" type="BIGINT" />
 		</addColumn>
 	</changeSet>
 	
-	<changeSet author="rheydenr" id="20191228-001"
+	<changeSet author="rheydenr" id="20200317-001"
 		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_PRODUCT">
-			<column name="ALLOWANCE" type="varchar(255)" />
-		</addColumn>
+		<comment>update name addon and local consultant for delivery addresses</comment>
+		<sql>UPDATE FKT_ADDRESS g SET NAME = (SELECT DELIVERY_CONTACT_COMPANY 
+		         FROM TMP_CONTACTS_WITH_ADDRESSES t WHERE t.DELIVERY_ADDRESS_ID = g.ID),
+		     LOCALCONSULTANT = (SELECT CONCAT(DELIVERY_CONTACT_FIRSTNAME, ' ', DELIVERY_CONTACT_NAME) 
+		         FROM TMP_CONTACTS_WITH_ADDRESSES t WHERE t.DELIVERY_ADDRESS_ID = g.ID)</sql>
 	</changeSet>
 	
-	<changeSet author="rheydenr" id="20200118-001"
-		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_PRODUCT">
-			<column name="NOTE" type="LONGTEXT" />
-		</addColumn>
+	<changeSet id="20190317-010" author="rheydenr">
+		<tagDatabase tag="version_2.1"/>
 	</changeSet>
-	
-	<changeSet author="rheydenr" id="20200206-001"
-		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_CONTACT">
-			<column name="REGISTERNUMBER" type="VARCHAR(255)" />
-		</addColumn>
-	</changeSet>
-	
-	<changeSet author="rheydenr" id="20200206-002"
-		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_ADDRESS">
-			<column name="ADDITIONALPHONE" type="VARCHAR(255)" />
-			<column name="NAMEADDON" type="VARCHAR(255)" />
-			<column name="ADDRESSADDON" type="VARCHAR(255)" />
-		</addColumn>
-	</changeSet>
-	
+
 </databaseChangeLog>
     
