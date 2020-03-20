@@ -177,7 +177,8 @@ public class CallEditor {
             }
             
             Map<String, String> params = new HashMap<>();
-//        	System.err.println("==> " + objId+ " / SEL-LISTNR (Call): " + selectionService);
+        	System.err.println("==> " + objId+ " / SEL-LISTNR (Call): " + selectionService);
+        	System.err.println("isForceNew: " + isForceNew);
             // forceNew means we want to create a new document unconditionally
             if(!BooleanUtils.toBoolean(isForceNew)) {
                 
@@ -202,10 +203,10 @@ public class CallEditor {
             	params.put(PARAM_COPY, BooleanUtils.toStringTrueFalse(isCopy));
             }
             params.put(PARAM_CATEGORY, category);
-            
+            System.err.println("PARAM_OBJ_ID: " + params.get(PARAM_OBJ_ID));
             // Define  the editor and try to open it
 			MPart editorPart = createEditorPart(editorType, documentPartStack, isFollowUp, isCopy, params);
-            
+            System.err.println("PART: " + editorPart.getObject());
 			partService.showPart(editorPart, PartState.ACTIVATE);
 			
 			// clear the objId parameter because of unwanted side effects for subsequent creation of an editor
