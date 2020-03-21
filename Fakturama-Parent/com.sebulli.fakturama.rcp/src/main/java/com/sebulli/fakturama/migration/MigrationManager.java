@@ -1018,13 +1018,13 @@ public class MigrationManager {
 		
 		// for delivery addresses the company field will be migrated to name field
 		if(billingtype.isDELIVERY()) {
-		    address.setName(oldContact.getCompany());
-		}
-		
-		// create local consultant
-		if(oldContact.getFirstname() != null && oldContact.getName() != null) {
-			String localConsultant = String.format("%s %s", oldContact.getFirstname(), oldContact.getName());
-			address.setLocalConsultant(localConsultant);
+		    address.setName(oldContact.getDeliveryCompany());
+    		
+    		// create local consultant
+    		if(oldContact.getFirstname() != null && oldContact.getName() != null) {
+    			String localConsultant = String.format("%s %s", oldContact.getDeliveryFirstname(), oldContact.getDeliveryName());
+    			address.setLocalConsultant(localConsultant);
+    		}
 		}
 	
 		// we don't have a CountryCode table :-(, therefore we have to look up in ULocale classes
