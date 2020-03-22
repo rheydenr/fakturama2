@@ -21,7 +21,7 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 
 	@PostConstruct
 	public void init() {
-		System.out.println("huhu");
+		// nothing to do at the moment
 	}
 
 	/**

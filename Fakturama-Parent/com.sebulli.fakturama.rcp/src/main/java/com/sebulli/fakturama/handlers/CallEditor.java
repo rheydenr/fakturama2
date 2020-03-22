@@ -46,6 +46,7 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
@@ -146,6 +147,9 @@ public class CallEditor {
     
     @Inject
     private ESelectionService selectionService;
+    
+    @Inject
+    private ILogger log;
 
 	/**
 	 * Execute the command
@@ -177,8 +181,8 @@ public class CallEditor {
             }
             
             Map<String, String> params = new HashMap<>();
-        	System.err.println("==> " + objId+ " / SEL-LISTNR (Call): " + selectionService);
-        	System.err.println("isForceNew: " + isForceNew);
+            log.debug("==> " + objId+ " / SEL-LISTNR (Call): " + selectionService);
+            log.debug("isForceNew: " + isForceNew);
             // forceNew means we want to create a new document unconditionally
             if(!BooleanUtils.toBoolean(isForceNew)) {
                 
@@ -203,10 +207,10 @@ public class CallEditor {
             	params.put(PARAM_COPY, BooleanUtils.toStringTrueFalse(isCopy));
             }
             params.put(PARAM_CATEGORY, category);
-            System.err.println("PARAM_OBJ_ID: " + params.get(PARAM_OBJ_ID));
+            log.debug("PARAM_OBJ_ID: " + params.get(PARAM_OBJ_ID));
             // Define  the editor and try to open it
 			MPart editorPart = createEditorPart(editorType, documentPartStack, isFollowUp, isCopy, params);
-            System.err.println("PART: " + editorPart.getObject());
+			log.debug("PART: " + editorPart.getObject());
 			partService.showPart(editorPart, PartState.ACTIVATE);
 			
 			// clear the objId parameter because of unwanted side effects for subsequent creation of an editor
@@ -229,10 +233,10 @@ public class CallEditor {
 		MPart myPart = null;
 		IEclipseContext stackContext = null;
 		// search only if not duplicated! Skip if a copy should be created.
-//		System.err.println("OBJ_ID: " + params.get(PARAM_OBJ_ID));
+//		log.debug("OBJ_ID: " + params.get(PARAM_OBJ_ID));
 		if(!BooleanUtils.toBoolean(isFollowUp) && !BooleanUtils.toBoolean(isCopy)) {
 			Collection<MPart> parts = partService.getParts();
-//			System.err.println("PARTS: " + parts.size()) ;
+//			log.debug("PARTS: " + parts.size()) ;
 	        if (params.get(PARAM_OBJ_ID) != null) {
 	    		// at first we look for an existing Part
 	            for (MPart mPart : parts) {
@@ -244,7 +248,7 @@ public class CallEditor {
 	    			if (StringUtils.equalsIgnoreCase(mPart.getElementId(), type)/* && mPart.getContext() != null*/) {
 	    				String object = (String) mPart.getTransientData().get(PARAM_OBJ_ID);
 	    				if (StringUtils.equalsIgnoreCase(object, params.get(PARAM_OBJ_ID))) {
-//        System.err.prisntln("MYPART: " + (mPart != null? mPart.getObject() : "null") + "; obj: " + object);
+//        log.debug("MYPART: " + (mPart != null? mPart.getObject() : "null") + "; obj: " + object);
 	    					myPart = mPart;
 	    					break;
 	    				}

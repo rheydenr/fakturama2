@@ -280,7 +280,7 @@ public class CoolbarViewPart {
 //    @Inject
 //    @Optional
 //    public void reactOnPrefColorChange(@Preference(value = Constants.TOOLBAR_SHOW_SAVE) Boolean colorKey) {
-//        System.out.println("React on a change in preferences with colorkey = " + colorKey);
+//        log.debug("React on a change in preferences with colorkey = " + colorKey);
 //        if ((top != null) && !top.isDisposed()) {
 //            toolItemsByKey.get("org.eclipse.ui.file.save"/*Constants.TOOLBAR_SHOW_SAVE*/).dispose();
 //        }

@@ -98,7 +98,7 @@ import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
  */
 public class ProductListTable extends AbstractViewDataTable<Product, ProductCategory> {
 
-    // ID of this view               fakturama.views.productTable
+    // ID of this view
     public static final String ID = "fakturama.views.productTable";
     
     protected static final String POPUP_ID = "com.sebulli.fakturama.productlist.popup";

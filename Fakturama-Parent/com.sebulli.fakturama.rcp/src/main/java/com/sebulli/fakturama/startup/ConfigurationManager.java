@@ -213,7 +213,6 @@ public class ConfigurationManager {
 	 * ==> at the moment this method does intentionally nothing!
 	 */
 	private void adaptLogfile(String oldWorkspace, String requestedWorkspace) {
-		System.out.println("");
 //		String defaultLogConfigFile = StringUtils.defaultIfBlank(System.getProperty(EquinoxLocations.PROP_USER_AREA), 
 //				System.getProperty(EquinoxLocations.PROP_USER_AREA_DEFAULT)) + defaultLogConfigFile;
 		// at first check if the configuration is set via a switch
