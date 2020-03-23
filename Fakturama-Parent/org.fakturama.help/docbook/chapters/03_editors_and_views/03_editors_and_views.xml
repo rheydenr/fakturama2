@@ -1844,7 +1844,7 @@
 								<imagedata fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
 							</imageobject>
 							<imageobject role="fo">
-								<imagedata contentdepth="40%" fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
+								<imagedata contentdepth="80%" fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
 							</imageobject>
 						</inlinemediaobject>
 					</term>
