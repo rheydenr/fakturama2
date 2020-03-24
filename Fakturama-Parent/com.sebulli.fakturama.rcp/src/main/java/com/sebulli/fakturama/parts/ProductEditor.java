@@ -36,6 +36,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.conversion.NumberToStringConverter;
+import org.eclipse.core.databinding.conversion.StringToNumberConverter;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -50,7 +52,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
@@ -72,6 +73,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
 
+import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
@@ -805,7 +807,7 @@ public class ProductEditor extends Editor<Product> {
 		
 		// Product note
 		Group noteGroup = new Group(top, SWT.NONE);
-		noteGroup.setText("Note");
+		noteGroup.setText(msg.editorContactLabelNotice);
 		GridLayoutFactory.swtDefaults().applyTo(noteGroup);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(noteGroup);
 		
@@ -838,7 +840,13 @@ public class ProductEditor extends Editor<Product> {
 		bindModelValue(editorProduct, textItemNr, Product_.itemNumber.getName(), 64);
 		bindModelValue(editorProduct, textName, Product_.name.getName(), 64);
 		fillAndBindCategoryCombo();
-		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64);
+		
+		NumberFormat numberFormat = NumberFormat.getNumberInstance();
+		numberFormat.setGroupingUsed(false);
+        UpdateValueStrategy<Object, String> numbertoStringStrategy = UpdateValueStrategy.create(NumberToStringConverter.fromLong(numberFormat , true));
+		UpdateValueStrategy<Object,Long> stringToNumberStrategy = UpdateValueStrategy.create(StringToNumberConverter.toLong(true));
+		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64, stringToNumberStrategy, numbertoStringStrategy);
+
 		bindModelValue(editorProduct, textSupplierItemNumber, Product_.supplierItemNumber.getName(), 64);
 		bindModelValue(editorProduct, textDescription, Product_.description.getName(), 0);   // no limit
 		if(useQuantityUnit) {
