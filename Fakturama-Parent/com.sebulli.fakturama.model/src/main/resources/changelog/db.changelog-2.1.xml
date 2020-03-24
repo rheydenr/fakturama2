@@ -275,7 +275,6 @@ TODO:
 			<column name="VALIDFROM" type="date"/>
 			<column name="VALIDTO" type="date"/>
 			<column name="ZIP" type="VARCHAR(255)"/>
-			<column name="FK_CONTACT" type="BIGINT"/>
 			<column name="CONTACT_ADDRESSES" type="BIGINT"/>
 		</createTable>
 		
@@ -881,7 +880,6 @@ TODO:
 			        VALIDFROM,
 			        VALIDTO,
 			        ZIP,
-			        FK_CONTACT,
 			        CONTACT_ADDRESSES )
 			SELECT
 			    BILLING_ADDRESS_ID,
@@ -901,7 +899,6 @@ TODO:
 			    BILLING_ADDRESS_VALIDFROM,
 			    BILLING_ADDRESS_VALIDTO,
 			    BILLING_ADDRESS_ZIP,
-			    BILLING_CONTACT_ID,
 			    BILLING_CONTACT_ID
 			FROM TMP_CONTACTS_WITH_ADDRESSES;
 		</sql>
@@ -940,7 +937,6 @@ TODO:
 			        VALIDFROM,
 			        VALIDTO,
 			        ZIP,
-			        FK_CONTACT,
 			        CONTACT_ADDRESSES )
 			SELECT
 			    DELIVERY_ADDRESS_ID,
@@ -960,7 +956,6 @@ TODO:
 			    DELIVERY_ADDRESS_VALIDFROM,
 			    DELIVERY_ADDRESS_VALIDTO,
 			    DELIVERY_ADDRESS_ZIP,
-			    BILLING_CONTACT_ID,
 			    BILLING_CONTACT_ID
 			FROM TMP_CONTACTS_WITH_ADDRESSES
 			WHERE DELIVERY_CONTACT_ID IS NOT NULL;
@@ -1284,11 +1279,6 @@ TODO:
             <column name="CONTACT_ADDRESSES"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenreich (generated)" id="20190915-138">
-        <createIndex indexName="FK_FKT_ADDRESS_FK_CONTACT" tableName="FKT_ADDRESS">
-            <column name="FK_CONTACT"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="rheydenreich (generated)" id="20190915-139">
         <createIndex indexName="FK_FKT_CATEGORY_FK_PARENT_CATEGORY" tableName="FKT_CATEGORY">
             <column name="FK_PARENT_CATEGORY"/>
@@ -1369,9 +1359,6 @@ TODO:
     </changeSet>
     <changeSet author="rheydenreich (generated)" id="20190915-171">
         <addForeignKeyConstraint baseColumnNames="CONTACT_ADDRESSES" baseTableName="FKT_ADDRESS" constraintName="FK_FKT_ADDRESS_CONTACT_ADDRESSES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CONTACT"/>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="20190915-172">
-        <addForeignKeyConstraint baseColumnNames="FK_CONTACT" baseTableName="FKT_ADDRESS" constraintName="FK_FKT_ADDRESS_FK_CONTACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CONTACT"/>
     </changeSet>
     <changeSet author="rheydenreich (generated)" id="20190915-173">
         <addForeignKeyConstraint baseColumnNames="FK_PARENT_CATEGORY" baseTableName="FKT_CATEGORY" constraintName="FK_FKT_CATEGORY_FK_PARENT_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>

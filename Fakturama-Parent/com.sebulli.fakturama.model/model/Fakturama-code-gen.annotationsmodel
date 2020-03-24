@@ -192,7 +192,7 @@
         <eReference href="Fakturama.ecore#//Address/contact"/>
         <eReferenceAnnotations xsi:type="modelannotations:EReferenceModelGenAnnotation" documentation="The contact to which this address belongs. This field is set via Contact class (bidirectional association)." useList="false"/>
         <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation" attributeOverride="">
-          <joinColumn name="FK_CONTACT"/>
+          <joinColumn name="CONTACT_ADDRESSES"/>
         </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
