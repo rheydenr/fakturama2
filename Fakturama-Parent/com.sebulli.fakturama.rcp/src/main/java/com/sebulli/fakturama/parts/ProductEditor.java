@@ -843,8 +843,8 @@ public class ProductEditor extends Editor<Product> {
 		
 		NumberFormat numberFormat = NumberFormat.getNumberInstance();
 		numberFormat.setGroupingUsed(false);
-        UpdateValueStrategy<Object, String> numbertoStringStrategy = UpdateValueStrategy.create(NumberToStringConverter.fromLong(numberFormat , true));
-		UpdateValueStrategy<Object,Long> stringToNumberStrategy = UpdateValueStrategy.create(StringToNumberConverter.toLong(true));
+        UpdateValueStrategy<Object, String> numbertoStringStrategy = UpdateValueStrategy.create(NumberToStringConverter.fromLong(numberFormat , false));
+		UpdateValueStrategy<Object,Long> stringToNumberStrategy = UpdateValueStrategy.create(StringToNumberConverter.toLong(false));
 		bindModelValue(editorProduct, textGtin, Product_.gtin.getName(), 64, stringToNumberStrategy, numbertoStringStrategy);
 
 		bindModelValue(editorProduct, textSupplierItemNumber, Product_.supplierItemNumber.getName(), 64);

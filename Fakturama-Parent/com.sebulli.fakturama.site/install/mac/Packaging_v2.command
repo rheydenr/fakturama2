@@ -24,9 +24,9 @@ DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
 # you should not need to change these
 APP_EXE="${APP_NAME}.app/Contents/MacOS/Fakturama"
 
-VOL_NAME="Installer_${APP_NAME}_${VERSION}"   # volume name will be "Installer_Fakturama_2_0_0”
+VOL_NAME="Installer_Fakturama_macos_x64_${VERSION}"   # volume name will be "Installer_Fakturama_macos_x64_2.0.0”
 DMG_TMP="${VOL_NAME}-temp.dmg"
-DMG_FINAL="${VOL_NAME}.dmg" # final DMG name will be "Installer_Fakturama2_2_0_0.dmg"
+DMG_FINAL="${VOL_NAME}.dmg" # final DMG name will be "Installer_Fakturama_macos_x64_2.0.0.dmg"
 STAGING_DIR="./Install"             # we copy all our stuff into this dir
 
 # Check the background image DPI and convert it if it isn't 72x72
