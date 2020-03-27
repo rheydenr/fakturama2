@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -549,12 +550,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         }
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
         
-        Composite salutationPaneö = new Composite(top, SWT.NONE);
-        GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(salutationPaneö);
-        GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(salutationPaneö);
+        Composite salutationPanel = new Composite(top, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(salutationPanel);
+        GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(salutationPanel);
 
         // Salutation
-        comboSalutationViewer = new ComboViewer(useSalutation ? salutationPaneö : invisible, SWT.BORDER | SWT.READ_ONLY);
+        comboSalutationViewer = new ComboViewer(useSalutation ? salutationPanel : invisible, SWT.BORDER | SWT.READ_ONLY);
         comboSalutationViewer.setContentProvider(new HashMapContentProvider<Integer, String>());
 /*
         allSalutations = itemListTypeDao.findAllSalutations();
@@ -565,9 +566,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         comboSalutationViewer.setInput(getSalutationMap());
         comboSalutationViewer.setLabelProvider(new NumberLabelProvider<Integer, String>(getSalutationMap()));
         GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboSalutationViewer.getControl());
+        setTabOrder(txtCompany, comboSalutationViewer.getControl());
 
         // Title
-        txtTitle = new Text(useTitle ? salutationPaneö : invisible, SWT.BORDER);
+        txtTitle = new Text(useTitle ? salutationPanel : invisible, SWT.BORDER);
         GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).span(useSalutation ? 1 : 2, 1).applyTo(txtTitle);
 
         // First and last name      
@@ -972,6 +974,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(txtNr);
 	}
 
+    @Focus
+    public void setFocus() {
+        txtNr.setFocus();
+    }
+    
 	private void createAddressGroup(Composite invisible, Composite twoPanelLayout) {
 		Composite tabAddress = new Composite(twoPanelLayout, SWT.NONE);
 		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(tabAddress);
@@ -1081,7 +1088,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		});
 		addressTabWidget.setStreet(txtStreet);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtStreet);
-		setTabOrder(txtCompany, txtStreet);
 	      
         final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
         final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
@@ -1226,7 +1232,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 64);
 		bindModelValue(editorContact, txtName, Contact_.name.getName(), 64);
 		bindModelValue(editorContact, txtCompany, Contact_.company.getName(), 64);
-		bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
 		
 		CTabItem[] items = addressTabFolder.getItems();
 		for (int i = 0; i < items.length; i++) {
@@ -1249,6 +1254,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 64);
 		bindModelValue(editorContact, txtWebshopName, Contact_.webshopName.getName(), 64);
 		bindModelValue(editorContact, txtAlias, Contact_.alias.getName(), 64);
+        bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
 
 		bindModelValue(editorContact, comboReliability, Contact_.reliability.getName());
 		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 32);
