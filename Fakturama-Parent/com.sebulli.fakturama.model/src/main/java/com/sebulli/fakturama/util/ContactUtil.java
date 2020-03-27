@@ -280,7 +280,7 @@ public class ContactUtil {
         case 3:
             return msg.commonFieldCompany;
         case 4:
-        	return msg.contactFieldFamilyName;
+        	return msg.contactFieldFamily;
     	default:
         	return "";
         }

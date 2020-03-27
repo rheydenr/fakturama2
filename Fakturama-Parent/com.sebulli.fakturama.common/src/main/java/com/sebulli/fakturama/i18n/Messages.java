@@ -172,7 +172,7 @@ public class Messages {
     public String contactFieldRegisterNumber;
 	public String contactFieldMrName;
 	public String contactFieldMsName;
-	public String contactFieldFamilyName;
+	public String contactFieldFamily;
 	public String contactFieldReliabilityGoodName;
 	public String contactFieldReliabilityMediumName;
 	public String contactFieldReliabilityPoorName;
