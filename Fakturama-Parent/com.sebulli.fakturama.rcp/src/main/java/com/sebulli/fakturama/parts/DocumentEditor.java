@@ -369,7 +369,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (newDocument) {
 			// Check if the document number is the next one
 			if (!document.getBillingType().isLETTER()) {
-				int result = getNumberGenerator().setNextFreeNumberInPrefStore(txtName.getText(), Document_.name.getName());
+				int result = getNumberGenerator().setNextFreeNumberInPrefStore(txtName.getText(), getEditorID());
 
 				// It's not the next free ID
 				if (result == ERROR_NOT_NEXT_ID) {
