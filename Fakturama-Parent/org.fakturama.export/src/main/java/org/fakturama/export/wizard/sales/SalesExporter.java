@@ -84,6 +84,8 @@ public class SalesExporter extends OOCalcExporter {
     
 	@Inject
 	private IEclipseContext context;
+	
+	private ContactUtil contactUtil;
 
 
 	/**
@@ -96,11 +98,8 @@ public class SalesExporter extends OOCalcExporter {
 	 */
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
-		if(ctx.get(Constants.PARAM_START_DATE) != null) {
-			startDate = (GregorianCalendar) ctx.get(Constants.PARAM_START_DATE);
-		} else {
-			startDate = null;
-		}
+	    contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
+		startDate = ctx.get(Constants.PARAM_START_DATE) != null ? (GregorianCalendar) ctx.get(Constants.PARAM_START_DATE) : null;
 		
 		if(ctx.get(Constants.PARAM_END_DATE) != null) {
 			endDate = (GregorianCalendar) ctx.get(Constants.PARAM_END_DATE);
@@ -117,7 +116,6 @@ public class SalesExporter extends OOCalcExporter {
 	 * 			True, if the export was successful
 	 */
 	public boolean export(boolean showZeroVatColumn, boolean paid) {
-		ContactUtil contactUtil = new ContactUtil();
 
 		// Try to generate a spreadsheet
 		if (!createSpreadSheet())

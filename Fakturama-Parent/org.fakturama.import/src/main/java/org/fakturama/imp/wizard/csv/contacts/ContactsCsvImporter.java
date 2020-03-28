@@ -301,7 +301,7 @@ public class ContactsCsvImporter {
 					if(payment != null) {
 						testContact.setPayment(payment);
 					}
-					testContact.setReliability(ReliabilityType.getByName(prop.getProperty("reliability")));
+					testContact.setReliability(ReliabilityType.getByName(prop.getProperty("reliability").toUpperCase()));
 
 					testContact.setWebsite(prop.getProperty("website"));
 					testContact.setSupplierNumber(prop.getProperty("supplier_nr"));

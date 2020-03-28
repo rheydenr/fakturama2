@@ -3125,6 +3125,7 @@ public class DocumentEditor extends Editor<Document> {
                     // clear SelectionService so that following calls don't get confused (esp. CallEditor)
                     // Important: Use the correct SelectionService from WorkbenchContext!
                     context.getParent().get(ESelectionService.class).setSelection(null);
+                    context.get(ESelectionService.class).setSelection(null);
 	                params.put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
 	                ParameterizedCommand pCmdCopy = commandService.createCommand(commandId, params);
 	                if (handlerService.canExecute(pCmdCopy)) {
