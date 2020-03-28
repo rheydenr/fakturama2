@@ -33,7 +33,7 @@ public class MultiChoiceWidgetObservableList<T> extends AbstractObservableList<T
 		this(customWidget, elementType, Realm.getDefault());
 	}
 
-	public MultiChoiceWidgetObservableList(MultiChoice<T> customWidget, Object elementType, Realm realm) {
+	private MultiChoiceWidgetObservableList(MultiChoice<T> customWidget, Object elementType, Realm realm) {
 		super(realm);
 		this.multiChoiceWidget = customWidget;
 		this.elementType = elementType;
@@ -64,24 +64,25 @@ public class MultiChoiceWidgetObservableList<T> extends AbstractObservableList<T
 	
 	
 	
-	@Override
-	public void add(int index, T element) {
-		multiChoiceWidget.select(element);
-		currentSelection.add(element);
-	}
+    @Override
+    public void add(int index, T element) {
+        // this is only while initializing, otherwise the selection is set via update handler
+        if (!multiChoiceWidget.isDisposed()) {
+            multiChoiceWidget.select(element);
+            currentSelection = multiChoiceWidget.getSelection();
+        }
+    }
 	
 	@Override
 	public boolean remove(Object o) {
-//		multiChoiceWidget.deselect((T) o);
-		currentSelection.remove(o);
+        // method have to be overwritten since super class throws an UnsupportedOperationException
 		return true;
 	}
 	
 	@Override
 	public T remove(int index) {
-		T retval = multiChoiceWidget.getItem(index);
-		multiChoiceWidget.deselectAt(index);
-		return retval;
+	    // method have to be overwritten since super class throws an UnsupportedOperationException
+	    return null;
 	}
 	
 
