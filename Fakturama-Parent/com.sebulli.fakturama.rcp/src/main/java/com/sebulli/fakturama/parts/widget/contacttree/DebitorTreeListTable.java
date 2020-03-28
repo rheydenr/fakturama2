@@ -1,8 +1,12 @@
 package com.sebulli.fakturama.parts.widget.contacttree;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorAddress;
@@ -30,6 +34,10 @@ public class DebitorTreeListTable extends ContactTreeListTable<DebitorAddress> {
     @Override
     public String getTableId() {
         return ID;
+    }
+    @PostConstruct
+    public Control createPartControl(Composite parent, MPart listTablePart) {
+        return super.createPartControl(parent, listTablePart);
     }
     
     @Override

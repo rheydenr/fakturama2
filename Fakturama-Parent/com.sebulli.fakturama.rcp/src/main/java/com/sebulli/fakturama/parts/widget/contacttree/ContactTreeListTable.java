@@ -38,7 +38,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -334,7 +333,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
                 //get the row position for the click in the NatTable
                 int rowPos = natTable.getRowPositionByY(event.y);
                 //transform the NatTable row position to the row position of the body layer stack
-                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack);
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack.getSelectionLayer());
                 selectedObject = ((ListDataProvider<K>) bodyLayerStack.getBodyDataProvider()).getRowObject(bodyRowPos);
                 // Call the corresponding editor. The editor is set
                 // in the variable "editor", which is used as a parameter
@@ -397,15 +396,16 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 //			@Override
 //			public void selectionChanged(SelectionChangedEvent event) {
 //				System.out.println("Selection changed:");
-//
+//selectionService.getSelection()
 //		IStructuredSelection structuredSelection = event.getStructuredSelection();
-//				@SuppressWarnings("rawtypes")
-//				Iterator it = selection.iterator();
-//				while (it.hasNext()) {
-//					System.out.println("  " + it.next());
-//				}
+//		selectedObject = (K) structuredSelection.getFirstElement();
+////				@SuppressWarnings("rawtypes")
+////				Iterator it = selection.iterator();
+////				while (it.hasNext()) {
+////					System.out.println("  " + it.next());
+////				}
 //			}
-//
+
 //		});
 
         // Change the default sort key bindings. Note that 'auto configure' was turned off

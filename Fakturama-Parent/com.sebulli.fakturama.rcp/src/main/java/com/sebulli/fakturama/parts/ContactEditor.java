@@ -80,7 +80,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -874,19 +873,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		comboReliability.setLabelProvider(new LabelProvider() {
 		    @Override
 		    public String getText(Object element) {
-		        ReliabilityType type = (ReliabilityType)element;
-		        switch (type) {
-                case NONE:
-                    return "---";
-                case POOR:
-                    return msg.contactFieldReliabilityPoorName;
-                case MEDIUM:
-                    return msg.contactFieldReliabilityMediumName;
-                case GOOD:
-                    return msg.contactFieldReliabilityGoodName;
-                default:
-                    return null;
-                }
+		        return contactUtil.getReliabilityString((ReliabilityType)element);
 		    }
 		});
 
@@ -942,8 +929,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// The note
 //		String note = DataUtils.makeOSLineFeeds(editorContact.getNote());
-		textNote = new Text(tabNote, SWT.BORDER | SWT.MULTI);
-
+		textNote = new Text(tabNote, SWT.BORDER | SWT.MULTI |SWT.WRAP);
+		
 		// If the note is not empty, display it,
 		// when opening the editor.
 		if (useNote && StringUtils.isNotEmpty(editorContact.getNote()))
