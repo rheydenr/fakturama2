@@ -394,6 +394,7 @@ public class CoolbarViewPart {
 					// clear SelectionService so that following calls don't get confused (esp. CallEditor)
 					// Important: Use the correct SelectionService from WorkbenchContext!
 					ctx.getParent().get(ESelectionService.class).setSelection(null);
+					ctx.get(ESelectionService.class).setSelection(null);
 					handlerService.executeHandler(pCmd, staticContext);
 			} else {
 				MessageDialog.openInformation(toolBar.getShell(),
