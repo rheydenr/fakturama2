@@ -316,8 +316,9 @@ public class ContactsCsvImporter {
 					}
 					// Add the contact to the data base
 					// Update the modified contact data
+					long currentId = testContact.getId();
 					contactsDAO.update(testContact);
-					if (DateUtils.isSameDay(testContact.getDateAdded(), Calendar.getInstance().getTime())) {
+                    if (currentId == 0) {
 						importedContacts++;
 					} else if (updateExisting) {
 						// Update data

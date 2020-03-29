@@ -99,6 +99,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
@@ -928,21 +929,23 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Controls in tab "Note"
 
 		// The note
-//		String note = DataUtils.makeOSLineFeeds(editorContact.getNote());
-		textNote = new Text(tabNote, SWT.BORDER | SWT.MULTI |SWT.WRAP);
-		
-		// If the note is not empty, display it,
-		// when opening the editor.
-		if (useNote && StringUtils.isNotEmpty(editorContact.getNote()))
-			tabFolder.setSelection(item5);
-
-        bindModel();
+//		String note = DataUtils.getInstance().makeOSLineFeeds(editorContact.getNote());
+		textNote = new Text(tabNote, SWT.BORDER | SWT.MULTI |SWT.WRAP | SWT.V_SCROLL | SWT.H_SCROLL);
+        textNote.setData("Notiz");
         
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
         scrollcomposite.setContent(top);
         scrollcomposite.setMinSize(top.computeSize(SWT.DEFAULT, SWT.DEFAULT));   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
         scrollcomposite.setExpandHorizontal(true);
         scrollcomposite.setExpandVertical(true);
+        bindModel();
+        
+		// If the note is not empty, display it,
+		// when opening the editor.
+        if (useNote && StringUtils.isNotEmpty(editorContact.getNote())) {
+			tabFolder.setSelection(item5);
+			textNote.setFocus();
+		}
 	}
 
     private void createCustomerNumberWidget(Composite headInfo) {
@@ -963,7 +966,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
     @Focus
     public void setFocus() {
-        txtNr.setFocus();
+        if (useNote && StringUtils.isNotEmpty(editorContact.getNote())) {
+            textNote.setFocus();
+        } else {
+            txtNr.setFocus();
+        }
     }
     
 	private void createAddressGroup(Composite invisible, Composite twoPanelLayout) {
