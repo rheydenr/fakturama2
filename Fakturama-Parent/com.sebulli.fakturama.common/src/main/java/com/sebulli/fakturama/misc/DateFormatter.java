@@ -14,7 +14,6 @@
 package com.sebulli.fakturama.misc;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -22,6 +21,8 @@ import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import org.apache.commons.lang3.time.DateUtils;
 
 import com.ibm.icu.text.DateFormat;
 
@@ -178,25 +179,12 @@ public class DateFormatter implements IDateFormatterService {
 		calendar.clear();
 
 		// try to parse the input date string
+		// use also localized formats
 		try {
-		    java.text.DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			calendar.setTime(formatter.parse(date));
+		    Date d = DateUtils.parseDate(date, "yyyy-MM-dd","yyyy/MM/dd", "dd.MM.yyyy","MM/dd/yyyy");
+			calendar.setTime(d);
 		} catch (ParseException e) {
-
-			// use also localized formats
-			try {
-				java.text.DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-				calendar.setTime(formatter.parse(date));
-			} catch (ParseException e2) {
-
-				// use also localized formats
-				try {
-				    java.text.DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-					calendar.setTime(formatter.parse(date));
-				} catch (ParseException e3) {
 					// Logger.logError(e3, "Error parsing Date:" + date);
-				}
-			}
 		}
 		return calendar;
 	}
