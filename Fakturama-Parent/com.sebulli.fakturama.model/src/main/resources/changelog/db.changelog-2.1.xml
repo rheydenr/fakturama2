@@ -138,13 +138,13 @@ TODO:
 			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
 			<column name="DESCRIPTION" type="CLOB"/>
 			<column name="EMAIL" type="VARCHAR(128)"/>
-			<column name="FAX" type="VARCHAR(128)"/>
+			<column name="FAX" type="VARCHAR(64)"/>
 			<column name="FIRSTNAME" type="VARCHAR(128)"/>
 			<column name="GENDER" type="INT"/>
 			<column name="GLN" type="BIGINT"/>
 			<column name="MANDATEREFERENCE" type="VARCHAR(128)"/>
 			<column name="MANUALADDRESS" type="CLOB"/>
-			<column name="MOBILE" type="VARCHAR(128)"/>
+			<column name="MOBILE" type="VARCHAR(64)"/>
 			<column name="MODIFIED" type="date"/>
 			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
@@ -221,7 +221,7 @@ TODO:
 			<column name="DTYPE" type="VARCHAR(31)"/>
 			<column name="BIRTHDAY" type="date"/>
 			<column name="COMPANY" type="VARCHAR(255)"/>
-			<column name="CUSTOMERNUMBER" type="VARCHAR(255)"/>
+			<column name="CUSTOMERNUMBER" type="VARCHAR(32)"/>
 			<column name="DATEADDED" type="date"/>
 			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
 			<column name="DISCOUNT" type="DOUBLE"/>
@@ -232,9 +232,9 @@ TODO:
 			<column name="MODIFIED" type="date"/>
 			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
-			<column name="NOTE" type="LONGTEXT"/>
-			<column name="REGISTERNUMBER" type="VARCHAR(255)" />
-			<column name="RELIABILITY" type="VARCHAR(128)"/>
+			<column name="NOTE" type="CLOB"/>
+			<column name="REGISTERNUMBER" type="VARCHAR(128)" />
+			<column name="RELIABILITY" type="VARCHAR(64)"/>
 			<column name="SUPPLIERNUMBER" type="VARCHAR(32)"/>
 			<column name="T_ALIAS" type="varchar(255)" />
 			<column name="TITLE" type="VARCHAR(32)"/>
@@ -242,9 +242,9 @@ TODO:
 			<column defaultValueBoolean="false" name="USESALESEQUALIZATIONTAX" type="BOOLEAN"/>
 			<column name="VALIDFROM" type="date"/>
 			<column name="VALIDTO" type="date"/>
-			<column name="VATNUMBER" type="VARCHAR(255)"/>
+			<column name="VATNUMBER" type="VARCHAR(64)"/>
 			<column defaultValueBoolean="false" name="VATNUMBERVALID" type="BOOLEAN"/>
-			<column name="WEBSHOPNAME" type="VARCHAR(255)"/>
+			<column name="WEBSHOPNAME" type="VARCHAR(128)"/>
 			<column name="WEBSITE" type="VARCHAR(255)"/>
 			<column name="FK_BANKACCOUNT" type="BIGINT"/>
 			<column name="FK_CATEGORY" type="BIGINT"/>
@@ -258,15 +258,15 @@ TODO:
 			</column>
 			<column name="ADDITIONALPHONE" type="VARCHAR(64)" />
 			<column name="ADDRESSADDON" type="VARCHAR(255)" />
-			<column name="CITY" type="VARCHAR(255)"/>
-			<column name="CITYADDON" type="VARCHAR(255)"/>
-			<column name="COUNTRYCODE" type="VARCHAR(255)"/>
+			<column name="CITY" type="VARCHAR(128)"/>
+			<column name="CITYADDON" type="VARCHAR(128)"/>
+			<column name="COUNTRYCODE" type="VARCHAR(8)"/>
 			<column name="DATEADDED" type="date"/>
 			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
 			<column name="EMAIL" type="VARCHAR(255)"/>
-			<column name="FAX" type="VARCHAR(255)"/>
-			<column name="LOCALCONSULTANT" type="VARCHAR(255)"/>
-			<column name="MOBILE" type="VARCHAR(255)"/>
+			<column name="FAX" type="VARCHAR(64)"/>
+			<column name="LOCALCONSULTANT" type="VARCHAR(128)"/>
+			<column name="MOBILE" type="VARCHAR(64)"/>
 			<column name="MODIFIED" type="date"/>
 			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
@@ -282,58 +282,52 @@ TODO:
 			<column name="BILLING_ADDRESS_ID" type="BIGINT">
 				<constraints primaryKey="true" />
 			</column>
-			<column name="BILLING_ADDRESS_CITY" type="VARCHAR(255)" />
-			<column name="BILLING_ADDRESS_CITYADDON" type="VARCHAR(255)" />
-			<column name="BILLING_ADDRESS_COUNTRYCODE" type="VARCHAR(255)" />
+			<column name="BILLING_ADDRESS_CITY" type="VARCHAR(128)" />
+			<column name="BILLING_ADDRESS_CITYADDON" type="VARCHAR(128)" />
+			<column name="BILLING_ADDRESS_COUNTRYCODE" type="VARCHAR(8)" />
 			<column name="BILLING_ADDRESS_DATEADDED" type="DATE" />
-			<column name="BILLING_ADDRESS_DELETED"
-				defaultValueBoolean="false" type="BOOLEAN" />
-			<column name="BILLING_ADDRESS_MANUALADDRESS"
-				type="VARCHAR(4096)" />
+			<column name="BILLING_ADDRESS_DELETED" defaultValueBoolean="false" type="BOOLEAN" />
+			<column name="BILLING_ADDRESS_MANUALADDRESS" type="CLOB" />
 			<column name="BILLING_ADDRESS_MODIFIED" type="DATE" />
-			<column name="BILLING_ADDRESS_MODIFIEDBY" type="VARCHAR(255)" />
+			<column name="BILLING_ADDRESS_MODIFIEDBY" type="VARCHAR(32)" />
 			<column name="BILLING_ADDRESS_NAME" type="VARCHAR(255)" />
 			<column name="BILLING_ADDRESS_STREET" type="VARCHAR(255)" />
 			<column name="BILLING_ADDRESS_VALIDFROM" type="DATE" />
 			<column name="BILLING_ADDRESS_VALIDTO" type="DATE" />
-			<column name="BILLING_ADDRESS_ZIP" type="VARCHAR(255)" />
+			<column name="BILLING_ADDRESS_ZIP" type="VARCHAR(16)" />
 			<column name="BILLING_CONTACT_ID" type="BIGINT NOT NULL" />
 			<column name="BILLING_CONTACT_DTYPE" type="VARCHAR(31)" />
 			<column name="BILLING_CONTACT_BIRTHDAY" type="DATE" />
 			<column name="BILLING_CONTACT_COMPANY" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_CONTACTTYPE" type="INTEGER" />
-			<column name="BILLING_CONTACT_CUSTOMERNUMBER"
-				type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_CUSTOMERNUMBER" type="VARCHAR(32)" />
 			<column name="BILLING_CONTACT_DATEADDED" type="DATE" />
-			<column name="BILLING_CONTACT_DELETED"
-				defaultValueBoolean="false" type="BOOLEAN" />
+			<column name="BILLING_CONTACT_DELETED" defaultValueBoolean="false" type="BOOLEAN" />
 			<column name="BILLING_CONTACT_DISCOUNT" type="DOUBLE" />
 			<column name="BILLING_CONTACT_EMAIL" type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_FAX" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_FAX" type="VARCHAR(64)" />
 			<column name="BILLING_CONTACT_FIRSTNAME" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_GENDER" type="INTEGER" />
 			<column name="BILLING_CONTACT_GLN" type="BIGINT" />
-			<column name="BILLING_CONTACT_MANDATEREFERENCE"
-				type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_MOBILE" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_MANDATEREFERENCE" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_MOBILE" type="VARCHAR(64)" />
 			<column name="BILLING_CONTACT_MODIFIED" type="DATE" />
-			<column name="BILLING_CONTACT_MODIFIEDBY" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_MODIFIEDBY" type="VARCHAR(32)" />
 			<column name="BILLING_CONTACT_NAME" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_NOTE" type="CLOB" />
-			<column name="BILLING_CONTACT_PHONE" type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_RELIABILITY" type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_SUPPLIERNUMBER"
-				type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_TITLE" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_PHONE" type="VARCHAR(64)" />
+			<column name="BILLING_CONTACT_RELIABILITY" type="VARCHAR(64)" />
+			<column name="BILLING_CONTACT_SUPPLIERNUMBER" type="VARCHAR(32)" />
+			<column name="BILLING_CONTACT_TITLE" type="VARCHAR(32)" />
 			<column name="BILLING_CONTACT_USENETGROSS" type="SMALLINT" />
 			<column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX"
 				defaultValueBoolean="false" type="BOOLEAN" />
 			<column name="BILLING_CONTACT_VALIDFROM" type="DATE" />
 			<column name="BILLING_CONTACT_VALIDTO" type="DATE" />
-			<column name="BILLING_CONTACT_VATNUMBER" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_VATNUMBER" type="VARCHAR(64)" />
 			<column name="BILLING_CONTACT_VATNUMBERVALID"
 				defaultValueBoolean="false" type="BOOLEAN" />
-			<column name="BILLING_CONTACT_WEBSHOPNAME" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_WEBSHOPNAME" type="VARCHAR(128)" />
 			<column name="BILLING_CONTACT_WEBSITE" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_FK_ADDRESS" type="BIGINT" />
 			<column name="BILLING_CONTACT_FK_ALTERNATECONTACT" type="BIGINT" />
@@ -341,21 +335,20 @@ TODO:
 			<column name="BILLING_CONTACT_FK_CATEGORY" type="BIGINT" />
 			<column name="BILLING_CONTACT_FK_PAYMENT" type="BIGINT" />
 			<column name="DELIVERY_ADDRESS_ID" type="BIGINT" />
-			<column name="DELIVERY_ADDRESS_CITY" type="VARCHAR(255)" />
-			<column name="DELIVERY_ADDRESS_CITYADDON" type="VARCHAR(255)" />
-			<column name="DELIVERY_ADDRESS_COUNTRYCODE" type="VARCHAR(255)" />
+			<column name="DELIVERY_ADDRESS_CITY" type="VARCHAR(128)" />
+			<column name="DELIVERY_ADDRESS_CITYADDON" type="VARCHAR(128)" />
+			<column name="DELIVERY_ADDRESS_COUNTRYCODE" type="VARCHAR(8)" />
 			<column name="DELIVERY_ADDRESS_DATEADDED" type="DATE" />
 			<column name="DELIVERY_ADDRESS_DELETED"
 				defaultValueBoolean="false" type="BOOLEAN" />
-			<column name="DELIVERY_ADDRESS_MANUALADDRESS"
-				type="VARCHAR(4096)" />
+			<column name="DELIVERY_ADDRESS_MANUALADDRESS" type="CLOB" />
 			<column name="DELIVERY_ADDRESS_MODIFIED" type="DATE" />
-			<column name="DELIVERY_ADDRESS_MODIFIEDBY" type="VARCHAR(255)" />
+			<column name="DELIVERY_ADDRESS_MODIFIEDBY" type="VARCHAR(32)" />
 			<column name="DELIVERY_ADDRESS_NAME" type="VARCHAR(255)" />
 			<column name="DELIVERY_ADDRESS_STREET" type="VARCHAR(255)" />
 			<column name="DELIVERY_ADDRESS_VALIDFROM" type="DATE" />
 			<column name="DELIVERY_ADDRESS_VALIDTO" type="DATE" />
-			<column name="DELIVERY_ADDRESS_ZIP" type="VARCHAR(255)" />
+			<column name="DELIVERY_ADDRESS_ZIP" type="VARCHAR(16)" />
 			<column name="DELIVERY_CONTACT_ID" type="BIGINT" />
 			<column name="DELIVERY_CONTACT_DTYPE" type="VARCHAR(31)" />
 			<column name="DELIVERY_CONTACT_BIRTHDAY" type="DATE" />
@@ -369,13 +362,13 @@ TODO:
 			<column name="DELIVERY_CONTACT_GENDER" type="INTEGER" />
 			<column name="DELIVERY_CONTACT_GLN" type="BIGINT" />
 			<column name="DELIVERY_CONTACT_MODIFIED" type="DATE" />
-			<column name="DELIVERY_CONTACT_MODIFIEDBY" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_MODIFIEDBY" type="VARCHAR(32)" />
 			<column name="DELIVERY_CONTACT_NAME" type="VARCHAR(255)" />
 			<column name="DELIVERY_CONTACT_NOTE" type="CLOB" />
-			<column name="DELIVERY_CONTACT_TITLE" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_TITLE" type="VARCHAR(32)" />
 			<column name="DELIVERY_CONTACT_VALIDFROM" type="DATE" />
 			<column name="DELIVERY_CONTACT_VALIDTO" type="DATE" />
-			<column name="DELIVERY_CONTACT_WEBSHOPNAME" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_WEBSHOPNAME" type="VARCHAR(128)" />
 			<column name="DELIVERY_CONTACT_WEBSITE" type="VARCHAR(255)" />
 			<column name="DELIVERY_CONTACT_FK_ADDRESS" type="BIGINT" />
 		</createTable>		
