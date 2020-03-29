@@ -120,7 +120,7 @@ TODO:
 	<comment>Create new tables.</comment>
 		<createTable tableName="FKT_ADDRESS_CONTACTTYPES">
 			<column name="ADDRESS_CONTACTTYPES" type="BIGINT"/>
-			<column name="T_ELEMENT" type="VARCHAR(255)"/>
+			<column name="T_ELEMENT" type="VARCHAR(16)"/>
 		</createTable>
 		
 		<createTable tableName="FKT_DOCUMENTRECEIVER">
@@ -132,33 +132,33 @@ TODO:
 			<column name="CITYADDON" type="VARCHAR(255)"/>
 			<column name="COMPANY" type="VARCHAR(255)"/>
 			<column name="CONSULTANT" type="VARCHAR(255)"/>
-			<column name="COUNTRYCODE" type="VARCHAR(255)"/>
-			<column name="CUSTOMERNUMBER" type="VARCHAR(255)"/>
+			<column name="COUNTRYCODE" type="VARCHAR(8)"/>
+			<column name="CUSTOMERNUMBER" type="VARCHAR(32)"/>
 			<column name="DATEADDED" type="date"/>
 			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
-			<column name="DESCRIPTION" type="LONGTEXT"/>
-			<column name="EMAIL" type="VARCHAR(255)"/>
-			<column name="FAX" type="VARCHAR(255)"/>
-			<column name="FIRSTNAME" type="VARCHAR(255)"/>
+			<column name="DESCRIPTION" type="CLOB"/>
+			<column name="EMAIL" type="VARCHAR(128)"/>
+			<column name="FAX" type="VARCHAR(128)"/>
+			<column name="FIRSTNAME" type="VARCHAR(128)"/>
 			<column name="GENDER" type="INT"/>
 			<column name="GLN" type="BIGINT"/>
-			<column name="MANDATEREFERENCE" type="VARCHAR(255)"/>
-			<column name="MANUALADDRESS" type="VARCHAR(255)"/>
-			<column name="MOBILE" type="VARCHAR(255)"/>
+			<column name="MANDATEREFERENCE" type="VARCHAR(128)"/>
+			<column name="MANUALADDRESS" type="CLOB"/>
+			<column name="MOBILE" type="VARCHAR(128)"/>
 			<column name="MODIFIED" type="date"/>
-			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
 			<column name="ORIGINADDRESSID" type="BIGINT"/>
 			<column name="ORIGINCONTACTID" type="BIGINT"/>
-			<column name="PHONE" type="VARCHAR(255)"/>
+			<column name="PHONE" type="VARCHAR(64)"/>
 			<column name="STREET" type="VARCHAR(255)"/>
-			<column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
+			<column name="SUPPLIERNUMBER" type="VARCHAR(32)"/>
 			<column name="T_ALIAS" type="varchar(255)" />
-			<column name="TITLE" type="VARCHAR(255)"/>
+			<column name="TITLE" type="VARCHAR(32)"/>
 			<column name="VALIDFROM" type="date"/>
 			<column name="VALIDTO" type="date"/>
-			<column name="VATNUMBER" type="VARCHAR(255)"/>
-			<column name="ZIP" type="VARCHAR(255)"/>
+			<column name="VATNUMBER" type="VARCHAR(32)"/>
+			<column name="ZIP" type="VARCHAR(16)"/>
 			<column name="FK_DOCUMENT" type="BIGINT"/>
 		</createTable>
 	</changeSet>
@@ -169,7 +169,7 @@ TODO:
 			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
 				<constraints primaryKey="true"/>
 			</column>
-			<column name="DTYPE" type="VARCHAR(31)"/>
+			<column name="DTYPE" type="VARCHAR(32)"/>
 			<column name="ADDRESSFIRSTLINE" type="VARCHAR(255)"/>
 			<column name="BILLINGTYPE" type="INT"/>
 			<column name="CUSTOMERREF" type="VARCHAR(255)"/>
@@ -179,11 +179,11 @@ TODO:
 			<column name="DOCUMENTDATE" type="date"/>
 			<column name="DUEDAYS" type="INT"/>
 			<column name="ITEMSREBATE" type="DOUBLE"/>
-			<column name="MESSAGE" type="LONGTEXT"/>
-			<column name="MESSAGE2" type="LONGTEXT"/>
-			<column name="MESSAGE3" type="LONGTEXT"/>
+			<column name="MESSAGE" type="CLOB"/>
+			<column name="MESSAGE2" type="CLOB"/>
+			<column name="MESSAGE3" type="CLOB"/>
 			<column name="MODIFIED" type="date"/>
-			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
 			<column name="NETGROSS" type="INT"/>
 			<column name="ODTPATH" type="VARCHAR(255)"/>
@@ -205,7 +205,7 @@ TODO:
 			<column name="VESTINGPERIODEND" type="date"/>
 			<column name="VESTINGPERIODSTART" type="date"/>
 			<column name="WEBSHOPDATE" type="date"/>
-			<column name="WEBSHOPID" type="VARCHAR(255)"/>
+			<column name="WEBSHOPID" type="VARCHAR(32)"/>
 			<column name="FK_INDIVIDUALINFO" type="BIGINT"/>
 			<column name="DOCUMENT_INVOICEREFERENCE" type="BIGINT"/>
 			<column name="FK_NOVATREF" type="BIGINT"/>
@@ -228,16 +228,16 @@ TODO:
 			<column name="FIRSTNAME" type="VARCHAR(255)"/>
 			<column name="GENDER" type="INT"/>
 			<column name="GLN" type="BIGINT"/>
-			<column name="MANDATEREFERENCE" type="VARCHAR(255)"/>
+			<column name="MANDATEREFERENCE" type="VARCHAR(128)"/>
 			<column name="MODIFIED" type="date"/>
-			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
 			<column name="NOTE" type="LONGTEXT"/>
 			<column name="REGISTERNUMBER" type="VARCHAR(255)" />
-			<column name="RELIABILITY" type="VARCHAR(255)"/>
-			<column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
+			<column name="RELIABILITY" type="VARCHAR(128)"/>
+			<column name="SUPPLIERNUMBER" type="VARCHAR(32)"/>
 			<column name="T_ALIAS" type="varchar(255)" />
-			<column name="TITLE" type="VARCHAR(255)"/>
+			<column name="TITLE" type="VARCHAR(32)"/>
 			<column name="USENETGROSS" type="SMALLINT"/>
 			<column defaultValueBoolean="false" name="USESALESEQUALIZATIONTAX" type="BOOLEAN"/>
 			<column name="VALIDFROM" type="date"/>
@@ -256,7 +256,7 @@ TODO:
 			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
 				<constraints primaryKey="true"/>
 			</column>
-			<column name="ADDITIONALPHONE" type="VARCHAR(255)" />
+			<column name="ADDITIONALPHONE" type="VARCHAR(64)" />
 			<column name="ADDRESSADDON" type="VARCHAR(255)" />
 			<column name="CITY" type="VARCHAR(255)"/>
 			<column name="CITYADDON" type="VARCHAR(255)"/>
@@ -268,13 +268,13 @@ TODO:
 			<column name="LOCALCONSULTANT" type="VARCHAR(255)"/>
 			<column name="MOBILE" type="VARCHAR(255)"/>
 			<column name="MODIFIED" type="date"/>
-			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
-			<column name="PHONE" type="VARCHAR(255)"/>
+			<column name="PHONE" type="VARCHAR(64)"/>
 			<column name="STREET" type="VARCHAR(255)"/>
 			<column name="VALIDFROM" type="date"/>
 			<column name="VALIDTO" type="date"/>
-			<column name="ZIP" type="VARCHAR(255)"/>
+			<column name="ZIP" type="VARCHAR(16)"/>
 			<column name="CONTACT_ADDRESSES" type="BIGINT"/>
 		</createTable>
 		

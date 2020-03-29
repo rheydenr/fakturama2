@@ -926,18 +926,18 @@
     </changeSet>
     
     <!-- fix column types -->
-    <changeSet author="rheydenr (generated)" id="20180104-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<modifyDataType tableName="FKT_CONTACT" columnName="NOTE" newDataType="LONGTEXT"/>
-		<modifyDataType tableName="FKT_PAYMENT" columnName="DEPOSITTEXT" newDataType="VARCHAR(4096)"/>
-		<modifyDataType tableName="FKT_PAYMENT" columnName="DESCRIPTION" newDataType="VARCHAR(8192)"/>
-		<modifyDataType tableName="FKT_PAYMENT" columnName="PAIDTEXT" newDataType="VARCHAR(4096)"/>
-		<modifyDataType tableName="FKT_PAYMENT" columnName="UNPAIDTEXT" newDataType="VARCHAR(4096)"/>
-		<modifyDataType tableName="FKT_ADDRESS" columnName="MANUALADDRESS" newDataType="VARCHAR(4096)"/>
-		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="NOVATDESCRIPTION" newDataType="VARCHAR(2048)"/>
-		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="PAYMENTDESCRIPTION" newDataType="VARCHAR(2048)"/>
-		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="PAYMENTTEXT" newDataType="VARCHAR(4096)"/>
-		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGDESCRIPTION" newDataType="VARCHAR(2048)"/>
-		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGVATDESCRIPTION" newDataType="VARCHAR(2048)"/>
+    <changeSet author="rheydenr (generated)" id="20180104-010" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<modifyDataType tableName="FKT_CONTACT" columnName="NOTE" newDataType="CLOB"/>
+		<modifyDataType tableName="FKT_PAYMENT" columnName="DEPOSITTEXT" newDataType="CLOB"/>
+		<modifyDataType tableName="FKT_PAYMENT" columnName="DESCRIPTION" newDataType="CLOB"/>
+		<modifyDataType tableName="FKT_PAYMENT" columnName="PAIDTEXT" newDataType="CLOB"/>
+		<modifyDataType tableName="FKT_PAYMENT" columnName="UNPAIDTEXT" newDataType="CLOB"/>
+		<!-- <modifyDataType tableName="FKT_ADDRESS" columnName="MANUALADDRESS" newDataType="CLOB"/> -->
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="NOVATDESCRIPTION" newDataType="CLOB"/>
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="PAYMENTDESCRIPTION" newDataType="CLOB"/>
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="PAYMENTTEXT" newDataType="CLOB"/>
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGDESCRIPTION" newDataType="CLOB"/>
+		<modifyDataType tableName="FKT_INDIVIDUALDOCUMENTINFO" columnName="SHIPPINGVATDESCRIPTION" newDataType="CLOB"/>
     </changeSet>
     
     <changeSet author="rheydenr (generated)" id="20180122-001" objectQuotingStrategy="QUOTE_ALL_OBJECTS">
