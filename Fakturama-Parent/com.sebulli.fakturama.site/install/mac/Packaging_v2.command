@@ -16,7 +16,6 @@ tar -xzvf ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/p
 # set up your app name, version number, and background image file name
 APP_NAME="Fakturama2"
 
-# mv Fakturama2.app/Contents/MacOS/Fakturama Fakturama2.app/Contents/MacOS/Fakturama2
 
 DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
 # cp ../${DMG_BACKGROUND_IMG} .
@@ -146,4 +145,8 @@ rm -rf "${STAGING_DIR}"
 rm -rf "${APP_NAME}.app"
 echo 'Done.'
 
+echo 'moving installer (tar.gz) to installer directory'
+mv ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-linux.gtk.x86_64.tar.gz ../install/Installer_Fakturama_linux_x64_${VERSION}.tar.gz
+mv "${DMG_FINAL}" ../install
+zip -m -o Installer_Fakturama_windows_x64_${VERSION}.zip Installer_Fakturama_windows_x64_${VERSION}.exe
 exit
