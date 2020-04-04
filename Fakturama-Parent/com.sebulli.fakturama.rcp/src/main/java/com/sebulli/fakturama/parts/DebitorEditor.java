@@ -28,7 +28,6 @@ import org.osgi.service.event.Event;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Contact_;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;

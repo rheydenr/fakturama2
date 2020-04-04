@@ -99,7 +99,6 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
@@ -1223,9 +1222,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtNr, Contact_.customerNumber.getName(), 32);
 		bindModelValue(editorContact, comboSalutationViewer, Contact_.gender.getName());
 		bindModelValue(editorContact, txtTitle, Contact_.title.getName(), 32);
-		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 64);
-		bindModelValue(editorContact, txtName, Contact_.name.getName(), 64);
-		bindModelValue(editorContact, txtCompany, Contact_.company.getName(), 64);
+		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 255);
+		bindModelValue(editorContact, txtName, Contact_.name.getName(), 255);
+		bindModelValue(editorContact, txtCompany, Contact_.company.getName(), 255);
 		
 		CTabItem[] items = addressTabFolder.getItems();
 		for (int i = 0; i < items.length; i++) {
@@ -1233,30 +1232,30 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			bindAddressWidgetForIndex(addressTabItem, i);
 		}
 		
-		bindModelValue(editorContact, txtAccountHolder, Contact_.bankAccount.getName() +"." +BankAccount_.accountHolder.getName(), 64);
+		bindModelValue(editorContact, txtAccountHolder, Contact_.bankAccount.getName() +"." +BankAccount_.accountHolder.getName(), 255);
 		bindModelValue(editorContact, txtAccount, Contact_.bankAccount.getName() +"." +BankAccount_.name.getName(), 32);
 		bindModelValue(editorContact, txtBankCode, Contact_.bankAccount.getName() +"." +BankAccount_.bankCode.getName(), 32);
 		bindModelValue(editorContact, txtBankName, Contact_.bankAccount.getName() +"." +BankAccount_.bankName.getName(), 64);
-		bindModelValue(editorContact, txtIBAN, Contact_.bankAccount.getName() +"." +BankAccount_.iban.getName(), 32);
-		bindModelValue(editorContact, txtBIC, Contact_.bankAccount.getName() +"." +BankAccount_.bic.getName(), 32);
-        bindModelValue(editorContact,txtMandatRef, Contact_.mandateReference.getName(), 32);
+		bindModelValue(editorContact, txtIBAN, Contact_.bankAccount.getName() +"." +BankAccount_.iban.getName(), 255);
+		bindModelValue(editorContact, txtBIC, Contact_.bankAccount.getName() +"." +BankAccount_.bic.getName(), 255);
+        bindModelValue(editorContact, txtMandatRef, Contact_.mandateReference.getName(), 255);
 
 		fillAndBindCategoryCombo();
 		fillAndBindPaymentCombo();
 		
-		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 64);
-		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 64);
-		bindModelValue(editorContact, txtWebshopName, Contact_.webshopName.getName(), 64);
-		bindModelValue(editorContact, txtAlias, Contact_.alias.getName(), 64);
+		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 32);
+		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 255);
+		bindModelValue(editorContact, txtWebshopName, Contact_.webshopName.getName(), 128);
+		bindModelValue(editorContact, txtAlias, Contact_.alias.getName(), 255);
         bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
 
 		bindModelValue(editorContact, comboReliability, Contact_.reliability.getName());
-		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 32);
+		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 64);
 		bindModelValue(editorContact, txtGln, Contact_.gln.getName(), 32);
-		bindModelValue(editorContact, txtRegisterNumber, Contact_.registerNumber.getName(), 64);
+		bindModelValue(editorContact, txtRegisterNumber, Contact_.registerNumber.getName(), 128);
 		bindModelValue(editorContact, txtDiscount, Contact_.discount.getName(), 16);
         bindModelValue(editorContact, comboUseNetGross, Contact_.useNetGross.getName());
-		bindModelValue(editorContact, textNote, Contact_.note.getName(), 10000);
+		bindModelValue(editorContact, textNote, Contact_.note.getName(), -1);
 		
 		bindAdditionalValues(editorContact);
 		
@@ -1272,13 +1271,13 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	    }
 	    
 	    AddressTabWidget currentAddressTabWidget = addressTabWidgets.get(index);
-		bindModelValue(currentAddress, currentAddressTabWidget.getAddressAddon(), Address_.addressAddon.getName(), 64);
-		bindModelValue(currentAddress, currentAddressTabWidget.getNameAddon(), Address_.name.getName(), 64);
-		bindModelValue(currentAddress, currentAddressTabWidget.getLocalConsultant(), Address_.localConsultant.getName(), 64);
-	    bindModelValue(currentAddress, currentAddressTabWidget.getStreet(), Address_.street.getName(), 64);
+		bindModelValue(currentAddress, currentAddressTabWidget.getAddressAddon(), Address_.addressAddon.getName(), 255);
+		bindModelValue(currentAddress, currentAddressTabWidget.getNameAddon(), Address_.name.getName(), 255);
+		bindModelValue(currentAddress, currentAddressTabWidget.getLocalConsultant(), Address_.localConsultant.getName(), 128);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getStreet(), Address_.street.getName(), 255);
 	    bindModelValue(currentAddress, currentAddressTabWidget.getZip(), Address_.zip.getName(), 16);
-	    bindModelValue(currentAddress, currentAddressTabWidget.getCity(), Address_.city.getName(), 32);
-	    bindModelValue(currentAddress, currentAddressTabWidget.getCityAddon(), Address_.cityAddon.getName(), 32);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getCity(), Address_.city.getName(), 128);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getCityAddon(), Address_.cityAddon.getName(), 128);
 	    bindModelValue(currentAddress, currentAddressTabWidget.getCountryCombo(), Address_.countryCode.getName());
 
 	    bindListWidget(currentAddress, currentAddressTabWidget.getContactTypeWidget(), Address_.contactTypes);
@@ -1286,10 +1285,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		Binding binding = bindModelValue(currentAddress, currentAddressTabWidget.getEmail(), Address_.email.getName(), 64, emailValidationStrategy, null);
 		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
 		
-		bindModelValue(currentAddress, currentAddressTabWidget.getPhone(), Address_.phone.getName(), 32);
-		bindModelValue(currentAddress, currentAddressTabWidget.getAdditionalPhone(), Address_.additionalPhone.getName(), 32);
-		bindModelValue(currentAddress, currentAddressTabWidget.getFax(), Address_.fax.getName(), 32);
-		bindModelValue(currentAddress, currentAddressTabWidget.getMobile(), Address_.mobile.getName(), 32);
+		bindModelValue(currentAddress, currentAddressTabWidget.getPhone(), Address_.phone.getName(), 64);
+		bindModelValue(currentAddress, currentAddressTabWidget.getAdditionalPhone(), Address_.additionalPhone.getName(), 64);
+		bindModelValue(currentAddress, currentAddressTabWidget.getFax(), Address_.fax.getName(), 64);
+		bindModelValue(currentAddress, currentAddressTabWidget.getMobile(), Address_.mobile.getName(), 64);
 	}
 
 	@SuppressWarnings("unchecked")
