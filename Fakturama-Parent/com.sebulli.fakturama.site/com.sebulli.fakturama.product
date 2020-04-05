@@ -14,7 +14,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true --add-modules=ALL-SYSTEM
+      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true --add-modules=ALL-SYSTEM -clean
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:name=Fakturama -Xdock:icon=../Resources/app.icns
       </vmArgsMac>
@@ -267,6 +267,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_uk"/>
       <feature id="org.eclipse.babel.nls_eclipse_sk"/>
       <feature id="org.eclipse.babel.nls_eclipse_el"/>
+      <feature id="org.eclipse.babel.nls_eclipse_sv"/>
       <feature id="org.eclipse.persistence.moxy"/>
       <feature id="com.opencsv.feature"/>
       <feature id="org.eclipse.persistence.jpa" installMode="root"/>
@@ -284,12 +285,12 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <plugin id="org.eclipse.gemini.dbaccess.hsqldb" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.dbaccess.mysql" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="3" />
-      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
       <property name="eclipse.p2.data.area" value="@config.dir/../p2" />
+      <property name="osgi.instance.area" value="@user.home/.fakturama2" />
       <property name="eclipse.p2.profile" value="profile" />
       <property name="org.eclipse.swt.browser.IEVersion" value="12001" os="win32" />
       <property name="org.eclipse.update.reconcile" value="false" />
-      <property name="osgi.instance.area" value="@user.home/.fakturama2" />
+      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
    </configurations>
 
    <repositories>

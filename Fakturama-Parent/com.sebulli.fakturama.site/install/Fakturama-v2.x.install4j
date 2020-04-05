@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="8.0.4" transformSequenceNumber="8">
+<install4j version="8.0.5" transformSequenceNumber="8">
   <directoryPresets config="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
   <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.0" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true">
@@ -19,7 +19,7 @@
         <language id="tr" />
       </additionalLanguages>
     </languages>
-    <codeSigning macEnabled="true" macPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
+    <codeSigning macEnabled="true" macPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../../Projekte/Fakturama/Zertifikat/Fakturama.org.p12" />
   </application>
   <files keepModificationTimes="true" globalExcludeSuffixes=".svn,.git">
     <filesets>
@@ -290,6 +290,19 @@ return console.askOkCancel(message, true);
             </formComponents>
           </screen>
           <screen id="12" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" styleId="267" finishScreen="true">
+            <actions>
+              <action id="444" beanClass="com.install4j.runtime.beans.actions.files.DeleteFileAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="files" type="array" class="java.io.File" length="1">
+                    <element index="0">
+                      <object class="java.io.File">
+                        <string>${installer:sys.userHome}/.fakturama2/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi</string>
+                      </object>
+                    </element>
+                  </property>
+                </serializedBean>
+              </action>
+            </actions>
             <formComponents>
               <formComponent id="210" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetBottom="10">
                 <serializedBean>
