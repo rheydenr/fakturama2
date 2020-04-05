@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="8.0.5" transformSequenceNumber="8">
+<install4j version="8.0.4" transformSequenceNumber="8">
   <directoryPresets config="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
   <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.0" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true">
@@ -19,7 +19,7 @@
         <language id="tr" />
       </additionalLanguages>
     </languages>
-    <codeSigning macEnabled="true" macPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../../Projekte/Fakturama/Zertifikat/Fakturama.org.p12" />
+    <codeSigning macEnabled="true" macPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
   </application>
   <files keepModificationTimes="true" globalExcludeSuffixes=".svn,.git">
     <filesets>
@@ -715,8 +715,5 @@ return console.askYesNo(message, true);
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="45" />
-    <mediaSet refId="59" />
-    <mediaSet refId="119" />
-    <mediaSet refId="120" />
   </buildIds>
 </install4j>

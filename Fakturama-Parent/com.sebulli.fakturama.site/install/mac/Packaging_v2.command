@@ -148,5 +148,5 @@ echo 'Done.'
 echo 'moving installer (tar.gz) to installer directory'
 mv ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-linux.gtk.x86_64.tar.gz ../install/Installer_Fakturama_linux_x64_${VERSION}.tar.gz
 mv "${DMG_FINAL}" ../install
-zip -m -o Installer_Fakturama_windows_x64_${VERSION}.zip Installer_Fakturama_windows_x64_${VERSION}.exe
+zip -m -o -v -j ../install/Installer_Fakturama_windows_x64_${VERSION}.zip ../install/Installer_Fakturama_windows-x64_${VERSION}.exe
 exit
