@@ -169,9 +169,10 @@ public class Messages {
 	public String contactDebtorFieldName;
 	public String contactFieldGln;
 	public String contactFieldGlnTooltip;
+    public String contactFieldRegisterNumber;
 	public String contactFieldMrName;
 	public String contactFieldMsName;
-	public String contactFieldFamilyName;
+	public String contactFieldFamily;
 	public String contactFieldReliabilityGoodName;
 	public String contactFieldReliabilityMediumName;
 	public String contactFieldReliabilityPoorName;
@@ -279,10 +280,14 @@ public class Messages {
 	public String editorContactFieldDistrict;
 	public String editorContactFieldFirstnamelastnameName;
 	public String editorContactFieldLastnamefirstnameName;
+	public String editorContactFieldNameAddon;
+	public String editorContactFieldNameAddonTooltip;
+	public String editorContactFieldAddressAddon;
 	public String editorContactFieldMandaterefName;
 	public String editorContactFieldNetgrossName;
 	public String editorContactFieldNumberName;
 	public String editorContactFieldNumberTooltip;
+	public String editorContactFieldAdditionalPhone;
 	public String editorContactFieldPaymentName;
 	public String editorContactFieldPaymentTooltip;
 	public String editorContactFieldReliabilityName;

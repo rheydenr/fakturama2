@@ -14,6 +14,7 @@
 
 package com.sebulli.fakturama.misc;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -27,49 +28,19 @@ import org.eclipse.jface.util.Util;
 public class OSDependent {
 
 	/**
-	 * Test, if it is a Mac OSX
-	 * 
-	 * @deprecated use {@link Util#isMac()} instead
-	 * @return TRUE, if it one
-	 */
-	public static boolean isMacOSX() {
-        return Util.isMac() || Util.isPhoton();
-	}
-
-	/**
-	 * Test, if it is a Linux system
-	 * 
-	 * @deprecated use {@link Util#isLinux()} instead
-	 * @return TRUE, if it one
-	 */
-	public static boolean isLinux() {
-		return  Util.isMotif() || Util.isLinux();
-	}
-
-	/**
-	 * Test, if it is a Windows System
-	 * 
-	 * @return TRUE, if it one
-	 * @deprecated use {@link Util#isWindows()} instead
-	 */
-	public static boolean isWin() {
-		return Util.isWindows();
-	}
-
-	/**
 	 * Returns the OS dependent program folder
 	 * 
 	 * @return Program folder as string
 	 */
 	public static String getProgramFolder() {
 
-		if (isMacOSX())
+		if (Util.isMac() || Util.isPhoton())
 			return "/Applications/";
 
-		if (isLinux())
+		if (Util.isLinux() || Util.isMotif())
 			return "/usr/lib/";
 
-		if (isWin())
+		if (Util.isWindows())
 			return "C:\\Program Files\\";
 
 		return "";
@@ -83,13 +54,13 @@ public class OSDependent {
 	 */
 	public static String getOODefaultPath() {
 
-		if (isMacOSX())
+		if (Util.isMac() || Util.isPhoton())
 			return getProgramFolder() + "LibreOffice.app";
 
-		if (isLinux())
+		if (Util.isLinux() || Util.isMotif())
 			return getProgramFolder() + "libreoffice";
 
-		if (isWin())
+		if (Util.isWindows())
 			return getProgramFolder() + "LibreOffice 6";
 
 		return "";
@@ -97,24 +68,32 @@ public class OSDependent {
 	}
 
 	/**
-	 * Returns the OpenOffice binary
+	 * Returns the OpenOffice binary. Checks if the Application exists.
 	 * 
 	 * @param path
-	 *            of the OpenOffice folder
+	 *            of the OpenOffice folder (from the preference store)
 	 * @return Full Path of the the binary.
 	 */
 	public static Path getOOBinary(String path) {
 	    Path retval = null;
 
-		if (isMacOSX())
+		if (Util.isMac() || Util.isPhoton())
 			retval = Paths.get(path, "/Contents/MacOS/soffice");
 
-		if (isLinux())
+		if (Util.isLinux() || Util.isMotif())
 		    retval = Paths.get(path, "/program/soffice");
 
-		if (isWin())
-		    retval = Paths.get(path, "program", "soffice.exe");
-
+		if (Util.isWindows()) {
+	        // in case of linked files the file suffix may have changed
+			String[] suffixes = new String[] {"exe", "bat", "com", "lnk"};
+			for (String suffix : suffixes) {
+				retval = Paths.get(path, "program", "soffice." + suffix);
+				if(retval != null && Files.exists(retval)) {
+					break;
+				}
+			}
+		}
+		
 		return retval;
 	}
 
@@ -124,6 +103,6 @@ public class OSDependent {
 	 * @return TRUE, if it an app
 	 */
 	public static boolean isOOApp() {
-		return isMacOSX();
+		return Util.isMac() || Util.isPhoton();
 	}
 }

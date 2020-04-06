@@ -1562,7 +1562,7 @@
 					<imagedata fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
 				</imageobject>
 				<imageobject role="fo">
-					<imagedata contentdepth="265%" fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
+					<imagedata contentdepth="200%" fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
 				</imageobject>
 			</mediaobject>
 		</informalfigure>
@@ -1844,7 +1844,7 @@
 								<imagedata fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
 							</imageobject>
 							<imageobject role="fo">
-								<imagedata contentdepth="40%" fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
+								<imagedata contentdepth="80%" fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
 							</imageobject>
 						</inlinemediaobject>
 					</term>
@@ -2016,7 +2016,7 @@
 		</sect2>
 		<sect2>
 			<title>Einheit</title>
-			<para>Die Maßeinheit des Produktes. Hier können Sie bei Bedarf auch definieren, wie die Maßeinheit bei unterschiedlichen Mengen heißen soll ("Karton" oder "Kartons"). Der Aufbau einer solchen Maßeinheit ist wie folgt:</para>
+			<para>Die Maßeinheit des Produktes. Hier kann man bei Bedarf auch definieren, wie die Maßeinheit bei unterschiedlichen Mengen heißen soll ("Karton" oder "Kartons"). Der Aufbau einer solchen Maßeinheit ist wie folgt:</para>
 			<programlisting>n#name1|n#name2|n#name3</programlisting>
 			<para>Hierbei steht <code>n</code> für eine beliebige Mengenangabe und <code>name1</code>, <code>name2</code> usw. für die entsprechende Mengenangabe.</para>
 			<para>Beispiel:
@@ -2027,6 +2027,10 @@
 		<sect2>
 			<title>Preis</title>
 			<para>Je nach Einstellung wird der Netto- oder Bruttopreis angezeigt. Beim Editieren des Nettopreises wird automatisch der Bruttopreis angepasst und umgekehrt, jeweils abhängig vom Mehrwertsteuersatz. Die Verwendung von (bis zu fünf) Staffelpreisen ist ebenfalls möglich (kann über die Einstellungen gesteuert werden).</para>
+		</sect2>
+		<sect2>
+			<title>Zuschlag</title>
+			<para>Zuschlag, der für den Produktpreis gilt.</para>
 		</sect2>
 		<sect2>
 			<title>Einkaufspreis</title>
@@ -2060,6 +2064,10 @@
 		<sect2>
 			<title>Benutzerfeld 1 .. 3</title>
 			<para>Frei belegbare Informationsfelder für dieses Produkt.</para>
+		</sect2>
+		<sect2>
+			<title>Notiz</title>
+			<para>Notizen zu diesem Produkt.</para>
 		</sect2>
 		<sect2>
 			<anchor xreflabel="" xml:id="editor_editor_product_pic"/>
@@ -2109,8 +2117,9 @@
 			<title>Adresse</title>
 			<para>Der Reiter unterteilt sich in allgemeine Angaben wie Firmenname und/oder Name des Kontaktes. Daneben
 			gibt es einen weiteren Bereich, in dem verschiedene Adressen zu diesem Kontakt erfasst werden können. Diese Adressen
-			können über das [+]-Symbol hinzugefügt werden. Derzeit ist es leider noch nicht möglich, eine Adresse auch wieder zu löschen.
-			Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine, 
+			können über das [+]-Symbol hinzugefügt werden. </para>
+			<warning>Derzeit ist es leider noch nicht möglich, eine Adresse auch wieder zu löschen.</warning>
+			<para>Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine, 
 			diese Auswahl wird in den kommenden Versionen von Fakturama vervollständigt). Lässt man
 			die Auswahl leer, kann die Adresse für beliebige Arten von Dokumenten verwendet werden. Ansonsten werden die Adressen
 			des Kontaktes bei der Adressauswahl über den Dokumentendialog gefiltert.</para>
@@ -2126,7 +2135,7 @@
 						<imagedata fileref="../images/editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata contentdepth="65%" fileref="../images/editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="200%" fileref="../images/editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
@@ -2142,7 +2151,7 @@
 						<imagedata fileref="../images/editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata contentdepth="65%" fileref="../images/editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="200%" fileref="../images/editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>

@@ -81,38 +81,7 @@ public class AboutPluginsPage extends ProductInfoPage {
 
 	private static final String SIGNED_NO = "SIGNED_NO";
 
-	/**
-	 * Get image descriptors for the signed, unsigned and unknown button.
-	 */
-	static {
-
-		Bundle bundle = FrameworkUtil.getBundle(AboutPluginsPage.class);
-
-		String rootPath = "$nl$/icons/full/obj16/";
-		IPath signedNoPath = new Path(rootPath + "signed_no_tbl.png");
-		URL signedNoURL = FileLocator.find(bundle, signedNoPath, null);
-		ImageDescriptor signedNoDesc = ImageDescriptor.createFromURL(signedNoURL);
-		if (signedNoDesc != null) {
-			JFaceResources.getImageRegistry().put(SIGNED_NO, signedNoDesc);
-		}
-
-		IPath signedYesPath = new Path(rootPath + "signed_yes_tbl.png");
-		URL signedYesURL = FileLocator.find(bundle, signedYesPath, null);
-		ImageDescriptor signedYesDesc = ImageDescriptor.createFromURL(signedYesURL);
-		if (signedYesDesc != null) {
-			JFaceResources.getImageRegistry().put(SIGNED_YES, signedYesDesc);
-		}
-
-		IPath unkPath = new Path(rootPath + "signed_unk_tbl.png");
-		URL unkURL = FileLocator.find(bundle, unkPath, null);
-		ImageDescriptor unkDesc = ImageDescriptor.createFromURL(unkURL);
-		if (unkDesc != null) {
-			JFaceResources.getImageRegistry().put(UNKNOWN, unkDesc);
-		}
-	}
-
 	public class BundleTableLabelProvider extends LabelProvider implements ITableLabelProvider {
-
 		/**
 		 * Queue containing bundle signing info to be resolved.
 		 */
@@ -123,7 +92,7 @@ public class AboutPluginsPage extends ProductInfoPage {
 		 */
 		private List<AboutBundleData> updateQueue = new ArrayList<AboutBundleData>();
 
-		/*
+		/**
 		 * this job will attempt to discover the signing state of a given bundle
 		 * and then send it along to the update job
 		 */
@@ -168,33 +137,59 @@ public class AboutPluginsPage extends ProductInfoPage {
 			}
 		};
 
-		/*
+		/**
 		 * this job is responsible for feeding label change events into the
 		 * viewer as they become available from the resolve job
 		 */
+		private Job updateJob;
+		
+		public BundleTableLabelProvider() {
+			 // Get image descriptors for the signed, unsigned and unknown button.
+			Map<String, String> imgMap = new HashMap<>();
+			imgMap.put(SIGNED_YES, "signed_yes_tbl.png");
+			imgMap.put(SIGNED_NO, "signed_no_tbl.png");
+			imgMap.put(UNKNOWN, "signed_unkn_tbl.png");
+			initImages(imgMap);
+			
+			
+			updateJob = new BasicUIJob("Load", Display.getDefault()) {
 
-		private Job updateJob = new BasicUIJob("Load", Display.getDefault()) {
-
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor) {
-				while (true) {
-					Control page = getControl();
-					// the page has gone down since we were asked to render
-					if (page == null || page.isDisposed())
-						return Status.OK_STATUS;
-					AboutBundleData[] data = null;
-					synchronized (updateQueue) {
-						if (updateQueue.isEmpty())
+				@Override
+				public IStatus runInUIThread(IProgressMonitor monitor) {
+					while (true) {
+						Control page = getControl();
+						// the page has gone down since we were asked to render
+						if (page == null || page.isDisposed())
 							return Status.OK_STATUS;
+						AboutBundleData[] data = null;
+						synchronized (updateQueue) {
+							if (updateQueue.isEmpty())
+								return Status.OK_STATUS;
 
-						data = updateQueue.toArray(new AboutBundleData[updateQueue.size()]);
-						updateQueue.clear();
+							data = updateQueue.toArray(new AboutBundleData[updateQueue.size()]);
+							updateQueue.clear();
 
+						}
+						fireLabelProviderChanged(new LabelProviderChangedEvent(BundleTableLabelProvider.this, data));
 					}
-					fireLabelProviderChanged(new LabelProviderChangedEvent(BundleTableLabelProvider.this, data));
+				}
+			};
+			//sync.asyncExec(updateJob);
+		}
+		
+		private void initImages(Map<String, String> imgMap) {
+			Bundle bundle = FrameworkUtil.getBundle(AboutPluginsPage.class);
+			String rootPath = "$nl$/icons/full/obj16/";
+			for (String imgKey : imgMap.keySet()) {
+				IPath imgPath = new Path(rootPath + imgMap.get(imgKey));
+				URL imgURL = FileLocator.find(bundle, imgPath, null);
+				ImageDescriptor signedNoDesc = ImageDescriptor.createFromURL(imgURL);
+				if (signedNoDesc != null && JFaceResources.getImageRegistry().get(imgKey) == null) {
+					JFaceResources.getImageRegistry().put(imgKey, signedNoDesc);
 				}
 			}
-		};
+		}
+
 
 		/*
 		 * (non-Javadoc)
@@ -206,12 +201,10 @@ public class AboutPluginsPage extends ProductInfoPage {
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
 
-			if (columnIndex == 0) {
-
-				if (element instanceof AboutBundleData) {
-					final AboutBundleData data = (AboutBundleData) element;
+			if (columnIndex == 0 && element instanceof AboutBundleData) {
+				final AboutBundleData data = (AboutBundleData) element;
 					if (data.isSignedDetermined()) {
-
+					
 						return JFaceResources.getImage(data.isSigned() ? SIGNED_YES : SIGNED_NO);
 					}
 
@@ -220,8 +213,7 @@ public class AboutPluginsPage extends ProductInfoPage {
 					}
 					resolveJob.schedule();
 
-					return JFaceResources.getImage(UNKNOWN);
-				}
+				return JFaceResources.getImage(UNKNOWN);
 			}
 
 			return null;

@@ -25,6 +25,7 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -65,6 +66,8 @@ import com.sebulli.fakturama.util.ContactUtil;
  */
 public class ContactsCsvImporter {
 	
+	private static final String DELIVERY_FIELD_PREFIX = "delivery_";
+
 	@Inject
 	@Translation
 	protected ImportMessages importMessages;
@@ -260,34 +263,21 @@ public class ContactsCsvImporter {
 					if(tmpAddress != null) {
 						address = tmpAddress;
 					}
-					address.setValidFrom(Calendar.getInstance().getTime());
-					address.setStreet(prop.getProperty("street"));
-					address.setCity(prop.getProperty("city"));
-					address.setPhone(prop.getProperty("phone"));
-					address.setFax(prop.getProperty("fax"));
-					address.setMobile(prop.getProperty("mobile"));
-					address.setEmail(prop.getProperty("email"));
-//					address.setCountryCode(prop.getProperty("country")); TODO get correct country code!
+					address = createAddressFromProperties(prop, address, "");
 					testContact.getAddresses().add(address);
 					address.setContact(testContact);
 					
-					Address deliveryAddress = addressManager.getAddressFromContact(testContact, ContactType.DELIVERY).orElse(null);
-					if(deliveryAddress.getId() == address.getId()) {
-						// recreation of delivery address, if any
-						deliveryAddress = modelFactory.createAddress();
+					if(isDeliveryAddressAvailable(prop)) {
+						Address deliveryAddress = addressManager.getAddressFromContact(testContact, ContactType.DELIVERY).orElse(null);
+						if(deliveryAddress.getId() == address.getId()) {
+							// recreation of delivery address, if any
+							deliveryAddress = modelFactory.createAddress();
+						}
+						deliveryAddress = createAddressFromProperties(prop, deliveryAddress, DELIVERY_FIELD_PREFIX);
+						deliveryAddress.getContactTypes().add(ContactType.DELIVERY);
+						testContact.getAddresses().add(deliveryAddress);
+						deliveryAddress.setContact(testContact);
 					}
-					deliveryAddress.setValidFrom(Calendar.getInstance().getTime());
-					deliveryAddress.setStreet(prop.getProperty("delivery_street"));
-					deliveryAddress.setZip(prop.getProperty("delivery_zip"));
-					deliveryAddress.setCity(prop.getProperty("delivery_city"));
-					deliveryAddress.setPhone(prop.getProperty("delivery_phone"));
-					deliveryAddress.setFax(prop.getProperty("delivery_fax"));
-					deliveryAddress.setMobile(prop.getProperty("delivery_mobile"));
-					deliveryAddress.setEmail(prop.getProperty("delivery_email"));
-					deliveryAddress.getContactTypes().add(ContactType.DELIVERY);
-//					deliveryAddress.setCountryCode(prop.getProperty("delivery_country")); // FIXME set correct country code!!!!
-					testContact.getAddresses().add(deliveryAddress);
-					deliveryAddress.setContact(testContact);
 
 					BankAccount account = testContact.getBankAccount() != null ? testContact.getBankAccount() : modelFactory.createBankAccount();
 					account.setValidFrom(Calendar.getInstance().getTime());
@@ -311,7 +301,7 @@ public class ContactsCsvImporter {
 					if(payment != null) {
 						testContact.setPayment(payment);
 					}
-					testContact.setReliability(ReliabilityType.getByName(prop.getProperty("reliability")));
+					testContact.setReliability(ReliabilityType.getByName(prop.getProperty("reliability").toUpperCase()));
 
 					testContact.setWebsite(prop.getProperty("website"));
 					testContact.setSupplierNumber(prop.getProperty("supplier_nr"));
@@ -326,8 +316,9 @@ public class ContactsCsvImporter {
 					}
 					// Add the contact to the data base
 					// Update the modified contact data
+					long currentId = testContact.getId();
 					contactsDAO.update(testContact);
-					if (DateUtils.isSameDay(testContact.getDateAdded(), Calendar.getInstance().getTime())) {
+                    if (currentId == 0) {
 						importedContacts++;
 					} else if (updateExisting) {
 						// Update data
@@ -363,6 +354,40 @@ public class ContactsCsvImporter {
 			log.error("can't save or update imported contact");
 		}
 		evtBroker.post(classifier == FakturamaModelPackage.DEBITOR_CLASSIFIER_ID ? "Debtor" : "Creditor", "update");
+	}
+
+
+	private boolean isDeliveryAddressAvailable(Properties prop) {
+		List<String> fieldsToCheck = Arrays.asList(
+				"street", //
+				"zip", //
+				"city", //
+				"phone", //
+				"fax", //
+				"mobile", //
+				"email");
+		return fieldsToCheck.stream().anyMatch(p -> prop.get(DELIVERY_FIELD_PREFIX + p) != null && !prop.get(DELIVERY_FIELD_PREFIX + p).toString().isEmpty());
+	}
+
+	/**
+	 * Creates an {@link Address} from CSV properties.
+	 * 
+	 * @param prop
+	 * @param address
+	 * @param prefix necessary e.g. for delivery addresses
+	 * @return 
+	 */
+	private Address createAddressFromProperties(Properties prop, Address address, String prefix) {
+		address.setValidFrom(Calendar.getInstance().getTime());
+		address.setStreet(prop.getProperty(StringUtils.join(prefix, "street")));
+		address.setZip(prop.getProperty(StringUtils.join(prefix, "zip")));
+		address.setCity(prop.getProperty(StringUtils.join(prefix, "city")));
+		address.setPhone(prop.getProperty(StringUtils.join(prefix, "phone")));
+		address.setFax(prop.getProperty(StringUtils.join(prefix, "fax")));
+		address.setMobile(prop.getProperty(StringUtils.join(prefix, "mobile")));
+		address.setEmail(prop.getProperty(StringUtils.join(prefix, "email")));
+//		address.setCountryCode(prop.getProperty("country")); // FIXME set correct country code!!!!
+		return address;
 	}
 
 	public String getResult() {

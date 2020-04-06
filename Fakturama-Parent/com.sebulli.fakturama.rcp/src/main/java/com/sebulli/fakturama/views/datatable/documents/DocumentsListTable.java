@@ -601,6 +601,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     toolItem.setTooltip(msg.commandNewTooltip + " " + msg.getMessageFromKey(DocumentType.ORDER.getSingularKey()));
                     parameterMap.put(CallEditor.PARAM_CATEGORY, DocumentType.ORDER.name());
                 }
+                parameterMap.put(CallEditor.PARAM_FORCE_NEW, Boolean.TRUE);
+
                 if (wbCommand != null) {
                     wbCommand = ParameterizedCommand.generateCommand(wbCommand.getCommand(), parameterMap);
                 }

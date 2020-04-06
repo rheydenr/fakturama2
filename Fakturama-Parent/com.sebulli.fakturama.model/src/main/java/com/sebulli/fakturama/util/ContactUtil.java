@@ -280,7 +280,7 @@ public class ContactUtil {
         case 3:
             return msg.commonFieldCompany;
         case 4:
-        	return msg.contactFieldFamilyName;
+        	return msg.contactFieldFamily;
     	default:
         	return "";
         }
@@ -802,9 +802,22 @@ public class ContactUtil {
      */
     public Boolean deliveryAddressEqualsBillingAddress(Document document) {
     	
+    	/*
+    	 * Following cases are possible:
+    	 * case 1: document is an invoice and has a document receiver those type is INVOICE
+    	 * case 2: document is not an invoice and has another document receiver fits to this type
+    	 * case 3: document is an invoice and has multiple document receivers (one for invoice,
+    	 *         one for delivery, one for order etc)
+    	 * case 4: document is not an invoice and has multiple other document receivers
+    	 */
+    	
     	Optional<DocumentReceiver> billingAddressFromReceiverDocument = document.getReceiver().stream().filter(rcv -> rcv.getBillingType() == null || rcv.getBillingType().isINVOICE()).findFirst();
-        String billingAddress = getAddressAsString(billingAddressFromReceiverDocument.get());
-        
+    	if(!billingAddressFromReceiverDocument.isPresent()) {
+    		// use the receiver's address which corresponds to billing type of the document
+    		billingAddressFromReceiverDocument = document.getReceiver().stream().filter(rcv -> rcv.getBillingType() == null || rcv.getBillingType().compareTo(document.getBillingType()) == 0).findFirst();
+    	}
+    	String billingAddress = getAddressAsString(billingAddressFromReceiverDocument.get());
+
     	Optional<DocumentReceiver> deliveryAddressFromReceiverDocument = document.getReceiver().stream().filter(rcv -> rcv.getBillingType() == null || rcv.getBillingType().isDELIVERY()).findFirst();
     	
     	// if no explicit delivery address is found we just use the billing address

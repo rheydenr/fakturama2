@@ -26,7 +26,8 @@ Die folgende Beschreibung ist für die Konvertierung einer HSQL-DB (Standard-Dat
 - `bin\clover migration.grf`
 - `bin\clover migration_002.grf`
 - `bin\clover migration_003.grf`
+- `bin\clover migration_004.grf`
 
-Am Ende jeder Ausführung muss `INFO  [main] - Execution of graph successful !` ausgegeben werden, ansonsten war die Konvertierung nicht erfolgreich. Die Ausführung des dritten Skriptes dauert etwas länger, weil hier alle Beziehungen zwischen den Tabellen wieder neu aufgebaut werden.
+Am Ende jeder Ausführung muss `INFO  [main] - Execution of graph successful !` ausgegeben werden, ansonsten war die Konvertierung nicht erfolgreich. Die Ausführung des letzten Skriptes dauert etwas länger, weil hier alle Beziehungen zwischen den Tabellen wieder neu aufgebaut werden.
 
 Anschließend kann man Fakturama wieder starten und mit der MySQL-Datenbank arbeiten. Bitte zuerst prüfen, ob alle Standardwerte korrekt gesetzt sind (Zahlungsart, Versandart, Steuersatz). Ebenfalls sollte geprüft werden, ob alle Beschreibungstexte und Notizen vorhanden sind. 

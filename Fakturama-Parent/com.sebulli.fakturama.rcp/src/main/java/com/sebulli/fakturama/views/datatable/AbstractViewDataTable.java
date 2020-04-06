@@ -352,6 +352,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                     @SuppressWarnings("unchecked")
                     Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
                     parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getFullPathName(true));
+                    parameterMap.put(CallEditor.PARAM_FORCE_NEW, Boolean.TRUE);
                     if (wbCommand != null) {
                         wbCommand = ParameterizedCommand.generateCommand(wbCommand.getCommand(), parameterMap);
                     } else {

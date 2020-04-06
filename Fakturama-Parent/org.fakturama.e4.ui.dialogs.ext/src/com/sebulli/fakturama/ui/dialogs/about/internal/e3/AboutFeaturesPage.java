@@ -19,11 +19,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -55,8 +59,11 @@ import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
  * outside the workbench.
  */
 public class AboutFeaturesPage extends ProductInfoPage {
+	
+	@Inject
+	private IEclipseContext context;
 
-	// used as the page id when this page is launched in its own dialog
+	/** used as the page id when this page is launched in its own dialog */
 	private static final String ID = "productInfo.features"; //$NON-NLS-1$
 	/**
 	 * Table height in dialog units (value 150).
@@ -94,8 +101,6 @@ public class AboutFeaturesPage extends ProductInfoPage {
 	private AboutBundleGroupData lastSelection = null;
 
 	private Button pluginsButton, moreButton;
-
-	private static Map featuresMap;
 
 	public void setBundleGroupInfos(AboutBundleGroupData[] bundleGroupInfos) {
 		this.bundleGroupInfos = bundleGroupInfos;
@@ -144,11 +149,17 @@ public class AboutFeaturesPage extends ProductInfoPage {
 		AboutBundleGroupData info = (AboutBundleGroupData) items[0].getData();
 		IBundleGroup bundleGroup = info.getBundleGroup();
 		Bundle[] bundles = bundleGroup == null ? new Bundle[0] : bundleGroup.getBundles();
+		
+		IEclipseContext localContext = EclipseContextFactory.create("about-dialog");
+		localContext.set(AboutPluginsDialog.ABOUT_TITLE, WorkbenchMessages.AboutFeaturesDialog_pluginInfoTitle);
+		localContext.set(AboutPluginsDialog.ABOUT_MESSAGE, NLS.bind(
+						WorkbenchMessages.AboutFeaturesDialog_pluginInfoMessage, bundleGroup.getIdentifier()));
+		localContext.set(AboutPluginsDialog.ABOUT_HELPID, IWorkbenchHelpContextIds.ABOUT_FEATURES_PLUGINS_DIALOG);
+		localContext.set(AboutPluginsDialog.ABOUT_BUNDLES, bundles);
+		localContext.set(AboutPluginsDialog.ABOUT_PRODUCTNAME, getProductName());
 
-		AboutPluginsDialog d = new AboutPluginsDialog(getShell(), getProductName(), bundles,
-				WorkbenchMessages.AboutFeaturesDialog_pluginInfoTitle, NLS.bind(
-						WorkbenchMessages.AboutFeaturesDialog_pluginInfoMessage, bundleGroup.getIdentifier()),
-				IWorkbenchHelpContextIds.ABOUT_FEATURES_PLUGINS_DIALOG);
+		AboutPluginsDialog d = new AboutPluginsDialog(getShell());//ContextInjectionFactory.make(AboutPluginsDialog.class, localContext);
+		ContextInjectionFactory.inject(d, localContext);
 		d.open();
 	}
 
@@ -302,18 +313,6 @@ public class AboutFeaturesPage extends ProductInfoPage {
 		if (info == null) {
 			moreButton.setEnabled(false);
 			pluginsButton.setEnabled(false);
-			return;
-		}
-
-		// Creating the feature map is too much just to determine enablement, so
-		// if
-		// it doesn't already exist, just enable the buttons. If this was the
-		// wrong
-		// choice, then when the button is actually pressed an dialog will be
-		// opened.
-		if (featuresMap == null) {
-			moreButton.setEnabled(true);
-			pluginsButton.setEnabled(true);
 			return;
 		}
 

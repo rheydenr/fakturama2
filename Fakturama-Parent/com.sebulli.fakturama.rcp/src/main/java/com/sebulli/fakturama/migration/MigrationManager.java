@@ -994,7 +994,8 @@ public class MigrationManager {
 			contact.setTitle(getDeliveryConsideredValue(billingtype, oldContact.getDeliveryTitle(), oldContact.getTitle()));
 			contact.setValidFrom(new Date());
 			contact.setBirthday(billingtype.isDELIVERY() ? getSaveParsedDate(oldContact.getBirthday()) :  getSaveParsedDate(oldContact.getDeliveryBirthday()));
-//			contact.setBirthday(LocalDate.parse(oldContact.getBirthday()));
+			contact.setWebsite(oldContact.getWebsite());
+			contact.setSupplierNumber(oldContact.getSuppliernumber());
 //		}
 // else there's no delivery contact!
 		return contact;
@@ -1015,10 +1016,15 @@ public class MigrationManager {
 		address.setFax(oldContact.getFax());
 		address.setMobile(oldContact.getMobile());
 		
-		// create local consultant
-		if(oldContact.getFirstname() != null && oldContact.getName() != null) {
-			String localConsultant = String.format("%s %s", oldContact.getFirstname(), oldContact.getName());
-			address.setLocalConsultant(localConsultant);
+		// for delivery addresses the company field will be migrated to name field
+		if(billingtype.isDELIVERY()) {
+		    address.setName(oldContact.getDeliveryCompany());
+    		
+    		// create local consultant
+    		if(oldContact.getFirstname() != null && oldContact.getName() != null) {
+    			String localConsultant = String.format("%s %s", oldContact.getDeliveryFirstname(), oldContact.getDeliveryName());
+    			address.setLocalConsultant(localConsultant);
+    		}
 		}
 	
 		// we don't have a CountryCode table :-(, therefore we have to look up in ULocale classes

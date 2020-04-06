@@ -78,6 +78,30 @@ TODO:
 		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT"/>
 	</changeSet>
 
+    <!--  update wrong contact type fields (copied from changelog-2.0 since it didn't work correctly)-->
+	<changeSet author="rheydenr" id="20190915-025">
+		<update tableName="FKT_CONTACT">
+			<column name="CONTACTTYPE" value="0"  type="int(10)"/>
+			<where>CONTACTTYPE IS NULL</where>
+		</update>
+		 
+ 		<createTable remarks="only a temp table" tableName="TMP_FKT_CONT">
+			<column name="id" type="int(10)" />
+		</createTable>
+	
+		<sql>INSERT INTO TMP_FKT_CONT SELECT
+			c2.ID FROM FKT_CONTACT c1, FKT_CONTACT c2
+			WHERE c1.FK_ALTERNATECONTACT = c2.ID
+			AND c2.CUSTOMERNUMBER IS NULL
+		</sql>
+        <sql>UPDATE FKT_CONTACT SET CONTACTTYPE=1 WHERE ID in (SELECT
+            ID FROM TMP_FKT_CONT)
+        </sql>
+		
+	   <dropTable tableName="TMP_FKT_CONT"/>		
+	   
+	</changeSet>
+
 	<changeSet author="rheydenr" id="20190915-030">
 		<comment>rename category columns (foreign key columns)</comment>
 		<renameColumn newColumnName="FK_PARENT_CATEGORY"
@@ -96,7 +120,7 @@ TODO:
 	<comment>Create new tables.</comment>
 		<createTable tableName="FKT_ADDRESS_CONTACTTYPES">
 			<column name="ADDRESS_CONTACTTYPES" type="BIGINT"/>
-			<column name="T_ELEMENT" type="VARCHAR(255)"/>
+			<column name="T_ELEMENT" type="VARCHAR(16)"/>
 		</createTable>
 		
 		<createTable tableName="FKT_DOCUMENTRECEIVER">
@@ -108,32 +132,33 @@ TODO:
 			<column name="CITYADDON" type="VARCHAR(255)"/>
 			<column name="COMPANY" type="VARCHAR(255)"/>
 			<column name="CONSULTANT" type="VARCHAR(255)"/>
-			<column name="COUNTRYCODE" type="VARCHAR(255)"/>
-			<column name="CUSTOMERNUMBER" type="VARCHAR(255)"/>
+			<column name="COUNTRYCODE" type="VARCHAR(8)"/>
+			<column name="CUSTOMERNUMBER" type="VARCHAR(32)"/>
 			<column name="DATEADDED" type="date"/>
 			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
-			<column name="DESCRIPTION" type="LONGTEXT"/>
-			<column name="EMAIL" type="VARCHAR(255)"/>
-			<column name="FAX" type="VARCHAR(255)"/>
-			<column name="FIRSTNAME" type="VARCHAR(255)"/>
+			<column name="DESCRIPTION" type="CLOB"/>
+			<column name="EMAIL" type="VARCHAR(128)"/>
+			<column name="FAX" type="VARCHAR(64)"/>
+			<column name="FIRSTNAME" type="VARCHAR(128)"/>
 			<column name="GENDER" type="INT"/>
 			<column name="GLN" type="BIGINT"/>
-			<column name="MANDATEREFERENCE" type="VARCHAR(255)"/>
-			<column name="MANUALADDRESS" type="VARCHAR(255)"/>
-			<column name="MOBILE" type="VARCHAR(255)"/>
+			<column name="MANDATEREFERENCE" type="VARCHAR(128)"/>
+			<column name="MANUALADDRESS" type="CLOB"/>
+			<column name="MOBILE" type="VARCHAR(64)"/>
 			<column name="MODIFIED" type="date"/>
-			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
 			<column name="ORIGINADDRESSID" type="BIGINT"/>
 			<column name="ORIGINCONTACTID" type="BIGINT"/>
-			<column name="PHONE" type="VARCHAR(255)"/>
+			<column name="PHONE" type="VARCHAR(64)"/>
 			<column name="STREET" type="VARCHAR(255)"/>
-			<column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
-			<column name="TITLE" type="VARCHAR(255)"/>
+			<column name="SUPPLIERNUMBER" type="VARCHAR(32)"/>
+			<column name="T_ALIAS" type="varchar(255)" />
+			<column name="TITLE" type="VARCHAR(32)"/>
 			<column name="VALIDFROM" type="date"/>
 			<column name="VALIDTO" type="date"/>
-			<column name="VATNUMBER" type="VARCHAR(255)"/>
-			<column name="ZIP" type="VARCHAR(255)"/>
+			<column name="VATNUMBER" type="VARCHAR(32)"/>
+			<column name="ZIP" type="VARCHAR(16)"/>
 			<column name="FK_DOCUMENT" type="BIGINT"/>
 		</createTable>
 	</changeSet>
@@ -144,7 +169,7 @@ TODO:
 			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
 				<constraints primaryKey="true"/>
 			</column>
-			<column name="DTYPE" type="VARCHAR(31)"/>
+			<column name="DTYPE" type="VARCHAR(32)"/>
 			<column name="ADDRESSFIRSTLINE" type="VARCHAR(255)"/>
 			<column name="BILLINGTYPE" type="INT"/>
 			<column name="CUSTOMERREF" type="VARCHAR(255)"/>
@@ -154,11 +179,11 @@ TODO:
 			<column name="DOCUMENTDATE" type="date"/>
 			<column name="DUEDAYS" type="INT"/>
 			<column name="ITEMSREBATE" type="DOUBLE"/>
-			<column name="MESSAGE" type="LONGTEXT"/>
-			<column name="MESSAGE2" type="LONGTEXT"/>
-			<column name="MESSAGE3" type="LONGTEXT"/>
+			<column name="MESSAGE" type="CLOB"/>
+			<column name="MESSAGE2" type="CLOB"/>
+			<column name="MESSAGE3" type="CLOB"/>
 			<column name="MODIFIED" type="date"/>
-			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
 			<column name="NETGROSS" type="INT"/>
 			<column name="ODTPATH" type="VARCHAR(255)"/>
@@ -180,7 +205,7 @@ TODO:
 			<column name="VESTINGPERIODEND" type="date"/>
 			<column name="VESTINGPERIODSTART" type="date"/>
 			<column name="WEBSHOPDATE" type="date"/>
-			<column name="WEBSHOPID" type="VARCHAR(255)"/>
+			<column name="WEBSHOPID" type="VARCHAR(32)"/>
 			<column name="FK_INDIVIDUALINFO" type="BIGINT"/>
 			<column name="DOCUMENT_INVOICEREFERENCE" type="BIGINT"/>
 			<column name="FK_NOVATREF" type="BIGINT"/>
@@ -196,28 +221,30 @@ TODO:
 			<column name="DTYPE" type="VARCHAR(31)"/>
 			<column name="BIRTHDAY" type="date"/>
 			<column name="COMPANY" type="VARCHAR(255)"/>
-			<column name="CUSTOMERNUMBER" type="VARCHAR(255)"/>
+			<column name="CUSTOMERNUMBER" type="VARCHAR(32)"/>
 			<column name="DATEADDED" type="date"/>
 			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
 			<column name="DISCOUNT" type="DOUBLE"/>
 			<column name="FIRSTNAME" type="VARCHAR(255)"/>
 			<column name="GENDER" type="INT"/>
 			<column name="GLN" type="BIGINT"/>
-			<column name="MANDATEREFERENCE" type="VARCHAR(255)"/>
+			<column name="MANDATEREFERENCE" type="VARCHAR(128)"/>
 			<column name="MODIFIED" type="date"/>
-			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
-			<column name="NOTE" type="LONGTEXT"/>
-			<column name="RELIABILITY" type="VARCHAR(255)"/>
-			<column name="SUPPLIERNUMBER" type="VARCHAR(255)"/>
-			<column name="TITLE" type="VARCHAR(255)"/>
+			<column name="NOTE" type="CLOB"/>
+			<column name="REGISTERNUMBER" type="VARCHAR(128)" />
+			<column name="RELIABILITY" type="VARCHAR(64)"/>
+			<column name="SUPPLIERNUMBER" type="VARCHAR(32)"/>
+			<column name="T_ALIAS" type="varchar(255)" />
+			<column name="TITLE" type="VARCHAR(32)"/>
 			<column name="USENETGROSS" type="SMALLINT"/>
 			<column defaultValueBoolean="false" name="USESALESEQUALIZATIONTAX" type="BOOLEAN"/>
 			<column name="VALIDFROM" type="date"/>
 			<column name="VALIDTO" type="date"/>
-			<column name="VATNUMBER" type="VARCHAR(255)"/>
+			<column name="VATNUMBER" type="VARCHAR(64)"/>
 			<column defaultValueBoolean="false" name="VATNUMBERVALID" type="BOOLEAN"/>
-			<column name="WEBSHOPNAME" type="VARCHAR(255)"/>
+			<column name="WEBSHOPNAME" type="VARCHAR(128)"/>
 			<column name="WEBSITE" type="VARCHAR(255)"/>
 			<column name="FK_BANKACCOUNT" type="BIGINT"/>
 			<column name="FK_CATEGORY" type="BIGINT"/>
@@ -229,24 +256,25 @@ TODO:
 			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
 				<constraints primaryKey="true"/>
 			</column>
-			<column name="CITY" type="VARCHAR(255)"/>
-			<column name="CITYADDON" type="VARCHAR(255)"/>
-			<column name="COUNTRYCODE" type="VARCHAR(255)"/>
+			<column name="ADDITIONALPHONE" type="VARCHAR(64)" />
+			<column name="ADDRESSADDON" type="VARCHAR(255)" />
+			<column name="CITY" type="VARCHAR(128)"/>
+			<column name="CITYADDON" type="VARCHAR(128)"/>
+			<column name="COUNTRYCODE" type="VARCHAR(8)"/>
 			<column name="DATEADDED" type="date"/>
 			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
 			<column name="EMAIL" type="VARCHAR(255)"/>
-			<column name="FAX" type="VARCHAR(255)"/>
-			<column name="LOCALCONSULTANT" type="VARCHAR(255)"/>
-			<column name="MOBILE" type="VARCHAR(255)"/>
+			<column name="FAX" type="VARCHAR(64)"/>
+			<column name="LOCALCONSULTANT" type="VARCHAR(128)"/>
+			<column name="MOBILE" type="VARCHAR(64)"/>
 			<column name="MODIFIED" type="date"/>
-			<column name="MODIFIEDBY" type="VARCHAR(255)"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
 			<column name="NAME" type="VARCHAR(255)"/>
-			<column name="PHONE" type="VARCHAR(255)"/>
+			<column name="PHONE" type="VARCHAR(64)"/>
 			<column name="STREET" type="VARCHAR(255)"/>
 			<column name="VALIDFROM" type="date"/>
 			<column name="VALIDTO" type="date"/>
-			<column name="ZIP" type="VARCHAR(255)"/>
-			<column name="FK_CONTACT" type="BIGINT"/>
+			<column name="ZIP" type="VARCHAR(16)"/>
 			<column name="CONTACT_ADDRESSES" type="BIGINT"/>
 		</createTable>
 		
@@ -254,58 +282,52 @@ TODO:
 			<column name="BILLING_ADDRESS_ID" type="BIGINT">
 				<constraints primaryKey="true" />
 			</column>
-			<column name="BILLING_ADDRESS_CITY" type="VARCHAR(255)" />
-			<column name="BILLING_ADDRESS_CITYADDON" type="VARCHAR(255)" />
-			<column name="BILLING_ADDRESS_COUNTRYCODE" type="VARCHAR(255)" />
+			<column name="BILLING_ADDRESS_CITY" type="VARCHAR(128)" />
+			<column name="BILLING_ADDRESS_CITYADDON" type="VARCHAR(128)" />
+			<column name="BILLING_ADDRESS_COUNTRYCODE" type="VARCHAR(8)" />
 			<column name="BILLING_ADDRESS_DATEADDED" type="DATE" />
-			<column name="BILLING_ADDRESS_DELETED"
-				defaultValueBoolean="false" type="BOOLEAN" />
-			<column name="BILLING_ADDRESS_MANUALADDRESS"
-				type="VARCHAR(4096)" />
+			<column name="BILLING_ADDRESS_DELETED" defaultValueBoolean="false" type="BOOLEAN" />
+			<column name="BILLING_ADDRESS_MANUALADDRESS" type="CLOB" />
 			<column name="BILLING_ADDRESS_MODIFIED" type="DATE" />
-			<column name="BILLING_ADDRESS_MODIFIEDBY" type="VARCHAR(255)" />
+			<column name="BILLING_ADDRESS_MODIFIEDBY" type="VARCHAR(32)" />
 			<column name="BILLING_ADDRESS_NAME" type="VARCHAR(255)" />
 			<column name="BILLING_ADDRESS_STREET" type="VARCHAR(255)" />
 			<column name="BILLING_ADDRESS_VALIDFROM" type="DATE" />
 			<column name="BILLING_ADDRESS_VALIDTO" type="DATE" />
-			<column name="BILLING_ADDRESS_ZIP" type="VARCHAR(255)" />
+			<column name="BILLING_ADDRESS_ZIP" type="VARCHAR(16)" />
 			<column name="BILLING_CONTACT_ID" type="BIGINT NOT NULL" />
 			<column name="BILLING_CONTACT_DTYPE" type="VARCHAR(31)" />
 			<column name="BILLING_CONTACT_BIRTHDAY" type="DATE" />
 			<column name="BILLING_CONTACT_COMPANY" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_CONTACTTYPE" type="INTEGER" />
-			<column name="BILLING_CONTACT_CUSTOMERNUMBER"
-				type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_CUSTOMERNUMBER" type="VARCHAR(32)" />
 			<column name="BILLING_CONTACT_DATEADDED" type="DATE" />
-			<column name="BILLING_CONTACT_DELETED"
-				defaultValueBoolean="false" type="BOOLEAN" />
+			<column name="BILLING_CONTACT_DELETED" defaultValueBoolean="false" type="BOOLEAN" />
 			<column name="BILLING_CONTACT_DISCOUNT" type="DOUBLE" />
 			<column name="BILLING_CONTACT_EMAIL" type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_FAX" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_FAX" type="VARCHAR(64)" />
 			<column name="BILLING_CONTACT_FIRSTNAME" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_GENDER" type="INTEGER" />
 			<column name="BILLING_CONTACT_GLN" type="BIGINT" />
-			<column name="BILLING_CONTACT_MANDATEREFERENCE"
-				type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_MOBILE" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_MANDATEREFERENCE" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_MOBILE" type="VARCHAR(64)" />
 			<column name="BILLING_CONTACT_MODIFIED" type="DATE" />
-			<column name="BILLING_CONTACT_MODIFIEDBY" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_MODIFIEDBY" type="VARCHAR(32)" />
 			<column name="BILLING_CONTACT_NAME" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_NOTE" type="CLOB" />
-			<column name="BILLING_CONTACT_PHONE" type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_RELIABILITY" type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_SUPPLIERNUMBER"
-				type="VARCHAR(255)" />
-			<column name="BILLING_CONTACT_TITLE" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_PHONE" type="VARCHAR(64)" />
+			<column name="BILLING_CONTACT_RELIABILITY" type="VARCHAR(64)" />
+			<column name="BILLING_CONTACT_SUPPLIERNUMBER" type="VARCHAR(32)" />
+			<column name="BILLING_CONTACT_TITLE" type="VARCHAR(32)" />
 			<column name="BILLING_CONTACT_USENETGROSS" type="SMALLINT" />
 			<column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX"
 				defaultValueBoolean="false" type="BOOLEAN" />
 			<column name="BILLING_CONTACT_VALIDFROM" type="DATE" />
 			<column name="BILLING_CONTACT_VALIDTO" type="DATE" />
-			<column name="BILLING_CONTACT_VATNUMBER" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_VATNUMBER" type="VARCHAR(64)" />
 			<column name="BILLING_CONTACT_VATNUMBERVALID"
 				defaultValueBoolean="false" type="BOOLEAN" />
-			<column name="BILLING_CONTACT_WEBSHOPNAME" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_WEBSHOPNAME" type="VARCHAR(128)" />
 			<column name="BILLING_CONTACT_WEBSITE" type="VARCHAR(255)" />
 			<column name="BILLING_CONTACT_FK_ADDRESS" type="BIGINT" />
 			<column name="BILLING_CONTACT_FK_ALTERNATECONTACT" type="BIGINT" />
@@ -313,21 +335,20 @@ TODO:
 			<column name="BILLING_CONTACT_FK_CATEGORY" type="BIGINT" />
 			<column name="BILLING_CONTACT_FK_PAYMENT" type="BIGINT" />
 			<column name="DELIVERY_ADDRESS_ID" type="BIGINT" />
-			<column name="DELIVERY_ADDRESS_CITY" type="VARCHAR(255)" />
-			<column name="DELIVERY_ADDRESS_CITYADDON" type="VARCHAR(255)" />
-			<column name="DELIVERY_ADDRESS_COUNTRYCODE" type="VARCHAR(255)" />
+			<column name="DELIVERY_ADDRESS_CITY" type="VARCHAR(128)" />
+			<column name="DELIVERY_ADDRESS_CITYADDON" type="VARCHAR(128)" />
+			<column name="DELIVERY_ADDRESS_COUNTRYCODE" type="VARCHAR(8)" />
 			<column name="DELIVERY_ADDRESS_DATEADDED" type="DATE" />
 			<column name="DELIVERY_ADDRESS_DELETED"
 				defaultValueBoolean="false" type="BOOLEAN" />
-			<column name="DELIVERY_ADDRESS_MANUALADDRESS"
-				type="VARCHAR(4096)" />
+			<column name="DELIVERY_ADDRESS_MANUALADDRESS" type="CLOB" />
 			<column name="DELIVERY_ADDRESS_MODIFIED" type="DATE" />
-			<column name="DELIVERY_ADDRESS_MODIFIEDBY" type="VARCHAR(255)" />
+			<column name="DELIVERY_ADDRESS_MODIFIEDBY" type="VARCHAR(32)" />
 			<column name="DELIVERY_ADDRESS_NAME" type="VARCHAR(255)" />
 			<column name="DELIVERY_ADDRESS_STREET" type="VARCHAR(255)" />
 			<column name="DELIVERY_ADDRESS_VALIDFROM" type="DATE" />
 			<column name="DELIVERY_ADDRESS_VALIDTO" type="DATE" />
-			<column name="DELIVERY_ADDRESS_ZIP" type="VARCHAR(255)" />
+			<column name="DELIVERY_ADDRESS_ZIP" type="VARCHAR(16)" />
 			<column name="DELIVERY_CONTACT_ID" type="BIGINT" />
 			<column name="DELIVERY_CONTACT_DTYPE" type="VARCHAR(31)" />
 			<column name="DELIVERY_CONTACT_BIRTHDAY" type="DATE" />
@@ -341,13 +362,13 @@ TODO:
 			<column name="DELIVERY_CONTACT_GENDER" type="INTEGER" />
 			<column name="DELIVERY_CONTACT_GLN" type="BIGINT" />
 			<column name="DELIVERY_CONTACT_MODIFIED" type="DATE" />
-			<column name="DELIVERY_CONTACT_MODIFIEDBY" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_MODIFIEDBY" type="VARCHAR(32)" />
 			<column name="DELIVERY_CONTACT_NAME" type="VARCHAR(255)" />
 			<column name="DELIVERY_CONTACT_NOTE" type="CLOB" />
-			<column name="DELIVERY_CONTACT_TITLE" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_TITLE" type="VARCHAR(32)" />
 			<column name="DELIVERY_CONTACT_VALIDFROM" type="DATE" />
 			<column name="DELIVERY_CONTACT_VALIDTO" type="DATE" />
-			<column name="DELIVERY_CONTACT_WEBSHOPNAME" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_WEBSHOPNAME" type="VARCHAR(128)" />
 			<column name="DELIVERY_CONTACT_WEBSITE" type="VARCHAR(255)" />
 			<column name="DELIVERY_CONTACT_FK_ADDRESS" type="BIGINT" />
 		</createTable>		
@@ -467,13 +488,14 @@ TODO:
 			FROM FKT_CONTACT c1
 			LEFT JOIN FKT_ADDRESS a1
 			ON c1.fk_address = a1.id
-			WHERE c1.CONTACTTYPE = 0 /* Billing contacts */;
+			WHERE c1.CONTACTTYPE = 0 
+			AND a1.id is not null /* Billing contacts */;
 		</sql>
 	</changeSet>
 
-	<changeSet author="rheydenr" id="20190915-052">
+ 	<changeSet author="rheydenr" id="20190915-052">
 		<comment>update addresses (merge delivery contacts into existing billing contacts)</comment>
-		<sql dbms="MariaDB, MySQL">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
+		<sql dbms="mysql,mariadb">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
 		SELECT t.BILLING_ADDRESS_ID,
 		    t.BILLING_ADDRESS_CITY,
 		    t.BILLING_ADDRESS_CITYADDON,
@@ -588,7 +610,7 @@ TODO:
 		    DELIVERY_CONTACT_FK_ADDRESS = s.FK_ADDRESS;
 		</sql>
 			
-		<sql dbms="h2, HyperSQL">
+		<sql dbms="h2,hsqldb">
 			MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
 			USING FKT_CONTACT s
 			ON t.BILLING_CONTACT_FK_ALTERNATECONTACT = s.id
@@ -621,7 +643,7 @@ TODO:
 	<changeSet author="rheydenr" id="20190915-053">
 		<comment>merge delivery addresses</comment>
 
-		<sql dbms="MariaDB, MySQL">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
+		<sql dbms="mysql,mariadb">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
 		SELECT t.BILLING_ADDRESS_ID,
 		    t.BILLING_ADDRESS_CITY,
 		    t.BILLING_ADDRESS_CITYADDON,
@@ -727,7 +749,7 @@ TODO:
 			    DELIVERY_ADDRESS_ZIP = s.ZIP;
 		</sql>
 
-		<sql dbms="h2, HyperSQL">MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
+		<sql dbms="h2, hsqldb">MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
 			USING FKT_ADDRESS s
 			ON t.DELIVERY_CONTACT_FK_ADDRESS = s.id
 			WHEN MATCHED THEN
@@ -851,7 +873,6 @@ TODO:
 			        VALIDFROM,
 			        VALIDTO,
 			        ZIP,
-			        FK_CONTACT,
 			        CONTACT_ADDRESSES )
 			SELECT
 			    BILLING_ADDRESS_ID,
@@ -871,7 +892,6 @@ TODO:
 			    BILLING_ADDRESS_VALIDFROM,
 			    BILLING_ADDRESS_VALIDTO,
 			    BILLING_ADDRESS_ZIP,
-			    BILLING_CONTACT_ID,
 			    BILLING_CONTACT_ID
 			FROM TMP_CONTACTS_WITH_ADDRESSES;
 		</sql>
@@ -910,7 +930,6 @@ TODO:
 			        VALIDFROM,
 			        VALIDTO,
 			        ZIP,
-			        FK_CONTACT,
 			        CONTACT_ADDRESSES )
 			SELECT
 			    DELIVERY_ADDRESS_ID,
@@ -930,7 +949,6 @@ TODO:
 			    DELIVERY_ADDRESS_VALIDFROM,
 			    DELIVERY_ADDRESS_VALIDTO,
 			    DELIVERY_ADDRESS_ZIP,
-			    BILLING_CONTACT_ID,
 			    BILLING_CONTACT_ID
 			FROM TMP_CONTACTS_WITH_ADDRESSES
 			WHERE DELIVERY_CONTACT_ID IS NOT NULL;
@@ -1254,11 +1272,6 @@ TODO:
             <column name="CONTACT_ADDRESSES"/>
         </createIndex>
     </changeSet>
-    <changeSet author="rheydenreich (generated)" id="20190915-138">
-        <createIndex indexName="FK_FKT_ADDRESS_FK_CONTACT" tableName="FKT_ADDRESS">
-            <column name="FK_CONTACT"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="rheydenreich (generated)" id="20190915-139">
         <createIndex indexName="FK_FKT_CATEGORY_FK_PARENT_CATEGORY" tableName="FKT_CATEGORY">
             <column name="FK_PARENT_CATEGORY"/>
@@ -1339,9 +1352,6 @@ TODO:
     </changeSet>
     <changeSet author="rheydenreich (generated)" id="20190915-171">
         <addForeignKeyConstraint baseColumnNames="CONTACT_ADDRESSES" baseTableName="FKT_ADDRESS" constraintName="FK_FKT_ADDRESS_CONTACT_ADDRESSES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CONTACT"/>
-    </changeSet>
-    <changeSet author="rheydenreich (generated)" id="20190915-172">
-        <addForeignKeyConstraint baseColumnNames="FK_CONTACT" baseTableName="FKT_ADDRESS" constraintName="FK_FKT_ADDRESS_FK_CONTACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CONTACT"/>
     </changeSet>
     <changeSet author="rheydenreich (generated)" id="20190915-173">
         <addForeignKeyConstraint baseColumnNames="FK_PARENT_CATEGORY" baseTableName="FKT_CATEGORY" constraintName="FK_FKT_CATEGORY_FK_PARENT_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
@@ -1464,14 +1474,12 @@ TODO:
         <addForeignKeyConstraint baseColumnNames="FK_WEBSHOP" baseTableName="FKT_WEBSHOPSTATEMAPPING" constraintName="FK_FKT_WEBSHOPSTATEMAPPING_FK_WEBSHOP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_WEBSHOP"/>
     </changeSet>	
 
-	<changeSet id="20190615-201" author="rheydenr">
-		<tagDatabase tag="version_2.1"/>
-	</changeSet>
-
 	<changeSet author="rheydenr" id="20191211-001"
 		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
 		<addColumn tableName="FKT_PRODUCT">
 			<column name="SUPPLIERITEMNUMBER" type="varchar(255)" />
+			<column name="ALLOWANCE" type="varchar(255)" />
+			<column name="NOTE" type="LONGTEXT" />
 		</addColumn>
 	</changeSet>
 	
@@ -1480,48 +1488,31 @@ TODO:
 		<addColumn tableName="FKT_DOCUMENTITEM">
 			<column name="SUPPLIERITEMNUMBER" type="varchar(255)" />
 		</addColumn>
-	</changeSet>
-	
-	<changeSet author="rheydenr" id="20191211-003"
-		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_CONTACT">
-			<column name="T_ALIAS" type="varchar(255)" />
-		</addColumn>
-		<addColumn tableName="FKT_DOCUMENTRECEIVER">
-			<column name="T_ALIAS" type="varchar(255)" />
-		</addColumn>
+		<dropColumn tableName="FKT_DOCUMENTITEM">
+			<column name="TARA" />
+		</dropColumn>
 	</changeSet>
 	
 	<changeSet author="rheydenr" id="20191211-004"
 		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<dropColumn tableName="FKT_DOCUMENTITEM">
-			<column name="TARA" />
-		</dropColumn>
 		<addColumn tableName="FKT_DOCUMENT">
 			<column name="TARA" type="DOUBLE"/>
-		</addColumn>
-	</changeSet>
-	
-	<changeSet author="rheydenr" id="20191218-001"
-		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_DOCUMENT">
 			<column name="VERSION" type="BIGINT" />
 		</addColumn>
 	</changeSet>
 	
-	<changeSet author="rheydenr" id="20191228-001"
+	<changeSet author="rheydenr" id="20200317-001"
 		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_PRODUCT">
-			<column name="ALLOWANCE" type="varchar(255)" />
-		</addColumn>
+		<comment>update name addon and local consultant for delivery addresses</comment>
+		<sql>UPDATE FKT_ADDRESS g SET NAME = (SELECT DELIVERY_CONTACT_COMPANY 
+		         FROM TMP_CONTACTS_WITH_ADDRESSES t WHERE t.DELIVERY_ADDRESS_ID = g.ID),
+		     LOCALCONSULTANT = (SELECT CONCAT(DELIVERY_CONTACT_FIRSTNAME, ' ', DELIVERY_CONTACT_NAME) 
+		         FROM TMP_CONTACTS_WITH_ADDRESSES t WHERE t.DELIVERY_ADDRESS_ID = g.ID)</sql>
 	</changeSet>
 	
-	<changeSet author="rheydenr" id="20200118-001"
-		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
-		<addColumn tableName="FKT_PRODUCT">
-			<column name="NOTE" type="LONGTEXT" />
-		</addColumn>
+	<changeSet id="20190317-010" author="rheydenr">
+		<tagDatabase tag="version_2.1"/>
 	</changeSet>
-	
+
 </databaseChangeLog>
     

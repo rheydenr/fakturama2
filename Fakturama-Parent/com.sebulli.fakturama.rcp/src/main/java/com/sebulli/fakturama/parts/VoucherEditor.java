@@ -344,7 +344,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	        textPaidValue = new FormattedText(bottom, SWT.BORDER | SWT.RIGHT);
 	        textPaidValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
-	        textPaidValue.getControl().setVisible(bPaidWithDiscount.getSelection());
+	        textPaidValue.getControl().setVisible(BooleanUtils.isTrue(voucher.getDiscounted()));
 	        textPaidValue.getControl().setToolTipText(labelPaidValue.getToolTipText());
 	        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(textPaidValue.getControl());
 	

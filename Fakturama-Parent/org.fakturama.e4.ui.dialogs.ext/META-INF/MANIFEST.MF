@@ -2,12 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: E4 dialog extensions
 Bundle-SymbolicName: org.fakturama.e4.ui.dialogs.ext;singleton:=true
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.1.0
 Bundle-Vendor: Fakturama Team
 Automatic-Module-Name: org.eclipse.e4.ui.dialogs.ext
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: javax.inject;version="1.0.0"
+Import-Package: javax.inject;version="1.0.0",
+ org.eclipse.e4.ui.di
 Export-Package: com.sebulli.fakturama.ui.dialogs,
  com.sebulli.fakturama.ui.dialogs.exceptions,
  com.sebulli.fakturama.ui.dialogs.model,

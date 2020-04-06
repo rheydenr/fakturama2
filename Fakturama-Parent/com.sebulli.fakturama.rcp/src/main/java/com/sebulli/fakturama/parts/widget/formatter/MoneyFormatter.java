@@ -62,7 +62,7 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
         // add some more digits before the decimal point (default is 4 digits, this is too less)
         // Because the content is not interpreted by DecimalFormat, but by Formatter (nebula),
         // we can't use a normal currency pattern.
-        String editFormatPattern = "###,##" + editFormat.toPattern();
+        String editFormatPattern = "-###,##" + editFormat.toPattern();
         //RHE: I don't know why I wrote this, really! Perhaps sometimes I get a lightning in my mind...
 //        if(editFormat.getMaximumFractionDigits() > 2) {
 //        	editFormatPattern += StringUtils.repeat("#", editFormat.getMaximumFractionDigits()-2);

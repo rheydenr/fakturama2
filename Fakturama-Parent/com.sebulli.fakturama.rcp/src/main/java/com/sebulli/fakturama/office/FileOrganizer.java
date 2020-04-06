@@ -45,6 +45,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
@@ -69,6 +70,9 @@ public class FileOrganizer {
 
 	@Inject
 	private DocumentsDAO documentsDAO;
+	
+	@Inject
+	private IDocumentAddressManager addressManager;
 	
 	enum PathOption {
 		WITH_FILENAME,
@@ -98,7 +102,7 @@ public class FileOrganizer {
 			     .replaceAll("\\n", "_")
 			     .replaceAll("\\t", "_");
 		}
-		return s;
+		return StringUtils.defaultString(s);
 	}
 
 	/**
@@ -125,7 +129,7 @@ public class FileOrganizer {
 
 		String address = replaceIllegalCharacters(document.getAddressFirstLine());
 
-		DocumentReceiver documentContact = document.getReceiver().stream().filter(r -> r.getBillingType() == null || r.getBillingType().isINVOICE() || r.getBillingType().isDELIVERY()).findFirst().get();
+		DocumentReceiver documentContact = addressManager.getBillingAdress(document);
 		String name = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getName()));
 		String companyOrName = replaceIllegalCharacters(contactUtil.getCompanyOrLastname(documentContact));
 		String alias = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getAlias()));
@@ -224,8 +228,7 @@ public class FileOrganizer {
 			retval = fileNamePlaceholder.matches("^\\w:.*");
 		} else {
 			// detect if the beginning of the given path is an existing one
-			Path tmpPath = Paths.get(StringUtils.substringBefore(fileNamePlaceholder, "/"));
-			retval = !tmpPath.toString().isEmpty() && Files.exists(tmpPath);
+			retval = fileNamePlaceholder.matches("^/.*");
 		}
 		return retval;
 	}
@@ -303,7 +306,7 @@ public class FileOrganizer {
 	 *            The workspace path
 	 * @param document
 	 *            The document
-	 * @param isPDF
+	 * @param targetFormat
 	 *            PDF or ODT
 	 * @param copyFile copy files instead of moving them
 	 * @return True, if it was successful
