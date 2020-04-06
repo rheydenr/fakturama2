@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Common
 Bundle-SymbolicName: com.sebulli.fakturama.common
-Bundle-Version: 2.0.5
+Bundle-Version: 2.1.0
 Export-Package: com.sebulli.fakturama.common,
  com.sebulli.fakturama.exception,
  com.sebulli.fakturama.i18n,
@@ -90,22 +90,16 @@ Export-Package: com.sebulli.fakturama.common,
 Require-Bundle: org.eclipse.e4.core.services,
  javax.inject,
  org.eclipse.equinox.ds;bundle-version="1.4.200",
- org.apache.commons.lang3,
+ org.apache.commons.lang3;visibility:=reexport,
  org.eclipse.core.runtime;bundle-version="3.10.0",
  org.javamoney.osgi,
  org.eclipse.jface,
- com.ibm.icu;bundle-version="58.2.0"
+ com.ibm.icu;bundle-version="58.2.0",
+ ch.qos.logback.classic,
+ ch.qos.logback.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: ch.qos.logback.classic,
- ch.qos.logback.classic.joran,
- ch.qos.logback.classic.spi,
- ch.qos.logback.classic.util,
- ch.qos.logback.core,
- ch.qos.logback.core.joran,
- ch.qos.logback.core.joran.spi,
- ch.qos.logback.core.spi,
- org.apache.commons.collections4,
+Import-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.bidimap,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di,

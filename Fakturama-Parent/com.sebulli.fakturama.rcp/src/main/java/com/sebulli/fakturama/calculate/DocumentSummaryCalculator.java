@@ -6,14 +6,17 @@ package com.sebulli.fakturama.calculate;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 
+import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
@@ -30,6 +33,10 @@ import com.sebulli.fakturama.model.VAT;
  *
  */
 public class DocumentSummaryCalculator {
+	public static final String CURRENCY_CODE = "CURRENCY_CODE";
+
+	@Inject
+	private DocumentReceiverDAO documentReceiverDao;
 
     /**
      * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
@@ -41,9 +48,14 @@ public class DocumentSummaryCalculator {
 	    this(false, DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 	
-	public DocumentSummaryCalculator(Document document, boolean useSET) {
-		this(useSET && document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax()), 
-				DataUtils.getInstance().getDefaultCurrencyUnit());
+	@Inject
+	public DocumentSummaryCalculator(IEclipseContext context) {
+	    this((CurrencyUnit)context.get(CURRENCY_CODE));
+	}
+
+	
+	public DocumentSummaryCalculator(boolean useSET) {
+	    this(useSET, DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 	
 	public DocumentSummaryCalculator(CurrencyUnit currencyCode) {
@@ -56,13 +68,13 @@ public class DocumentSummaryCalculator {
 	}
 	
     public DocumentSummary calculate(Document dataSetDocument) {
-        this.useSET = dataSetDocument != null && dataSetDocument.getBillingContact() != null && BooleanUtils.isTrue(dataSetDocument.getBillingContact().getUseSalesEqualizationTax());
+    	this.useSET = documentReceiverDao.isSETEnabled(dataSetDocument);
         Double scaleFactor = NumberUtils.DOUBLE_ONE;
         int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
         VAT noVatReference = dataSetDocument.getNoVatReference();
         // only calculate a deposit if the document is really deposited (else, if e.g. we have a fully paid invoice and the deposit 
         // amount is not equal to zero we get unpredictable results in later processing)
-        MonetaryAmount deposit = Money.of(BooleanUtils.isTrue(dataSetDocument.getDeposit()) ? dataSetDocument.getPaidValue() : NumberUtils.DOUBLE_ZERO, currencyCode);
+        MonetaryAmount deposit = Money.of(BooleanUtils.isTrue(dataSetDocument.getDeposit()) ? dataSetDocument.getPaidValue() : NumberUtils.DOUBLE_ZERO, getCurrencyCode());
         Shipping shipping = dataSetDocument.getShipping();
 		return calculate(null, dataSetDocument.getItems(), 
         		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(NumberUtils.DOUBLE_ZERO), 
@@ -71,8 +83,8 @@ public class DocumentSummaryCalculator {
                 Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO), noVatReference, 
                 scaleFactor, netGross, deposit);
     }
-    
-    public DocumentSummary calculate(List<DocumentItem> items, Shipping shipping, ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, 
+
+	public DocumentSummary calculate(List<DocumentItem> items, Shipping shipping, ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, 
             int netGross, MonetaryAmount deposit) {
         return calculate(null, items, shipping.getShippingValue(), shipping.getShippingVat(), shippingAutoVat, itemsDiscount, noVatReference, NumberUtils.DOUBLE_ONE, netGross, deposit);
     }
@@ -139,7 +151,7 @@ public class DocumentSummaryCalculator {
 			if (noVatReference != null) {
 				vatDescription = noVatReference.getDescription();
 				vatPercent = noVatReference.getTaxValue();
-				itemVatAmount = Money.zero(currencyCode);
+				itemVatAmount = Money.zero(getCurrencyCode());
 			}
 
 			// Add the VAT to the sum of VATs
@@ -187,7 +199,7 @@ public class DocumentSummaryCalculator {
 		retval.setDiscountNet(discountNet);
 		retval.setDiscountGross(itemsGross.multiply(itemsDiscount));
 
-		final MonetaryAmount zero = Money.zero(currencyCode);
+		final MonetaryAmount zero = Money.zero(getCurrencyCode());
 
 		// Calculate discount
 		if (!DataUtils.getInstance().DoublesAreEqual(itemsDiscount, NumberUtils.DOUBLE_ZERO)) {
@@ -269,7 +281,7 @@ public class DocumentSummaryCalculator {
 		// calculate shipping
 
 		// Scale the shipping
-		MonetaryAmount shippingAmount = Money.of(shippingValue * scaleFactor, currencyCode);
+		MonetaryAmount shippingAmount = Money.of(shippingValue * scaleFactor, getCurrencyCode());
 		Double shippingVatPercent = shippingVat != null ? shippingVat.getTaxValue() : NumberUtils.DOUBLE_ZERO;
 		String shippingVatDescription = shippingVat != null ? shippingVat.getDescription() : ""; // TODO or get it from additional document info???
 
@@ -462,6 +474,13 @@ public class DocumentSummaryCalculator {
 	 */
 	public final void setUseSET(boolean useSET) {
 		this.useSET = useSET;
+	}
+
+	private CurrencyUnit getCurrencyCode() {
+		if(currencyCode == null) {
+			currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
+		}
+		return currencyCode;
 	}
 
 }

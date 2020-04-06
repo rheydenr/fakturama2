@@ -105,7 +105,7 @@ public class SelectContactDialog<T extends Contact> extends AbstractSelectionDia
         context.set(IEventBroker.class, evtBroker);
         MPart part = modelService.createModelElement(MPart.class);
         part.setContext(context);
-        part.getProperties().put(Constants.PROPERTY_CONTACTS_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
+        part.getTransientData().put(Constants.PROPERTY_CONTACTS_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
         context.set(MPart.class, part);
         // FIXME Workaround (quick & dirty), please use enums
         if(StringUtils.equals((String) context.get("CONTACT_TYPE"), "CREDITOR")) {

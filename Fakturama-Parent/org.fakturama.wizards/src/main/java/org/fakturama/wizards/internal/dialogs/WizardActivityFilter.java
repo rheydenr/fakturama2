@@ -4,7 +4,8 @@ import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.fakturama.wizards.model.AdaptableList;
+import org.fakturama.wizards.activities.WorkbenchActivityHelper;
+import org.fakturama.wizards.internal.AdaptableList;
 
 /**
  * Viewer filter designed to work with the new wizard page (and its input/content provider).
@@ -33,9 +34,9 @@ public class WizardActivityFilter extends ViewerFilter {
 			return true; //top-level ("primary") wizards should always be returned
 		}
 
-//        if (WorkbenchActivityHelper.filterItem(element)) {
-//			return false;
-//		}
+        if (WorkbenchActivityHelper.filterItem(element)) {
+			return false;
+		}
 
         return true;
     }

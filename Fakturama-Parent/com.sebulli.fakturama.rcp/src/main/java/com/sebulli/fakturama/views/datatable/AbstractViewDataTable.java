@@ -168,7 +168,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	    // Create the top composite
 		top = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(2).applyTo(top);
-		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).applyTo(top);
+//		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).applyTo(top);
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, contextHelpId);
@@ -352,6 +352,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                     @SuppressWarnings("unchecked")
                     Map<String, Object> parameterMap = wbCommand != null ? wbCommand.getParameterMap() : new HashMap<>();
                     parameterMap.put(CallEditor.PARAM_CATEGORY, treeObject.getFullPathName(true));
+                    parameterMap.put(CallEditor.PARAM_FORCE_NEW, Boolean.TRUE);
                     if (wbCommand != null) {
                         wbCommand = ParameterizedCommand.generateCommand(wbCommand.getCommand(), parameterMap);
                     } else {
@@ -637,12 +638,12 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	                          MessageFormat.format(msg.dialogDeletedatasetMessage, objToDelete.getName()));
                 	}
                     if(confirmation) {  // only kill if confirmed
-                    	handleAfterConfirmation(objToDelete);
                     	
                         // refresh object from database
                         objToDelete = getEntityDAO().findById(objToDelete.getId(), true);
                         // Instead of deleting it completely from the database the element is just marked
                         // as deleted. So a document which still refers to this element would not cause an error.
+                        objToDelete = handleCascadeDelete(objToDelete);
                         objToDelete.setDeleted(Boolean.TRUE);
                         
                         objToDelete = getEntityDAO().update(objToDelete);
@@ -676,9 +677,11 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	/**
 	 * Hook for handling objects after the deletion is confirmed by user.
 	 * This method should be overwritten if additional behavior is wanted.
+	 * @return 
 	 */
-    protected void handleAfterConfirmation(T objToDelete) {
+    protected T handleCascadeDelete(T objToDelete) {
 		// empty per default
+    	return objToDelete;
 	}
     
 	/**
@@ -689,9 +692,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 		// empty per default
     }
 
-
 	abstract protected AbstractDAO<T> getEntityDAO();
-
 
     /**
      * @return

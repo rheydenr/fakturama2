@@ -17,10 +17,12 @@ package com.sebulli.fakturama.dto;
 
 import java.util.Optional;
 
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
-import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -35,6 +37,9 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
  * @author Gerd Bartelt
  */
 public class VatSummarySetManager {
+	@Inject
+	private IEclipseContext context;
+	
 	private VatSummarySet vatSummarySet;
 
 	/**
@@ -56,9 +61,7 @@ public class VatSummarySetManager {
 		MonetaryAmount deposit = Money.of(document.getPaidValue(), currencyCode);
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator();
-        boolean useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
-		documentSummaryCalculator.setUseSET(useSET);
+		DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
 		documentSummaryCalculator.calculate(vatSummarySet, document.getItems(), 
 				document.getShipping() != null ? document.getShipping().getShippingValue() : Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,
 				document.getShipping() != null ? document.getShipping().getShippingVat() : null,
@@ -67,8 +70,6 @@ public class VatSummarySetManager {
 				document.getNoVatReference(),
  			    scaleFactor, document.getNetGross(), deposit);
 	}
-	
-	
 	
 	/**
 	 * Getter for the VatSummarySet

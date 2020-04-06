@@ -7,8 +7,11 @@ import java.util.StringTokenizer;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.fakturama.wizards.WorkbenchException;
-import org.fakturama.wizards.model.IWorkbenchAdapter;
+
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
+import com.sebulli.fakturama.ui.dialogs.exceptions.WorkbenchException;
+import com.sebulli.fakturama.ui.dialogs.model.IWorkbenchAdapter;
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  * Category provides for hierarchical grouping of elements
@@ -23,7 +26,7 @@ public class Category implements IAdaptable {
     /**
      * Name of the miscellaneous category
      */
-    public final static String MISC_NAME = "other"; //WorkbenchMessages.ICategory_other;
+    public final static String MISC_NAME = WorkbenchMessages.ICategory_other;
 
     /**
      * Identifier of the miscellaneous category

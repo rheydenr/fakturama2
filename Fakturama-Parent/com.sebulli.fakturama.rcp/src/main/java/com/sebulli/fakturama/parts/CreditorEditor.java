@@ -23,7 +23,6 @@ import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.CreditorsDAO;
-import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Creditor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -52,7 +51,7 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 	@Override
 	protected Creditor createNewContact(FakturamaModelFactory modelFactory) {
 		Creditor createCreditor = modelFactory.createCreditor();
-		createCreditor.setContactType(ContactType.BILLING);
+//		createCreditor.setContactType(ContactType.BILLING);
 		return createCreditor;
 	}
 	
@@ -82,13 +81,5 @@ public class CreditorEditor extends ContactEditor<Creditor> {
 	@Override
 	protected void setPartLabelForNewContact(MPart part) {
 		part.setLabel(msg.commandNewCreditorName);
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.sebulli.fakturama.parts.ContactEditor#getDeliveryContact()
-	 */
-	@Override
-	protected Creditor getDeliveryContact() {
-		return (Creditor) editorContact.getAlternateContacts();
 	}
 }

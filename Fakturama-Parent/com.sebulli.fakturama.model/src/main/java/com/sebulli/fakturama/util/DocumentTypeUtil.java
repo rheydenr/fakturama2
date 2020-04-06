@@ -29,9 +29,8 @@ import com.sebulli.fakturama.model.FakturamaModelPackage;
  *
  */
 public class DocumentTypeUtil {
-
-    
-    /**
+	
+	/**
      * Finds a {@link DocumentType} by it corresponding {@link BillingType}.
      * 
      * @param billingType

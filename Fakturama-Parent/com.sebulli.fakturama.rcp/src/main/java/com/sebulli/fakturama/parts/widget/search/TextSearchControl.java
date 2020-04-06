@@ -131,24 +131,26 @@ public class TextSearchControl extends Composite {
 	}
 
 	private void registerListeners() {
-		addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-				if (textControl != null && !textControl.isDisposed()) {
-					addToSearchHistory(textControl.getText());
-//					System.out.println("SUCHE läuft! (selected)");
-					// TODO: Suche auslösen!
+		if(hasHistorySupport()) {
+			addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
+					if (textControl != null && !textControl.isDisposed()) {
+						addToSearchHistory(textControl.getText());
+	//					System.out.println("SUCHE läuft! (selected)");
+						// TODO: Suche auslösen!
+					}
+			}));
+			textControl.addFocusListener(new FocusAdapter() {
+	
+				@Override
+				public void focusLost(FocusEvent e) {
+					if (textControl != null && !textControl.isDisposed()) {
+						addToSearchHistory(textControl.getText());
+	//System.out.println("SUCHE läuft! (Focus.out)");
+						// TODO: Suche auslösen!
+					}
 				}
-		}));
-		textControl.addFocusListener(new FocusAdapter() {
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (textControl != null && !textControl.isDisposed()) {
-					addToSearchHistory(textControl.getText());
-//System.out.println("SUCHE läuft! (Focus.out)");
-					// TODO: Suche auslösen!
-				}
-			}
-		});
+			});
+		}
 	}
 
 	private static int getCompositeStyle(boolean automaticFind, Composite parent) {

@@ -742,6 +742,19 @@
                 </listitem>
                 <listitem>
                     <para>
+                        <emphasis role="bold">{company}</emphasis> Firmenname des Kunden</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{alias}</emphasis> Aliasname des Kunden</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{version}</emphasis> Versionsnummer des Dokumentes. Beim Verwenden dieses Platzhalter werden bestehende Dokumente nicht überschrieben, 
+                        sondern mit einer Versionsnummer versehen. Damit kann man mehrere Versionen desselben Dokumentes speichern. Die Versionen sind nicht zwangsläufig fortlaufend.</para>
+                </listitem>
+                <listitem>
+                    <para>
                         <emphasis role="bold">{custno}</emphasis> Kundennummer</para>
                 </listitem>
                 <listitem>

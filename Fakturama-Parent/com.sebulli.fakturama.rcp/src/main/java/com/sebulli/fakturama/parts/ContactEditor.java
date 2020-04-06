@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,31 +29,31 @@ import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.metamodel.ListAttribute;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -62,7 +63,11 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
+import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -70,19 +75,18 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.Event;
 
@@ -95,13 +99,16 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
 import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Contact_;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.parts.converter.CategoryConverter;
@@ -111,6 +118,7 @@ import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
 import com.sebulli.fakturama.parts.widget.contentprovider.HashMapContentProvider;
 import com.sebulli.fakturama.parts.widget.contentprovider.StringHashMapContentProvider;
+import com.sebulli.fakturama.parts.widget.labelprovider.ContactTypeLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.NumberLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.StringComboBoxLabelProvider;
@@ -141,28 +149,18 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	// SWT widgets of the editor
     private Composite top;
 
-    private TabFolder tabFolder;
+    private CTabFolder tabFolder;
+    private CTabFolder addressTabFolder;
+    private List<AddressTabWidget> addressTabWidgets = new ArrayList<>();
+    
 	private Text textNote;
 	private ComboViewer comboSalutationViewer;
 	private Text txtTitle;
 	private Text txtFirstname;
 	private Text txtName;
 	private Text txtCompany;
-	private Text txtStreet;
-	private Text txtZip;
-	private Text txtCity;
-	private ComboViewer comboCountry;
 	private CDateTime dtBirthday;
-	private ComboViewer comboDeliveryGender;
-	private Text txtDeliveryTitle;
-	private Text txtDeliveryFirstname;
-	private Text txtDeliveryName;
-	private CDateTime dtDeliveryBirthday;
-	private Text txtDeliveryCompany;
-	private Text txtDeliveryStreet;
-	private Text txtDeliveryZip;
-	private Text txtDeliveryCity;
-	private ComboViewer comboDeliveryCountry;
+
 	private Text txtAccountHolder;
 	private Text txtAccount;
 	private Text txtBankCode;
@@ -173,24 +171,17 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private Text txtNr;
 	private Combo comboPayment;
 	private ComboViewer comboReliability;
-	private Text txtPhone;
-	private Text txtFax;
-	private Text txtMobile;
 	private Text txtSupplierNr;
-	private Text txtEmail;
 	private Text txtWebsite;
-	private Text txtWebshopName;
+	private Text txtWebshopName, txtAlias, txtRegisterNumber;
 	private Text txtVatNr;
 	private Text txtGln;
 	private FormattedText txtDiscount;
-	private Combo comboCategory;
-	private Group deliveryGroup;
-	private Button bDelAddrEquAddr;
+	private CCombo comboCategory;
 	private ComboViewer comboUseNetGross;
 
 	// These flags are set by the preference settings.
 	// They define, if elements of the editor are displayed, or not.
-	private boolean useDelivery;
 	private boolean useBank;
 	private boolean useMisc;
 	private boolean useNote;
@@ -221,16 +212,14 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     private PaymentsDAO paymentsDao;
     
     @Inject
-	protected IPreferenceStore preferences;
-    
-    @Inject
-    private IEclipseContext context;
-    
-    @Inject
     private ESelectionService selectionService;
 
     private ContactUtil contactUtil;
     private FakturamaModelFactory modelFactory = new FakturamaModelFactory();
+
+	private UpdateValueStrategy<IStatus, String> emailValidationStrategy = new UpdateValueStrategy<IStatus, String>();
+
+	private Map<Integer, String> salutationMap;
 
 	/**
 	 * Saves the contents of this part
@@ -247,6 +236,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		 * - date_added (constant)
 		 */
 
+		// TODO bind combo to model!
 		// at first, check the category for a new entry
         // (the user could have written a new one into the combo field)
         String testCat = comboCategory.getText();
@@ -263,11 +253,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			return Boolean.FALSE;
 		}
 
-	    // check for a new contact
-		if (newContact) {
-
+	    // check the number for a new contact (but only if check is not suppressed)
+		if (newContact && !defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_SUPPRESS_CONTACTNUMER_CHECK)) {
 			// Check, if the contact number is the next one
-			int result = setNextFreeNumberInPrefStore(txtNr.getText(), Contact_.customerNumber.getName());
+			int result = getNumberGenerator().setNextFreeNumberInPrefStore(txtNr.getText(), getEditorID());
 
 			// It's not the next free ID
 			if (result == ERROR_NOT_NEXT_ID) {
@@ -316,11 +305,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		    editorContact.setDiscount(editorContact.getDiscount() * -1); // discount has to be negative
 		}
 		
-		// remove any manual added address
-		editorContact.getAddress().setManualAddress(null);
-		if(editorContact.getAlternateContacts() != null && editorContact.getAlternateContacts().getAddress() != null) {
-			editorContact.getAlternateContacts().getAddress().setManualAddress(null);
-		}
+//		// remove any manual added address
+//		editorContact.getAddress().setManualAddress(null);
+//		if(editorContact.getAlternateContacts() != null && editorContact.getAlternateContacts().getAddress() != null) {
+//			editorContact.getAlternateContacts().getAddress().setManualAddress(null);
+//		}
 
         try {
             // save the new or updated Contact
@@ -350,7 +339,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         Map<String, Object> eventParams = new HashMap<>();
         // the transientData HashMap contains the target document number
         // (was set in MouseEvent handler)
-        String callerDocument = (String) part.getProperties().get(CallEditor.PARAM_CALLING_DOC);
+        String callerDocument = (String) part.getTransientData().get(CallEditor.PARAM_CALLING_DOC);
         if(callerDocument != null) {
             eventParams.put(DocumentEditor.DOCUMENT_ID, callerDocument);
             eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(editorContact.getId()));
@@ -383,10 +372,21 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	@PostConstruct
 	public void init(Composite parent) {
 	    contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+	    
+		emailValidationStrategy.setBeforeSetValidator((String emailAddress) -> {
+			if (StringUtils.isBlank(emailAddress) || EmailValidator.getInstance().isValid(emailAddress)) {
+				return ValidationStatus.ok();
+			} else {
+				return ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
+			}
+		});
+	    
+	    
+	    
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(getEditorIconURI());
-        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+        String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
@@ -408,7 +408,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			setPartLabelForNewContact(part);
 
 			// Set the payment to the standard value
-			long paymentId = preferences.getLong(Constants.DEFAULT_PAYMENT);
+			long paymentId = defaultValuePrefs.getLong(Constants.DEFAULT_PAYMENT);
 			Payment defaultPayment = paymentsDao.findById(paymentId);
 			editorContact.setPayment(defaultPayment);
 			editorContact.setReliability(ReliabilityType.NONE);
@@ -416,16 +416,12 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			// I'ver never given it to the model!
 			// Therefore, to keep it in sync with old version, I've changed it here back to "uncertain" (which is 0).
 			editorContact.setUseNetGross((short)0);
-			
-			// country is determined by locale
-			editorContact.getAddress().setCountryCode(localeUtil.getDefaultLocale().getCountry());
 
 			// Get the next contact number
-			editorContact.setCustomerNumber(getNextNr());
+			editorContact.setCustomerNumber(getNumberGenerator().getNextNr(getEditorID()));
 			
             // a new contact is always dirty...
-            setDirty(true);
-
+            // setDirty(true);
 		}
 		else {
 
@@ -456,70 +452,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 * @return the contact
 	 */
 	protected abstract C createNewContact(FakturamaModelFactory modelFactory2);
-
-	/**
-	 * Defines, if the delivery address is equal to the billing address
-	 * 
-	 * @param isEqual
-	 */
-	private void deliveryAddressIsEqual(boolean isEqual) {
-		deliveryGroup.setVisible(!isEqual);
-		if (isEqual) {
-//			copyAddressToDeliveryAdress();
-			editorContact.setAlternateContacts(null);
-		} else {
-			editorContact.setAlternateContacts(createNewContact(modelFactory));
-			
-			// country is determined by origin address or by locale
-			editorContact.getAlternateContacts().getAddress().setCountryCode(
-					editorContact.getAddress() != null 
-						? editorContact.getAddress().getCountryCode() 
-						: localeUtil.getDefaultLocale().getCountry()); 
-			rebindAlternativeContactsEditor();
-		}
-	}
-
-	/**
-	 * Rebinds all delivery fields from editor to the (newly) additional contact. This is
-	 * necessary because binding works only on objects. If you try to bind an editor field
-	 * to a (nested) property of a non-existent object nothing happens.
-	 * <br />
-	 * Example: <br />
-	 * <ul><li>Create an object, say, new Debitor()
-	 * <li>bind a field to alternateContacts.name
-	 * <li>enter a value in this field
-	 * <li>result: nothing is transported to the model
-	 * </ul>
-	 * Therefore we have to rebind the bindings.
-	 */
-	private void rebindAlternativeContactsEditor() {
-		bindModelValue(editorContact, comboDeliveryGender, Contact_.alternateContacts.getName() + "." + Contact_.gender.getName());
-		bindModelValue(editorContact, txtDeliveryTitle, Contact_.alternateContacts.getName() +"." +Contact_.title.getName(), 32);
-
-		bindModelValue(editorContact, txtDeliveryFirstname, Contact_.alternateContacts.getName() +"." +Contact_.firstName.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryName, Contact_.alternateContacts.getName() +"." +Contact_.name.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryCompany, Contact_.alternateContacts.getName() +"." +Contact_.company.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryStreet, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.street.getName(), 64);
-		bindModelValue(editorContact, txtDeliveryZip, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.zip.getName(), 16);
-		bindModelValue(editorContact, txtDeliveryCity, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.city.getName(), 32);
-		bindModelValue(editorContact, comboDeliveryCountry, Contact_.alternateContacts.getName() +"." +Contact_.address.getName() +"." + Address_.countryCode.getName());
-		bindModelValue(editorContact, dtDeliveryBirthday, Contact_.alternateContacts.getName() +"." +Contact_.birthday.getName());
-	}
-
-//	/**
-//	 * Copy all the address data to the delivery address
-//	 */
-//	private void copyAddressToDeliveryAdress() {
-////		comboDeliveryGender.select(comboGender.getSelectionIndex());
-//		txtDeliveryTitle.setText(txtTitle.getText());
-//		txtDeliveryFirstname.setText(txtFirstname.getText());
-//		txtDeliveryName.setText(txtName.getText());
-//		txtDeliveryCompany.setText(txtCompany.getText());
-//		txtDeliveryStreet.setText(txtStreet.getText());
-//		txtDeliveryZip.setText(txtZip.getText());
-//		txtDeliveryCity.setText(txtCity.getText());
-////		txtDeliveryCountry.setText(comboCountry.getText());
-//	}
 	
     /**
      * If an entity is deleted via list view we have to close a possibly open
@@ -528,7 +460,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
      */
     @Inject
     @Optional
-    public void handleForceClose(@UIEventTopic(ContactEditor.EDITOR_ID + "/forceClose") Event event) {
+    public void handleForceClose(@UIEventTopic(ContactEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "forceClose") Event event) {
         // the event has already all given params in it since we created them as Map
         String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
         // at first we have to check if the message is for us
@@ -550,53 +482,165 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// Some of this editors' control elements can be hidden.
 		// Get the these settings from the preference store
-		useDelivery = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_DELIVERY);
-		useBank = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_BANK);
-		useMisc = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_MISC);
-		useNote = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_NOTE);
-		useSalutation = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_GENDER);
-		useTitle = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_TITLE);
-		useLastNameFirst = (preferences.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT) == 1);
-		useCompany = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COMPANY);
-		useCountry = preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_COUNTRY);
+		useBank = defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_BANK);
+		useMisc = defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_MISC);
+		useNote = defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_NOTE);
+		useSalutation = defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_GENDER);
+		useTitle = defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_TITLE);
+		useLastNameFirst = (defaultValuePrefs.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT) == 1);
+		useCompany = defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_COMPANY);
+		useCountry = defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_COUNTRY);
 		
-		// now do some helpful initializations (needed for combo boxes)
-        Map<String, String> countryNames = localeUtil.getLocaleCountryMap();
-		
-		Map<Integer, String> salutationList = new HashMap<>();
-		for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
-		    salutationList.put(i, contactUtil.getSalutationString(i));
-		} 
-
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
+        GridLayoutFactory.fillDefaults().applyTo(parent);
 
 		// Create the ScrolledComposite to scroll horizontally and vertically
 	    ScrolledComposite scrollcomposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 
 		// Create the top Composite
-		top = new Composite(scrollcomposite, SWT.SCROLLBAR_OVERLAY | SWT.NONE );  //was parent before 
+        top = new Composite(scrollcomposite, SWT.SCROLLBAR_OVERLAY | SWT.NONE );  //was parent before 
 
-		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1200, 600);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
-		scrollcomposite.setExpandHorizontal(true);
-		scrollcomposite.setExpandVertical(true);
-        scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
-		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(top);
+		GridLayoutFactory.fillDefaults().numColumns(4).margins(10, 20).equalWidth(false).applyTo(top);
 
 		// Create an invisible container for all hidden components	
-		Composite invisible = new Composite(top, SWT.NONE);
+		Composite invisible = new Composite(parent, SWT.NONE);
 		invisible.setVisible(false);
 		GridDataFactory.fillDefaults().hint(0, 0).applyTo(invisible);
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, ContextHelpConstants.CONTACT_EDITOR);
 
+		createCustomerNumberWidget(top);
+
+        // Category 
+		Composite categoryPanel = new Composite(top, SWT.NONE);
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(categoryPanel);
+        GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(categoryPanel);
+		
+        Label labelCategory = new Label(categoryPanel, SWT.NONE);
+        //T: Label in the contact editor
+        labelCategory.setText(msg.commonFieldCategory);
+        //T: Tool Tip Text
+        labelCategory.setToolTipText(msg.editorContactFieldCategoryTooltip);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
+
+        comboCategory = new CCombo(categoryPanel, SWT.BORDER);
+        comboCategory.setToolTipText(labelCategory.getToolTipText());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
+
+        // Company
+        Label labelCompany = new Label(useCompany ? top : invisible, SWT.NONE);
+        //T: Label in the contact editor
+        labelCompany.setText(msg.commonFieldCompany);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCompany);
+        txtCompany = new Text(useCompany ? top : invisible, SWT.BORDER | SWT.MULTI);
+//      txtCompany.setText(DataUtils.makeOSLineFeeds(editorContact.getCompany()));
+        GridDataFactory.swtDefaults().hint(400, 40).span(3, 1).grab(false, false).applyTo(txtCompany);
+
+        // The title and gender's label
+        Label labelTitle = new Label((useSalutation || useTitle) ? top : invisible, SWT.NONE);
+        if (useSalutation) {
+            labelTitle.setText(msg.commonFieldGender);
+        } else if (useSalutation && useTitle) {
+            labelTitle.setText(labelTitle.getText() + ", ");
+        } else if (useTitle) {
+            //T: "Title" ( part of an address)
+            labelTitle.setText(labelTitle.getText() + msg.commonFieldTitle);
+        }
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
+        
+        Composite salutationPanel = new Composite(top, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(salutationPanel);
+        GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(salutationPanel);
+
+        // Salutation
+        comboSalutationViewer = new ComboViewer(useSalutation ? salutationPanel : invisible, SWT.BORDER | SWT.READ_ONLY);
+        comboSalutationViewer.setContentProvider(new HashMapContentProvider<Integer, String>());
+/*
+        allSalutations = itemListTypeDao.findAllSalutations();
+        comboSalutationViewer.setContentProvider(new EntityComboProvider());
+        comboSalutationViewer.setLabelProvider(new EntityLabelProvider());
+        comboSalutationViewer.setInput(allSalutations);
+ */
+        comboSalutationViewer.setInput(getSalutationMap());
+        comboSalutationViewer.setLabelProvider(new NumberLabelProvider<Integer, String>(getSalutationMap()));
+        GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboSalutationViewer.getControl());
+        setTabOrder(txtCompany, comboSalutationViewer.getControl());
+
+        // Title
+        txtTitle = new Text(useTitle ? salutationPanel : invisible, SWT.BORDER);
+        GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).span(useSalutation ? 1 : 2, 1).applyTo(txtTitle);
+
+        // First and last name      
+        Label labelName = new Label(top, SWT.NONE);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
+        
+        Composite namePanel = new Composite(top, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(namePanel);
+        GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(namePanel);
+        if (useLastNameFirst) {
+            //T: Format of the name in an address
+            labelName.setText(msg.editorContactFieldLastnamefirstnameName);
+            txtName = new Text(namePanel, SWT.BORDER);
+            GridDataFactory.fillDefaults().hint(200, SWT.DEFAULT).applyTo(txtName);
+            txtFirstname = new Text(namePanel, SWT.BORDER);
+            GridDataFactory.fillDefaults().hint(200, SWT.DEFAULT).applyTo(txtFirstname);
+        }
+        else {
+            //T: Format of the name in an address
+            labelName.setText(msg.editorContactFieldFirstnamelastnameName);
+            txtFirstname = new Text(namePanel, SWT.BORDER);
+            GridDataFactory.fillDefaults().hint(200, SWT.DEFAULT).applyTo(txtFirstname);
+            txtName = new Text(namePanel, SWT.BORDER);
+            GridDataFactory.fillDefaults().hint(200, SWT.DEFAULT).applyTo(txtName);
+        }
+        
+//      txtFirstname.addFocusListener(new FocusAdapter() {
+//          /* (non-Javadoc)
+//           * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+//           */
+//          @Override
+//          public void focusLost(FocusEvent e) {
+//              checkDuplicateContact();
+//          }
+//      });
+        txtFirstname.addModifyListener(new ModifyListener() {
+            
+            @Override
+            public void modifyText(ModifyEvent e) {
+                if(!((Text)e.getSource()).getText().equals(editorContact.getFirstName())) {
+                    isDuplicateWarningShown = false;
+                }
+            }
+        });
+        
+//      txtName.addFocusListener(new FocusAdapter() {
+//          /* (non-Javadoc)
+//           * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+//           */
+//          @Override
+//          public void focusLost(FocusEvent e) {
+//              checkDuplicateContact();
+//          }
+//      });
+        txtName.addModifyListener(new ModifyListener() {
+            
+            @Override
+            public void modifyText(ModifyEvent e) {
+                if(!((Text)e.getSource()).getText().equals(editorContact.getName())) {
+                    isDuplicateWarningShown = false;
+                }
+            }
+        });
+        
 		// Create the address tab
 		Composite tabAddress;
-		if (useDelivery || useBank || useMisc || useNote) {
-			tabFolder = new TabFolder(top, SWT.NONE);
-			GridDataFactory.fillDefaults().grab(true, true).applyTo(tabFolder);
+		if (useBank || useMisc || useNote) {
+			tabFolder = new CTabFolder(top, SWT.NONE);
+			tabFolder.setSimple(false);
+			GridDataFactory.fillDefaults().grab(true, true).span(4, 1).applyTo(tabFolder);
 
-			TabItem item1 = new TabItem(tabFolder, SWT.NONE);
+			CTabItem item1 = new CTabItem(tabFolder, SWT.NONE);
 			//T: Label in the contact editor
 			item1.setText(msg.editorContactLabelAddress);
 			tabAddress = new Composite(tabFolder, SWT.NONE);
@@ -605,12 +649,13 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		else {
 			tabAddress = new Composite(top, SWT.NONE);
 		}
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(tabAddress);
+        GridDataFactory.fillDefaults().grab(true, true).span(4, 1).applyTo(tabAddress);
+		GridLayoutFactory.swtDefaults().applyTo(tabAddress);
 
 		// Create the bank tab
 		Composite tabBank;
 		if (useBank) {
-			TabItem item3 = new TabItem(tabFolder, SWT.NONE);
+			CTabItem item3 = new CTabItem(tabFolder, SWT.NONE);
 			//T: Label in the contact editor
 			item3.setText(msg.editorContactLabelBankaccount);
 			tabBank = new Composite(tabFolder, SWT.NONE);
@@ -627,7 +672,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Create the miscellaneous tab
 		Composite tabMisc;
 		if (useMisc) {
-			TabItem item4 = new TabItem(tabFolder, SWT.NONE);
+			CTabItem item4 = new CTabItem(tabFolder, SWT.NONE);
 			//T: Label in the contact editor
 			item4.setText(msg.commandNavigationMisc);
 			tabMisc = new Composite(tabFolder, SWT.NONE);
@@ -636,13 +681,13 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		else {
 			tabMisc = new Composite(invisible, SWT.NONE);
 		}
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(tabMisc);
+		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(tabMisc);
 
 		// Create to note tab
-		TabItem item5 = null;
+		CTabItem item5 = null;
 		Composite tabNote;
 		if (useNote) {
-			item5 = new TabItem(tabFolder, SWT.NONE);
+			item5 = new CTabItem(tabFolder, SWT.NONE);
 			//T: Label in the contact editor
 			item5.setText(msg.editorContactLabelNotice);
 			tabNote = new Composite(tabFolder, SWT.NONE);
@@ -652,313 +697,13 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			tabNote = new Composite(invisible, SWT.NONE);
 		}
 		tabNote.setLayout(new FillLayout());
-
-		// Composite for the customer's number
-		Composite customerNrComposite = new Composite(tabAddress, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(customerNrComposite);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(customerNrComposite);
-
-		// Customer's number
-		Label labelNr = new Label(customerNrComposite, SWT.NONE);
-		//T: Label in the contact editor
-		labelNr.setText(msg.editorContactFieldNumberName);
-		//T: Tool Tip Text
-		labelNr.setToolTipText(msg.editorContactFieldNumberTooltip);
-
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNr);
-		txtNr = new Text(customerNrComposite, SWT.BORDER);
-		txtNr.setToolTipText(labelNr.getToolTipText());
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtNr);
-
-		// Check button: delivery address equals billing address
-		bDelAddrEquAddr = new Button(tabAddress, SWT.CHECK);
-		//T: Label in the contact editor
-		bDelAddrEquAddr.setText(msg.editorContactFieldDeliveryaddressequalsName);
-		GridDataFactory.swtDefaults().applyTo(bDelAddrEquAddr);
-		bDelAddrEquAddr.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-				deliveryAddressIsEqual(bDelAddrEquAddr.getSelection());
-				comboDeliveryCountry.refresh();
-		}));
-
+		if(tabFolder != null) {
+			tabFolder.setSelection(0);
+		}
+		
 		// Group: address
-		Group addressGroup = new Group(tabAddress, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(addressGroup);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(addressGroup);
-		//T: Label in the contact editor
-		addressGroup.setText(msg.editorContactLabelAddress);
-
-		// Controls in the group "address"
-
-		// The title and gender's label
-		Label labelTitle = new Label((useSalutation || useTitle) ? addressGroup : invisible, SWT.NONE);
-		if (useSalutation) {
-			labelTitle.setText(msg.commonFieldGender);
-		}
-		if (useSalutation && useTitle) {
-			labelTitle.setText(labelTitle.getText() + ", ");
-		}
-		if (useTitle) {
-			//T: "Title" ( part of an address)
-			labelTitle.setText(labelTitle.getText() + msg.commonFieldTitle);
-		}
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
-
-		// Salutation
-		comboSalutationViewer = new ComboViewer(useSalutation ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboSalutationViewer.setContentProvider(new HashMapContentProvider<Integer, String>());
-/*
-		allSalutations = itemListTypeDao.findAllSalutations();
-		comboSalutationViewer.setContentProvider(new EntityComboProvider());
-		comboSalutationViewer.setLabelProvider(new EntityLabelProvider());
-		comboSalutationViewer.setInput(allSalutations);
- */
-		comboSalutationViewer.setInput(salutationList);
-		comboSalutationViewer.setLabelProvider(new NumberLabelProvider<Integer, String>(salutationList));
-		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboSalutationViewer.getControl());
-
-		// Title
-		txtTitle = new Text(useTitle ? addressGroup : invisible, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).span(useSalutation ? 1 : 2, 1).applyTo(txtTitle);
-
-		// First and last name		
-		Label labelName = new Label(addressGroup, SWT.NONE);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
-		if (useLastNameFirst) {
-			//T: Format of the name in an address
-			labelName.setText(msg.editorContactFieldLastnamefirstnameName);
-			txtName = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(txtName);
-			txtFirstname = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtFirstname);
-		}
-		else {
-			//T: Format of the name in an address
-			labelName.setText(msg.editorContactFieldFirstnamelastnameName);
-			txtFirstname = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).grab(true, false).applyTo(txtFirstname);
-			txtName = new Text(addressGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).grab(true, false).applyTo(txtName);
-		}
+		createAddressGroup(invisible, tabAddress);
 		
-		txtFirstname.addFocusListener(new FocusAdapter() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
-			 */
-			@Override
-			public void focusLost(FocusEvent e) {
-			    checkDuplicateContact();
-			}
-		});
-		txtFirstname.addModifyListener(new ModifyListener() {
-			
-			@Override
-			public void modifyText(ModifyEvent e) {
-				if(!((Text)e.getSource()).getText().equals(editorContact.getFirstName())) {
-					isDuplicateWarningShown = false;
-				}
-			}
-		});
-		
-		txtName.addFocusListener(new FocusAdapter() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
-			 */
-			@Override
-			public void focusLost(FocusEvent e) {
-			    checkDuplicateContact();
-			}
-		});
-		txtName.addModifyListener(new ModifyListener() {
-			
-			@Override
-			public void modifyText(ModifyEvent e) {
-				if(!((Text)e.getSource()).getText().equals(editorContact.getName())) {
-					isDuplicateWarningShown = false;
-				}
-			}
-		});
-
-		// Company
-		Label labelCompany = new Label(useCompany ? addressGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelCompany.setText(msg.commonFieldCompany);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCompany);
-		txtCompany = new Text(useCompany ? addressGroup : invisible, SWT.BORDER | SWT.MULTI);
-//		txtCompany.setText(DataUtils.makeOSLineFeeds(editorContact.getCompany()));
-		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtCompany);
-
-		// Street
-		Label labelStreet = new Label(addressGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelStreet.setText(msg.commonFieldStreet);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStreet);
-		txtStreet = new Text(addressGroup, SWT.BORDER);
-		txtStreet.addFocusListener(new FocusAdapter() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
-			 */
-			@Override
-			public void focusLost(FocusEvent e) {
-			    checkDuplicateContact();
-			}
-		});
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtStreet);
-		setTabOrder(txtCompany, txtStreet);
-
-		// City
-		Label labelCity = new Label(addressGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelCity.setText(msg.editorContactFieldZipcityName);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCity);
-		txtZip = new Text(addressGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).applyTo(txtZip);
-		txtCity = new Text(addressGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults().hint(150, SWT.DEFAULT).grab(true, false).applyTo(txtCity);
-
-		// Country
-		Label labelCountry = new Label(useCountry ? addressGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelCountry.setText(msg.commonFieldCountry);
-		//T: Tool Tip Text
-		labelCountry.setToolTipText(msg.editorContactHintSethomecountry);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
-
-		comboCountry = new ComboViewer(useCountry ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
-		comboCountry.setContentProvider(new StringHashMapContentProvider());
-		comboCountry.setInput(countryNames);
-		comboCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames, localeUtil));
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCountry.getCombo());
-		
-		// Birthday
-		Label labelBirthday = new Label(addressGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelBirthday.setText(msg.editorContactFieldBirthdayName);
-		//T: Tool Tip Text
-		labelBirthday.setToolTipText(msg.editorContactFieldBirthdayTooltip);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBirthday);		
-
-		// Set the dtBirthday widget to the contact's birthday date
-        dtBirthday = new CDateTime(addressGroup, CDT.BORDER | CDT.DROP_DOWN);
-        dtBirthday.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
-        dtBirthday.setFormat(CDT.DATE_MEDIUM);
-		dtBirthday.setToolTipText(labelBirthday.getToolTipText());
-		GridDataFactory.fillDefaults().hint(250, SWT.DEFAULT).grab(true, false).applyTo(dtBirthday);
-
-		// Group: delivery address
-		deliveryGroup = new Group(tabAddress, SWT.NONE);
-		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(deliveryGroup);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(deliveryGroup);
-		//T: Label in the contact editor
-		deliveryGroup.setText(msg.commonFieldDeliveryaddress);
-
-		// Controls in the group "Delivery"
-
-		// Delivery gender and title's label
-		Label labelDeliveryTitle = new Label((useSalutation || useTitle) ? deliveryGroup : invisible, SWT.NONE);
-		if (useSalutation)
-			labelDeliveryTitle.setText(msg.commonFieldGender);
-		if (useSalutation && useTitle)
-			labelDeliveryTitle.setText(labelDeliveryTitle.getText() + ", ");
-		if (useTitle)
-			//T: "Title" (part of an address)
-			labelDeliveryTitle.setText(labelDeliveryTitle.getText() + msg.commonFieldTitle);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryTitle);
-
-		// Delivery Gender
-		comboDeliveryGender = new ComboViewer(useSalutation ? deliveryGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboDeliveryGender.setContentProvider(new HashMapContentProvider<Integer, String>());
-        comboDeliveryGender.setInput(salutationList);
-        comboDeliveryGender.setLabelProvider(new NumberLabelProvider<Integer, String>(salutationList));
-		GridDataFactory.fillDefaults().grab(false, false).hint(100, SWT.DEFAULT).span(useTitle ? 1 : 2, 1).applyTo(comboDeliveryGender.getCombo());
-		
-		// Delivery Title
-		txtDeliveryTitle = new Text(useTitle ? deliveryGroup : invisible, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).span(useSalutation ? 1 : 2, 1).applyTo(txtDeliveryTitle);
-
-		// Delivery first and last name
-		Label labelDeliveryName = new Label(deliveryGroup, SWT.NONE);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryName);
-		if (useLastNameFirst) {
-			labelDeliveryName.setText(msg.editorContactFieldLastnamefirstnameName);
-			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
-			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
-		} else {
-			labelDeliveryName.setText(msg.editorContactFieldFirstnamelastnameName);
-			txtDeliveryFirstname = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryFirstname);
-			txtDeliveryName = new Text(deliveryGroup, SWT.BORDER);
-			GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryName);
-		}
-
-		// Delivery company
-		Label labelDeliveryCompany = new Label(useCompany ? deliveryGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryCompany.setText(msg.commonFieldCompany);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCompany);
-		txtDeliveryCompany = new Text(useCompany ? deliveryGroup : invisible, SWT.BORDER | SWT.MULTI);
-		GridDataFactory.fillDefaults().hint(210, 40).grab(true, false).span(2, 1).applyTo(txtDeliveryCompany);
-
-//		// Delivery district
-//		Label labelDeliveryStreet = new Label(deliveryGroup, SWT.NONE);
-//		//T: Label in the contact editor
-//		labelDeliveryStreet.setText(msg.commonField);
-//		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
-//		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
-//		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
-//		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
-//		
-		// Delivery street
-		Label labelDeliveryStreet = new Label(deliveryGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryStreet.setText(msg.commonFieldStreet);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryStreet);
-		txtDeliveryStreet = new Text(deliveryGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(txtDeliveryStreet);
-		setTabOrder(txtDeliveryCompany, txtDeliveryStreet);
-
-		// Delivery city
-		Label labelDeliveryCity = new Label(deliveryGroup, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryCity.setText(msg.editorContactFieldZipcityName);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCity);
-		txtDeliveryZip = new Text(deliveryGroup, SWT.BORDER);
-		GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(txtDeliveryZip);
-		txtDeliveryCity = new Text(deliveryGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtDeliveryCity);
-
-		// Delivery country
-		Label labelDeliveryCountry = new Label(useCountry ? deliveryGroup : invisible, SWT.NONE);
-		//T: Label in the contact editor
-		labelDeliveryCountry.setText(msg.commonFieldCountry);
-		labelDeliveryCountry.setToolTipText(labelCountry.getToolTipText());
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDeliveryCountry);
-		comboDeliveryCountry = new ComboViewer(useCountry ? deliveryGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboDeliveryCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
-        comboDeliveryCountry.setContentProvider(new StringHashMapContentProvider());
-        comboDeliveryCountry.setInput(countryNames);
-        comboDeliveryCountry.setLabelProvider(new StringComboBoxLabelProvider(countryNames, localeUtil));
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboDeliveryCountry.getCombo());
-		
-		// Deliverer's Birthday
-		Label labelDelivererBirthday = new Label(deliveryGroup, SWT.NONE);
-		//T: Label in the deliverer editor
-		labelDelivererBirthday.setText(msg.editorContactFieldBirthdayName);
-		//T: Tool Tip Text
-		labelDelivererBirthday.setToolTipText(msg.editorContactFieldDeliverersbirthdayTooltip);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelDelivererBirthday);		
-
-		dtDeliveryBirthday = new CDateTime(deliveryGroup, CDT.BORDER | CDT.DROP_DOWN);
-		dtDeliveryBirthday.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-		dtDeliveryBirthday.setFormat(CDT.DATE_MEDIUM);
-		dtDeliveryBirthday.setToolTipText(labelDelivererBirthday.getToolTipText());
-		GridDataFactory.swtDefaults().applyTo(dtDeliveryBirthday);
-//		if(editorContact.getAlternateContacts() != null) {
-//			rebindEditor();
-//		}
-
 		// Controls in the tab "Bank"
 
 		// Account holder
@@ -1023,76 +768,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// Controls in tab "Misc"
 
-		// Category 
-		Label labelCategory = new Label(tabMisc, SWT.NONE);
-		//T: Label in the contact editor
-		labelCategory.setText(msg.commonFieldCategory);
-		//T: Tool Tip Text
-		labelCategory.setToolTipText(msg.editorContactFieldCategoryTooltip);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
-
-//		createCategoryCombo();
-        comboCategory = new Combo(tabMisc, SWT.BORDER);
-        comboCategory.setToolTipText(labelCategory.getToolTipText());
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
-
-		// Suppliernumber
-		Label labelSupplier = new Label(tabMisc, SWT.NONE);
-		//T: Label in the contact editor
-		labelSupplier.setText(msg.editorContactFieldSuppliernumberName);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelSupplier);
-		txtSupplierNr = new Text(tabMisc, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtSupplierNr);
-		
-		final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
-		final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
-		
-		// EMail
-		Label labelEmail = new Label(tabMisc, SWT.NONE);
-		//T: Label in the contact editor
-		labelEmail.setText(msg.exporterDataEmail);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelEmail);
-		txtEmail = new Text(tabMisc, SWT.BORDER);
-		txtEmail.addMouseMoveListener((e) -> {
-			if (e.stateMask == SWT.CTRL) {
-				txtEmail.setCursor(cursorHand);
-			} else {
-				txtEmail.setCursor(cursorIBeam);
-			}
-		});
-		txtEmail.addMouseListener(new UrlCallHandler(txtEmail, log));
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtEmail);
-
-		// Telephone
-		Label labelTel = new Label(tabMisc, SWT.NONE);
-		//T: Label in the contact editor
-		labelTel.setText(msg.exporterDataTelephone);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTel);
-		txtPhone = new Text(tabMisc, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtPhone);
-
-		// Telefax
-		Label labelFax = new Label(tabMisc, SWT.NONE);
-		//T: Label in the contact editor
-		labelFax.setText(msg.exporterDataTelefax);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelFax);
-		txtFax = new Text(tabMisc, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtFax);
-
-		// Mobile
-		Label labelMobile = new Label(tabMisc, SWT.NONE);
-		//T: Label in the contact editor
-		labelMobile.setText(msg.exporterDataMobile);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelMobile);
-		txtMobile = new Text(tabMisc, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtMobile);
-
 		// Web Site
 		Label labelWebsite = new Label(tabMisc, SWT.NONE);
 		//T: Label in the contact editor
 		labelWebsite.setText(msg.exporterDataWebsite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWebsite);
 		txtWebsite = new Text(tabMisc, SWT.BORDER);
+		
+		final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
+		final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
 		
 		txtWebsite.addMouseMoveListener((e) -> {
 			if (e.stateMask == SWT.CTRL) {
@@ -1104,8 +788,30 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		
 		// FAK-382 clickable URL
 		txtWebsite.addMouseListener(new UrlCallHandler(txtWebsite, log));
+		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(txtWebsite);
+
+		// Suppliernumber
+		Label labelSupplier = new Label(tabMisc, SWT.NONE);
+		//T: Label in the contact editor
+		labelSupplier.setText(msg.editorContactFieldSuppliernumberName);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelSupplier);
+		txtSupplierNr = new Text(tabMisc, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtSupplierNr);
 		
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebsite);
+		// GLN
+		Label labelGln = new Label(tabMisc, SWT.NONE);
+		labelGln.setText(msg.contactFieldGln);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelGln);
+		txtGln = new Text(tabMisc, SWT.BORDER);
+		txtGln.setToolTipText(msg.contactFieldGlnTooltip);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtGln);
+		
+		// Register Number
+		Label labelRegisterNumber = new Label(tabMisc, SWT.NONE);
+		labelRegisterNumber.setText(msg.contactFieldRegisterNumber);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelRegisterNumber);
+		txtRegisterNumber = new Text(tabMisc, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtRegisterNumber);
 		
 		// WebShop name  
 		Label labelWebshopName = new Label(tabMisc, SWT.NONE);
@@ -1113,6 +819,36 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelWebshopName);
 		txtWebshopName = new Text(tabMisc, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtWebshopName);
+		
+		// Alias for this contact 
+		Label labelAlias = new Label(tabMisc, SWT.NONE);
+		labelAlias.setText(msg.editorContactFieldAlias);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAlias);
+		txtAlias = new Text(tabMisc, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAlias);
+	      
+        // Birthday
+        Label labelBirthday = new Label(tabMisc, SWT.NONE);
+        //T: Label in the contact editor
+        labelBirthday.setText(msg.editorContactFieldBirthdayName);
+        //T: Tool Tip Text
+        labelBirthday.setToolTipText(msg.editorContactFieldBirthdayTooltip);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelBirthday);        
+
+        // Set the dtBirthday widget to the contact's birthday date
+        dtBirthday = new CDateTime(tabMisc, CDT.BORDER | CDT.DROP_DOWN);
+        dtBirthday.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+        dtBirthday.setFormat(CDT.DATE_MEDIUM);
+        dtBirthday.setToolTipText(labelBirthday.getToolTipText());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(dtBirthday);
+
+		// VAT number
+		Label labelVatNr = new Label(tabMisc, SWT.NONE);
+		//T: Label in the contact editor
+		labelVatNr.setText(msg.exporterDataVatno);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVatNr);
+		txtVatNr = new Text(tabMisc, SWT.BORDER);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtVatNr);
 
 		// Payment
 		Label labelPayment = new Label(tabMisc, SWT.NONE);
@@ -1124,6 +860,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelPayment);
         // Combo to select the payment
         comboPayment = new Combo(tabMisc, SWT.BORDER | SWT.READ_ONLY);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(comboPayment);
 
 		// Reliability
 		Label labelReliability = new Label(tabMisc, SWT.NONE);
@@ -1136,39 +873,11 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		comboReliability.setLabelProvider(new LabelProvider() {
 		    @Override
 		    public String getText(Object element) {
-		        ReliabilityType type = (ReliabilityType)element;
-		        switch (type) {
-                case NONE:
-                    return "---";
-                case POOR:
-                    return msg.contactFieldReliabilityPoorName;
-                case MEDIUM:
-                    return msg.contactFieldReliabilityMediumName;
-                case GOOD:
-                    return msg.contactFieldReliabilityGoodName;
-                default:
-                    return null;
-                }
+		        return contactUtil.getReliabilityString((ReliabilityType)element);
 		    }
 		});
 
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboReliability.getControl());
-		
-		// VAT number
-		Label labelVatNr = new Label(tabMisc, SWT.NONE);
-		//T: Label in the contact editor
-		labelVatNr.setText(msg.exporterDataVatno);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelVatNr);
-		txtVatNr = new Text(tabMisc, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtVatNr);
-		
-		// GLN
-		Label labelGln = new Label(tabMisc, SWT.NONE);
-		labelGln.setText(msg.contactFieldGln);
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelGln);
-		txtGln = new Text(tabMisc, SWT.BORDER);
-		txtGln.setToolTipText(msg.contactFieldGlnTooltip);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtGln);
 
 		// Customer's discount
 		Label labelDiscount = new Label(tabMisc, SWT.NONE);
@@ -1219,23 +928,284 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Controls in tab "Note"
 
 		// The note
-//		String note = DataUtils.makeOSLineFeeds(editorContact.getNote());
-		textNote = new Text(tabNote, SWT.BORDER | SWT.MULTI);
-
+//		String note = DataUtils.getInstance().makeOSLineFeeds(editorContact.getNote());
+		textNote = new Text(tabNote, SWT.BORDER | SWT.MULTI |SWT.WRAP | SWT.V_SCROLL | SWT.H_SCROLL);
+        textNote.setData("Notiz");
+        
+        scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
+        scrollcomposite.setContent(top);
+        scrollcomposite.setMinSize(top.computeSize(SWT.DEFAULT, SWT.DEFAULT));   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+        scrollcomposite.setExpandHorizontal(true);
+        scrollcomposite.setExpandVertical(true);
+        bindModel();
+        
 		// If the note is not empty, display it,
 		// when opening the editor.
-		if (useNote && StringUtils.isNotEmpty(editorContact.getNote()))
+        if (useNote && StringUtils.isNotEmpty(editorContact.getNote())) {
 			tabFolder.setSelection(item5);
+			textNote.setFocus();
+		}
+	}
 
-		// Test, if the address and the delivery address
-		// are equal. If they are, set the checkbox and
-		// hide the delivery address
-		Boolean isEqual = editorContact.getAlternateContacts() == null;
-		bDelAddrEquAddr.setSelection(isEqual);
-		deliveryGroup.setVisible(!isEqual);
+    private void createCustomerNumberWidget(Composite headInfo) {
+		// Composite for the customer's number
+
+		// Customer's number
+		Label labelNr = new Label(headInfo, SWT.NONE);
+		//T: Label in the contact editor
+		labelNr.setText(msg.editorContactFieldNumberName);
+		//T: Tool Tip Text
+		labelNr.setToolTipText(msg.editorContactFieldNumberTooltip);
+
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNr);
+		txtNr = new Text(headInfo, SWT.BORDER);
+		txtNr.setToolTipText(labelNr.getToolTipText());
+        GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(txtNr);
+	}
+
+    @Focus
+    public void setFocus() {
+        if (useNote && StringUtils.isNotEmpty(editorContact.getNote())) {
+            textNote.setFocus();
+        } else {
+            txtNr.setFocus();
+        }
+    }
+    
+	private void createAddressGroup(Composite invisible, Composite twoPanelLayout) {
+		Composite tabAddress = new Composite(twoPanelLayout, SWT.NONE);
+		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(tabAddress);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(tabAddress);
 		
-        bindModel();
+		// Controls in the group "address"
+
+		addressTabFolder = new CTabFolder(twoPanelLayout, SWT.NONE);
+		addressTabFolder.setHighlightEnabled(true);
+		addressTabFolder.setSimple(false);
+		Button plusButton = new Button(addressTabFolder, SWT.NONE);
+		plusButton.setText("+");
+		plusButton.setToolTipText("add a new address for this contact");
+		plusButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				CTabItem newAddressTab = createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress + " #" + (addressTabFolder.getItemCount()),
+						invisible, createAddressPanel());
+				bindAddressWidgetForIndex(newAddressTab, addressTabFolder.getItemCount() - 1);
+				
+				addressTabFolder.setSelection(newAddressTab);
+			}
+		});
+		addressTabFolder.setTopRight(plusButton);
+
+		// create an inner tab for each BillingType
+		// hint: The main tab is not closable!
+		CTabItem addressTab = createAddressTabForBillingType(msg.editorContactLabelMaintab, invisible, createAddressPanel(), SWT.NONE);
+		addressTabFolder.setSelection(addressTab);
+		if(editorContact.getAddresses().size() > 1) {
+			for (int i = 1; i < editorContact.getAddresses().size(); i++) {
+				createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress + " #" + i, invisible, createAddressPanel());
+			}
+		}
+//		
+//		addressTabFolder.addCTabFolder2Listener(CTabFolder2Listener.closeAdapter(e -> {
+//			e.doit = MessageDialog.openQuestion(top.getShell(), msg.dialogMessageboxTitleWarning, "Möchten Sie die ausgewählte Adresse wirklich entfernen?");
+//		}));
+
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(addressTabFolder);
+		addressTabFolder.setFocus();
+	}
+
+	private Map<Integer, String> getSalutationMap() {
+		if(salutationMap == null || salutationMap.isEmpty()) {
+			salutationMap = new HashMap<>();
+			for (int i = 0; i <= ContactUtil.MAX_SALUTATION_COUNT; i++) {
+			    salutationMap.put(i, contactUtil.getSalutationString(i));
+			}
+		}
+		return salutationMap;
+	}
+
+	private Composite createAddressPanel() {
+		Composite addressGroup = new Composite(addressTabFolder, SWT.NONE);
+		GridLayoutFactory.swtDefaults().numColumns(4).equalWidth(false).applyTo(addressGroup);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(addressGroup);
+		return addressGroup;
+	}
+
+	private CTabItem createAddressTabForBillingType(String name, Composite invisible, Composite addressGroup) {
+		// FIXME at the moment closing a CTab raises a CCE, therefore this is commented out for the moment 
+		int style = SWT.NONE/* | SWT.CLOSE */;
+		return createAddressTabForBillingType(name, invisible, addressGroup, style);
+	}
+	
+	private CTabItem createAddressTabForBillingType(String name, Composite invisible, Composite addressGroup, int style) {
+		CTabItem addressForBillingType = new CTabItem(addressTabFolder, style);
+		AddressTabWidget addressTabWidget = new AddressTabWidget();
+		addressForBillingType.setText(name);
+        
+        // Name Addon
+        Label labelNameAddon = new Label(addressGroup, SWT.NONE);
+        //T: Label in the contact editor
+        labelNameAddon.setText(msg.editorContactFieldNameAddon);
+        labelNameAddon.setToolTipText(msg.editorContactFieldNameAddonTooltip);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelNameAddon);
+        Text txtNameAddon = new Text(addressGroup, SWT.BORDER);
+        txtNameAddon.setToolTipText(msg.editorContactFieldNameAddonTooltip);
+        addressTabWidget.setNameAddon(txtNameAddon);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(txtNameAddon);
+
+		// Local Consultant
+		Label labelLocalConsultant = new Label(addressGroup, SWT.NONE);
+		//T: Label in the contact editor
+		labelLocalConsultant.setText(msg.editorContactFieldLocalconsultant);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelLocalConsultant);
 		
+		Text txtlocalConsultant = new Text(addressGroup, SWT.BORDER);
+		addressTabWidget.setLocalConsultant(txtlocalConsultant);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtlocalConsultant);
+		
+		// Street
+		Label labelStreet = new Label(addressGroup, SWT.NONE);
+		//T: Label in the contact editor
+		labelStreet.setText(msg.commonFieldStreet);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelStreet);
+		Text txtStreet = new Text(addressGroup, SWT.BORDER);
+		txtStreet.addFocusListener(new FocusAdapter() {
+			/* (non-Javadoc)
+			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+			 */
+			@Override
+			public void focusLost(FocusEvent e) {
+				checkDuplicateContact(txtStreet.getText());
+			}
+		});
+		addressTabWidget.setStreet(txtStreet);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtStreet);
+	      
+        final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
+        final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
+        
+        // EMail
+        Label labelEmail = new Label(addressGroup, SWT.NONE);
+        //T: Label in the contact editor
+        labelEmail.setText(msg.exporterDataEmail);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelEmail);
+        Text txtEmail = new Text(addressGroup, SWT.BORDER);
+        txtEmail.addMouseMoveListener((e) -> {
+            if (e.stateMask == SWT.CTRL) {
+                txtEmail.setCursor(cursorHand);
+            } else {
+                txtEmail.setCursor(cursorIBeam);
+            }
+        });
+        txtEmail.addMouseListener(new UrlCallHandler(txtEmail, log));
+        addressTabWidget.setEmail(txtEmail);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(txtEmail);
+        
+        // Address Addon
+        Label labelAddressAddon = new Label(addressGroup, SWT.NONE);
+        //T: Label in the contact editor
+        labelAddressAddon.setText(msg.editorContactFieldAddressAddon);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAddressAddon);
+        Text txtAddressAddon = new Text(addressGroup, SWT.BORDER);
+        addressTabWidget.setAddressAddon(txtAddressAddon);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAddressAddon);
+
+        // Telephone
+        Label labelTel = new Label(addressGroup, SWT.NONE);
+        //T: Label in the contact editor
+        labelTel.setText(msg.exporterDataTelephone);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTel);
+        Text txtPhone = new Text(addressGroup, SWT.BORDER);
+        addressTabWidget.setPhone(txtPhone);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(txtPhone);
+
+		// City Addon
+		Label labelCityAddon = new Label(addressGroup, SWT.NONE);
+		//T: Label in the contact editor
+		labelCityAddon.setText(msg.editorContactFieldDistrict);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCityAddon);
+		Text txtCityAddon = new Text(addressGroup, SWT.BORDER);
+		addressTabWidget.setCityAddon(txtCityAddon);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtCityAddon);
+//		setTabOrder(txtStreet, txtCityAddon);
+
+        // additional Phone
+        Label labelAdditionalPhone = new Label(addressGroup, SWT.NONE);
+        //T: Label in the contact editor
+        labelAdditionalPhone.setText(msg.editorContactFieldAdditionalPhone);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAdditionalPhone);
+        Text txtAdditionalPhone = new Text(addressGroup, SWT.BORDER);
+        addressTabWidget.setAdditionalPhone(txtAdditionalPhone);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(txtAdditionalPhone);
+
+		// City
+		Label labelCity = new Label(addressGroup, SWT.NONE);
+		//T: Label in the contact editor
+		labelCity.setText(msg.editorContactFieldZipcityName);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCity);
+		
+		Composite zipAndCity = new Composite(addressGroup, SWT.NONE);
+		GridDataFactory.fillDefaults().hint(80, SWT.DEFAULT).grab(true, false).applyTo(zipAndCity);
+		GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(zipAndCity);
+		Text txtZip = new Text(zipAndCity, SWT.BORDER);
+		addressTabWidget.setZip(txtZip);
+		GridDataFactory.fillDefaults().hint(50, SWT.DEFAULT).applyTo(txtZip);
+		
+		Text txtCity = new Text(zipAndCity, SWT.BORDER);
+		addressTabWidget.setCity(txtCity);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtCity);
+
+        // Telefax
+        Label labelFax = new Label(addressGroup, SWT.NONE);
+        //T: Label in the contact editor
+        labelFax.setText(msg.exporterDataTelefax);
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelFax);
+        Text txtFax = new Text(addressGroup, SWT.BORDER);
+        addressTabWidget.setFax(txtFax);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(txtFax);
+
+		// Country
+		Label labelCountry = new Label(useCountry ? addressGroup : invisible, SWT.NONE);
+		//T: Label in the contact editor
+		labelCountry.setText(msg.commonFieldCountry);
+		//T: Tool Tip Text
+		labelCountry.setToolTipText(msg.editorContactHintSethomecountry);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
+
+		ComboViewer comboCountry = new ComboViewer(useCountry ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
+		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
+		comboCountry.setContentProvider(new StringHashMapContentProvider());
+		comboCountry.setInput(localeUtil.getLocaleCountryMap());
+		StringComboBoxLabelProvider stringComboBoxLabelProvider = ContextInjectionFactory.make(StringComboBoxLabelProvider.class, context);
+		stringComboBoxLabelProvider.setCountryNames(localeUtil.getLocaleCountryMap());
+		comboCountry.setLabelProvider(stringComboBoxLabelProvider);
+		addressTabWidget.setCountryCombo(comboCountry);
+		GridDataFactory.fillDefaults().hint(80, SWT.DEFAULT).grab(false, false).applyTo(comboCountry.getCombo());
+        
+		// Mobile
+		Label labelMobile = new Label(addressGroup, SWT.NONE);
+		//T: Label in the contact editor
+		labelMobile.setText(msg.exporterDataMobile);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelMobile);
+		Text txtMobile = new Text(addressGroup, SWT.BORDER);
+		addressTabWidget.setMobile(txtMobile);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtMobile);
+		
+		Label labelAddressType = new Label(addressGroup, SWT.NONE);
+		labelAddressType.setText(msg.editorContactFieldContacttype);
+		labelAddressType.setToolTipText(msg.editorContactFieldContacttypeTooltip);
+		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelAddressType);
+		
+		final MultiChoice<ContactType> mcSimple = new MultiChoice<ContactType>(addressGroup, SWT.None);
+		mcSimple.setLabelProvider(new ContactTypeLabelProvider(msg));
+		mcSimple.addAll(ContactType.values());
+		addressTabWidget.setContactTypeWidget(mcSimple);
+		GridDataFactory.fillDefaults().applyTo(mcSimple);
+		
+		addressForBillingType.setControl(addressGroup);
+		addressTabWidgets.add(addressTabWidget);
+		return addressForBillingType;
 	}
 	
 	/**
@@ -1252,66 +1222,99 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtNr, Contact_.customerNumber.getName(), 32);
 		bindModelValue(editorContact, comboSalutationViewer, Contact_.gender.getName());
 		bindModelValue(editorContact, txtTitle, Contact_.title.getName(), 32);
-		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 64);
-		bindModelValue(editorContact, txtName, Contact_.name.getName(), 64);
-		bindModelValue(editorContact, txtCompany, Contact_.company.getName(), 64);
-		bindModelValue(editorContact, txtStreet, Contact_.address.getName() + "." + Address_.street.getName(), 64);
-		bindModelValue(editorContact, txtZip, Contact_.address.getName() + "." + Address_.zip.getName(), 16);
-		bindModelValue(editorContact, txtCity, Contact_.address.getName() + "." + Address_.city.getName(), 32);
-		bindModelValue(editorContact, comboCountry, Contact_.address.getName() + "." + Address_.countryCode.getName());
-		bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
+		bindModelValue(editorContact, txtFirstname, Contact_.firstName.getName(), 255);
+		bindModelValue(editorContact, txtName, Contact_.name.getName(), 255);
+		bindModelValue(editorContact, txtCompany, Contact_.company.getName(), 255);
 		
-		if(editorContact.getAlternateContacts() != null) {
-			rebindAlternativeContactsEditor();
+		CTabItem[] items = addressTabFolder.getItems();
+		for (int i = 0; i < items.length; i++) {
+			CTabItem addressTabItem = items[i];
+			bindAddressWidgetForIndex(addressTabItem, i);
 		}
 		
-		bindModelValue(editorContact, txtAccountHolder, Contact_.bankAccount.getName() +"." +BankAccount_.accountHolder.getName(), 64);
+		bindModelValue(editorContact, txtAccountHolder, Contact_.bankAccount.getName() +"." +BankAccount_.accountHolder.getName(), 255);
 		bindModelValue(editorContact, txtAccount, Contact_.bankAccount.getName() +"." +BankAccount_.name.getName(), 32);
 		bindModelValue(editorContact, txtBankCode, Contact_.bankAccount.getName() +"." +BankAccount_.bankCode.getName(), 32);
 		bindModelValue(editorContact, txtBankName, Contact_.bankAccount.getName() +"." +BankAccount_.bankName.getName(), 64);
-		bindModelValue(editorContact, txtIBAN, Contact_.bankAccount.getName() +"." +BankAccount_.iban.getName(), 32);
-		bindModelValue(editorContact, txtBIC, Contact_.bankAccount.getName() +"." +BankAccount_.bic.getName(), 32);
-        bindModelValue(editorContact,txtMandatRef, Contact_.mandateReference.getName(), 32);
+		bindModelValue(editorContact, txtIBAN, Contact_.bankAccount.getName() +"." +BankAccount_.iban.getName(), 255);
+		bindModelValue(editorContact, txtBIC, Contact_.bankAccount.getName() +"." +BankAccount_.bic.getName(), 255);
+        bindModelValue(editorContact, txtMandatRef, Contact_.mandateReference.getName(), 255);
 
 		fillAndBindCategoryCombo();
 		fillAndBindPaymentCombo();
 		
-		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 64);
-		
-		UpdateValueStrategy<IStatus, String> strategy = new UpdateValueStrategy<IStatus, String>();
-		strategy.setBeforeSetValidator(new IValidator<String>() {
-
-		    @Override
-		    public IStatus validate(String emailAddress) {
-		        if(StringUtils.isBlank(emailAddress) || EmailValidator.getInstance().isValid(emailAddress)) {
-		        	return ValidationStatus.ok();
-		        } else {
-		        	return ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
-		        }
-		    }
-		});
-		
-		Binding binding = bindModelValue(editorContact, txtEmail, Contact_.email.getName(), 64, strategy, null);
-		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
-		
-		bindModelValue(editorContact, txtPhone, Contact_.phone.getName(), 32);
-		bindModelValue(editorContact, txtFax, Contact_.fax.getName(), 32);
-		bindModelValue(editorContact, txtMobile, Contact_.mobile.getName(), 32);
-		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 64);
-		bindModelValue(editorContact, txtWebshopName, Contact_.webshopName.getName(), 64);
+		bindModelValue(editorContact, txtSupplierNr, Contact_.supplierNumber.getName(), 32);
+		bindModelValue(editorContact, txtWebsite, Contact_.website.getName(), 255);
+		bindModelValue(editorContact, txtWebshopName, Contact_.webshopName.getName(), 128);
+		bindModelValue(editorContact, txtAlias, Contact_.alias.getName(), 255);
+        bindModelValue(editorContact, dtBirthday, Contact_.birthday.getName());
 
 		bindModelValue(editorContact, comboReliability, Contact_.reliability.getName());
-		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 32);
+		bindModelValue(editorContact, txtVatNr, Contact_.vatNumber.getName(), 64);
 		bindModelValue(editorContact, txtGln, Contact_.gln.getName(), 32);
+		bindModelValue(editorContact, txtRegisterNumber, Contact_.registerNumber.getName(), 128);
 		bindModelValue(editorContact, txtDiscount, Contact_.discount.getName(), 16);
         bindModelValue(editorContact, comboUseNetGross, Contact_.useNetGross.getName());
-		bindModelValue(editorContact, textNote, Contact_.note.getName(), 10000);
+		bindModelValue(editorContact, textNote, Contact_.note.getName(), -1);
 		
 		bindAdditionalValues(editorContact);
 		
 		part.getTransientData().remove(BIND_MODE_INDICATOR);
     }
-	
+
+	protected void bindAddressWidgetForIndex(CTabItem addressTabItem, int index) {
+	    Address currentAddress = getOrCreateAddressByIndexFromContact(index);
+		// sometimes the country code is null
+		// ==> country is determined by locale
+	    if(currentAddress.getCountryCode() == null) {
+	    	currentAddress.setCountryCode(localeUtil.getDefaultLocale().getCountry());
+	    }
+	    
+	    AddressTabWidget currentAddressTabWidget = addressTabWidgets.get(index);
+		bindModelValue(currentAddress, currentAddressTabWidget.getAddressAddon(), Address_.addressAddon.getName(), 255);
+		bindModelValue(currentAddress, currentAddressTabWidget.getNameAddon(), Address_.name.getName(), 255);
+		bindModelValue(currentAddress, currentAddressTabWidget.getLocalConsultant(), Address_.localConsultant.getName(), 128);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getStreet(), Address_.street.getName(), 255);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getZip(), Address_.zip.getName(), 16);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getCity(), Address_.city.getName(), 128);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getCityAddon(), Address_.cityAddon.getName(), 128);
+	    bindModelValue(currentAddress, currentAddressTabWidget.getCountryCombo(), Address_.countryCode.getName());
+
+	    bindListWidget(currentAddress, currentAddressTabWidget.getContactTypeWidget(), Address_.contactTypes);
+		
+		Binding binding = bindModelValue(currentAddress, currentAddressTabWidget.getEmail(), Address_.email.getName(), 64, emailValidationStrategy, null);
+		ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
+		
+		bindModelValue(currentAddress, currentAddressTabWidget.getPhone(), Address_.phone.getName(), 64);
+		bindModelValue(currentAddress, currentAddressTabWidget.getAdditionalPhone(), Address_.additionalPhone.getName(), 64);
+		bindModelValue(currentAddress, currentAddressTabWidget.getFax(), Address_.fax.getName(), 64);
+		bindModelValue(currentAddress, currentAddressTabWidget.getMobile(), Address_.mobile.getName(), 64);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <E extends IEntity> void bindListWidget(E listEntity, Control currentWidget,
+			ListAttribute<E, ContactType> property) {
+
+		if (currentWidget instanceof MultiChoice) {
+			bindModelList(listEntity, ContactType.class, (MultiChoice<ContactType>) currentWidget, property.getName(),
+				null, null);
+		}
+	}
+
+	protected Address getOrCreateAddressByIndexFromContact(int i) {
+		// get last address and fill up the address list
+		int lastAddressIndex = editorContact.getAddresses().size() - 1;
+		if(lastAddressIndex < i) {
+			do {
+				Address address = modelFactory.createAddress();
+				address.setCountryCode(localeUtil.getDefaultLocale().getCountry());
+				// add no ContactType means this address is a default address for this contact
+				editorContact.addToAddresses(address);
+			} while(++lastAddressIndex < i);
+		}
+		return editorContact.getAddresses().get(i);
+	}
+
 	private void fillAndBindPaymentCombo() {
 		Payment tmpPayment = editorContact.getPayment();
 		ComboViewer comboViewerPayment;
@@ -1360,7 +1363,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
      *
      * @return the delivery contact
      */
-	abstract protected C getDeliveryContact();
+//	abstract protected C getDeliveryContact();
 
 	/**
      * creates the combo box for the VAT category
@@ -1397,25 +1400,26 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	
 	/**
 	 * Checks if the currently entered name and street is already stored.
+	 * @param street 
 	 * 
 	 * @return <code>true</code> if a contact with the same name and street was found
 	 */
-	private void checkDuplicateContact() {
+	private void checkDuplicateContact(String street) {
 		// check only if name, firstname and street aren't empty
 		if(isDuplicateWarningShown  
 			|| "".equals(txtName.getText())
 			|| "".equals(txtFirstname.getText())
-			|| "".equals(txtStreet.getText())) return;
+			|| "".equals(street)) return;
 		
 		// Search the list for an existing data set with the specified value
 		Contact testContact = contactDAO.checkContactWithSameValues(txtName.getText()
 				, txtFirstname.getText()
-				, txtStreet.getText());
+				, street);
 		if(testContact != null) {
 				isDuplicateWarningShown = true;
 				MessageDialog.openWarning(top.getShell(), msg.editorContactWarningDuplicate,
 						MessageFormat.format(msg.editorContactWarningDuplicateStreet, 
-								testContact.getFirstName(), testContact.getName(), testContact.getAddress().getStreet()));
+								testContact.getFirstName(), testContact.getName(), testContact.getAddresses().get(0).getStreet()));
 		}
 
 		// nothing found
@@ -1431,7 +1435,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		// Cancel, if there is already a document with the same ID
 		Contact testContact = contactDAO.getContactWithSameNumber(txtNr.getText());
 		if (testContact != null && testContact.getId() != editorContact.getId()) {
-			int contactFormat = preferences.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT);
+			int contactFormat = defaultValuePrefs.getInt(Constants.PREFERENCES_CONTACT_NAME_FORMAT);
 			// Display an error message
 			MessageDialog.openError(top.getShell(), msg.dialogMessageboxTitleError, 
 					MessageFormat.format(msg.editorContactErrorCustomernumber, txtNr.getText(), 
@@ -1507,8 +1511,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			}
 			super.mouseDown(e);
 		}
-
 	}
-
 }
 

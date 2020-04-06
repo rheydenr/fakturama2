@@ -33,10 +33,7 @@ import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 /**
  * Handler class for deleting an item from a list.
  * 
- * (class is unused)
- *
  */
-@Deprecated 
 public class DeleteHandler {
 
 	@CanExecute

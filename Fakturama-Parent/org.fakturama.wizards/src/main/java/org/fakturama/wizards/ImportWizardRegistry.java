@@ -21,8 +21,9 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.fakturama.wizards.internal.AbstractExtensionWizardRegistry;
-import org.fakturama.wizards.internal.registry.IWorkbenchRegistryConstants;
 import org.fakturama.wizards.internal.registry.WizardsRegistryReader;
+
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  * The {@link ImportWizardRegistry} gets the {@link MAddon} for

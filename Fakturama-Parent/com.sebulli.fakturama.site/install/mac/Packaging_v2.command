@@ -9,14 +9,13 @@ if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-VERSION=2.0.5
+VERSION=2.1.0
 # prepare the correct directory structure
 tar -xzvf ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-macosx.cocoa.x86_64.tar.gz
 
 # set up your app name, version number, and background image file name
 APP_NAME="Fakturama2"
 
-# mv Fakturama2.app/Contents/MacOS/Fakturama Fakturama2.app/Contents/MacOS/Fakturama2
 
 DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
 # cp ../${DMG_BACKGROUND_IMG} .
@@ -24,9 +23,9 @@ DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
 # you should not need to change these
 APP_EXE="${APP_NAME}.app/Contents/MacOS/Fakturama"
 
-VOL_NAME="Installer_${APP_NAME}_${VERSION}"   # volume name will be "Installer_Fakturama_2_0_0”
+VOL_NAME="Installer_Fakturama_macos_x64_${VERSION}"   # volume name will be "Installer_Fakturama_macos_x64_2.0.0”
 DMG_TMP="${VOL_NAME}-temp.dmg"
-DMG_FINAL="${VOL_NAME}.dmg" # final DMG name will be "Installer_Fakturama2_2_0_0.dmg"
+DMG_FINAL="${VOL_NAME}.dmg" # final DMG name will be "Installer_Fakturama_macos_x64_2.0.0.dmg"
 STAGING_DIR="./Install"             # we copy all our stuff into this dir
 
 # Check the background image DPI and convert it if it isn't 72x72
@@ -146,4 +145,8 @@ rm -rf "${STAGING_DIR}"
 rm -rf "${APP_NAME}.app"
 echo 'Done.'
 
+echo 'moving installer (tar.gz) to installer directory'
+mv ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-linux.gtk.x86_64.tar.gz ../install/Installer_Fakturama_linux_x64_${VERSION}.tar.gz
+mv "${DMG_FINAL}" ../install
+zip -m -o -v -j ../install/Installer_Fakturama_windows_x64_${VERSION}.zip ../install/Installer_Fakturama_windows-x64_${VERSION}.exe
 exit

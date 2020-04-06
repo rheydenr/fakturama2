@@ -32,8 +32,6 @@ public class ShippingVatTypeLabelProvider extends LabelProvider {
         this.msg = msg;
     }
 
-
-
     @Override
     public String getText(Object element) {
         String retval = "";

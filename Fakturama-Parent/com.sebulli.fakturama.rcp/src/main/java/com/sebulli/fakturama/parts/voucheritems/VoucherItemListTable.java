@@ -114,11 +114,11 @@ import com.sebulli.fakturama.model.VoucherItem;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.ExpenditureVoucherEditor;
 import com.sebulli.fakturama.parts.VoucherEditor;
-import com.sebulli.fakturama.parts.itemlist.ItemAccountTypeDisplayConverter;
+import com.sebulli.fakturama.parts.converter.ItemAccountTypeDisplayConverter;
+import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
 import com.sebulli.fakturama.parts.itemlist.ItemAccountTypeValueComboProvider;
 import com.sebulli.fakturama.parts.itemlist.MoveEntryDownMenuItem;
 import com.sebulli.fakturama.parts.itemlist.MoveEntryUpMenuItem;
-import com.sebulli.fakturama.parts.itemlist.VatDisplayConverter;
 import com.sebulli.fakturama.parts.itemlist.VatValueComboProvider;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
@@ -423,9 +423,9 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
             public void selectionChanged(SelectionChangedEvent event) {
 //                log.debug("Selection changed:");
                 
-                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
                 @SuppressWarnings("unchecked")
-                List<VoucherItemDTO> selectedElements = selection.toList();
+                List<VoucherItemDTO> selectedElements = structuredSelection.toList();
                 selectionService.setSelection(selectedElements);
             }
             
@@ -863,7 +863,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
         // Recalculate the total sum of the document if necessary
         // do it via the messaging system and send a message to ExpenditureVoucherEditor
         Map<String, Object> event = new HashMap<>();
-        event.put(DocumentEditor.DOCUMENT_ID, ((MPart)top.getParent().getParent().getData("modelElement")).getProperties().get(VoucherEditor.PART_ID));
+        event.put(DocumentEditor.DOCUMENT_ID, ((MPart)top.getParent().getParent().getData("modelElement")).getTransientData().get(VoucherEditor.PART_ID));
         event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
         evtBroker.post(VoucherEditor.EDITOR_ID + "/itemChanged", event);
     }

@@ -593,7 +593,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 			log.error(ex);
 		}
 
-		if (executionResult.getErrorCode() != Constants.RC_OK) {
+		if (executionResult != null && executionResult.getErrorCode() != Constants.RC_OK) {
 			// If there is an error - display it in a message box
 			String errorMessage = StringUtils.abbreviate(executionResult.getErrorMessage(), 400);
 			MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);

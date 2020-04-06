@@ -7,8 +7,11 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.commands.CommandManager;
+import org.eclipse.core.commands.ParameterType;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.EventTopic;
@@ -19,7 +22,6 @@ import org.eclipse.e4.ui.model.application.commands.MCommand;
 import org.eclipse.e4.ui.model.application.commands.MHandler;
 import org.eclipse.e4.ui.model.application.commands.MHandlerContainer;
 import org.eclipse.e4.ui.model.application.ui.MContext;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -27,15 +29,23 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
+
+import com.sebulli.fakturama.handlers.paramconverter.BooleanParameterValueConverter;
+import com.sebulli.fakturama.handlers.paramconverter.DocumentParameterConverter;
+import com.sebulli.fakturama.handlers.paramconverter.NumberParameterValueConverter;
 
 /**
  * Process the additions and removals of handlers on the model
  */
 public class HandlerProcessingAddon {
+    
+    @Inject
+    private CommandManager cmdMan;    	
+
+    @Inject
+    private IEclipseContext context;
 	private MApplication application;
 	private EModelService modelService;
-        private EventHandler testHandler;
 	
 	/**
 	 * Do initial check of handlers and their context upon creation
@@ -49,6 +59,8 @@ public class HandlerProcessingAddon {
 		this.application = application;
 		this.modelService = modelService;
 		
+		defineAdditionalParameterTypes();
+		
         ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
         IRunnableWithProgress op = new IRunnableWithProgress() {
         	public void run(IProgressMonitor monitor) throws InvocationTargetException ,InterruptedException {
@@ -60,42 +72,35 @@ public class HandlerProcessingAddon {
         	// (since we have the progress already on splash screen)
         	progressMonitorDialog.setOpenOnRun(false);
 			progressMonitorDialog.run(true, false, op);
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+		} catch (InvocationTargetException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-		testHandler = new EventHandler() {
-			
-			@Override
-			public void handleEvent(Event event) {
-				Object part = event.getProperty(UIEvents.EventTags.ELEMENT);
-				boolean tbr =(Boolean) event.getProperty(UIEvents.EventTags.NEW_VALUE);
-				if (part instanceof MPart){
-					System.out.println("Part "+((MPart)part).getElementId()+" is "+(!tbr?"NOT":"")+" visible");
-				}
-			}
-		};
-		eventBroker.subscribe(UIEvents.UIElement.TOPIC_TOBERENDERED, testHandler);
-    	
+	}
 
-        
+	
+	/**
+	 * Per default all parameter types are Strings. To change this we have to register additional parameter types
+	 * (which corresponds to existing Java classes). 
+	 */
+	private void defineAdditionalParameterTypes() {
+        ParameterType parameterType = cmdMan.getParameterType("com.sebulli.fakturama.model.Order");
+        parameterType.define("com.sebulli.fakturama.model.Order", ContextInjectionFactory.make(DocumentParameterConverter.class, context));
+		
+        ParameterType parameterTypeInteger = cmdMan.getParameterType("java.lang.Integer");
+        parameterTypeInteger.define("java.lang.Integer", new NumberParameterValueConverter());
+		
+        ParameterType parameterTypeBoolean = cmdMan.getParameterType("java.lang.Boolean");
+        parameterTypeBoolean.define("java.lang.Boolean", new BooleanParameterValueConverter());
 	}
 
 	protected void initialize(IProgressMonitor pMonitor) {
 		List<MHandlerContainer> findElements = modelService.findElements(application, null,
 				MHandlerContainer.class, null);
-//		pMonitor.beginTask("initialize application", IProgressMonitor.UNKNOWN);
-//		int i = 1;
 		for (MHandlerContainer mHandlerContainer : findElements) {
-//			pMonitor.worked(i++);
 			if (mHandlerContainer instanceof MContext) {
 				MContext mContext = (MContext) mHandlerContainer;
 				IEclipseContext context = mContext.getContext();
-//				context.getParent().get(IPreferenceStore.class)
 				if (context != null) {
 					for (MHandler mHandler : mHandlerContainer.getHandlers()) {
 						processActiveHandler(mHandler, context);

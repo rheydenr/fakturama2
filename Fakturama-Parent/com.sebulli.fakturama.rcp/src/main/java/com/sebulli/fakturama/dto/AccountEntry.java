@@ -60,6 +60,7 @@ public class AccountEntry extends DTO {
 	 * 
 	 */
 	public AccountEntry(Document document) {
+		// take the first DocumentReceiver as address source
 		this(document.getPayDate(), document.getAddressFirstLine(),
 				document.getName(),
 				document.getPaidValue());

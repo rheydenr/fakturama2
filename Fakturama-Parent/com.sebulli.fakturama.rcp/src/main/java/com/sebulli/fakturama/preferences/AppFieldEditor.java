@@ -123,15 +123,13 @@ public class AppFieldEditor extends StringButtonFieldEditor {
 			path = "";
 
 		// Check whether it is a valid application
-		if (path.length() != 0) {
-			if (!ooStarter.isValidPath(path)) {
-				if (OSDependent.isOOApp())
-					//T: Error message if the selected file is not a valid OpenOffice app
-				    message = msg.preferencesOfficeAppfieldNovalidapp;
-				else
-					//T: Error message if the selected folder is not a valid OpenOffice folder
-				    message = msg.preferencesOfficeAppfieldNovalidfolder;
-			}
+		if (path.length() != 0 && OSDependent.getOOBinary(path) == null) {
+			if (OSDependent.isOOApp())
+				//T: Error message if the selected file is not a valid OpenOffice app
+			    message = msg.preferencesOfficeAppfieldNovalidapp;
+			else
+				//T: Error message if the selected folder is not a valid OpenOffice folder
+			    message = msg.preferencesOfficeAppfieldNovalidfolder;
 		}
 
 		// Display an error message

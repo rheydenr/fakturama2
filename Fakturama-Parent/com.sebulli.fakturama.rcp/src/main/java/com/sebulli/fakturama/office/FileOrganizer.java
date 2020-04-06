@@ -21,7 +21,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +35,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.Util;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -43,9 +43,9 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
-import com.sebulli.fakturama.misc.OSDependent;
-import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
@@ -70,6 +70,9 @@ public class FileOrganizer {
 
 	@Inject
 	private DocumentsDAO documentsDAO;
+	
+	@Inject
+	private IDocumentAddressManager addressManager;
 	
 	enum PathOption {
 		WITH_FILENAME,
@@ -99,7 +102,7 @@ public class FileOrganizer {
 			     .replaceAll("\\n", "_")
 			     .replaceAll("\\t", "_");
 		}
-		return s;
+		return StringUtils.defaultString(s);
 	}
 
 	/**
@@ -126,9 +129,10 @@ public class FileOrganizer {
 
 		String address = replaceIllegalCharacters(document.getAddressFirstLine());
 
-		Contact documentContact = Optional.ofNullable(document.getBillingContact()).orElse(document.getDeliveryContact());
+		DocumentReceiver documentContact = addressManager.getBillingAdress(document);
 		String name = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getName()));
 		String companyOrName = replaceIllegalCharacters(contactUtil.getCompanyOrLastname(documentContact));
+		String alias = replaceIllegalCharacters(StringUtils.defaultString(documentContact.getAlias()));
 
 		// Replace the placeholders
 		String customerRef = replaceIllegalCharacters(document.getCustomerRef());
@@ -141,6 +145,9 @@ public class FileOrganizer {
 				.replaceAll("\\{name\\}", name)
 				.replaceAll("\\{firstname\\}", replaceIllegalCharacters(documentContact.getFirstName()))
 				.replaceAll("\\{companyorname\\}", companyOrName)
+				.replaceAll("\\{company\\}", replaceIllegalCharacters(StringUtils.defaultString(documentContact.getCompany())))
+				.replaceAll("\\{alias\\}", alias)
+				.replaceAll("\\{version\\}", String.format("%03d", document.getVersion()))
 				.replaceAll("\\{custno\\}", 
 					StringUtils.defaultString(documentContact.getCustomerNumber()));
 
@@ -217,12 +224,11 @@ public class FileOrganizer {
 	 */
 	private boolean isAbsolutePath(String fileNamePlaceholder) {
 		boolean retval = false;
-		if(OSDependent.isWin()) {
+		if(Util.isWindows()) {
 			retval = fileNamePlaceholder.matches("^\\w:.*");
 		} else {
 			// detect if the beginning of the given path is an existing one
-			Path tmpPath = Paths.get(StringUtils.substringBefore(fileNamePlaceholder, "/"));
-			retval = !tmpPath.toString().isEmpty() && Files.exists(tmpPath);
+			retval = fileNamePlaceholder.matches("^/.*");
 		}
 		return retval;
 	}
@@ -300,7 +306,7 @@ public class FileOrganizer {
 	 *            The workspace path
 	 * @param document
 	 *            The document
-	 * @param isPDF
+	 * @param targetFormat
 	 *            PDF or ODT
 	 * @param copyFile copy files instead of moving them
 	 * @return True, if it was successful

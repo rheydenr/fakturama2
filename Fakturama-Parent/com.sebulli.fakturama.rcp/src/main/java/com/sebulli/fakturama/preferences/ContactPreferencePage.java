@@ -31,7 +31,7 @@ import com.sebulli.fakturama.misc.Constants;
 /**
  * Preference page for the contact settings
  * 
- * @author Gerd Bartelt
+ * @author The Fakturama Team
  */
 public class ContactPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference  {
 
@@ -60,9 +60,6 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(this.getControl(), ContextHelpConstants.CONTACT_PREFERENCE_PAGE);
 
-		//T: Preference page "Contact" - Label checkbox "Use delivery address"
-		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_DELIVERY, msg.preferencesContactUsedelivery, getFieldEditorParent()));
-
 		//T: Preference page "Contact" - Label checkbox "Use bank account"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_BANK, msg.preferencesContactUsebankaccount, getFieldEditorParent()));
 
@@ -89,7 +86,7 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 		//T: Preference page "Contact" - Label checkbox "Use Country Field"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_COUNTRY, msg.preferencesContactUsecountry, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX, msg.preferencesDocumentUsesalesequalizationtax, getFieldEditorParent()));
-
+		addField(new BooleanFieldEditor(Constants.PREFERENCES_CONTACT_SUPPRESS_CONTACTNUMER_CHECK, msg.preferencesContactSuppressnumbercheck, getFieldEditorParent()));
 	}
 
 	/**
@@ -109,6 +106,7 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COMPANY, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_COUNTRY, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CONTACT_SUPPRESS_CONTACTNUMER_CHECK, write);
 	}
     
     @Override
@@ -136,5 +134,6 @@ public class ContactPreferencePage extends FieldEditorPreferencePage implements 
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_COMPANY, true);
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_COUNTRY, true);
 		node.setDefault(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX, false);
+		node.setDefault(Constants.PREFERENCES_CONTACT_SUPPRESS_CONTACTNUMER_CHECK, false);
 	}
 }

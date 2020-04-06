@@ -4,8 +4,11 @@ import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.IWizardNode;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardSelectionPage;
-import org.fakturama.wizards.model.AdaptableList;
+import org.fakturama.wizards.internal.AdaptableList;
+
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 
 /**
  * Page for selecting a wizard from a group of available wizards.
@@ -34,7 +37,7 @@ public abstract class WorkbenchWizardSelectionPage extends WizardSelectionPage {
         this.currentResourceSelection = currentSelection;
         this.workbench = aWorkbench;
         this.triggerPointId = triggerPointId;
-        setTitle("WorkbenchMessages.Select");
+        setTitle(WorkbenchMessages.Select);
     }
 
     /**
@@ -76,9 +79,9 @@ public abstract class WorkbenchWizardSelectionPage extends WizardSelectionPage {
         setSelectedNode(node);
     }
 
-//    /* (non-Javadoc)
-//     * @see org.eclipse.jface.wizard.IWizardPage#getNextPage()
-//     */
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.wizard.IWizardPage#getNextPage()
+     */
 //    public IWizardPage getNextPage() { 
 //        ITriggerPoint triggerPoint = getWorkbench().getActivitySupport()
 //        .getTriggerPointManager().getTriggerPoint(triggerPointId);

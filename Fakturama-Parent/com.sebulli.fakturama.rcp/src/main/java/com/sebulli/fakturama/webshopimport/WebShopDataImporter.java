@@ -81,7 +81,6 @@ import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
-import com.sebulli.fakturama.migration.CategoryBuilder;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -94,7 +93,9 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
@@ -104,6 +105,7 @@ import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.model.WebshopStateMapping;
 import com.sebulli.fakturama.parts.DebitorEditor;
+import com.sebulli.fakturama.util.CategoryBuilder;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.webshopimport.type.AttributeType;
@@ -180,8 +182,10 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     
 	@Inject
 	private INumberFormatterService numberFormatterService;
-
 	
+	@Inject
+	private IDocumentAddressManager addressManager;
+
 	private WebShopConnector connector;
 	private String runResult = "";
 
@@ -577,8 +581,6 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         contactItem.setFirstName(contact.getFirstname());
         contactItem.setName(contact.getLastname());
         contactItem.setCompany(contact.getCompany());
-        contactItem.setPhone(contact.getPhone());
-        contactItem.setEmail(contact.getEmail());
         contactItem.setWebshopName(contact.getWebshopName());
         contactItem.setVatNumber(contact.getVatno());
 		contactItem.setValidFrom(today);
@@ -588,20 +590,25 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         address.setZip(contact.getZip());
         address.setCity(contact.getCity());
         address.setValidFrom(today);
+        address.setPhone(contact.getPhone());
+        address.setEmail(contact.getEmail());
+        address.getContactTypes().add(com.sebulli.fakturama.model.ContactType.BILLING);
         String countryCode = localeUtil.findCodeByDisplayCountry(contact.getCountry(), lang);
         address.setCountryCode(countryCode);
         
-        contactItem.setAddress(address);
         contactItem = contactsDAO.findOrCreate(contactItem);
+        address.setContact(contactItem);
+        contactItem.getAddresses().add(address);
         // Attention: If the contact is new then we have to create a new number for it!
         if(StringUtils.isBlank(contactItem.getCustomerNumber())) {
     		NumberGenerator numberProvider = ContextInjectionFactory.make(NumberGenerator.class, context);
-            numberProvider.setEditorID(DebitorEditor.class.getSimpleName());
-            String nextNr = numberProvider.getNextNr();
+    		String editorId = DebitorEditor.class.getSimpleName();
+            String nextNr = numberProvider.getNextNr(editorId);
             contactItem.setCustomerNumber(nextNr);
             contactItem = contactsDAO.update(contactItem);
-            numberProvider.setNextFreeNumberInPrefStore(nextNr);
+			numberProvider.setNextFreeNumberInPrefStore(nextNr, editorId);
         }
+//        contactItem = contactsDAO.update(contactItem);
 //            contactItem.setSupplierNumber(contact.get???); ==> is not transferred from connector!!!
 
         Address deliveryAddress = fakturamaModelFactory.createAddress();
@@ -609,8 +616,10 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         deliveryAddress.setZip(contact.getDeliveryZip());
         deliveryAddress.setCity(contact.getDeliveryCity());
         deliveryAddress.setValidFrom(today);
+        deliveryAddress.getContactTypes().add(com.sebulli.fakturama.model.ContactType.DELIVERY);
         countryCode = localeUtil.findCodeByDisplayCountry(contact.getDeliveryCountry(), lang);
         deliveryAddress.setCountryCode(countryCode);
+        deliveryAddress.setContact(contactItem);
         
         // if delivery contact is equal to main contact we don't need to persist it
         if (!address.isSameAs(deliveryAddress) 
@@ -618,25 +627,13 @@ public class WebShopDataImporter implements IRunnableWithProgress {
                 || !StringUtils.equals(contact.getDeliveryFirstname(), contactItem.getFirstName())
                 || !StringUtils.equals(contact.getDeliveryLastname(), contactItem.getName())
                 || !StringUtils.equals(contact.getDeliveryCompany(), contactItem.getCompany())) {
-            Contact deliveryContact = fakturamaModelFactory.createDebitor();
 
-            deliveryContact.setFirstName(contact.getDeliveryFirstname());
-            deliveryContact.setName(contact.getDeliveryLastname());
-            deliveryContact.setCompany(contact.getDeliveryCompany());
-
-            if (contact.getDeliveryGender().equals("m"))
-                deliveryContact.setGender(Integer.valueOf(1));
-            if (contact.getDeliveryGender().equals("f"))
-                deliveryContact.setGender(Integer.valueOf(2));
-            
-            deliveryContact.setValidFrom(Date.from(instant));
-
-            deliveryContact.setAddress(deliveryAddress);
-            contactItem.setAlternateContacts(deliveryContact);
-            contactItem = contactsDAO.update(contactItem);
+            contactItem.getAddresses().add(deliveryAddress);
         }
-    
-        dataSetDocument.setBillingContact(contactItem);
+        contactItem = contactsDAO.update(contactItem);
+        address = addressManager.getAddressFromContact(contactItem, com.sebulli.fakturama.model.ContactType.BILLING).orElse(null);
+        DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromAddress(address, dataSetDocument.getBillingType());
+		dataSetDocument.getReceiver().add(documentReceiver);
 //            dataSetDocument.setAddress(contactItem.getAddress(false)); // included in contact
 //            dataSetDocument.setDeliveryaddress(deliveryContact); // included in contact
         dataSetDocument.setAddressFirstLine(contactUtil.getNameWithCompany(contactItem));			
@@ -679,8 +676,13 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 				noVat = false;
 			} else {
 				// Use the vat name
-				if (noVatName.isEmpty() && !itemType.getVatname().isEmpty()) {
-					noVatName = itemType.getVatname();
+				if (noVatName.isEmpty()) {
+					if (!itemType.getVatname().isEmpty()) {
+						noVatName = itemType.getVatname();
+					} else {
+						// fallback if VAT name isn't set
+						noVatName = msg.dataDefaultVat;
+					}
 				}
 			}
 
@@ -882,7 +884,9 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     	// Re-calculate the document's total sum and check it.
     	// It must be the same total value as in the web shop
 //        	dataSetDocument.calculate();
-    	DocumentSummary summary = new DocumentSummaryCalculator(currencyCode).calculate(dataSetDocument);
+    	context.set(DocumentSummaryCalculator.CURRENCY_CODE, currencyCode);
+    	DocumentSummaryCalculator summaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
+    	DocumentSummary summary = summaryCalculator.calculate(dataSetDocument);
 		MonetaryAmount calcTotal = summary.getTotalGross();
 		MonetaryAmount totalFromWebshop = Money.of(paymentType != null ? paymentType.getTotal() : NumberUtils.DOUBLE_ZERO, currencyCode);
 		totalFromWebshop = DataUtils.getInstance().getDefaultRounding().apply(totalFromWebshop);
@@ -908,7 +912,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     private VAT getOrCreateVAT(String vatName, Double vatPercent) {
         VAT vat = fakturamaModelFactory.createVAT();
         vat.setName(vatName);
-        vat.setDescription(vatName);
+//        vat.setDescription(vatName);
         vat.setTaxValue(vatPercent);
         vat.setValidFrom(new Date());
         try {
@@ -1088,7 +1092,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	private String getStringFromInputStream(InputStream is) {
         String line = "";
         try {
-            line = IOUtils.toString(is);
+            line = IOUtils.toString(is, "UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
         }

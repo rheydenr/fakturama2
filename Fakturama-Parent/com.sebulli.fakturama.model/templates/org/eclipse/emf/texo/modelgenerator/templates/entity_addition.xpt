@@ -20,12 +20,12 @@ Additional code for JavaBeans
 	    boolean retval = true;
 	    if(other != null) {
 	  	«FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation -»
-			«IF featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many -»
+			«IF featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many && !featureAnnotation.EStructuralFeature.volatile-»
 			if(«featureAnnotation.getter»() != null) {
 				retval &= «featureAnnotation.getter»().isSameAs(other.«featureAnnotation.getter»());
 			}
-			«ELSEIF featureAnnotation.EStructuralFeature.many -»
-				/* reference to a Set («featureAnnotation.name») cannot be compared... */
+			«ELSEIF featureAnnotation.EStructuralFeature.many || featureAnnotation.EStructuralFeature.volatile -»
+				/* reference to a Set («featureAnnotation.name») or a volatile member cannot be compared... */
 			«ELSE -»
 				«EXPAND attribute FOR featureAnnotation -»
 	  		«ENDIF-»
@@ -41,7 +41,7 @@ Additional code for JavaBeans
 	public «this.simpleClassName-» clone() {
 		    «this.simpleClassName-» retval = new «this.simpleClassName-»();
 		  	«FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation -»
-				«IF featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many -»
+				«IF featureAnnotation.reference && !featureAnnotation.EStructuralFeature.many && !featureAnnotation.EStructuralFeature.volatile-»
 					retval.«featureAnnotation.setter»(this.«featureAnnotation.getter»());
 				«ELSEIF featureAnnotation.EStructuralFeature.many -»
 					/* reference to a Set («featureAnnotation.name») cannot be compared... */
@@ -56,6 +56,7 @@ Additional code for JavaBeans
 «ENDDEFINE»
 
 «DEFINE copyAttribute FOR EAttributeModelGenAnnotation -»
+«IF !this.EStructuralFeature.volatile -»
 	«IF this.primitive -»
 	«REM»ugly hack, but I don't know how to identify the entities ID :-( /* INFO: «this» */ «ENDREM-»
 		«IF this.name != 'id' -»
@@ -64,6 +65,7 @@ Additional code for JavaBeans
 	«ELSE -»
 		  retval.«this.setter»(this.«this.getter»());
 	«ENDIF -»
+«ENDIF -»
 «ENDDEFINE -»
 
 «DEFINE attribute FOR EAttributeModelGenAnnotation -»

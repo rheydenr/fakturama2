@@ -43,6 +43,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -72,6 +73,7 @@ import org.w3c.dom.NodeList;
 import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
+import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
@@ -120,6 +122,9 @@ public class OfficeDocument {
     @Inject
     private DocumentsDAO documentsDAO;
     
+	@Inject
+	private DocumentReceiverDAO documentReceiverDao;
+
 	@Inject
 	private ILocaleService localeUtil;
     
@@ -191,22 +196,25 @@ public class OfficeDocument {
 			// Stop here and do not fill the document's placeholders, if it's an existing document
 			if (openExisting) {
 				documentPath = Paths.get(document.getOdtPath());
-				generatedPdf = Paths.get(document.getPdfPath());
+				if(document.getPdfPath() != null) {
+					generatedPdf = Paths.get(document.getPdfPath());
+				}
 				openDocument();
 				return;
 			}
 			
 			// check if we have to use sales equalization tax
-	        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
+	        setUseSalesEquationTaxForDocument(document);
 
 			// remove previous images            
             cleanup();
             
             // Recalculate the sum of the document before exporting
-			documentSummary = new DocumentSummaryCalculator().calculate(this.document);
+            DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
+			documentSummary = documentSummaryCalculator.calculate(this.document);
 
 			// Get the VAT summary of the UniDataSet document
-			VatSummarySetManager vatSummarySetManager = new VatSummarySetManager();
+			VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, context);
 			vatSummarySetManager.add(this.document, Double.valueOf(1.0));
 
             /* Get the placeholders of the OpenOffice template.
@@ -851,6 +859,11 @@ public class OfficeDocument {
 		else if (key.equals("ITEM.NR")) {
 			value = item.getItemNumber();
 		}
+		
+		// Get the item number
+		else if (key.equals("ITEM.SUPPLIERNUMBER")) {
+			value = item.getSupplierItemNumber();
+		}
 
 		// Get the quanity unit
 		else if (key.equals("ITEM.QUANTITYUNIT")) {
@@ -1033,7 +1046,8 @@ public class OfficeDocument {
 				int pictureWidth = 100;
 				double pictureRatio = 1.0;
 				double pixelRatio = 1.0;
-			      
+				Path workDir = null;
+
 				// Read the image a first time to get width and height
 				try (ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());) {
 					
@@ -1061,12 +1075,13 @@ public class OfficeDocument {
 					}
 					
 					// Generate the image
-					
+					String imageName = "tmpImage"+RandomStringUtils.randomAlphanumeric(8);
+				
 					/*
 					 * Workaround: As long as the ODF toolkit can't handle images from a ByteStream
 					 * we have to convert it to a temporary image and insert that into the document.
 					 */
-					Path workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "tmpImage"+item.getDescription().hashCode());
+					workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), imageName);
 					
 					// FIXME Scaling doesn't work! :-(
 					// Therefore we "scale" the image manually by setting width and height inside result document
@@ -1106,7 +1121,15 @@ public class OfficeDocument {
 
 				}
 				catch (IOException e) {
-					e.printStackTrace();
+					log.error("Can't create temporary image file. Reason: " + e);
+				} finally {
+					if(workDir != null) {
+						try {
+							Files.deleteIfExists(workDir);
+						} catch (IOException e) {
+							log.error("Can't delete temporary image file. Reason: " + e);
+						}
+					}
 				}
 			}
 			
@@ -1239,9 +1262,15 @@ public class OfficeDocument {
 	public boolean testOpenAsExisting(Document document, Path template) {
 		Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
 		Path oODocumentFile = fo.getDocumentPath(pathOptions, TargetFormat.ODT, document);
+		
+		boolean ignorePdf = true;
+		if (preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.PDF.getPrefId()) && document.getPdfPath() == null) {
+			// if PDF should be created but the path in the document object is null then it has to be re-created.
+			ignorePdf = false;
+		}
 
 		return (Files.exists(oODocumentFile) && BooleanUtils.isTrue(document.getPrinted()) &&
-				filesAreEqual(document.getPrintTemplate(),template));
+				filesAreEqual(document.getPrintTemplate(),template) && ignorePdf);
 	}
 
     /**
@@ -1314,8 +1343,13 @@ public class OfficeDocument {
      */
     public void setDocument(Document document) {
         this.document = document;
-        this.useSET = document != null && document.getBillingContact() != null && BooleanUtils.isTrue(document.getBillingContact().getUseSalesEqualizationTax());
+        
+        setUseSalesEquationTaxForDocument(document);
     }
+
+	private void setUseSalesEquationTaxForDocument(Document document) {
+		this.useSET = documentReceiverDao.isSETEnabled(document);
+	}
 
     /**
      * @return the template

@@ -28,14 +28,13 @@ import org.osgi.service.event.Event;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Contact_;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.resources.core.Icon;
 
 /**
- * Editor for {@link Debitor}s.
+ * Editor for {@link Debtor}s.
  */
 public class DebitorEditor extends ContactEditor<Debitor> {
 
@@ -59,13 +58,13 @@ public class DebitorEditor extends ContactEditor<Debitor> {
 	@Override
 	protected Debitor createNewContact(FakturamaModelFactory modelFactory) {
 		Debitor debitor = modelFactory.createDebitor();
-		debitor.setContactType(ContactType.BILLING);
+//		debitor.setContactType(ContactType.BILLING);
 		return debitor;
 	}
 	
 	@Override
 	protected void createAdditionalFields(Composite tabMisc) {
-		if (preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX)) {
+		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX)) {
 			/*Label emptyLbl = */new Label(tabMisc, SWT.NONE);
 			sqtButton = new Button(tabMisc, SWT.CHECK);
 			sqtButton.setText(msg.editorContactFieldSalesequalizationtaxName);
@@ -74,7 +73,7 @@ public class DebitorEditor extends ContactEditor<Debitor> {
 	
 	@Override
 	protected void bindAdditionalValues(Debitor editorContact) {
-		if (preferences.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX)) {
+		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX)) {
 			bindModelValue(editorContact, sqtButton, Contact_.useSalesEqualizationTax.getName());
 		}
 	}
@@ -107,10 +106,5 @@ public class DebitorEditor extends ContactEditor<Debitor> {
 	@Override
 	protected void setPartLabelForNewContact(MPart part) {
 		part.setLabel(msg.commandNewDebtorName);
-	}
-	
-	@Override
-	protected Debitor getDeliveryContact() {
-		return (Debitor) editorContact.getAlternateContacts();
 	}
 }

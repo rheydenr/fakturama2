@@ -126,7 +126,7 @@
 			<programlisting><?db-font-size 75% ?><xi:include href="../images/importexport/expenditures.csv" parse="text" />
 			</programlisting>
 		</informalexample>
-		<info>Die Beispieldatei kann auch <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/org.fakturama.help/docbook/chapters/images/importexport/expenditures.csv">hier</link> heruntergeladen werden.</info>
+		<tip>Die Beispieldatei kann auch <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/org.fakturama.help/docbook/chapters/images/importexport/expenditures.csv">hier</link> heruntergeladen werden.</tip>
 		<para>Die zu importierenden Daten müssen in einer CSV-Datei vorliegen und folgende Spalten beinhalten:</para>
 		<variablelist>
 			<varlistentry>
@@ -191,7 +191,7 @@
 			</varlistentry>
 		</variablelist>
 		<para>Mehrere Positionen eines Beleges werden erfasst, indem jede Position in einer eigenen Zeile angelegt wird und die Werte in den Spalten <emphasis role="bold">Category</emphasis>, <emphasis role="bold">Date</emphasis>, <emphasis role="bold">DocumentNr</emphasis>, <emphasis role="bold">Nr</emphasis> und <emphasis role="bold">Name</emphasis> auf den gleichen Wert gesetzt werden. Siehe obiges Beispiel die letzten zwei Zeilen.</para>
-		<para>Bereits importierte Belege werden nicht ein zweites Mal importiert.</para>
+		<para>Der Import beginnt nach dem Klick auf "Fertigstellen". Bereits importierte Belege werden nicht ein zweites Mal importiert.</para>
 		<para>Es wird empfohlen, den Import zuerst mit einer Datei aus nur 2-3 Einträgen zu testen, bevor die ganze Datei importiert wird (zum Beispiel auch ein Beleg mit mehreren Positionen). Bei einem fehlerhaften Import muss ansonsten jeder Beleg einzeln gelöscht werden.</para>
 		<para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link>
 		</para>
@@ -203,7 +203,7 @@
 		<informalexample pgwide="1">
 		<programlisting><?db-font-size 75% ?><xi:include href="../images/importexport/contacts.csv" parse="text" />
 		</programlisting></informalexample>
-		<info>Die Beispieldatei kann auch <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/org.fakturama.help/docbook/chapters/images/importexport/contacts.csv">hier</link> heruntergeladen werden.</info>
+		<tip>Die Beispieldatei kann auch <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/org.fakturama.help/docbook/chapters/images/importexport/contacts.csv">hier</link> heruntergeladen werden.</tip>
 		<para>Die zu importierenden Daten müssen in einer CSV-Datei vorliegen und folgende Spalten beinhalten:</para>
 		<variablelist>
 			<varlistentry>
@@ -434,6 +434,18 @@
 					<para>Rabatt, der diesem Kunden gewährt wird.</para>
 				</listitem>
 			</varlistentry>
+			<varlistentry>
+				<term>supplier_nr</term>
+				<listitem>
+					<para>Lieferantennummer</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>username</term>
+				<listitem>
+					<para>Nutzername für den Webshop</para>
+				</listitem>
+			</varlistentry>
 		</variablelist>
 		<para>Es wird empfohlen, den Import zuerst mit einer Datei aus nur 2-3 Einträgen zu testen, bevor die ganze Datei importiert wird. Bei einem fehlerhaften Import muss ansonsten jeder Kontakt einzeln gelöscht werden.</para>
 		<para>Siehe auch <link linkend="importexport_export_csv_contacts">Export Adressliste als CSV-Datei</link>
@@ -444,8 +456,10 @@
 		<title>Produkte aus CSV-Datei importieren</title>
 		<para>Produkte können aus einer CSV-Datei in Fakturama importiert werden. Die Datei muss im Format UTF-8 vorliegen und durch Semikola getrennt sein. Zeichenketten sind in Hochkommata einzuschließen. Beispiel:</para>
 		<informalexample pgwide="1">
-  <programlisting><?db-font-size 65% ?><xi:include href="../images/importexport/import_products.csv" parse="text" /></programlisting></informalexample>
-		<info>Die Beispieldatei kann auch <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/org.fakturama.help/docbook/chapters/images/importexport/import_products.csv">hier</link> heruntergeladen werden.</info>
+  			<programlisting><?db-font-size 65% ?><xi:include href="../images/importexport/import_products.csv" parse="text" /></programlisting>
+		</informalexample>
+  		
+		<tip>Die Beispieldatei kann auch <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/master/Fakturama-Parent/org.fakturama.help/docbook/chapters/images/importexport/import_products.csv">hier</link> heruntergeladen werden.</tip>
 		<para>Die zu importierenden Daten müssen in einer CSV-Datei vorliegen und folgende Spalten beinhalten:</para>
 		<variablelist>
 			<varlistentry>
@@ -585,6 +599,12 @@
 				<term>qunit</term>
 				<listitem>
 					<para>Mengeneinheit</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>costprice</term>
+				<listitem>
+					<para>Einkaufspreis</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>

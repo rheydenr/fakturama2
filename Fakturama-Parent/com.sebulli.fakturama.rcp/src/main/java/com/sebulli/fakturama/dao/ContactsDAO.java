@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.persistence.config.QueryHints;
 
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Contact_;
@@ -56,6 +58,7 @@ public class ContactsDAO extends AbstractDAO<Contact> {
          * name, name and ZIP are compared. Customer number is only compared, if it
          * is set.
          */
+    	
         Set<Predicate> restrictions = new HashSet<>();
         // Compare customer number, only if it is set.
         if(StringUtils.isNotBlank(object.getCustomerNumber())) {
@@ -65,14 +68,20 @@ public class ContactsDAO extends AbstractDAO<Contact> {
         // Then we get no result (which is correct).
         restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(object.getFirstName())));
         restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(object.getName())));
-        if (object.getAddress() != null) {
-            restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), StringUtils.defaultString(object.getAddress().getZip())));
-        } else {
-            // set to an undefined value so we get no result (then the contact is not found in the database)
-            restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.zip), "-1"));
-        }
         
-        // and, finally, filter all deleted contacts (or contacts that are'nt valid anymore)
+        /*
+         * The restriction for ZIP makes no sense furthermore, since we have more than one address per contact.
+         * Therefore more than one address could have the same ZIP code for a completely different other address. 
+         */
+//    	Join<Contact, Address> addresses = root.join(Contact_.addresses);
+//        if (object.getAddresses() != null) {
+//            restrictions.add(cb.in(addresses.get(Address_.zip), object.getAddresses().getZip())));
+//        } else {
+//            // set to an undefined value so we get no result (then the contact is not found in the database)
+//            restrictions.add(cb.equal(addresses.get(Address_.zip), "-1"));
+//        }
+        
+        // and, finally, filter all deleted contacts (or contacts that aren't valid anymore)
         restrictions.add(cb.and(
                 cb.not(root.get(Contact_.deleted)),
                 cb.or(
@@ -105,7 +114,7 @@ public class ContactsDAO extends AbstractDAO<Contact> {
      */
     public String[] getVisibleProperties() {
         return new String[] { Contact_.customerNumber.getName(), Contact_.firstName.getName(), Contact_.name.getName(),
-                Contact_.company.getName(), Contact_.address.getName() + "." +Address_.zip.getName(), Contact_.address.getName() + "." +Address_.city.getName()};
+                Contact_.company.getName(), Address_.zip.getName(), Address_.city.getName()};
     }
 
 	/**
@@ -122,10 +131,12 @@ public class ContactsDAO extends AbstractDAO<Contact> {
     	CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Contact> query = cb.createQuery(getEntityClass());
         Root<Contact> root = query.from(getEntityClass());
+        Join<Contact, Address> address = root.join(Contact_.addresses);
         restrictions.add(cb.equal(root.get(Contact_.firstName), StringUtils.defaultString(firstName)));
         restrictions.add(cb.equal(root.get(Contact_.name), StringUtils.defaultString(name)));
         restrictions.add(cb.not(root.get(Contact_.deleted)));
-        restrictions.add(cb.equal(root.get(Contact_.address).get(Address_.street), StringUtils.defaultString(street)));
+        restrictions.add(cb.equal(address.get(Address_.street), StringUtils.defaultString(street)));
+        
         CriteriaQuery<Contact> select = query.select(root);
         select.where(restrictions.toArray(new Predicate[]{}));
         List<Contact> resultList = getEntityManager().createQuery(select).getResultList();
@@ -155,5 +166,12 @@ public class ContactsDAO extends AbstractDAO<Contact> {
         	retval = resultList.get(0);
         }
 		return retval;
-	}	
+	}
+
+	public Address findByAddressId(Long addressId) {
+		if (addressId != null) {
+			return getEntityManager().find(Address.class, addressId);
+		} else
+			return null;
+	}
 }

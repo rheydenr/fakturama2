@@ -16,8 +16,9 @@ package com.sebulli.fakturama.i18n;
 import java.lang.reflect.Field;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
 import org.eclipse.e4.core.services.nls.Message;
+
+import com.ibm.icu.util.StringTokenizer;
 
 /**
  * This class contains all the message keys from
@@ -92,6 +93,7 @@ public class Messages {
 	public String commandNewReceiptvoucherTooltip;
 	public String commandNewTooltip;
 	public String commandOpenContactTooltip;
+	public String commandOpenDocument;
 	public String commandOpenParcelName;
 	public String commandOpenWwwName;
 	public String commandParcelserviceName;
@@ -167,9 +169,10 @@ public class Messages {
 	public String contactDebtorFieldName;
 	public String contactFieldGln;
 	public String contactFieldGlnTooltip;
+    public String contactFieldRegisterNumber;
 	public String contactFieldMrName;
 	public String contactFieldMsName;
-	public String contactFieldFamilyName;
+	public String contactFieldFamily;
 	public String contactFieldReliabilityGoodName;
 	public String contactFieldReliabilityMediumName;
 	public String contactFieldReliabilityPoorName;
@@ -178,9 +181,10 @@ public class Messages {
 	public String editorContactFieldEmailValidationerror;
 	public String editorContactFieldSalesequalizationtaxName;
 	public String editorContactFieldWebsiteCantopen;
+	public String editorContactFieldLocalconsultant;
+	public String editorContactFieldAlias;
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
-	public String editorDocumentDialogNodefaultvalue;
 
 	public String Data653;
 	public String dataDefaultContactFormatExcludedcountries;
@@ -268,15 +272,22 @@ public class Messages {
 	public String editorContactFieldBirthdayName;
 	public String editorContactFieldBirthdayTooltip;
 	public String editorContactFieldCategoryTooltip;
+	public String editorContactFieldContacttype;
+	public String editorContactFieldContacttypeTooltip;
 	public String editorContactFieldDeliverersbirthdayTooltip;
 	public String editorContactFieldDeliveryaddressequalsName;
 	public String editorContactFieldDiscountTooltip;
+	public String editorContactFieldDistrict;
 	public String editorContactFieldFirstnamelastnameName;
 	public String editorContactFieldLastnamefirstnameName;
+	public String editorContactFieldNameAddon;
+	public String editorContactFieldNameAddonTooltip;
+	public String editorContactFieldAddressAddon;
 	public String editorContactFieldMandaterefName;
 	public String editorContactFieldNetgrossName;
 	public String editorContactFieldNumberName;
 	public String editorContactFieldNumberTooltip;
+	public String editorContactFieldAdditionalPhone;
 	public String editorContactFieldPaymentName;
 	public String editorContactFieldPaymentTooltip;
 	public String editorContactFieldReliabilityName;
@@ -287,7 +298,10 @@ public class Messages {
 	public String editorContactLabelAddress;
 	public String editorContactLabelBankaccount;
 	public String editorContactLabelNotice;
+	public String editorContactLabelAdditionaladdress;
+	public String editorContactLabelMaintab;
 	public String editorDocumentAdditemTooltip;
+	public String editorDocumentCopyitemTooltip;
 	public String editorDocumentCheckboxPaidTooltip;
 	public String editorDocumentCollectiveinvoiceTooltip;
 	public String editorDocumentCreateduplicate;
@@ -296,6 +310,7 @@ public class Messages {
 	public String editorDocumentDeleteitemTooltip;
 	public String editorDocumentDialogGrossvalues;
 	public String editorDocumentDialogNetvalues;
+	public String editorDocumentDialogNodefaultvalue;
 	public String editorDocumentDialogWarningDocumentexists;
 	public String editorDocumentDialogWarningCopyexists;
 	public String editorDocumentDiscountTooltip;
@@ -333,6 +348,10 @@ public class Messages {
 	public String editorDocumentFieldServicedateTooltip;
 	public String editorDocumentFieldShipping;
 	public String editorDocumentFieldShippingTooltip;
+	public String editorDocumentFieldNetweight;
+	public String editorDocumentFieldTara;
+	public String editorDocumentFieldTotalweight;
+	
 	public String editorDocumentItems;
 	public String editorDocumentNetgrossTooltip;
 	public String editorDocumentPaidvalue;
@@ -374,10 +393,13 @@ public class Messages {
 	public String editorProductFieldGrosspriceName;
 	public String editorProductFieldGtin;
 	public String editorProductFieldPriceName;
-	public String editorProductFieldCostprice;;
+	public String editorProductFieldAllowance;
+	public String editorProductFieldCostprice;
 	public String editorProductFieldQuantityunitName;
 	public String editorProductFieldQuantityunitInvalid;
 	public String editorProductFieldQuantityunitNameShort;
+	public String editorProductFieldSupplierItemnumber;
+	public String editorProductFieldSupplierItemnumberTooltip;
 	public String editorProductLabelFrom;
 	public String editorProductNameTooltip;
 	public String editorProductVatName;
@@ -655,6 +677,7 @@ public class Messages {
 	public String preferencesContactUsegender;
 	public String preferencesContactUsemiscpage;
 	public String preferencesContactUsenotepage;
+	public String preferencesContactSuppressnumbercheck;
 	public String preferencesContactUsetitle;
 	public String preferencesDocument;
 	public String preferencesDocumentAdddelnotenumber;
@@ -926,13 +949,15 @@ public class Messages {
 			Class<?> c = this.getClass();
 			// make the key java-like :-)
 			StringBuffer sb = new StringBuffer();
-			StrTokenizer st = new StrTokenizer(retval, ".");
-			while (st.hasNext()) {
-				if (st.previousIndex() == -1) {
-					sb.append(st.next());
+			StringTokenizer st = new StringTokenizer(retval, ".");
+			boolean isFirst = true;
+			while (st.hasMoreElements()) {
+				if (isFirst) {
+					sb.append(st.nextToken());
+					isFirst = false;
 					continue;
 				}
-				sb.append(StringUtils.capitalize(st.next()));
+				sb.append(StringUtils.capitalize(st.nextToken()));
 			}
 
 			Field chap = c.getDeclaredField(sb.toString());

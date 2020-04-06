@@ -1,13 +1,11 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
@@ -18,36 +16,18 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
-import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.HintValues;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
+import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.model.Debitor_;
 
 @Creatable
 public class DebitorsDAO extends AbstractDAO<Debitor> {
-
-    @Inject
-    @GeminiPersistenceContext(unitName = "unconfigured2", properties = {
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_DRIVER, valuePref = @Preference(PersistenceUnitProperties.JDBC_DRIVER)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_URL, valuePref = @Preference(PersistenceUnitProperties.JDBC_URL)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_USER, valuePref = @Preference(PersistenceUnitProperties.JDBC_USER)),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.JDBC_PASSWORD, valuePref = @Preference(PersistenceUnitProperties.JDBC_PASSWORD)),
-//            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING, value = "false"),
-            @GeminiPersistenceProperty(name = PersistenceUnitProperties.WEAVING_INTERNAL, value = "false") })
-    private EntityManager em;
-
-    @PreDestroy
-    public void destroy() {
-        if (em != null && em.isOpen()) {
-            em.close();
-        }
-    }
     
     @Override
     protected Set<Predicate> getRestrictions(Debitor object, CriteriaBuilder cb, Root<Debitor> root) {
@@ -64,12 +44,13 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
         // Then we get no result (which is correct).
         restrictions.add(cb.equal(root.get(Debitor_.firstName), StringUtils.defaultString(object.getFirstName())));
         restrictions.add(cb.equal(root.get(Debitor_.name), StringUtils.defaultString(object.getName())));
-        if (object.getAddress() != null) {
-            restrictions.add(cb.equal(root.get(Debitor_.address).get(Address_.zip), StringUtils.defaultString(object.getAddress().getZip())));
-        } else {
-            // set to an undefined value so we get no result (then the contact is not found in the database)
-            restrictions.add(cb.equal(root.get(Debitor_.address).get(Address_.zip), "-1"));
-        }
+//    	TODO HIER BITTE NOCHMAL NACHSEHEN!!!
+//        if (object.getAddress() != null) {
+//            restrictions.add(cb.equal(root.get(Debitor_.address).get(Address_.zip), StringUtils.defaultString(object.getAddress().getZip())));
+//        } else {
+//            // set to an undefined value so we get no result (then the contact is not found in the database)
+//            restrictions.add(cb.equal(root.get(Debitor_.address).get(Address_.zip), "-1"));
+//        }
         return restrictions;
     }
     
@@ -94,6 +75,80 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
         debitor.fetch(Debitor_.categories);
         return q.getResultList();
     }
+    
+    /**
+     * Finds all {@link DebitorAddress}es for a given {@link ContactType}. This is used for
+     * selection of a certain {@link Contact} in the DocumentEditor's address field.
+     * If a {@link Debitor} has only one address then this one is used.
+     * If a {@link Debitor} has more than one address and many of them matches the given {@link ContactType},
+     * all of these matching {@link Debitor}s are returned.
+     * @param contactType 
+     * 
+     * @return List of {@link DebitorAddress}es for a certain {@link ContactType}.
+     */
+	public List<DebitorAddress> findForTreeListView(ContactType contactType) {
+		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Debitor> query = cb.createQuery(getEntityClass());
+		Root<Debitor> debitorQuery = query.from(getEntityClass());
+		// filter all Debitors with matching addresses
+		query.distinct(true).select(debitorQuery)
+				.where(cb.and(
+						debitorQuery.get(Debitor_.customerNumber).isNotNull(), 
+						cb.not(debitorQuery.get(Debitor_.deleted))/*
+																	 * , cb.or(
+																	 * cb.isEmpty(debitorQuery.join(Contact_.addresses).
+																	 * get(Address_.contactTypes)),
+																	 * debitorQuery.join(Contact_.addresses).get(
+																	 * Address_.contactTypes).in(contactType) )
+																	 */
+						))
+				.orderBy(cb.asc(debitorQuery.get(Debitor_.customerNumber)));
+		TypedQuery<Debitor> q = getEntityManager().createQuery(query);
+		q.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+//        q.setHint(QueryHints.REFRESH, HintValues.TRUE); 
+		q.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+		debitorQuery.fetch(Debitor_.categories);
+		debitorQuery.fetch(Debitor_.addresses).fetch(Address_.contactTypes);
+		List<Debitor> debitorsFromDb = q.getResultList();
+		List<DebitorAddress> treeItems = new ArrayList<>();
+		
+		/*
+		 * Create a list of DebitorAddresses. This is done by creating at least one
+		 * entry (for the main address) and some child entries for other matching addresses.
+		 */
+		for (Debitor debitor : debitorsFromDb) {
+			List<Address> addresses = debitor.getAddresses();
+			DebitorAddress treeItemDebitorAddress;
+			if (addresses.size() >= 1) {
+				// create the first entry for a debitor
+				treeItemDebitorAddress = createDebitorTreeItem(debitor, addresses.get(0));
+				if(addresses.size() > 1) {
+					// if more than one address exists create child entries
+					addresses.subList(1, addresses.size())
+						.stream()
+						.filter(adr -> adr.getContactTypes().isEmpty() || adr.getContactTypes().contains(contactType))
+						.forEach(adr -> treeItems.add(createDebitorTreeItem(debitor, adr)));
+				}
+				treeItems.add(treeItemDebitorAddress);
+			}
+		}
+
+		return treeItems;
+	}    
+    
+/*
+
+   Müller | Fritz | Bahnhofstraße 3 | 05885 | Friesland      => ContactType.INVOICE
+v  Meyer  | Johannes 
+     --   | ---   | Hauptstraße 4  | 08554 | Adorf           => ContactType.INVOICE
+     --   | ---   | Carolastraße 3 | 18554 | Bedorf          => ContactType.INVOICE, ContactType.DELIVERY
+   Emsland | Jaqueline | Karlstraße 9 | 82282 | Rühmkirchen  => ContactType.INVOICE
+
+ */
+ 	
+	private DebitorAddress createDebitorTreeItem(Debitor debitor2, Address adr) {
+		return new DebitorAddress(debitor2, adr);
+	}    
     
     public Debitor findByDebitorNumber(String debNo) {
         Debitor result = null;
@@ -148,13 +203,8 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
      * @return list of all categories
      */
 	public Collection<String> getCategoryStrings() {
-		List<String> result = em.createQuery("select distinct c.category from Debitor c where c.deleted = false", String.class).getResultList();
+		List<String> result = getEntityManager().createQuery("select distinct c.category from Debitor c where c.deleted = false", String.class).getResultList();
 		return result;
-	}
-
-	@Override
-	protected EntityManager getEntityManager() {
-		return em;
 	}
 
 	@Override
@@ -169,6 +219,6 @@ public class DebitorsDAO extends AbstractDAO<Debitor> {
      */
     public String[] getVisibleProperties() {
         return new String[] { Debitor_.customerNumber.getName(), Debitor_.firstName.getName(), Debitor_.name.getName(),
-                Debitor_.company.getName(), Debitor_.address.getName() + "." +Address_.zip.getName(), Debitor_.address.getName() + "." +Address_.city.getName()};
+                Debitor_.company.getName(), Address_.zip.getName(), Address_.city.getName()};
     }
 }

@@ -216,9 +216,13 @@ public class ImportOptionPage extends WizardPage {
 	}
 	
     private IDialogSettings getCurrentDialogSettings() {
-        IDialogSettings section = getDialogSettings().getSection(ImportOptions.IMPORT_SETTING_OPTIONS);
-        if (section == null) {
-            section = getDialogSettings().addNewSection(ImportOptions.IMPORT_SETTING_OPTIONS);
+        IDialogSettings section = null;
+        IDialogSettings dialogSettings = getDialogSettings();
+		if(dialogSettings != null) {
+			section = dialogSettings.getSection(ImportOptions.IMPORT_SETTING_OPTIONS);
+	        if (section == null) {
+	            section = dialogSettings.addNewSection(ImportOptions.IMPORT_SETTING_OPTIONS);
+	        }
         }
         return section;
     }
@@ -231,12 +235,15 @@ public class ImportOptionPage extends WizardPage {
      * Save the current dialog settings for further use.
      */
     public void saveSettings() {
-        getCurrentDialogSettings().put(ImportOptions.PICTURE_BASE_PATH, pictureBasePath.getText());
-        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_SEPARATOR, separator.getText());
-        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_QUOTECHAR, quoteChar.getText());
-        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_FILENAME, options.getCsvFile());
-        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_UPDATEEXISTING, buttonUpdateExisting.getSelection());
-        getCurrentDialogSettings().put(ImportOptions.IMPORT_CSV_UPDATEWITHEMPTYVALUES, buttonUpdateWithEmptyValues.getSelection());
+        IDialogSettings currentDialogSettings = getCurrentDialogSettings();
+        if(currentDialogSettings != null) {
+			currentDialogSettings.put(ImportOptions.PICTURE_BASE_PATH, pictureBasePath.getText());
+	        currentDialogSettings.put(ImportOptions.IMPORT_CSV_SEPARATOR, separator.getText());
+	        currentDialogSettings.put(ImportOptions.IMPORT_CSV_QUOTECHAR, quoteChar.getText());
+	        currentDialogSettings.put(ImportOptions.IMPORT_CSV_FILENAME, options.getCsvFile());
+	        currentDialogSettings.put(ImportOptions.IMPORT_CSV_UPDATEEXISTING, buttonUpdateExisting.getSelection());
+	        currentDialogSettings.put(ImportOptions.IMPORT_CSV_UPDATEWITHEMPTYVALUES, buttonUpdateWithEmptyValues.getSelection());
+        }
     }
 	
 }

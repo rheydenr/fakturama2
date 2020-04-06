@@ -207,7 +207,7 @@ public class ItemListBuilder {
                 item.setName(msg.commonFieldName);
                 item.setItemNumber(msg.productFieldItemno);
                 // other values are set by default values (look into model)
-                int defaultVatId = preferences.getInt(Constants.DEFAULT_VAT, 1);
+                long defaultVatId = preferences.getLong(Constants.DEFAULT_VAT, 1);
                 VAT defaultVat = vatDao.findById(defaultVatId);
                 Optional<DocumentItemDTO> maxPosItem = itemListTable.getDocumentItemsListData().stream().max(new Comparator<DocumentItemDTO>() {
                     @Override
@@ -242,6 +242,21 @@ public class ItemListBuilder {
             public void mouseDown(MouseEvent e) {
                 itemListTable.removeSelectedEntry();
                 itemListTable.renumberItems();
+            }
+        });
+        
+
+        // Item copy button
+        Label copyButton = new Label(addButtonComposite, SWT.NONE);
+        //T: Tool Tip Text
+        copyButton.setToolTipText(msg.editorDocumentCopyitemTooltip);
+        copyButton.setImage(Icon.COMMAND_COPY.getImage(IconSize.DefaultIconSize));
+        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(copyButton);
+        copyButton.addMouseListener(new MouseAdapter() {
+
+            // Delete the selected item
+            public void mouseDown(MouseEvent e) {
+                itemListTable.copySelectedEntry();
             }
         });
 

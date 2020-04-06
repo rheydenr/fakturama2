@@ -218,7 +218,8 @@ public class ParcelServiceFormFiller {
 
 			// get all entries
 			Placeholders placeholders = ContextInjectionFactory.make(Placeholders.class, context);
-			DocumentSummary documentSummary = new DocumentSummaryCalculator().calculate(document);
+			DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
+			DocumentSummary documentSummary = documentSummaryCalculator.calculate(document);
 			
 			for (Map.Entry<Object, Object> propItem : inputProperties.entrySet()) {
 			    String key = (String) propItem.getKey();

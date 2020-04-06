@@ -27,6 +27,7 @@ import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -47,8 +48,9 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.IDateFormatterService;
-import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
 
@@ -76,6 +78,15 @@ public class SalesExporter extends OOCalcExporter {
 	
 	@Inject
 	private DocumentsDAO documentsDao;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
+    
+	@Inject
+	private IEclipseContext context;
+	
+	private ContactUtil contactUtil;
+
 
 	/**
 	 * Constructor Sets the begin and end date
@@ -87,11 +98,8 @@ public class SalesExporter extends OOCalcExporter {
 	 */
 	@PostConstruct
 	public void initialize(IEclipseContext ctx) {
-		if(ctx.get(Constants.PARAM_START_DATE) != null) {
-			startDate = (GregorianCalendar) ctx.get(Constants.PARAM_START_DATE);
-		} else {
-			startDate = null;
-		}
+	    contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
+		startDate = ctx.get(Constants.PARAM_START_DATE) != null ? (GregorianCalendar) ctx.get(Constants.PARAM_START_DATE) : null;
 		
 		if(ctx.get(Constants.PARAM_END_DATE) != null) {
 			endDate = (GregorianCalendar) ctx.get(Constants.PARAM_END_DATE);
@@ -108,7 +116,6 @@ public class SalesExporter extends OOCalcExporter {
 	 * 			True, if the export was successful
 	 */
 	public boolean export(boolean showZeroVatColumn, boolean paid) {
-		ContactUtil contactUtil = new ContactUtil();
 
 		// Try to generate a spreadsheet
 		if (!createSpreadSheet())
@@ -167,7 +174,7 @@ public class SalesExporter extends OOCalcExporter {
 
 		// Create a VAT summary set manager that collects all VAT
 		// values of all documents
-		VatSummarySetManager vatSummarySetAllDocuments = new VatSummarySetManager();
+		VatSummarySetManager vatSummarySetAllDocuments = ContextInjectionFactory.make(VatSummarySetManager.class, context);
 
 		// Table column headings
 		int headLine = row;
@@ -193,7 +200,7 @@ public class SalesExporter extends OOCalcExporter {
 		// the columns are created.
 		// Later all the documents are analyzed a second time and then they
 		// are exported document by document into the table.
-		DocumentSummaryCalculator dsc = new DocumentSummaryCalculator();
+		DocumentSummaryCalculator dsc = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
 //		for (Document document : documents) {
 //			if (documentShouldBeExported(document)) {
 //				dsc.calculate(document);
@@ -250,9 +257,9 @@ public class SalesExporter extends OOCalcExporter {
 		DocumentSummary documentSummary;
 		for (Document document : documents) {
 			documentSummary = null;
+			VatSummarySetManager vatSummarySetOneDocument = ContextInjectionFactory.make(VatSummarySetManager.class, context);
 
 			// Now analyze document by document
-			VatSummarySetManager vatSummarySetOneDocument = new VatSummarySetManager();
 			documentSummary = dsc.calculate(document);
 
 			// Calculate the relation between paid value and the value
@@ -286,7 +293,7 @@ public class SalesExporter extends OOCalcExporter {
 			}
 			setCellText(row, col++, document.getName());
 			setCellText(row, col++, dateFormatterService.getFormattedLocalizedDate(document.getDocumentDate()));
-			Contact addressid = document.getBillingContact();
+			DocumentReceiver addressid = addressManager.getBillingAdress(document);
 
 			// Fill the address columns with the contact that corresponds to the addressid
 			if (addressid != null && addressid.getName() != null) {
@@ -294,14 +301,14 @@ public class SalesExporter extends OOCalcExporter {
 				setCellText(row, col++, addressid.getName());
 				setCellText(row, col++, addressid.getCompany());
 				setCellText(row, col++, addressid.getVatNumber());
-				if(addressid.getAddress() != null) {
-					setCellText(row, col++, addressid.getAddress().getCountryCode());
+				if(addressid.getCountryCode() != null) {
+					setCellText(row, col++, addressid.getCountryCode());
 				} else {
 					col++;
 				}
-			} else if(addressid.getAddress() != null && addressid.getAddress().getManualAddress() != null) {
-				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_FIRSTNAME));
-				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getAddress().getManualAddress(), ContactUtil.KEY_LASTNAME));
+			} else if(addressid.getManualAddress() != null) {
+				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getManualAddress(), ContactUtil.KEY_FIRSTNAME));
+				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getManualAddress(), ContactUtil.KEY_LASTNAME));
 				col += 3;
 			}
 			// ... or use the documents first line

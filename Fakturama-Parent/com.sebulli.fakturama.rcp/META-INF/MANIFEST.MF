@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Fakturama RCP
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.sebulli.fakturama.rcp;singleton:=true
-Bundle-Version: 2.0.5
+Bundle-Version: 2.1.0
 Bundle-ClassPath: .
 Bundle-Activator: com.sebulli.fakturama.Activator
 Bundle-Vendor: %Bundle-Vendor
@@ -21,6 +21,7 @@ Export-Package: com.sebulli.fakturama.calculate,
 Require-Bundle: com.sebulli.fakturama.common,
  com.sebulli.fakturama.resources,
  com.sebulli.fakturama.model,
+ org.fakturama.e4.ui.dialogs.ext;bundle-version="2.1.0",
  org.fakturama.wizards,
  org.fakturama.print.openoffice,
  org.eclipse.nebula.widgets.nattable.core,
@@ -28,6 +29,8 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.eclipse.nebula.widgets.formattedtext,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.nebula.widgets.picture,
+ org.eclipse.nebula.widgets.treemapper,
+ org.eclipse.nebula.widgets.opal.multichoice,
  org.eclipse.nebula.jface.cdatetime,
  org.eclipse.jface,
  org.eclipse.jface.databinding,
@@ -37,6 +40,7 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.eclipse.core.databinding.property,
  org.eclipse.core.jobs,
  org.eclipse.e4.core.services,
+ org.eclipse.e4.core.di.extensions;bundle-version="0.15.400",
  org.eclipse.e4.ui.workbench,
  org.eclipse.e4.ui.workbench.swt,
  org.eclipse.e4.ui.workbench.renderers.swt,
@@ -44,7 +48,9 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.eclipse.e4.ui.services,
  org.eclipse.e4.ui.di,
  org.eclipse.e4.ui.dialogs,
+ org.eclipse.e4.ui.css.swt.theme;bundle-version="0.12.300",
  org.eclipse.e4.core.di,
+ org.eclipse.ui.themes;bundle-version="1.2.600",
  org.eclipse.equinox.p2.core,
  org.eclipse.equinox.p2.engine,
  org.eclipse.equinox.p2.operations,
@@ -55,27 +61,25 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.apache.commons.cli,
  org.apache.commons.codec,
  org.apache.commons.collections,
- org.apache.commons.lang3,
  org.apache.commons.validator,
+ org.apache.commons.logging;bundle-version="1.1.1",
+ org.apache.commons.text,
  org.apache.poi.ooxml,
  javax.inject,
  org.eclipse.emf.common,
  org.javamoney.osgi,
  org.eclipse.osgi,
  org.eclipse.draw2d,
- org.eclipse.nebula.widgets.treemapper,
  org.eclipse.gemini.ext.di,
  org.eclipse.osgi.services,
  org.eclipse.equinox.security,
  org.eclipse.persistence.moxy,
  com.ibm.icu;bundle-version="58.2.0",
- org.apache.commons.logging;bundle-version="1.1.1",
- org.apache.commons.text
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/parcelservice.xml,OSGI-INF/splashservice.xml
-Import-Package: javax.inject,
- org.apache.commons.io,
+ org.eclipse.nebula.widgets.nattable.extension.e4;bundle-version="1.1.0",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists;bundle-version="1.5.0",
+ org.eclipse.nebula.widgets.nattable.extension.nebula;bundle-version="1.1.0",
+ org.eclipse.update.configurator;bundle-version="3.4.400"
+Import-Package: org.apache.commons.io,
  org.eclipse.core.commands,
  org.eclipse.core.net.proxy,
  org.eclipse.core.runtime,
@@ -83,11 +87,6 @@ Import-Package: javax.inject,
  org.eclipse.core.runtime.preferences,
  org.eclipse.e4.core.commands,
  org.eclipse.e4.core.contexts,
- org.eclipse.e4.core.di,
- org.eclipse.e4.core.di.annotations,
- org.eclipse.e4.core.di.extensions,
- org.eclipse.e4.core.di.suppliers,
- org.eclipse.e4.ui.di,
  org.eclipse.e4.ui.model,
  org.eclipse.e4.ui.model.application,
  org.eclipse.e4.ui.model.application.commands,
@@ -129,4 +128,7 @@ Import-Package: javax.inject,
  org.osgi.service.prefs,
  org.osgi.util.tracker,
  org.osgi.util.xml
+Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: com.sebulli.fakturama.rcp
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Service-Component: OSGI-INF/parcelservice.xml,OSGI-INF/splashservice.xml

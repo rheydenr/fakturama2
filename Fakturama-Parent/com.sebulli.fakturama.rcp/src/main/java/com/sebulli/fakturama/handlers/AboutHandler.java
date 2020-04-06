@@ -15,9 +15,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Shell;
 
-import com.sebulli.fakturama.dialogs.about.E4AboutDialog;
-import com.sebulli.fakturama.ui.E4ApplicationInfo;
-import com.sebulli.fakturama.ui.IE4ApplicationInfo;
+import com.sebulli.fakturama.ui.dialogs.AboutDialogE4;
 
 public class AboutHandler {
 
@@ -28,11 +26,8 @@ public class AboutHandler {
 		// the (formerly) first call to this was in org.eclipse.ui.internal.Workbench:
 		// (while creating the workbench window)
 		//       String applicationName = WorkbenchPlugin.getDefault().getAppName();
-		
-		IE4ApplicationInfo applicationInfo = ContextInjectionFactory.make(E4ApplicationInfo.class, context);
-		
-		context.set(IE4ApplicationInfo.class, applicationInfo);
-		E4AboutDialog dlg = ContextInjectionFactory.make(E4AboutDialog.class, context);
+
+		AboutDialogE4 dlg = ContextInjectionFactory.make(AboutDialogE4.class, context);
 		dlg.open();
 	}
 }

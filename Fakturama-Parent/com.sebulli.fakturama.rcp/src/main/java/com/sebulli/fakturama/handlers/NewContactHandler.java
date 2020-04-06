@@ -19,6 +19,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -88,7 +89,7 @@ public class NewContactHandler {
 	private void callHandler(String editorType) {
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, editorType);
-//        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
+        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
         ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
         handlerService.executeHandler(parameterizedCommand);	    
 	}

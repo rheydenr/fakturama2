@@ -46,5 +46,4 @@ public class EntityConverter<T extends IEntity> extends Converter<T, String> {
         }
         return result;
     }
-
 }

@@ -13,16 +13,18 @@ import java.util.StringTokenizer;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.fakturama.wizards.IE4WizardDescriptor;
-import org.fakturama.wizards.WorkbenchException;
 import org.fakturama.wizards.activities.WorkbenchActivityHelper;
 import org.fakturama.wizards.internal.dialogs.WizardCollectionElement;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
 import org.osgi.service.log.LogService;
 
-import com.sebulli.fakturama.misc.Util;
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
+import com.sebulli.fakturama.ui.dialogs.exceptions.WorkbenchException;
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  *  Instances access the registry that is provided at creation time
@@ -59,7 +61,7 @@ public class WizardsRegistryReader extends RegistryReader {
      */
     final public static String GENERAL_WIZARD_CATEGORY = "org.eclipse.ui.Basic";	//$NON-NLS-1$
 
-    final private static String UNCATEGORIZED_WIZARD_CATEGORY_LABEL = "other";// WorkbenchMessages.NewWizardsRegistryReader_otherCategory;
+    final private static String UNCATEGORIZED_WIZARD_CATEGORY_LABEL = WorkbenchMessages.NewWizardsRegistryReader_otherCategory;
     
     private final static String CATEGORY_SEPARATOR = "/";//$NON-NLS-1$
 
@@ -191,7 +193,7 @@ public class WizardsRegistryReader extends RegistryReader {
         } catch (WorkbenchException e) {
             logger.log(LogService.LOG_ERROR, "Cannot create category: ", e);//$NON-NLS-1$
             return;
-        }
+		}
 
         // Defer for later processing.
         if (deferCategories == null) {
@@ -267,7 +269,7 @@ public class WizardsRegistryReader extends RegistryReader {
 		}
 
         if (parent != null) {
-			createCollectionElement(parent, (IConfigurationElement) Util.getAdapter(category,
+			createCollectionElement(parent, Adapters.adapt(category,
 					IConfigurationElement.class));
 		}
     }

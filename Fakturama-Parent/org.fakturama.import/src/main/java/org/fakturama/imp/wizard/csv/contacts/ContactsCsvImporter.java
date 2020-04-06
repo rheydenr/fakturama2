@@ -15,24 +15,32 @@
 package org.fakturama.imp.wizard.csv.contacts;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.ICSVParser;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -45,9 +53,10 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
-import com.sebulli.fakturama.model.Debitor;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.ReliabilityType;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -57,6 +66,8 @@ import com.sebulli.fakturama.util.ContactUtil;
  */
 public class ContactsCsvImporter {
 	
+	private static final String DELIVERY_FIELD_PREFIX = "delivery_";
+
 	@Inject
 	@Translation
 	protected ImportMessages importMessages;
@@ -64,7 +75,7 @@ public class ContactsCsvImporter {
 	@Inject
 	@Translation
 	protected Messages msg;
-    
+
     @Inject
     protected ILogger log;
 	
@@ -82,6 +93,15 @@ public class ContactsCsvImporter {
     
     @Inject
     private IDateFormatterService dateFormatterService;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
+
+    /**
+     * Event Broker for sending update events to the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
 
     private char quoteChar, separator;
     
@@ -94,9 +114,10 @@ public class ContactsCsvImporter {
 	private String[] requiredHeaders = { "category", "gender", "title", "firstname", "name", "company", "street", "zip", "city", "country",
 			"delivery_gender", "delivery_title", "delivery_firstname", "delivery_name", "delivery_company",
 			"delivery_street", "delivery_zip", "delivery_city", "delivery_country",
-			"account_holder", "account", "bank_code", "bank_name", "iban", "bic",
+			"delivery_phone", "delivery_fax", "delivery_mobile", "delivery_email", 
+			"account_holder", "bank_name", "iban", "bic",
 			"nr", "note", "date_added",  "payment", "reliability",
-			"phone", "fax", "mobile", "email", "website", "vatnr", "vatnrvalid", "discount" };
+			"phone", "fax", "mobile", "email", "website", "vatnr", "vatnrvalid", "discount", "supplier_nr", "username", "birthday" };
 
 	// The result string
 	String result = "";
@@ -145,11 +166,12 @@ public class ContactsCsvImporter {
 		int lineNr = 0;
 
 		String[] columns;
+		Path inputFile = Paths.get(fileName);
 	
 		// Open the existing file
-		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
-			 BufferedReader in = new BufferedReader(isr);
-			 CSVReader csvr = new CSVReader(in, separator, quoteChar);) {
+		try (BufferedReader in = Files.newBufferedReader(inputFile)) {
+			ICSVParser csvParser = new CSVParserBuilder().withSeparator(separator).withQuoteChar(quoteChar).build();
+			CSVReader csvr = new CSVReaderBuilder(in).withCSVParser(csvParser).build();
 			
 			// Read next CSV line
 			columns = csvr.readNext();
@@ -206,11 +228,14 @@ public class ContactsCsvImporter {
 					contact.setName(prop.getProperty("name"));
 					Address address = modelFactory.createAddress();
 					address.setZip(prop.getProperty("zip"));
-					contact.setAddress(address);
+					
+					// TODO make BillingType changeable
+					address.getContactTypes().add(ContactType.BILLING);
+					contact.getAddresses().add(address);
 					/*
 					 * Customer number, first name, name and ZIP are compared
 					 */
-					Contact testContact = contactsDAO.findOrCreate(contact);
+					Contact testContact = contactsDAO.findOrCreate(contact, true);
 					
 					// if found and no update is required skip to the next record
 					if(testContact != null && !updateExisting) {
@@ -218,43 +243,41 @@ public class ContactsCsvImporter {
 						continue;
 					}
 					
-					ContactCategory category = contactCategoriesDAO.findByName(prop.getProperty("category"));
-					if(category == null && prop.getProperty("category") != null) {
-						category = modelFactory.createContactCategory();
-						category.setName(prop.getProperty("category"));
+					if(testContact == null) {
+						// work further with testcontact
+						testContact = contact;
 					}
-					// work further with testcontact
-					testContact.setCategories(category);
+					
+					String categoryString = StringUtils.stripStart(prop.getProperty("category"), "/");
+					if (categoryString != null) {
+						ContactCategory category = contactCategoriesDAO.getCategory(prop.getProperty("category"), true);
+						testContact.setCategories(category);
+					}
 					testContact.setGender(contactUtil.getSalutationID(prop.getProperty("gender")));
 
 					testContact.setTitle(prop.getProperty("title"));
 					testContact.setCompany(prop.getProperty("company"));
 					
 					// if previous address is given use it
-					if(testContact.getAddress() != null) {
-						address = testContact.getAddress();
+					Address tmpAddress = addressManager.getAddressFromContact(testContact, ContactType.BILLING).orElse(null);
+					if(tmpAddress != null) {
+						address = tmpAddress;
 					}
-					address.setValidFrom(Calendar.getInstance().getTime());
-					address.setStreet(prop.getProperty("street"));
-					address.setCity(prop.getProperty("city"));
-//					address.setCountryCode(prop.getProperty("country")); TODO get correct country code!
-					testContact.setAddress(address);
-
-					Debitor deliveryContact = testContact.getAlternateContacts() != null ? (Debitor) testContact.getAlternateContacts() : modelFactory.createDebitor();
-					deliveryContact.setGender(contactUtil.getSalutationID(prop.getProperty("delivery_gender")));
-					deliveryContact.setTitle(prop.getProperty("delivery_title"));
-					deliveryContact.setFirstName(prop.getProperty("delivery_firstname"));
-					deliveryContact.setName(prop.getProperty("delivery_name"));
-					deliveryContact.setCompany(prop.getProperty("delivery_company"));
+					address = createAddressFromProperties(prop, address, "");
+					testContact.getAddresses().add(address);
+					address.setContact(testContact);
 					
-					Address deliveryAddress = deliveryContact.getAddress() != null ? deliveryContact.getAddress() : modelFactory.createAddress();
-					deliveryAddress.setValidFrom(Calendar.getInstance().getTime());
-					deliveryAddress.setStreet(prop.getProperty("delivery_street"));
-					deliveryAddress.setZip(prop.getProperty("delivery_zip"));
-					deliveryAddress.setCity(prop.getProperty("delivery_city"));
-//					deliveryAddress.setCountryCode(prop.getProperty("delivery_country")); // FIXME set correct country code!!!!
-					deliveryContact.setAddress(deliveryAddress);
-					testContact.setAlternateContacts(deliveryContact);
+					if(isDeliveryAddressAvailable(prop)) {
+						Address deliveryAddress = addressManager.getAddressFromContact(testContact, ContactType.DELIVERY).orElse(null);
+						if(deliveryAddress.getId() == address.getId()) {
+							// recreation of delivery address, if any
+							deliveryAddress = modelFactory.createAddress();
+						}
+						deliveryAddress = createAddressFromProperties(prop, deliveryAddress, DELIVERY_FIELD_PREFIX);
+						deliveryAddress.getContactTypes().add(ContactType.DELIVERY);
+						testContact.getAddresses().add(deliveryAddress);
+						deliveryAddress.setContact(testContact);
+					}
 
 					BankAccount account = testContact.getBankAccount() != null ? testContact.getBankAccount() : modelFactory.createBankAccount();
 					account.setValidFrom(Calendar.getInstance().getTime());
@@ -278,26 +301,29 @@ public class ContactsCsvImporter {
 					if(payment != null) {
 						testContact.setPayment(payment);
 					}
-					testContact.setReliability(ReliabilityType.getByName(prop.getProperty("reliability")));
+					testContact.setReliability(ReliabilityType.getByName(prop.getProperty("reliability").toUpperCase()));
 
-					testContact.setPhone(prop.getProperty("phone"));
-					testContact.setFax(prop.getProperty("fax"));
-					testContact.setMobile(prop.getProperty("mobile"));
-					testContact.setEmail(prop.getProperty("email"));
 					testContact.setWebsite(prop.getProperty("website"));
+					testContact.setSupplierNumber(prop.getProperty("supplier_nr"));
+					testContact.setWebshopName(prop.getProperty("username"));
 					testContact.setVatNumber(prop.getProperty("vatnr"));
 					testContact.setVatNumberValid(BooleanUtils.toBooleanObject(prop.getProperty("vatnrvalid")));
 					testContact.setDiscount(DataUtils.getInstance().StringToDouble(prop.getProperty("discount")));
-					
+					String birthday = prop.getProperty("birthday");
+					if(StringUtils.isNotBlank(birthday)) {
+						GregorianCalendar dateFromString = dateFormatterService.getCalendarFromDateString(birthday);
+						testContact.setBirthday(dateFromString.getTime());
+					}
 					// Add the contact to the data base
-					if (DateUtils.isSameDay(testContact.getDateAdded(), Calendar.getInstance().getTime())) {
+					// Update the modified contact data
+					long currentId = testContact.getId();
+					contactsDAO.update(testContact);
+                    if (currentId == 0) {
 						importedContacts++;
 					} else if (updateExisting) {
 						// Update data
 						updatedContacts++;
 					}
-					// Update the modified contact data
-					contactsDAO.update(testContact);
 				}
 			}
 			
@@ -327,6 +353,41 @@ public class ContactsCsvImporter {
 		catch (FakturamaStoringException e) {
 			log.error("can't save or update imported contact");
 		}
+		evtBroker.post(classifier == FakturamaModelPackage.DEBITOR_CLASSIFIER_ID ? "Debtor" : "Creditor", "update");
+	}
+
+
+	private boolean isDeliveryAddressAvailable(Properties prop) {
+		List<String> fieldsToCheck = Arrays.asList(
+				"street", //
+				"zip", //
+				"city", //
+				"phone", //
+				"fax", //
+				"mobile", //
+				"email");
+		return fieldsToCheck.stream().anyMatch(p -> prop.get(DELIVERY_FIELD_PREFIX + p) != null && !prop.get(DELIVERY_FIELD_PREFIX + p).toString().isEmpty());
+	}
+
+	/**
+	 * Creates an {@link Address} from CSV properties.
+	 * 
+	 * @param prop
+	 * @param address
+	 * @param prefix necessary e.g. for delivery addresses
+	 * @return 
+	 */
+	private Address createAddressFromProperties(Properties prop, Address address, String prefix) {
+		address.setValidFrom(Calendar.getInstance().getTime());
+		address.setStreet(prop.getProperty(StringUtils.join(prefix, "street")));
+		address.setZip(prop.getProperty(StringUtils.join(prefix, "zip")));
+		address.setCity(prop.getProperty(StringUtils.join(prefix, "city")));
+		address.setPhone(prop.getProperty(StringUtils.join(prefix, "phone")));
+		address.setFax(prop.getProperty(StringUtils.join(prefix, "fax")));
+		address.setMobile(prop.getProperty(StringUtils.join(prefix, "mobile")));
+		address.setEmail(prop.getProperty(StringUtils.join(prefix, "email")));
+//		address.setCountryCode(prop.getProperty("country")); // FIXME set correct country code!!!!
+		return address;
 	}
 
 	public String getResult() {

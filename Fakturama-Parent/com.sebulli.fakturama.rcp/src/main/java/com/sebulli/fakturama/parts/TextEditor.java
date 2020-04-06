@@ -32,7 +32,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -81,7 +81,7 @@ public class TextEditor extends Editor<TextModule> {
     private Composite top;
 	private Text textName;
 	private Text textText;
-	private Combo comboCategory;
+	private CCombo comboCategory;
 
 	// defines, if the text is new created
 	private boolean newText;
@@ -167,7 +167,7 @@ public class TextEditor extends Editor<TextModule> {
         Long objId = null;
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(Icon.COMMAND_TEXT.getIconURI());
-        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+        String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
@@ -229,7 +229,7 @@ public class TextEditor extends Editor<TextModule> {
 		labelCategory.setToolTipText(msg.textFieldCategoryTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 
-        comboCategory = new Combo(top, SWT.BORDER);
+        comboCategory = new CCombo(top, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboCategory);
 		
 		// The text

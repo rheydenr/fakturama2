@@ -17,6 +17,7 @@ package com.sebulli.fakturama.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -30,6 +31,8 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.widgets.Shell;
 
+import com.sebulli.fakturama.log.ILogger;
+
 /**
  * Resets a perspective to its defaults.
  * 
@@ -40,6 +43,9 @@ import org.eclipse.swt.widgets.Shell;
  *
  */
 public class ResetPerspectiveHandler {
+    @Inject
+    private ILogger log;
+    
 	private static final String MAIN_WINDOW_ID = "com.sebulli.fakturama.application";
 
 	@Execute
@@ -68,7 +74,7 @@ public class ResetPerspectiveHandler {
 			parent.getChildren().remove(perspective);
 
 			parent.getChildren().add(snippet);
-			System.out.println(parent.getChildren().get(0).getElementId());
+			log.debug(parent.getChildren().get(0).getElementId());
 			partService.switchPerspective((MPerspective) snippet);
 		}
 	}

@@ -39,10 +39,10 @@ import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.IntegerFormatter;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -97,7 +97,7 @@ public class PaymentEditor extends Editor<Payment> {
 	private Text textPaid;
 	private Text textDepositPaid;
 	private Text textUnpaid;
-	private Combo comboCategory;
+	private CCombo comboCategory;
 
 	// defines if the payment is newly created
 	private boolean newPayment;
@@ -150,7 +150,7 @@ public class PaymentEditor extends Editor<Payment> {
 		// to the data base
 		if (newPayment) {
 			newPayment = false;
-            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            String category = (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 VoucherCategory newCat = accountDAO.findCategoryByName(category);
                 payment.setCategory(newCat);
@@ -191,7 +191,7 @@ public class PaymentEditor extends Editor<Payment> {
         long stdID = 1L;
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(Icon.COMMAND_PAYMENT.getIconURI());
-        String tmpObjId = (String) part.getProperties().get(CallEditor.PARAM_OBJ_ID);
+        String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
         if (StringUtils.isNumeric(tmpObjId)) {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
@@ -259,7 +259,7 @@ public class PaymentEditor extends Editor<Payment> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCategory);
 		
         // Collect all category strings
-        comboCategory = new Combo(top, SWT.BORDER);
+        comboCategory = new CCombo(top, SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(comboCategory);
 
 		// Payment description

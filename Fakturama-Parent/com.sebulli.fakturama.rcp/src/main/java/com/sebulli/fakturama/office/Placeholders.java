@@ -37,6 +37,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.ULocale;
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.i18n.ILocaleService;
@@ -46,12 +47,13 @@ import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
-import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
@@ -67,6 +69,10 @@ public class Placeholders {
 
     @Inject
     private IEclipseContext context;
+    
+	@Inject
+	private ContactsDAO contactsDAO;
+
 //
 //    @Inject
 //    private Logger log;
@@ -82,6 +88,9 @@ public class Placeholders {
 
     @Inject
     private IPreferenceStore preferences;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
 
 	// all placeholders
 	private static String placeholders[] = {
@@ -138,12 +147,17 @@ public class Placeholders {
 			"DOCUMENT.VESTINGPERIOD.END",
 			"DOCUMENT.ITEMS.GROSS",
 			"DOCUMENT.ITEMS.NET",
+			"DOCUMENT.ITEMS.NET.DISCOUNTED",
 			"DOCUMENT.ITEMS.COUNT",
 			"DOCUMENT.TOTAL.QUANTITY",
 			"DOCUMENT.TOTAL.NET",
-			"DOCUMENT.ITEMS.NET.DISCOUNTED",
 			"DOCUMENT.TOTAL.VAT",
 			"DOCUMENT.TOTAL.GROSS",
+			
+			"DOCUMENT.WEIGHT.TARA",
+			"DOCUMENT.WEIGHT.NET",
+			"DOCUMENT.WEIGHT.TOTAL",
+			
 			"DOCUMENT.DEPOSIT.DEPOSIT",
 			"DOCUMENT.DEPOSIT.FINALPAYMENT",
 			"DOCUMENT.DEPOSIT.DEP_TEXT",
@@ -401,45 +415,46 @@ public class Placeholders {
 	 * @return
 	 * 		The value mofified by the parameters
 	 */
-	String interpretParameters(String placeholder, String value) {
+	String interpretParameters(final String placeholder, final String pValue) {
 		String par;
+		String retval = pValue;
 		
-		if (value == null)
-			return value;
+		if (retval == null)
+			return retval;
 		
 		// The parameters "PRE" and "POST" are only used, if the
 		// placeholder value is not empty
-		if (!value.isEmpty()) {
+		if (!retval.isEmpty()) {
 			
 			// Parameter "PRE"
 			par = extractParam(placeholder,"PRE");
 			if (!par.isEmpty())
-					value =  removeQuotationMarks(par) + value;
+					retval =  removeQuotationMarks(par) + retval;
 
 			// Parameter "POST"
 			par = extractParam(placeholder,"POST");
 			if (!par.isEmpty())
-					value += removeQuotationMarks(par);
+					retval += removeQuotationMarks(par);
 
 			// Parameter "INONELINE"
 			par = extractParam(placeholder,"INONELINE");
 			if (!par.isEmpty())
-				value = StringInOneLine(value, removeQuotationMarks(par));
+				retval = StringInOneLine(retval, removeQuotationMarks(par));
 
 			// Parameter "REPLACE"
 			par = extractParam(placeholder,"REPLACE");
 			if (!par.isEmpty())
-				value = replaceValues(removeQuotationMarks(par) , value);
+				retval = replaceValues(removeQuotationMarks(par) , retval);
 
 			// Parameter "FORMAT"
 			par = extractParam(placeholder,"FORMAT");
 			if (!par.isEmpty()) {
 				try {
-					Double parsedDouble = localizedNumberFormat.parse(value).doubleValue();
-					value = numberFormatterService.DoubleToDecimalFormatedValue(parsedDouble, par);
+					Double parsedDouble = localizedNumberFormat.parse(retval).doubleValue();
+					retval = numberFormatterService.DoubleToDecimalFormatedValue(parsedDouble, par);
 				}
 				catch (ParseException e) {
-					value = "### NVL ###";
+					retval = "### NVL ###";
 				}
 			}
 
@@ -447,11 +462,67 @@ public class Placeholders {
 			par = extractParam(placeholder, "DFORMAT");
 			if (!par.isEmpty()) {
 				try {
-					GregorianCalendar checkDate = dateFormatterService.getCalendarFromDateString(value);
+					GregorianCalendar checkDate = dateFormatterService.getCalendarFromDateString(retval);
 					SimpleDateFormat sdf = new SimpleDateFormat(par);
-					value = sdf.format(checkDate.getTime());
+					retval = sdf.format(checkDate.getTime());
 				} catch (IllegalArgumentException e) {
-					value = "### NVL ###";
+					retval = "### NVL ###";
+				}
+			}
+			
+			// extract first n characters from string
+			par = extractParam(placeholder, "FIRST");
+			if (!par.isEmpty()) {
+				Integer length = extractLengthFromParameter(par, retval.length());
+				if (length.compareTo(Integer.valueOf(0)) >= 0) {
+					int len = length.compareTo(retval.length()) < 0 ? length : retval.length();
+					retval = retval.substring(0, len);
+				}
+			}
+			
+			// extract last n characters from string
+			par = extractParam(placeholder, "LAST");
+			if (!par.isEmpty()) {
+				Integer length = extractLengthFromParameter(par, retval.length());
+				if (length.compareTo(Integer.valueOf(0)) >= 0) {
+					int len = length.compareTo(retval.length()) < 0 ? length : retval.length();
+					retval = retval.substring(retval.length() - len);
+				}
+			}
+			
+			// extract range from n to m characters from string
+			par = extractParam(placeholder, "RANGE");
+			if(!par.isEmpty()) {
+				String[] boundaries = par.split(",");
+				if(boundaries.length == 2) {
+					// for customer convenience we start counting from 1
+					Integer start = extractLengthFromParameter(boundaries[0], 0) - 1;
+					Integer end = extractLengthFromParameter(boundaries[1], retval.length());
+					if (end.compareTo(Integer.valueOf(0)) >= 0 ) {
+						int len = end.compareTo(retval.length()) < 0 ? end : retval.length();
+						retval = len == 0 ? "" : retval.substring(start, len);
+					}
+				}
+			}
+			
+			// extract without range from n to m characters from string
+			par = extractParam(placeholder, "EXRANGE");
+			if (!par.isEmpty()) {
+				String[] boundaries = par.split(",");
+				if (boundaries.length == 2) {
+					// for customer convenience we start counting from 1
+					Integer start = extractLengthFromParameter(boundaries[0], 0) - 1;
+					Integer end = extractLengthFromParameter(boundaries[1], retval.length());
+					if (end.compareTo(Integer.valueOf(0)) >= 0) {
+						int len = end.compareTo(retval.length()) < 0 ? end : retval.length();
+						if (len == 0) {
+							retval = "";
+						} else {
+							String first = retval.substring(0, Math.max(0, start));
+							String last = retval.substring(len, retval.length());
+							retval = first + last;
+						}
+					}
 				}
 			}
 		}
@@ -459,12 +530,22 @@ public class Placeholders {
 			// Parameter "EMPTY"
 			par = extractParam(placeholder,"EMPTY");
 			if (!par.isEmpty())
-					value = removeQuotationMarks(par);
+				retval = removeQuotationMarks(par);
 		}
 		
 		// Encode some special characters
-		value = encodeEntities(value);
-		return value;
+		retval = encodeEntities(retval);
+		return retval;
+	}
+
+	private Integer extractLengthFromParameter(String par, Integer defaultValue) {
+		Integer length;
+		try {
+			length = Integer.parseInt(par);
+		} catch (NumberFormatException e) {
+			length = defaultValue;
+		}
+		return length;
 	}
 	
 	/**
@@ -666,22 +747,22 @@ public class Placeholders {
 		String deliverystring;
 		String differentstring;
 		// address and delivery address
+		DocumentReceiver billingAdress = addressManager.getBillingAdress(document);
+		DocumentReceiver deliveryAdress = addressManager.getDeliveryAdress(document);
 		for (int i = 0;i<2 ; i++) {
 		    String s;
 			deliverystring = i==1 ? "delivery" : "";
 			if(i == 1) {
-                s = contactUtil.getAddressAsString(document.getDeliveryContact());
+				s = contactUtil.getAddressAsString(deliveryAdress);
 			} else {
-			    s = contactUtil.getAddressAsString(document.getBillingContact());
+				s = contactUtil.getAddressAsString(billingAdress);
 			}
 			
 			//  with option "DIFFERENT" and without
 			for (int ii = 0 ; ii<2; ii++) {
 				differentstring = ii==1 ? ".DIFFERENT" : "";
-				if (ii==1) {
-					if (contactUtil.deliveryAddressEqualsBillingAddress(document))
-						s="";
-				}
+				if (ii==1 && contactUtil.deliveryAddressEqualsBillingAddress(document))
+					s="";
 				if (key.equals("DOCUMENT" + differentstring +"."+ deliverystring.toUpperCase()+ "ADDRESS")) return s;
 			}
 		}
@@ -690,7 +771,7 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.TYPE")) return msg.getMessageFromKey(DocumentTypeUtil.findByBillingType(document.getBillingType()).getSingularKey());
 		if (key.equals("DOCUMENT.NAME")) return document.getName();
 		if (key.equals("DOCUMENT.CUSTOMERREF")) return document.getCustomerRef();
-		if (key.equals("DOCUMENT.CONSULTANT")) return document.getConsultant();
+		if (key.equals("DOCUMENT.CONSULTANT")) return billingAdress.getConsultant();
 		if (key.equals("DOCUMENT.SERVICEDATE")) return dateFormatterService.getFormattedLocalizedDate(document.getServiceDate());
 		if (key.equals("DOCUMENT.MESSAGE")) return document.getMessage();
 		if (key.equals("DOCUMENT.MESSAGE1")) return document.getMessage();
@@ -713,6 +794,17 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return Double.toString(documentSummary.getTotalQuantity()); // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
 
+		if (key.startsWith("DOCUMENT.WEIGHT")) {
+			if (key.equals("DOCUMENT.WEIGHT.TARA"))
+				return numberFormatterService.doubleToFormattedQuantity(document.getTara());
+			double netWeightValue = document.getItems().stream().mapToDouble(d -> d.getWeight() != null ? d.getWeight() : Double.valueOf(0.0)).sum();
+			if (key.equals("DOCUMENT.WEIGHT.NET"))
+				return numberFormatterService.doubleToFormattedQuantity(netWeightValue);
+			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
+			if (key.equals("DOCUMENT.WEIGHT.TOTAL"))
+				return numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue);
+		}		
+		
 		if (key.equals("DOCUMENT.DEPOSIT.DEPOSIT")) return numberFormatterService.formatCurrency(documentSummary.getDeposit());
 		if (key.equals("DOCUMENT.DEPOSIT.FINALPAYMENT")) return numberFormatterService.formatCurrency(documentSummary.getFinalPayment());
 		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString(Constants.PREFERENCES_DEPOSIT_TEXT);
@@ -758,35 +850,34 @@ public class Placeholders {
 		if (key.startsWith("DOCUMENT.REFERENCE.")) {
 			Transaction transaction = ContextInjectionFactory.make(Transaction.class, context).of(document);
 			if (transaction != null) {
-				if (key.equals("DOCUMENT.REFERENCE.OFFER"))
+				switch(key) {
+				case "DOCUMENT.REFERENCE.OFFER":
 					return transaction.getReference(DocumentType.OFFER);
-				if (key.equals("DOCUMENT.REFERENCE.ORDER"))
+				case "DOCUMENT.REFERENCE.ORDER":
 					return transaction.getReference(DocumentType.ORDER);
-				if (key.equals("DOCUMENT.REFERENCE.CONFIRMATION"))
+				case "DOCUMENT.REFERENCE.CONFIRMATION":
 					return transaction.getReference(DocumentType.CONFIRMATION);
-				if (key.equals("DOCUMENT.REFERENCE.INVOICE"))
+				case "DOCUMENT.REFERENCE.INVOICE":
 					return transaction.getReference(DocumentType.INVOICE);
-				if (key.equals("DOCUMENT.REFERENCE.INVOICE.DATE"))
+				case "DOCUMENT.REFERENCE.INVOICE.DATE":
 					return transaction.getFirstReferencedDocumentDate(DocumentType.INVOICE);
-				//			if (key.equals("DOCUMENT.REFERENCE.INVOICE.DUEDATE")) return transaction.getFirstReferencedDocumentDueDate(DocumentType.INVOICE);
-				if (key.equals("DOCUMENT.REFERENCE.DELIVERY"))
+//				case "DOCUMENT.REFERENCE.INVOICE.DUEDATE":
+//					return transaction.getFirstReferencedDocumentDueDate(DocumentType.INVOICE);
+				case "DOCUMENT.REFERENCE.DELIVERY":
 					return transaction.getReference(DocumentType.DELIVERY);
-				if (key.equals("DOCUMENT.REFERENCE.CREDIT"))
+				case "DOCUMENT.REFERENCE.CREDIT":
 					return transaction.getReference(DocumentType.CREDIT);
-				if (key.equals("DOCUMENT.REFERENCE.DUNNING"))
+				case "DOCUMENT.REFERENCE.DUNNING":
 					return transaction.getReference(DocumentType.DUNNING);
-				if (key.equals("DOCUMENT.REFERENCE.PROFORMA"))
+				case "DOCUMENT.REFERENCE.PROFORMA":
 					return transaction.getReference(DocumentType.PROFORMA);
+				}
 			}
 		}
 		
 		//setProperty("PAYMENT.NAME", document.getStringValueByKey("paymentname"));
 		if (key.equals("PAYMENT.DESCRIPTION")) {
-			if(document.getPayment() != null) {
-				return document.getPayment().getDescription();
-			} else {
-				return document.getAdditionalInfo().getPaymentDescription();
-			}
+			return document.getPayment() != null ? document.getPayment().getDescription() : document.getAdditionalInfo().getPaymentDescription();
 		}
 		if (key.equals("PAYMENT.PAID.VALUE")) return numberFormatterService.DoubleToFormatedPriceRound(document.getPaidValue());
 		if (key.equals("PAYMENT.PAID.DATE")) return dateFormatterService.getFormattedLocalizedDate(document.getPayDate());
@@ -802,23 +893,20 @@ public class Placeholders {
 		
 		if (key.startsWith("DELIVERY.")) {
 			key2 = key.substring(9);
-            addressField = document.getDeliveryContact() != null 
-            		? contactUtil.getAddressAsString(document.getDeliveryContact()) 
-            		: contactUtil.getAddressAsString(document.getBillingContact() != null 
-            		  && document.getBillingContact().getAlternateContacts() != null 
-            		     ? document.getBillingContact().getAlternateContacts() 
-            		     : document.getBillingContact());
+            addressField = deliveryAdress != null 
+            		? contactUtil.getAddressAsString(deliveryAdress) 
+            		: contactUtil.getAddressAsString(billingAdress);
 		}
 		else {
 			key2 = key;
-			addressField = contactUtil.getAddressAsString(document.getBillingContact());
+			addressField = contactUtil.getAddressAsString(billingAdress);
 		}
 
 		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_ADDRESSFIRSTLINE);
 		
 		// Get the contact of the UniDataSet document
-		Contact contact = document.getBillingContact();
-	
+		
+		DocumentReceiver contact = billingAdress;
 		// There is a reference to a contact. Use this (but only if it's a valid contact!)
 		if (contact != null) {
 		    if (key.equals("ADDRESS")) return contactUtil.getAddressAsString(contact);
@@ -826,8 +914,11 @@ public class Placeholders {
 			if (key.equals("ADDRESS.GREETING")) return contactUtil.getGreeting(contact);
 			if (key.equals("ADDRESS.TITLE")) return contact.getTitle();
 			if (key.equals("ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
-			if (key.equals("ADDRESS.BIRTHDAY")) {
-				return contact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(contact.getBirthday());
+			if (key.equals("ADDRESS.BIRTHDAY") && contact.getOriginContactId() != null) {
+				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
+				if(originContact != null) {
+					return originContact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(originContact.getBirthday());
+				}
 			}
 			if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
 			if (key.equals("ADDRESS.FIRSTANDLASTNAME")) return contactUtil.getFirstAndLastName(contact);
@@ -835,28 +926,30 @@ public class Placeholders {
 			if (key.equals("ADDRESS.LASTNAME")) return contact.getName();
 			if (key.equals("ADDRESS.COMPANY")) return contact.getCompany();
 
-			Address address = contact.getAddress();
-			if(address != null) {
-    			if (key.equals("ADDRESS.STREET")) return address.getStreet();
-    			if (key.equals("ADDRESS.STREETNAME")) return contactUtil.getStreetName(address.getStreet());
-    			if (key.equals("ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
-    			if (key.equals("ADDRESS.ZIP")) return address.getZip();
-    			if (key.equals("ADDRESS.CITY")) return address.getCity();
-                if (key.equals("ADDRESS.COUNTRY.CODE2")) return address.getCountryCode();
-                Optional<ULocale> locale = localeUtil.findByCode(address.getCountryCode());
-                if (key.equals("ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
-                if (key.equals("ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
-			}
-			
-			BankAccount bankAccount = contact.getBankAccount();
-			if(bankAccount != null) {
-                if (key.equals("ADDRESS.BANK.ACCOUNT.HOLDER")) return bankAccount.getAccountHolder();
-    			if (key.equals("ADDRESS.BANK.ACCOUNT")) return bankAccount.getName();
-    			if (key.equals("ADDRESS.BANK.CODE")) return Optional.ofNullable(bankAccount.getBankCode()).orElse(Integer.valueOf(0)).toString();
-    			if (key.equals("ADDRESS.BANK.NAME")) return bankAccount.getBankName();
-    			if (key.equals("ADDRESS.BANK.IBAN")) return bankAccount.getIban();
-    			if (key.equals("ADDRESS.BANK.BIC")) return bankAccount.getBic();
-			}
+			if (key.equals("ADDRESS.STREET")) return contact.getStreet();
+			if (key.equals("ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
+			if (key.equals("ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
+			if (key.equals("ADDRESS.ZIP")) return contact.getZip();
+			if (key.equals("ADDRESS.CITY")) return contact.getCity();
+            if (key.equals("ADDRESS.COUNTRY.CODE2")) return contact.getCountryCode();
+            
+            Optional<ULocale> locale = localeUtil.findByCode(contact.getCountryCode());
+            if (key.equals("ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
+            if (key.equals("ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
+            if(contact.getOriginContactId() != null) {
+				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
+				if(originContact != null) {
+					BankAccount bankAccount = originContact.getBankAccount();
+					if(bankAccount != null) {
+		                if (key.equals("ADDRESS.BANK.ACCOUNT.HOLDER")) return bankAccount.getAccountHolder();
+		    			if (key.equals("ADDRESS.BANK.ACCOUNT")) return bankAccount.getName();
+		    			if (key.equals("ADDRESS.BANK.CODE")) return Optional.ofNullable(bankAccount.getBankCode()).orElse(Integer.valueOf(0)).toString();
+		    			if (key.equals("ADDRESS.BANK.NAME")) return bankAccount.getBankName();
+		    			if (key.equals("ADDRESS.BANK.IBAN")) return bankAccount.getIban();
+		    			if (key.equals("ADDRESS.BANK.BIC")) return bankAccount.getBic();
+					}
+				}
+            }
 			if (key.equals("ADDRESS.NR")) return contact.getCustomerNumber();
 			if (key.equals("ADDRESS.PHONE")) return contact.getPhone();
 			if (key.equals("ADDRESS.PHONE.PRE")) return getTelPrePost(contact.getPhone(), true);
@@ -869,16 +962,20 @@ public class Placeholders {
 			if (key.equals("ADDRESS.MOBILE.POST")) return getTelPrePost(contact.getMobile(), false);
 			if (key.equals("ADDRESS.SUPPLIER.NUMBER")) return contact.getSupplierNumber();
 			if (key.equals("ADDRESS.EMAIL")) return contact.getEmail();
-			if (key.equals("ADDRESS.WEBSITE")) return contact.getWebsite();
-			if (key.equals("ADDRESS.VATNR")) return contact.getVatNumber();
-			if (key.equals("ADDRESS.NOTE")) return contact.getNote();
-			if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(contact.getDiscount()).orElse(Double.valueOf(0)).toString();
+			
+            if(contact.getOriginContactId() != null) {
+				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
+				if (key.equals("ADDRESS.WEBSITE")) return originContact.getWebsite();
+				if (key.equals("ADDRESS.VATNR")) return originContact.getVatNumber();
+				if (key.equals("ADDRESS.NOTE")) return originContact.getNote();
+				if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(originContact.getDiscount()).orElse(Double.valueOf(0)).toString();
+				if (key.equals("ADDRESS.MANDATEREFERENCE")) return originContact.getMandateReference();
+            }
 			if (key.equals("ADDRESS.GLN")) return Optional.ofNullable(contact.getGln()).orElse(Long.valueOf(0)).toString();
-			if (key.equals("ADDRESS.MANDATEREFERENCE")) return contact.getMandateReference();
 			
 			// now switch to delivery contact, if any
-			if(document.getDeliveryContact() != null) {
-			    contact = document.getDeliveryContact();
+			if(deliveryAdress != null) {
+			    contact = deliveryAdress;
 			    // if no delivery contact is available, use billing contact
 			}
 			if (key.equals("DELIVERY.ADDRESS")) return contactUtil.getAddressAsString(contact);
@@ -886,26 +983,26 @@ public class Placeholders {
 			if (key.equals("DELIVERY.ADDRESS.GREETING")) return contactUtil.getGreeting(contact);
 			if (key.equals("DELIVERY.ADDRESS.TITLE")) return contact.getTitle();
 			if (key.equals("DELIVERY.ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
-			if (key.equals("DELIVERY.ADDRESS.BIRTHDAY")) {
-				return contact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(contact.getBirthday());
+			if (key.equals("DELIVERY.ADDRESS.BIRTHDAY") && contact.getOriginContactId() != null) {
+				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
+				if(originContact != null) {
+				return originContact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(originContact.getBirthday());
+				}
 			}
 			if (key.equals("DELIVERY.ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
 			if (key.equals("DELIVERY.ADDRESS.FIRSTNAME")) return contact.getFirstName();
 			if (key.equals("DELIVERY.ADDRESS.LASTNAME")) return contact.getName();
 			if (key.equals("DELIVERY.ADDRESS.COMPANY")) return contact.getCompany();
 
-            address = contact.getAddress();
-            if(address != null) {
-    			if (key.equals("DELIVERY.ADDRESS.STREET")) return address.getStreet();
-    			if (key.equals("DELIVERY.ADDRESS.STREETNAME")) return contactUtil.getStreetName(address.getStreet());
-    			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(address.getStreet());
-    			if (key.equals("DELIVERY.ADDRESS.ZIP")) return address.getZip();
-    			if (key.equals("DELIVERY.ADDRESS.CITY")) return address.getCity();
-    			Optional<ULocale> locale = localeUtil.findByCode(address.getCountryCode());
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
-    			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : localeUtil.getDefaultLocale().getDisplayCountry();
-   			    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
-            }
+			if (key.equals("DELIVERY.ADDRESS.STREET")) return contact.getStreet();
+			if (key.equals("DELIVERY.ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
+			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
+			if (key.equals("DELIVERY.ADDRESS.ZIP")) return contact.getZip();
+			if (key.equals("DELIVERY.ADDRESS.CITY")) return contact.getCity();
+			locale = localeUtil.findByCode(contact.getCountryCode());
+			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
+			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : localeUtil.getDefaultLocale().getDisplayCountry();
+		    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
 		}
 		// There is no reference - Try to get the information from the address field
 		else {
@@ -1007,22 +1104,25 @@ public class Placeholders {
 	    censoredAccount = censorAccountNumber(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN));
 	    paymenttext = StringUtils.replace(paymenttext, "<BANK.IBAN.CENSORED>", censoredAccount);
 	    
-	    Contact contact = document.getBillingContact();
-        if(contact != null && contact.getBankAccount() != null) {
-    	    // debitor's bank account
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.ACCOUNT.HOLDER>", 
-    	            contact.getBankAccount().getAccountHolder());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN>", 
-    	            contact.getBankAccount().getIban());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.BIC>", 
-    	            contact.getBankAccount().getBic());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.NAME>", 
-    	            contact.getBankAccount().getBankName());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.MANDATREF>", 
-    	            contact.getMandateReference());
-    	    // Additional placeholder for censored bank account
-    	    censoredAccount = censorAccountNumber(contact.getBankAccount().getIban());
-    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN.CENSORED>", censoredAccount);
+	    DocumentReceiver documentReceiver = addressManager.getBillingAdress(document);
+        if(documentReceiver != null && documentReceiver.getOriginContactId() != null) {
+        	Contact contact = contactsDAO.findById(documentReceiver.getOriginContactId());
+        	if(contact != null && contact.getBankAccount() != null) {
+	    	    // debitor's bank account
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.ACCOUNT.HOLDER>", 
+	    	            contact.getBankAccount().getAccountHolder());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN>", 
+	    	            contact.getBankAccount().getIban());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.BIC>", 
+	    	            contact.getBankAccount().getBic());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.NAME>", 
+	    	            contact.getBankAccount().getBankName());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.MANDATREF>", 
+	    	            contact.getMandateReference());
+	    	    // Additional placeholder for censored bank account
+	    	    censoredAccount = censorAccountNumber(contact.getBankAccount().getIban());
+	    	    paymenttext = StringUtils.replace(paymenttext, "<DEBITOR.BANK.IBAN.CENSORED>", censoredAccount);
+        	}
 	    }
 	    
 	    // placeholder for total sum

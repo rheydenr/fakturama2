@@ -20,9 +20,13 @@ import javax.inject.Inject;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateListStrategy;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.IBeanListProperty;
 import org.eclipse.core.databinding.beans.IBeanValueProperty;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -32,7 +36,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -45,7 +49,10 @@ import org.eclipse.nebula.jface.cdatetime.CDateTimeObservableValue;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.FormattedTextObservableValue;
+import org.eclipse.nebula.widgets.opal.multichoice.MultiChoice;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -64,9 +71,14 @@ import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
+import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.parts.widget.CTabItemSelectionProperty;
+import com.sebulli.fakturama.parts.widget.MultiChoiceWidgetObservableList;
 
 /**
  * Parent class for all editors
@@ -93,7 +105,9 @@ public abstract class Editor<T extends IEntity> {
     protected PropertiesDAO propertiesDao;
 	
     @Inject
-    private IEclipseContext context;
+    protected IEclipseContext context;
+    
+    private NumberGenerator numberGenerator;
 
 	@Inject
 	@Translation
@@ -280,7 +294,6 @@ public abstract class Editor<T extends IEntity> {
 		public void focus() {
 			stdButton.setFocus();
 		}
-
 	}
 
 	/**
@@ -292,32 +305,6 @@ public abstract class Editor<T extends IEntity> {
 		if (stdComposite != null)
 //			stdComposite.setStdText();
 			stdComposite.focus();
-	}
-
-	/**
-	 * Get the next document number
-	 * 
-	 * @return The next document number
-	 * @deprecated use {@link NumberGenerator#getNextNr(String)}
-	 */
-	protected String getNextNr() {
-		NumberGenerator numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
-		return numberGenerator.getNextNr(getEditorID());
-	}
-
-	/**
-	 * Set the next free document number in the preference store. But check if
-	 * the documents number is the next free one.
-	 * 
-	 * @param s
-	 *            The document number as string.
-	 * @return Errorcode, if the document number is correctly set to the next
-	 *         free number.
-	 * @deprecated use {@link NumberGenerator#setNextFreeNumberInPrefStore(String, String, String)}
-	 */
-	protected int setNextFreeNumberInPrefStore(String value, String key) {
-		NumberGenerator numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
-		return numberGenerator.setNextFreeNumberInPrefStore(value, getEditorID());
 	}
 	
     /**
@@ -336,26 +323,85 @@ public abstract class Editor<T extends IEntity> {
 	 * @param source the SWT widget
 	 * @param property the property to observe
 	 */
-	protected Binding bindModelValue(T target, Control source, String property) {
+	protected <E extends IEntity> Binding bindModelValue(E target, Control source, String property) {
 	    return bindModelValue(target, source, property, null, null);
 	}
 	
-    protected Binding bindModelValue(T target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
-        IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
-        IObservableValue<T> model = nameProperty.observe(target);
+   	@SuppressWarnings("unchecked")
+	protected <E extends IEntity> Binding bindModelList(E target, Object elementType, final Control source,
+			String property, UpdateListStrategy<String, E> targetToModel, UpdateListStrategy<E, String> modelToTarget) {
+		Binding retval = null;
+		IBeanListProperty listProperty = BeanProperties.list(target.getClass(), property, elementType.getClass());
+		IObservableList<String> uiWidget = null;
+		IObservableList<E> modelList = (IObservableList<E>)listProperty.observe(target);
+		if (source instanceof MultiChoice) {
+			uiWidget = new MultiChoiceWidgetObservableList<>((MultiChoice) source, elementType);
+			uiWidget.addListChangeListener((ListChangeEvent<? extends String> event) -> {
+				if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+					getMDirtyablePart().setDirty(true);
+				}
+			});
+		}
+
+		if (targetToModel != null || modelToTarget != null) {
+			retval = getCtx().bindList(uiWidget, modelList, targetToModel, modelToTarget);
+		} else {
+			retval = getCtx().bindList(uiWidget, modelList);
+		}
+
+		return retval;
+	}
+   	
+   	
+   	/**
+   	 * 
+   	 * @param <E> Master entity
+   	 * @param <D> detail entity (type of the list entry)
+   	 * @param target
+   	 * @param detailEntity
+   	 * @param cTabFolder
+   	 * @param property
+   	 * @return
+   	 */
+   	protected <E extends IEntity, D extends IEntity> Binding bindModelSetFromCTabFolder(E target, D detailEntity, CTabFolder cTabFolder, String property) {
+		Binding retval = null;
+		new CTabItemSelectionProperty().observe(cTabFolder);
+		IBeanListProperty<Document, DocumentReceiver> nameProperty = BeanProperties.list(Document_.receiver.getName());
+		//nameProperty.observeDetail(target);
+		
+		
+		return retval;
+   	}
+   	
+   	protected <E extends IEntity> Binding bindObservableValue(IObservableValue<E> model, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
         Binding retval = null;
         
-        IObservableValue<T> uiWidget;
+        IObservableValue uiWidget;
         /*
          * ATTENTION! Dont't be attempted to put the Listener code in this if statement.
          * Otherwise you get ALWAYS a dirty editor!
          */
-        if(source instanceof Combo || source instanceof Button) {
-            uiWidget = WidgetProperties.selection().observe(source);
+        boolean observeModelChangeManually = false;
+        if(source instanceof Combo) {
+			uiWidget = WidgetProperties.comboSelection().observe((Combo) source);
+			observeModelChangeManually = true;
+        } else if(source instanceof CCombo) {
+			uiWidget = WidgetProperties.ccomboSelection().observe((CCombo) source);
+			((CCombo) source).addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+						getMDirtyablePart().setDirty(true);
+				}
+			});
+			observeModelChangeManually = true;
+        } else if (source instanceof Button) {
+            uiWidget = WidgetProperties.buttonSelection().observe((Button) source);
+            observeModelChangeManually = true;
+        } else if (source instanceof Spinner) {
+            uiWidget = WidgetProperties.spinnerSelection().observe((Spinner) source);
         } else if(source instanceof CDateTime) {
             uiWidget = new CDateTimeObservableValue((CDateTime) source);
-        } else if(source instanceof Spinner) {
-        	uiWidget = WidgetProperties.selection().observe(source);
+            observeModelChangeManually = true;
         } else {
 //            uiWidget = WidgetProperties.text(SWT.FocusOut).observe(source);
             uiWidget = WidgetProperties.text(SWT.Modify).observe(source);
@@ -367,32 +413,37 @@ public abstract class Editor<T extends IEntity> {
             retval = getCtx().bindValue(uiWidget, model);
         }    
         
-        if(source instanceof Combo) {
-            ((Combo)source).addModifyListener(e -> {
+        if(observeModelChangeManually) {
+        	model.addValueChangeListener(e -> {
             	// because of the Linux event fireworks bug :-(
             	if (((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null 
-            			&& (((Combo)source).getSelectionIndex() != ((Combo)e.getSource()).getSelectionIndex() || ((Combo)e.getSource()).getSelectionIndex() == -1)) {
-				    getMDirtyablePart().setDirty(true);
+            			&& e.diff.getNewValue() != e.diff.getOldValue()) {
+            		getMDirtyablePart().setDirty(true);
 				}
             });
-        } else if(source instanceof CDateTime) {
-            ((CDateTime)source).addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-            	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
-                    getMDirtyablePart().setDirty(true);
-            	}
-            }));
-        } else if(source instanceof Button) {
-        	((Button)source).addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-            	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
-        			getMDirtyablePart().setDirty(true);
-            	}
-        	}));
         }
         
         return retval;
+	}
+ 
+	@SuppressWarnings("rawtypes")
+	protected <E extends IEntity> Binding bindModelValue(E target, final Control source, String property, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+        IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
+// TODO using chained properties
+//        BeanProperties.value(target.getClass(), property).value(property).value(property).observe(source);
+
+        IObservableValue<E> model;
+        if(target instanceof IObservableValue) {
+        	model = (IObservableValue<E>) target;
+        } else {
+        	model = nameProperty.observe(target);
+        }
+        return bindObservableValue(model, source, property, targetToModel, modelToTarget);
     }
 	
-    protected Binding bindModelValue(T target, Text source, String property, int limit, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+	protected <E extends IEntity> Binding bindModelValue(E target, Text source, String property, int limit,
+			UpdateValueStrategy/* <? extends Widget,E> */  targetToModel,
+			UpdateValueStrategy/* <E,? extends Widget> */ modelToTarget) {
     	Binding binding = null;
         if (limit > 0) {
             source.setTextLimit(limit);
@@ -414,19 +465,19 @@ public abstract class Editor<T extends IEntity> {
      * Supervise this text widget. Set the text limit and request a new
      * "isDirty" validation, if the content of the text widget is modified.
      */
-    protected Binding bindModelValue(T target, Text source, String property, int limit) {
+    protected <E extends IEntity> Binding bindModelValue(E target, Text source, String property, int limit) {
         return bindModelValue(target, source, property, limit, null, null);
     }
 
-
-    protected Binding bindModelValue(T target, FormattedText source, String property, int limit) {
+   	@SuppressWarnings("unchecked")
+    protected <E extends IEntity> Binding bindModelValue(E target, FormattedText source, String property, int limit) {
     	Binding binding = null;
     	if(limit > 0) {
     		source.getControl().setTextLimit(limit);
     	}
         IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
-        IObservableValue<T> model = nameProperty.observe(target);
-        IObservableValue<T> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);
+        IObservableValue<E> model = nameProperty.observe(target);
+        IObservableValue<E> uiWidget = new FormattedTextObservableValue(source, SWT.Modify);
         binding = getCtx().bindValue(uiWidget, model);
 
         source.getControl().addModifyListener(e -> {
@@ -443,11 +494,12 @@ public abstract class Editor<T extends IEntity> {
         return binding;
     }
 
-    protected Binding bindModelValue(T target, ComboViewer source, String property) {
+   	@SuppressWarnings("unchecked")
+    protected <E extends IEntity> Binding bindModelValue(E target, ComboViewer source, String property) {
     	Binding binding = null;
-        IBeanValueProperty nameProperty = BeanProperties.value(getModelClass(), property);
-        IObservableValue<T> model = nameProperty.observe(target);
-        IObservableValue<T> uiWidget = ViewersObservables
+        IBeanValueProperty nameProperty = BeanProperties.value(target.getClass(), property);
+        IObservableValue<E> model = nameProperty.observe(target);
+        IObservableValue<E> uiWidget = ViewersObservables
                 .observeSingleSelection(source);
         binding = getCtx().bindValue(uiWidget, model);
         
@@ -463,7 +515,7 @@ public abstract class Editor<T extends IEntity> {
 	/**
      * @return the ctx
      */
-    public DataBindingContext getCtx() {
+    protected DataBindingContext getCtx() {
         return ctx;
     }
 
@@ -552,4 +604,10 @@ public abstract class Editor<T extends IEntity> {
 
     protected abstract Class<T> getModelClass();
 
+	public NumberGenerator getNumberGenerator() {
+		if(numberGenerator == null) {
+			numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
+		}
+		return numberGenerator;
+	}
 }

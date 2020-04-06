@@ -103,7 +103,7 @@
 			<varlistentry>
 				<term>Hauptmenü Hilfe</term>
 				<listitem>
-					<para>Befehle zum Abrufen von Informationen und zur Softwareaktualisierung.
+					<para>Befehle zum Abrufen von Informationen<!-- und zur Softwareaktualisierung -->.
 			Siehe <link linkend="application_mainmenu_help">Hauptmenü Hilfe</link>
 					</para>
 				</listitem>
@@ -1051,7 +1051,9 @@
 						<imagedata contentdepth="80%" width="40pt" fileref="../images/application/order_new_32.png" format="PNG" scalefit="1"/>
 					</imageobject>
 			</inlinemediaobject> Auftrag</title>
-			<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster.</para>
+			<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster. Mit gedrückter STRG-Taste (bzw. CMD-Taste bei MacOS) 
+			wird der aktive Auftrag dupliziert und in einem neuen Editor dargestellt (ggf. muss man dazu zunächst den Fokus direkt auf den 
+			aktiven Editor setzen).</para>
 			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
 			</para>
 		</sect2>
@@ -1135,7 +1137,9 @@
 						<imagedata contentdepth="80%" width="40pt"  fileref="../images/application/product_new_32.png" format="PNG" scalefit="1"/>
 					</imageobject> 
 			</inlinemediaobject>Produkt</title>
-			<para>Erstellt ein neues Produkt und öffnet dieses in einem Editorfenster.</para>
+			<para>Erstellt ein neues Produkt und öffnet dieses in einem Editorfenster. Mit gedrückter STRG-Taste (bzw. CMD-Taste bei MacOS) 
+			wird das aktive Produkt dupliziert und in einem neuen Editor dargestellt (ggf. muss man dazu zunächst den Fokus direkt auf den 
+			aktiven Editor setzen).</para>
 			<para>Siehe auch <link linkend="editor_editor_product">Produkteditor</link>
 			</para>
 		</sect2>
@@ -1558,7 +1562,7 @@
 					<imagedata fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
 				</imageobject>
 				<imageobject role="fo">
-					<imagedata contentdepth="265%" fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
+					<imagedata contentdepth="200%" fileref="../images/editor/editor.png" format="PNG" scalefit="1"/>
 				</imageobject>
 			</mediaobject>
 		</informalfigure>
@@ -1682,7 +1686,22 @@
 						</inlinemediaobject>
 					</term>
 					<listitem>
-						<para>Die Adresse kann direkt eingegeben werden. Ebenso kann über das Icon "Kontakt" eine Liste mit allen Debitoradressen geöffnet und die gewünschte Adresse ausgewählt werden (mit STRG+Klick wird die Kreditoren-Auswahl geöffnet). Dann wird mit dem Adresstext intern auch eine Verknüpfung zu dieser Adresse hergestellt. Dadurch können beispielsweise Zusatzinformationen (Kontonummer usw.) beim Ausdruck der Rechnung mit eingeblendet werden. Ist bei dem entsprechenden Kontakt eine Zahlungsart hinterlegt, wird diese ebenfalls mit übernommen.</para>
+						<para>Über das Icon "Kontakt" kann eine Liste mit allen Debitoradressen geöffnet 
+						und die gewünschte Adresse ausgewählt werden (mit <emphasis role="italic">STRG+Klick</emphasis> wird die Kreditoren-Auswahl geöffnet). Dann wird mit dem Adresstext 
+						intern auch eine Verknüpfung zu dieser Adresse hergestellt. Dadurch können beispielsweise Zusatzinformationen (Kontonummer usw.) 
+						beim Ausdruck der Rechnung mit eingeblendet werden. Ist bei dem entsprechenden Kontakt eine Zahlungsart hinterlegt, wird diese 
+						ebenfalls mit übernommen.</para>
+						<para>Die Adressen im Auswahldialog werden nach der entsprechenden Dokumentenart gefiltert. Wird gerade ein Rechnungsdokument bearbeitet,
+						werden nur Rechnungsadressen angezeigt. Bei einem Lieferschein werden dementsprechend nur Lieferadressen angezeigt. Wurde das Feld
+						im Kontakt leer gelassen wird die Adresse ebenfalls angezeigt. Hat ein Kontakt mehrere infrage kommende Adressen werden diese
+						in einer Baumstruktur unter dem entsprechenden Kontakteintrag anzgezeigt.</para>
+						<para>Wird für ein Rechnungsdokument ein Kontakt ausgewählt, der eine separate Lieferanschrift besitzt, so wird diese
+						ebenfalls gleich in das Adressfeld eingefügt (in einem separaten Reiter). Dasselbe gilt auch für einen Lieferschein
+						(dort wird die Rechnungsadresse aus dem Kontakt mit hinzugefügt). Die Adressreiter sind mit der Art der jeweiligen Anschrift versehen.</para>
+						<para>Wird die ausgewählte Adresse später im Dokumenten-Editor geändert, wirkt sich dies nur auf das aktuelle Dokument
+						aus und nicht auf den ursprünglich gespeicherten Kontakt. Dementsprechend wirkt sich ein geänderter Kontakt auch nicht auf die 
+						Adresse im Dokumenteditor aus. Wurde ein Kontakt nachträglich geändert (im Kontakteditor), muss er bei Bedarf wieder neu 
+						dem Dokument hinzugefügt werden.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
@@ -1718,28 +1737,10 @@
 					</listitem>
 				</varlistentry>
 			</variablelist>
+			<para>Eine Adresse kann auch ohne Auswahl über den Kontakte-Dialog manuell eingegeben werden. Damit entfällt allerdings
+			die Möglichkeit, bestimmte Platzhalter zu befüllen (z. B. Kundennummer oder Bankverbindung des Kunden).</para>
 			<para>Siehe auch <link linkend="preferences_contactformat">Format des Adressfeldes</link>
 			</para>
-		</sect2>
-		<sect2>
-			<title>Warnsymbol</title>
-			<variablelist>
-				<varlistentry>
-					<term>
-						<inlinemediaobject>
-							<imageobject role="html">
-								<imagedata fileref="../images/editor/warning_32.png" format="PNG" scalefit="1"/>
-							</imageobject>
-							<imageobject role="fo">
-								<imagedata contentdepth="90%" fileref="../images/editor/warning_32.png" format="PNG" scalefit="1"/>
-							</imageobject>
-						</inlinemediaobject>
-					</term>
-					<listitem>
-						<para>Unterscheidet sich die Lieferadresse von der Rechnungsadresse, so erscheint ein Warnsymbol. Die Lieferadresse wird angezeigt, wenn man mit der Maus über das Symbol streicht.</para>
-					</listitem>
-				</varlistentry>
-			</variablelist>
 		</sect2>
 		<sect2>
 			<title>Leistungsdatum</title>
@@ -1798,7 +1799,6 @@
 						</inlinemediaobject>
 					</term>
 					<listitem>
-
 						<para>Importieren aller Artikel eines Lieferscheins. Zusätzlich kann die Lieferscheinnummer in das Feld <emphasis role="bold">Bemerkung</emphasis> übernommen werden.</para>
 						<para>Es werden im Auswahldialog nur die Lieferscheine angezeigt, die noch keiner Rechnung zugeordnet sind. Eine bereits zugeordnete Lieferscheinnummer kann im <link linkend="application_overview">Übersichtsfenster</link> wieder zurückgesetzt werden. Ist bereits eine Kontaktadresse vergeben, werden nur die Lieferscheine dieses Kunden aufgelistet.</para>
 						<para>Dieses Icon ist nur bei Rechnungen und Proformarechnungen aktiv.</para>
@@ -1835,6 +1835,21 @@
 					</term>
 					<listitem>
 						<para>Löscht den ausgewählten Artikel.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>
+						<inlinemediaobject>
+							<imageobject role="html">
+								<imagedata fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
+							</imageobject>
+							<imageobject role="fo">
+								<imagedata contentdepth="80%" fileref="../images/application/copy_edit.png" format="PNG" scalefit="1"/>
+							</imageobject>
+						</inlinemediaobject>
+					</term>
+					<listitem>
+						<para>Dupliziert den oder die ausgewählten Artikel.</para>
 					</listitem>
 				</varlistentry>
 			</variablelist>
@@ -1964,7 +1979,8 @@
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="editor_editor_product"/><title>Der Produkteditor</title>
-		<para>Abhängig von den Einstellungen sind einige Elemente ausgeblendet.</para>
+		<para>Abhängig von den Einstellungen sind einige Elemente ausgeblendet. Möchte man das aktive Produkt duplizieren, kann man wahlweise auf das Produkt-Icon
+		in der Werkzeugleiste klicken (mit gedrückter STRG- bzw. CMD-Taste) oder man drückt die Tastenkombination SHIFT + ALT + C.</para>
 		<informalfigure>
 			<mediaobject>
 				<imageobject role="html">
@@ -2000,7 +2016,7 @@
 		</sect2>
 		<sect2>
 			<title>Einheit</title>
-			<para>Die Maßeinheit des Produktes. Hier können Sie bei Bedarf auch definieren, wie die Maßeinheit bei unterschiedlichen Mengen heißen soll ("Karton" oder "Kartons"). Der Aufbau einer solchen Maßeinheit ist wie folgt:</para>
+			<para>Die Maßeinheit des Produktes. Hier kann man bei Bedarf auch definieren, wie die Maßeinheit bei unterschiedlichen Mengen heißen soll ("Karton" oder "Kartons"). Der Aufbau einer solchen Maßeinheit ist wie folgt:</para>
 			<programlisting>n#name1|n#name2|n#name3</programlisting>
 			<para>Hierbei steht <code>n</code> für eine beliebige Mengenangabe und <code>name1</code>, <code>name2</code> usw. für die entsprechende Mengenangabe.</para>
 			<para>Beispiel:
@@ -2013,8 +2029,12 @@
 			<para>Je nach Einstellung wird der Netto- oder Bruttopreis angezeigt. Beim Editieren des Nettopreises wird automatisch der Bruttopreis angepasst und umgekehrt, jeweils abhängig vom Mehrwertsteuersatz. Die Verwendung von (bis zu fünf) Staffelpreisen ist ebenfalls möglich (kann über die Einstellungen gesteuert werden).</para>
 		</sect2>
 		<sect2>
+			<title>Zuschlag</title>
+			<para>Zuschlag, der für den Produktpreis gilt.</para>
+		</sect2>
+		<sect2>
 			<title>Einkaufspreis</title>
-			<para>Der Einkaufspreis des Produktes.</para>
+			<para>Der Einkaufspreis des Produktes. Dazu kann auch noch ein Zuschlag (in % oder absolut) erfasst werden (wird derzeit aber noch nicht ausgewertet).</para>
 		</sect2>
 		<sect2>
 			<title>MwSt.</title>
@@ -2046,6 +2066,10 @@
 			<para>Frei belegbare Informationsfelder für dieses Produkt.</para>
 		</sect2>
 		<sect2>
+			<title>Notiz</title>
+			<para>Notizen zu diesem Produkt.</para>
+		</sect2>
+		<sect2>
 			<anchor xreflabel="" xml:id="editor_editor_product_pic"/>
 			<title>Produktbild</title>
 			<para>Wird das Produkt aus einem Webshop importiert, wird automatisch das Produktbild verwendet. Bei manuell angelegten Produkten kann ein Bild ausgewählt werden.</para>
@@ -2073,21 +2097,35 @@
 		</sect2>
 		<sect2>
 			<title>Kundennummer</title>
-			<para>Nummer des Kontaktes. Diese wird automatisch hochgezählt.</para>
+			<para>Nummer des Kontaktes. Diese wird automatisch hochgezählt. Man kann die Nummer auch 
+			manuell überschreiben. Dann wird geprüft, ob die eingegebene Nummer die nächste mögliche Nummer
+			ist. Diese Prüfung kann man über eine Einstellung auch abschalten:</para>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/editor/preference_suppress_numbercheck.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata width="50%" fileref="../images/editor/preference_suppress_numbercheck.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
 			<para>Siehe <link linkend="preferences_numberrangevalues">Nummernkreise</link>
 			</para>
 		</sect2>
 		<sect2>
 			<title>Adresse</title>
-			<para>Adresse ist auch Rechnungsadresse. Einzelne Felder wie <emphasis role="bold">Anrede, Titel, Firma oder Land</emphasis> können in den Einstellungen auch ausgeblendet werden, falls sie nie benutzt werden.</para>
-		</sect2>
-		<sect2>
-			<title>Lieferadresse entspricht Rechnungsadresse</title>
-			<para>Ist dieses Feld aktiviert, so wird als Lieferadresse die Rechnungsadresse verwendet.</para>
-		</sect2>
-		<sect2>
-			<title>Lieferadresse</title>
-			<para>Wird ausgeblendet, wenn <emphasis role="bold">Lieferadresse entspricht Rechnungsadresse</emphasis> aktiviert wurde.</para>
+			<para>Der Reiter unterteilt sich in allgemeine Angaben wie Firmenname und/oder Name des Kontaktes. Daneben
+			gibt es einen weiteren Bereich, in dem verschiedene Adressen zu diesem Kontakt erfasst werden können. Diese Adressen
+			können über das [+]-Symbol hinzugefügt werden. </para>
+			<warning>Derzeit ist es leider noch nicht möglich, eine Adresse auch wieder zu löschen.</warning>
+			<para>Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine, 
+			diese Auswahl wird in den kommenden Versionen von Fakturama vervollständigt). Lässt man
+			die Auswahl leer, kann die Adresse für beliebige Arten von Dokumenten verwendet werden. Ansonsten werden die Adressen
+			des Kontaktes bei der Adressauswahl über den Dokumentendialog gefiltert.</para>
+			<para>Einzelne Felder wie <emphasis role="bold">Anrede, Titel, Firma oder Land</emphasis> 
+			können in den Einstellungen auch ausgeblendet werden, falls sie nie benutzt werden.</para>
+			<para>Siehe dazu auch <link linkend="editor_editor_document_address">Adressauswahl im Dokumenteneditor</link>.</para>
 		</sect2>
 		<sect2>
 			<title>Reiter Bankkonto</title>
@@ -2097,7 +2135,7 @@
 						<imagedata fileref="../images/editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata contentdepth="65%" fileref="../images/editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="200%" fileref="../images/editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
@@ -2113,7 +2151,7 @@
 						<imagedata fileref="../images/editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata contentdepth="65%" fileref="../images/editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="200%" fileref="../images/editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
@@ -2125,7 +2163,7 @@
 		</sect3>
 		<sect3>
 			<title>Zusätzliche Kontaktdaten</title>
-			<para>Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
+			<para>Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN, Aliasname und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
 			<para>Das Eingabefeld für die Webseite ist interaktiv. Hat man hier eine gültige URL eingegeben (beginnend mit "http://" oder "https://"), kann man bei gedrückter STRG-Taste 
 			und Mausklick auf das Feld die Seite direkt im Browser aufrufen. Das gilt auch für das E-Mail-Feld. Hier wird die Standard-E-Mail-Anwendung des Systems verwendet und ein
 			neues E-Mail-Fenster geöffnet.</para>

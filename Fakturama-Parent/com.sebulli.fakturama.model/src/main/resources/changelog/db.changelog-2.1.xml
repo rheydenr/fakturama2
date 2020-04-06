@@ -1,0 +1,1518 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+<!--
+TODO:
+- drop all foreign key constraints
+- copy contacts and addresses into temporary tables
+- copy FKT.DOCUMENT:CONSULTANT into appropriate DOCUMENTRECEIVERs / CONTACTs
+- copy documents and items into temporary tables
+- rename old tables
+- rename temp tables
+- add necessary constraints
+-->
+
+<!-- changes for version 2.1 -->
+	<changeSet author="rheydenr" id="20190915-010">
+		<comment>Drop all foreign key constraints</comment>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ADDRESS"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ADDRESS_CONTACTTYPES"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_BANKACCOUNT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CATEGORY"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CEFACTCODE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CONFIRMATION"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CONTACT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_CREDIT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DELIVERY"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DOCUMENT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DOCUMENTITEM"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DOCUMENTRECEIVER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_DUNNING"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_INDIVIDUALDOCUMENTINFO"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_INVOICE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ITEMACCOUNTTYPE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_LETTER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_OFFER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ORDER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PAYMENT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PRODUCT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PRODUCTBLOCKPRICE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PRODUCTOPTIONS"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_PROFORMA"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_ROLE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_SHIPPING"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_TENANT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_TEXTMODULE"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_USER"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_USERPROPERTY"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_VAT"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_VOUCHERITEMS"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_VOUCHERS"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_WEBSHOP"/>
+		<dropAllForeignKeyConstraints baseTableName="FKT_WEBSHOPSTATEMAPPING"/>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-020">
+		<comment>Drop not necessary indexes.</comment>
+		<dropIndex tableName="FKT_CATEGORY" indexName="FK_FKT_CATEGORY_ABSTRACTCATEGORY_PARENT"/>
+		
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_ADDRESS"/>
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_ALTERNATECONTACT"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_CONTACT"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_DELIVERYCONTACT"/>
+		
+		<!--  also drop other indexes because they have to be recreated -->
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_BANKACCOUNT"/>
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_CATEGORY"/>
+		<dropIndex tableName="FKT_CONTACT" indexName="FK_FKT_CONTACT_FK_PAYMENT"/>
+		
+		<dropIndex tableName="FKT_DOCUMENTITEM" indexName="FK_FKT_DOCUMENTITEM_FK_DOCUMENT"/>
+		<dropIndex tableName="FKT_DOCUMENTITEM" indexName="FK_FKT_DOCUMENTITEM_FK_PRODUCT"/>
+		<dropIndex tableName="FKT_DOCUMENTITEM" indexName="FK_FKT_DOCUMENTITEM_FK_VAT"/>
+		
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_DOCUMENT_INVOICEREFERENCE"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_INDIVIDUALINFO"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_NOVATREF"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_PAYMENT"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_SHIPPING"/>
+		<dropIndex tableName="FKT_DOCUMENT" indexName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT"/>
+	</changeSet>
+
+    <!--  update wrong contact type fields (copied from changelog-2.0 since it didn't work correctly)-->
+	<changeSet author="rheydenr" id="20190915-025">
+		<update tableName="FKT_CONTACT">
+			<column name="CONTACTTYPE" value="0"  type="int(10)"/>
+			<where>CONTACTTYPE IS NULL</where>
+		</update>
+		 
+ 		<createTable remarks="only a temp table" tableName="TMP_FKT_CONT">
+			<column name="id" type="int(10)" />
+		</createTable>
+	
+		<sql>INSERT INTO TMP_FKT_CONT SELECT
+			c2.ID FROM FKT_CONTACT c1, FKT_CONTACT c2
+			WHERE c1.FK_ALTERNATECONTACT = c2.ID
+			AND c2.CUSTOMERNUMBER IS NULL
+		</sql>
+        <sql>UPDATE FKT_CONTACT SET CONTACTTYPE=1 WHERE ID in (SELECT
+            ID FROM TMP_FKT_CONT)
+        </sql>
+		
+	   <dropTable tableName="TMP_FKT_CONT"/>		
+	   
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-030">
+		<comment>rename category columns (foreign key columns)</comment>
+		<renameColumn newColumnName="FK_PARENT_CATEGORY"
+				oldColumnName="ABSTRACTCATEGORY_PARENT"
+				remarks="parent category"
+				columnDataType="BIGINT"
+				tableName="FKT_CATEGORY"/>
+		<renameColumn newColumnName="FK_CATEGORY"
+				oldColumnName="ITEMACCOUNTTYPE_CATEGORY"
+				columnDataType="BIGINT"
+				remarks="parent category"
+				tableName="FKT_ITEMACCOUNTTYPE"/>
+	</changeSet>
+	
+	<changeSet id="20190915-040" author="rheydenr">
+	<comment>Create new tables.</comment>
+		<createTable tableName="FKT_ADDRESS_CONTACTTYPES">
+			<column name="ADDRESS_CONTACTTYPES" type="BIGINT"/>
+			<column name="T_ELEMENT" type="VARCHAR(16)"/>
+		</createTable>
+		
+		<createTable tableName="FKT_DOCUMENTRECEIVER">
+			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="BILLINGTYPE" type="INT"/>
+			<column name="CITY" type="VARCHAR(255)"/>
+			<column name="CITYADDON" type="VARCHAR(255)"/>
+			<column name="COMPANY" type="VARCHAR(255)"/>
+			<column name="CONSULTANT" type="VARCHAR(255)"/>
+			<column name="COUNTRYCODE" type="VARCHAR(8)"/>
+			<column name="CUSTOMERNUMBER" type="VARCHAR(32)"/>
+			<column name="DATEADDED" type="date"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
+			<column name="DESCRIPTION" type="CLOB"/>
+			<column name="EMAIL" type="VARCHAR(128)"/>
+			<column name="FAX" type="VARCHAR(64)"/>
+			<column name="FIRSTNAME" type="VARCHAR(128)"/>
+			<column name="GENDER" type="INT"/>
+			<column name="GLN" type="BIGINT"/>
+			<column name="MANDATEREFERENCE" type="VARCHAR(128)"/>
+			<column name="MANUALADDRESS" type="CLOB"/>
+			<column name="MOBILE" type="VARCHAR(64)"/>
+			<column name="MODIFIED" type="date"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
+			<column name="NAME" type="VARCHAR(255)"/>
+			<column name="ORIGINADDRESSID" type="BIGINT"/>
+			<column name="ORIGINCONTACTID" type="BIGINT"/>
+			<column name="PHONE" type="VARCHAR(64)"/>
+			<column name="STREET" type="VARCHAR(255)"/>
+			<column name="SUPPLIERNUMBER" type="VARCHAR(32)"/>
+			<column name="T_ALIAS" type="varchar(255)" />
+			<column name="TITLE" type="VARCHAR(32)"/>
+			<column name="VALIDFROM" type="date"/>
+			<column name="VALIDTO" type="date"/>
+			<column name="VATNUMBER" type="VARCHAR(32)"/>
+			<column name="ZIP" type="VARCHAR(16)"/>
+			<column name="FK_DOCUMENT" type="BIGINT"/>
+		</createTable>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-050">
+		<comment>create tables for new contact structure (will be renamed later on)</comment>
+		<createTable tableName="TMP_FKT_DOCUMENT">
+			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="DTYPE" type="VARCHAR(32)"/>
+			<column name="ADDRESSFIRSTLINE" type="VARCHAR(255)"/>
+			<column name="BILLINGTYPE" type="INT"/>
+			<column name="CUSTOMERREF" type="VARCHAR(255)"/>
+			<column name="DATEADDED" type="date"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
+			<column defaultValueBoolean="false" name="DEPOSIT" type="BOOLEAN"/>
+			<column name="DOCUMENTDATE" type="date"/>
+			<column name="DUEDAYS" type="INT"/>
+			<column name="ITEMSREBATE" type="DOUBLE"/>
+			<column name="MESSAGE" type="CLOB"/>
+			<column name="MESSAGE2" type="CLOB"/>
+			<column name="MESSAGE3" type="CLOB"/>
+			<column name="MODIFIED" type="date"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
+			<column name="NAME" type="VARCHAR(255)"/>
+			<column name="NETGROSS" type="INT"/>
+			<column name="ODTPATH" type="VARCHAR(255)"/>
+			<column name="ORDERDATE" type="date"/>
+			<column defaultValueBoolean="false" name="PAID" type="BOOLEAN"/>
+			<column name="PAIDVALUE" type="DOUBLE"/>
+			<column name="PAYDATE" type="date"/>
+			<column name="PDFPATH" type="VARCHAR(255)"/>
+			<column name="PRINTTEMPLATE" type="VARCHAR(255)"/>
+			<column defaultValueBoolean="false" name="PRINTED" type="BOOLEAN"/>
+			<column name="PROGRESS" type="INT"/>
+			<column name="SERVICEDATE" type="date"/>
+			<column name="SHIPPINGAUTOVAT" type="VARCHAR(255)"/>
+			<column name="SHIPPINGVALUE" type="DOUBLE"/>
+			<column name="TOTALVALUE" type="DOUBLE"/>
+			<column name="TRANSACTIONID" type="INT"/>
+			<column name="VALIDFROM" type="date"/>
+			<column name="VALIDTO" type="date"/>
+			<column name="VESTINGPERIODEND" type="date"/>
+			<column name="VESTINGPERIODSTART" type="date"/>
+			<column name="WEBSHOPDATE" type="date"/>
+			<column name="WEBSHOPID" type="VARCHAR(32)"/>
+			<column name="FK_INDIVIDUALINFO" type="BIGINT"/>
+			<column name="DOCUMENT_INVOICEREFERENCE" type="BIGINT"/>
+			<column name="FK_NOVATREF" type="BIGINT"/>
+			<column name="FK_PAYMENT" type="BIGINT"/>
+			<column name="FK_SHIPPING" type="BIGINT"/>
+			<column name="FK_SRCDOCUMENT" type="BIGINT"/>
+		</createTable>
+
+		<createTable tableName="TMP_FKT_CONTACT">
+			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="DTYPE" type="VARCHAR(31)"/>
+			<column name="BIRTHDAY" type="date"/>
+			<column name="COMPANY" type="VARCHAR(255)"/>
+			<column name="CUSTOMERNUMBER" type="VARCHAR(32)"/>
+			<column name="DATEADDED" type="date"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
+			<column name="DISCOUNT" type="DOUBLE"/>
+			<column name="FIRSTNAME" type="VARCHAR(255)"/>
+			<column name="GENDER" type="INT"/>
+			<column name="GLN" type="BIGINT"/>
+			<column name="MANDATEREFERENCE" type="VARCHAR(128)"/>
+			<column name="MODIFIED" type="date"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
+			<column name="NAME" type="VARCHAR(255)"/>
+			<column name="NOTE" type="CLOB"/>
+			<column name="REGISTERNUMBER" type="VARCHAR(128)" />
+			<column name="RELIABILITY" type="VARCHAR(64)"/>
+			<column name="SUPPLIERNUMBER" type="VARCHAR(32)"/>
+			<column name="T_ALIAS" type="varchar(255)" />
+			<column name="TITLE" type="VARCHAR(32)"/>
+			<column name="USENETGROSS" type="SMALLINT"/>
+			<column defaultValueBoolean="false" name="USESALESEQUALIZATIONTAX" type="BOOLEAN"/>
+			<column name="VALIDFROM" type="date"/>
+			<column name="VALIDTO" type="date"/>
+			<column name="VATNUMBER" type="VARCHAR(64)"/>
+			<column defaultValueBoolean="false" name="VATNUMBERVALID" type="BOOLEAN"/>
+			<column name="WEBSHOPNAME" type="VARCHAR(128)"/>
+			<column name="WEBSITE" type="VARCHAR(255)"/>
+			<column name="FK_BANKACCOUNT" type="BIGINT"/>
+			<column name="FK_CATEGORY" type="BIGINT"/>
+			<column name="FK_PAYMENT" type="BIGINT"/>
+			<column name="OLD_ID" type="BIGINT"/>
+		</createTable>
+		
+		<createTable tableName="TMP_FKT_ADDRESS">
+			<column autoIncrement="true" name="ID" startWith="1" type="BIGINT">
+				<constraints primaryKey="true"/>
+			</column>
+			<column name="ADDITIONALPHONE" type="VARCHAR(64)" />
+			<column name="ADDRESSADDON" type="VARCHAR(255)" />
+			<column name="CITY" type="VARCHAR(128)"/>
+			<column name="CITYADDON" type="VARCHAR(128)"/>
+			<column name="COUNTRYCODE" type="VARCHAR(8)"/>
+			<column name="DATEADDED" type="date"/>
+			<column defaultValueBoolean="false" name="DELETED" type="BOOLEAN"/>
+			<column name="EMAIL" type="VARCHAR(255)"/>
+			<column name="FAX" type="VARCHAR(64)"/>
+			<column name="LOCALCONSULTANT" type="VARCHAR(128)"/>
+			<column name="MOBILE" type="VARCHAR(64)"/>
+			<column name="MODIFIED" type="date"/>
+			<column name="MODIFIEDBY" type="VARCHAR(32)"/>
+			<column name="NAME" type="VARCHAR(255)"/>
+			<column name="PHONE" type="VARCHAR(64)"/>
+			<column name="STREET" type="VARCHAR(255)"/>
+			<column name="VALIDFROM" type="date"/>
+			<column name="VALIDTO" type="date"/>
+			<column name="ZIP" type="VARCHAR(16)"/>
+			<column name="CONTACT_ADDRESSES" type="BIGINT"/>
+		</createTable>
+		
+		<createTable tableName="TMP_CONTACTS_WITH_ADDRESSES">
+			<column name="BILLING_ADDRESS_ID" type="BIGINT">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="BILLING_ADDRESS_CITY" type="VARCHAR(128)" />
+			<column name="BILLING_ADDRESS_CITYADDON" type="VARCHAR(128)" />
+			<column name="BILLING_ADDRESS_COUNTRYCODE" type="VARCHAR(8)" />
+			<column name="BILLING_ADDRESS_DATEADDED" type="DATE" />
+			<column name="BILLING_ADDRESS_DELETED" defaultValueBoolean="false" type="BOOLEAN" />
+			<column name="BILLING_ADDRESS_MANUALADDRESS" type="CLOB" />
+			<column name="BILLING_ADDRESS_MODIFIED" type="DATE" />
+			<column name="BILLING_ADDRESS_MODIFIEDBY" type="VARCHAR(32)" />
+			<column name="BILLING_ADDRESS_NAME" type="VARCHAR(255)" />
+			<column name="BILLING_ADDRESS_STREET" type="VARCHAR(255)" />
+			<column name="BILLING_ADDRESS_VALIDFROM" type="DATE" />
+			<column name="BILLING_ADDRESS_VALIDTO" type="DATE" />
+			<column name="BILLING_ADDRESS_ZIP" type="VARCHAR(16)" />
+			<column name="BILLING_CONTACT_ID" type="BIGINT NOT NULL" />
+			<column name="BILLING_CONTACT_DTYPE" type="VARCHAR(31)" />
+			<column name="BILLING_CONTACT_BIRTHDAY" type="DATE" />
+			<column name="BILLING_CONTACT_COMPANY" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_CONTACTTYPE" type="INTEGER" />
+			<column name="BILLING_CONTACT_CUSTOMERNUMBER" type="VARCHAR(32)" />
+			<column name="BILLING_CONTACT_DATEADDED" type="DATE" />
+			<column name="BILLING_CONTACT_DELETED" defaultValueBoolean="false" type="BOOLEAN" />
+			<column name="BILLING_CONTACT_DISCOUNT" type="DOUBLE" />
+			<column name="BILLING_CONTACT_EMAIL" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_FAX" type="VARCHAR(64)" />
+			<column name="BILLING_CONTACT_FIRSTNAME" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_GENDER" type="INTEGER" />
+			<column name="BILLING_CONTACT_GLN" type="BIGINT" />
+			<column name="BILLING_CONTACT_MANDATEREFERENCE" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_MOBILE" type="VARCHAR(64)" />
+			<column name="BILLING_CONTACT_MODIFIED" type="DATE" />
+			<column name="BILLING_CONTACT_MODIFIEDBY" type="VARCHAR(32)" />
+			<column name="BILLING_CONTACT_NAME" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_NOTE" type="CLOB" />
+			<column name="BILLING_CONTACT_PHONE" type="VARCHAR(64)" />
+			<column name="BILLING_CONTACT_RELIABILITY" type="VARCHAR(64)" />
+			<column name="BILLING_CONTACT_SUPPLIERNUMBER" type="VARCHAR(32)" />
+			<column name="BILLING_CONTACT_TITLE" type="VARCHAR(32)" />
+			<column name="BILLING_CONTACT_USENETGROSS" type="SMALLINT" />
+			<column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX"
+				defaultValueBoolean="false" type="BOOLEAN" />
+			<column name="BILLING_CONTACT_VALIDFROM" type="DATE" />
+			<column name="BILLING_CONTACT_VALIDTO" type="DATE" />
+			<column name="BILLING_CONTACT_VATNUMBER" type="VARCHAR(64)" />
+			<column name="BILLING_CONTACT_VATNUMBERVALID"
+				defaultValueBoolean="false" type="BOOLEAN" />
+			<column name="BILLING_CONTACT_WEBSHOPNAME" type="VARCHAR(128)" />
+			<column name="BILLING_CONTACT_WEBSITE" type="VARCHAR(255)" />
+			<column name="BILLING_CONTACT_FK_ADDRESS" type="BIGINT" />
+			<column name="BILLING_CONTACT_FK_ALTERNATECONTACT" type="BIGINT" />
+			<column name="BILLING_CONTACT_FK_BANKACCOUNT" type="BIGINT" />
+			<column name="BILLING_CONTACT_FK_CATEGORY" type="BIGINT" />
+			<column name="BILLING_CONTACT_FK_PAYMENT" type="BIGINT" />
+			<column name="DELIVERY_ADDRESS_ID" type="BIGINT" />
+			<column name="DELIVERY_ADDRESS_CITY" type="VARCHAR(128)" />
+			<column name="DELIVERY_ADDRESS_CITYADDON" type="VARCHAR(128)" />
+			<column name="DELIVERY_ADDRESS_COUNTRYCODE" type="VARCHAR(8)" />
+			<column name="DELIVERY_ADDRESS_DATEADDED" type="DATE" />
+			<column name="DELIVERY_ADDRESS_DELETED"
+				defaultValueBoolean="false" type="BOOLEAN" />
+			<column name="DELIVERY_ADDRESS_MANUALADDRESS" type="CLOB" />
+			<column name="DELIVERY_ADDRESS_MODIFIED" type="DATE" />
+			<column name="DELIVERY_ADDRESS_MODIFIEDBY" type="VARCHAR(32)" />
+			<column name="DELIVERY_ADDRESS_NAME" type="VARCHAR(255)" />
+			<column name="DELIVERY_ADDRESS_STREET" type="VARCHAR(255)" />
+			<column name="DELIVERY_ADDRESS_VALIDFROM" type="DATE" />
+			<column name="DELIVERY_ADDRESS_VALIDTO" type="DATE" />
+			<column name="DELIVERY_ADDRESS_ZIP" type="VARCHAR(16)" />
+			<column name="DELIVERY_CONTACT_ID" type="BIGINT" />
+			<column name="DELIVERY_CONTACT_DTYPE" type="VARCHAR(31)" />
+			<column name="DELIVERY_CONTACT_BIRTHDAY" type="DATE" />
+			<column name="DELIVERY_CONTACT_COMPANY" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_CONTACTTYPE" type="INTEGER" />
+			<column name="DELIVERY_CONTACT_DATEADDED" type="DATE" />
+			<column name="DELIVERY_CONTACT_DELETED"
+				defaultValueBoolean="false" type="BOOLEAN"/>
+			<column name="DELIVERY_CONTACT_DISCOUNT" type="DOUBLE" />
+			<column name="DELIVERY_CONTACT_FIRSTNAME" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_GENDER" type="INTEGER" />
+			<column name="DELIVERY_CONTACT_GLN" type="BIGINT" />
+			<column name="DELIVERY_CONTACT_MODIFIED" type="DATE" />
+			<column name="DELIVERY_CONTACT_MODIFIEDBY" type="VARCHAR(32)" />
+			<column name="DELIVERY_CONTACT_NAME" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_NOTE" type="CLOB" />
+			<column name="DELIVERY_CONTACT_TITLE" type="VARCHAR(32)" />
+			<column name="DELIVERY_CONTACT_VALIDFROM" type="DATE" />
+			<column name="DELIVERY_CONTACT_VALIDTO" type="DATE" />
+			<column name="DELIVERY_CONTACT_WEBSHOPNAME" type="VARCHAR(128)" />
+			<column name="DELIVERY_CONTACT_WEBSITE" type="VARCHAR(255)" />
+			<column name="DELIVERY_CONTACT_FK_ADDRESS" type="BIGINT" />
+		</createTable>		
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-051">
+		<comment>Copy data from old tables into new tables.</comment>
+		<sql>
+			<comment>insert data from old contacts table into temporary table
+                     (at first only for billing addresses)
+			</comment>
+			INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
+			    (   BILLING_ADDRESS_ID,
+			        BILLING_ADDRESS_CITY,
+			        BILLING_ADDRESS_CITYADDON,
+			        BILLING_ADDRESS_COUNTRYCODE,
+			        BILLING_ADDRESS_DATEADDED,
+			        BILLING_ADDRESS_DELETED,
+			        BILLING_ADDRESS_MANUALADDRESS,
+			        BILLING_ADDRESS_MODIFIED,
+			        BILLING_ADDRESS_MODIFIEDBY,
+			        BILLING_ADDRESS_NAME,
+			        BILLING_ADDRESS_STREET,
+			        BILLING_ADDRESS_VALIDFROM,
+			        BILLING_ADDRESS_VALIDTO,
+			        BILLING_ADDRESS_ZIP,
+			        BILLING_CONTACT_ID,
+			        BILLING_CONTACT_DTYPE,
+			        BILLING_CONTACT_BIRTHDAY,
+			        BILLING_CONTACT_COMPANY,
+			        BILLING_CONTACT_CONTACTTYPE,
+			        BILLING_CONTACT_CUSTOMERNUMBER,
+			        BILLING_CONTACT_DATEADDED,
+			        BILLING_CONTACT_DELETED,
+			        BILLING_CONTACT_DISCOUNT,
+			        BILLING_CONTACT_EMAIL,
+			        BILLING_CONTACT_FAX,
+			        BILLING_CONTACT_FIRSTNAME,
+			        BILLING_CONTACT_GENDER,
+			        BILLING_CONTACT_GLN,
+			        BILLING_CONTACT_MANDATEREFERENCE,
+			        BILLING_CONTACT_MOBILE,
+			        BILLING_CONTACT_MODIFIED,
+			        BILLING_CONTACT_MODIFIEDBY,
+			        BILLING_CONTACT_NAME,
+			        BILLING_CONTACT_NOTE,
+			        BILLING_CONTACT_PHONE,
+			        BILLING_CONTACT_RELIABILITY,
+			        BILLING_CONTACT_SUPPLIERNUMBER,
+			        BILLING_CONTACT_TITLE,
+			        BILLING_CONTACT_USENETGROSS,
+			        BILLING_CONTACT_USESALESEQUALIZATIONTAX,
+			        BILLING_CONTACT_VALIDFROM,
+			        BILLING_CONTACT_VALIDTO,
+			        BILLING_CONTACT_VATNUMBER,
+			        BILLING_CONTACT_VATNUMBERVALID,
+			        BILLING_CONTACT_WEBSHOPNAME,
+			        BILLING_CONTACT_WEBSITE,
+			        BILLING_CONTACT_FK_ADDRESS,
+			        BILLING_CONTACT_FK_ALTERNATECONTACT,
+			        BILLING_CONTACT_FK_BANKACCOUNT,
+			        BILLING_CONTACT_FK_CATEGORY,
+			        BILLING_CONTACT_FK_PAYMENT
+			    )
+			SELECT
+			    a1.ID,
+			    a1.CITY,
+			    a1.CITYADDON,
+			    a1.COUNTRYCODE,
+			    a1.DATEADDED,
+			    a1.DELETED,
+			    a1.MANUALADDRESS,
+			    a1.MODIFIED,
+			    a1.MODIFIEDBY,
+			    a1.NAME,
+			    a1.STREET,
+			    a1.VALIDFROM,
+			    a1.VALIDTO,
+			    a1.ZIP,
+			    c1.id,
+			    c1.DTYPE,
+			    c1.BIRTHDAY,
+			    c1.COMPANY,
+			    c1.CONTACTTYPE,
+			    c1.CUSTOMERNUMBER,
+			    c1.DATEADDED,
+			    c1.DELETED,
+			    c1.DISCOUNT,
+			    c1.EMAIL,
+			    c1.FAX,
+			    c1.FIRSTNAME,
+			    c1.GENDER,
+			    c1.GLN,
+			    c1.MANDATEREFERENCE,
+			    c1.MOBILE,
+			    c1.MODIFIED,
+			    c1.MODIFIEDBY,
+			    c1.NAME,
+			    c1.NOTE,
+			    c1.PHONE,
+			    c1.RELIABILITY,
+			    c1.SUPPLIERNUMBER,
+			    c1.TITLE,
+			    c1.USENETGROSS,
+			    c1.USESALESEQUALIZATIONTAX,
+			    c1.VALIDFROM,
+			    c1.VALIDTO,
+			    c1.VATNUMBER,
+			    c1.VATNUMBERVALID,
+			    c1.WEBSHOPNAME,
+			    c1.WEBSITE,
+			    c1.FK_ADDRESS,
+			    c1.FK_ALTERNATECONTACT,
+			    c1.FK_BANKACCOUNT,
+			    c1.FK_CATEGORY,
+			    c1.FK_PAYMENT
+			FROM FKT_CONTACT c1
+			LEFT JOIN FKT_ADDRESS a1
+			ON c1.fk_address = a1.id
+			WHERE c1.CONTACTTYPE = 0 
+			AND a1.id is not null /* Billing contacts */;
+		</sql>
+	</changeSet>
+
+ 	<changeSet author="rheydenr" id="20190915-052">
+		<comment>update addresses (merge delivery contacts into existing billing contacts)</comment>
+		<sql dbms="mysql,mariadb">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
+		SELECT t.BILLING_ADDRESS_ID,
+		    t.BILLING_ADDRESS_CITY,
+		    t.BILLING_ADDRESS_CITYADDON,
+		    t.BILLING_ADDRESS_COUNTRYCODE,
+		    t.BILLING_ADDRESS_DATEADDED,
+		    t.BILLING_ADDRESS_DELETED,
+		    t.BILLING_ADDRESS_MANUALADDRESS,
+		    t.BILLING_ADDRESS_MODIFIED,
+		    t.BILLING_ADDRESS_MODIFIEDBY,
+		    t.BILLING_ADDRESS_NAME,
+		    t.BILLING_ADDRESS_STREET,
+		    t.BILLING_ADDRESS_VALIDFROM,
+		    t.BILLING_ADDRESS_VALIDTO,
+		    t.BILLING_ADDRESS_ZIP,
+		    t.BILLING_CONTACT_ID,
+		    t.BILLING_CONTACT_DTYPE,
+		    t.BILLING_CONTACT_BIRTHDAY,
+		    t.BILLING_CONTACT_COMPANY,
+		    t.BILLING_CONTACT_CONTACTTYPE,
+		    t.BILLING_CONTACT_CUSTOMERNUMBER,
+		    t.BILLING_CONTACT_DATEADDED,
+		    t.BILLING_CONTACT_DELETED,
+		    t.BILLING_CONTACT_DISCOUNT,
+		    t.BILLING_CONTACT_EMAIL,
+		    t.BILLING_CONTACT_FAX,
+		    t.BILLING_CONTACT_FIRSTNAME,
+		    t.BILLING_CONTACT_GENDER,
+		    t.BILLING_CONTACT_GLN,
+		    t.BILLING_CONTACT_MANDATEREFERENCE,
+		    t.BILLING_CONTACT_MOBILE,
+		    t.BILLING_CONTACT_MODIFIED,
+		    t.BILLING_CONTACT_MODIFIEDBY,
+		    t.BILLING_CONTACT_NAME,
+		    t.BILLING_CONTACT_NOTE,
+		    t.BILLING_CONTACT_PHONE,
+		    t.BILLING_CONTACT_RELIABILITY,
+		    t.BILLING_CONTACT_SUPPLIERNUMBER,
+		    t.BILLING_CONTACT_TITLE,
+		    t.BILLING_CONTACT_USENETGROSS,
+		    t.BILLING_CONTACT_USESALESEQUALIZATIONTAX,
+		    t.BILLING_CONTACT_VALIDFROM,
+		    t.BILLING_CONTACT_VALIDTO,
+		    t.BILLING_CONTACT_VATNUMBER,
+		    t.BILLING_CONTACT_VATNUMBERVALID,
+		    t.BILLING_CONTACT_WEBSHOPNAME,
+		    t.BILLING_CONTACT_WEBSITE,
+		    t.BILLING_CONTACT_FK_ADDRESS,
+		    t.BILLING_CONTACT_FK_ALTERNATECONTACT,
+		    t.BILLING_CONTACT_FK_BANKACCOUNT,
+		    t.BILLING_CONTACT_FK_CATEGORY,
+		    t.BILLING_CONTACT_FK_PAYMENT,
+		    t.DELIVERY_ADDRESS_ID,
+		    t.DELIVERY_ADDRESS_CITY,
+		    t.DELIVERY_ADDRESS_CITYADDON,
+		    t.DELIVERY_ADDRESS_COUNTRYCODE,
+		    t.DELIVERY_ADDRESS_DATEADDED,
+		    t.DELIVERY_ADDRESS_DELETED,
+		    t.DELIVERY_ADDRESS_MANUALADDRESS,
+		    t.DELIVERY_ADDRESS_MODIFIED,
+		    t.DELIVERY_ADDRESS_MODIFIEDBY,
+		    t.DELIVERY_ADDRESS_NAME,
+		    t.DELIVERY_ADDRESS_STREET,
+		    t.DELIVERY_ADDRESS_VALIDFROM,
+		    t.DELIVERY_ADDRESS_VALIDTO,
+		    t.DELIVERY_ADDRESS_ZIP,
+		    t.DELIVERY_CONTACT_ID,
+		    t.DELIVERY_CONTACT_DTYPE,
+		    t.DELIVERY_CONTACT_BIRTHDAY,
+		    t.DELIVERY_CONTACT_COMPANY,
+		    t.DELIVERY_CONTACT_CONTACTTYPE,
+		    t.DELIVERY_CONTACT_DATEADDED,
+		    t.DELIVERY_CONTACT_DELETED,
+		    t.DELIVERY_CONTACT_DISCOUNT,
+		    t.DELIVERY_CONTACT_FIRSTNAME,
+		    t.DELIVERY_CONTACT_GENDER,
+		    t.DELIVERY_CONTACT_GLN,
+		    t.DELIVERY_CONTACT_MODIFIED,
+		    t.DELIVERY_CONTACT_MODIFIEDBY,
+		    t.DELIVERY_CONTACT_NAME,
+		    t.DELIVERY_CONTACT_NOTE,
+		    t.DELIVERY_CONTACT_TITLE,
+		    t.DELIVERY_CONTACT_VALIDFROM,
+		    t.DELIVERY_CONTACT_VALIDTO,
+		    t.DELIVERY_CONTACT_WEBSHOPNAME,
+		    t.DELIVERY_CONTACT_WEBSITE,
+		    t.DELIVERY_CONTACT_FK_ADDRESS
+		FROM
+		    FKT_CONTACT s, TMP_CONTACTS_WITH_ADDRESSES t
+		where
+		    t.BILLING_CONTACT_FK_ALTERNATECONTACT = s.id
+		ON DUPLICATE KEY UPDATE
+		    DELIVERY_CONTACT_ID = s.ID,
+		    DELIVERY_CONTACT_DTYPE = s.DTYPE,
+		    DELIVERY_CONTACT_BIRTHDAY = s.BIRTHDAY,
+		    DELIVERY_CONTACT_COMPANY = s.COMPANY,
+		    DELIVERY_CONTACT_CONTACTTYPE = s.CONTACTTYPE,
+		    DELIVERY_CONTACT_DATEADDED = s.DATEADDED,
+		    DELIVERY_CONTACT_DELETED = s.DELETED,
+		    DELIVERY_CONTACT_DISCOUNT = s.DISCOUNT,
+		    DELIVERY_CONTACT_FIRSTNAME = s.FIRSTNAME,
+		    DELIVERY_CONTACT_GENDER = s.GENDER,
+		    DELIVERY_CONTACT_GLN = s.GLN,
+		    DELIVERY_CONTACT_MODIFIED = s.MODIFIED,
+		    DELIVERY_CONTACT_MODIFIEDBY = s.MODIFIEDBY,
+		    DELIVERY_CONTACT_NAME = s.NAME,
+		    DELIVERY_CONTACT_NOTE = s.NOTE,
+		    DELIVERY_CONTACT_TITLE = s.TITLE,
+		    DELIVERY_CONTACT_VALIDFROM = s.VALIDFROM,
+		    DELIVERY_CONTACT_VALIDTO = s.VALIDTO,
+		    DELIVERY_CONTACT_WEBSHOPNAME = s.WEBSHOPNAME,
+		    DELIVERY_CONTACT_WEBSITE = s.WEBSITE,
+		    DELIVERY_CONTACT_FK_ADDRESS = s.FK_ADDRESS;
+		</sql>
+			
+		<sql dbms="h2,hsqldb">
+			MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
+			USING FKT_CONTACT s
+			ON t.BILLING_CONTACT_FK_ALTERNATECONTACT = s.id
+			WHEN MATCHED THEN
+			UPDATE SET
+			    t.DELIVERY_CONTACT_ID = s.ID,
+			    t.DELIVERY_CONTACT_DTYPE = s.DTYPE,
+			    t.DELIVERY_CONTACT_BIRTHDAY = s.BIRTHDAY,
+			    t.DELIVERY_CONTACT_COMPANY = s.COMPANY,
+			    t.DELIVERY_CONTACT_CONTACTTYPE = s.CONTACTTYPE,
+			    t.DELIVERY_CONTACT_DATEADDED = s.DATEADDED,
+			    t.DELIVERY_CONTACT_DELETED = s.DELETED,
+			    t.DELIVERY_CONTACT_DISCOUNT = s.DISCOUNT,
+			    t.DELIVERY_CONTACT_FIRSTNAME = s.FIRSTNAME,
+			    t.DELIVERY_CONTACT_GENDER = s.GENDER,
+			    t.DELIVERY_CONTACT_GLN = s.GLN,
+			    t.DELIVERY_CONTACT_MODIFIED = s.MODIFIED,
+			    t.DELIVERY_CONTACT_MODIFIEDBY = s.MODIFIEDBY,
+			    t.DELIVERY_CONTACT_NAME = s.NAME,
+			    t.DELIVERY_CONTACT_NOTE = s.NOTE,
+			    t.DELIVERY_CONTACT_TITLE = s.TITLE,
+			    t.DELIVERY_CONTACT_VALIDFROM = s.VALIDFROM,
+			    t.DELIVERY_CONTACT_VALIDTO = s.VALIDTO,
+			    t.DELIVERY_CONTACT_WEBSHOPNAME = s.WEBSHOPNAME,
+			    t.DELIVERY_CONTACT_WEBSITE = s.WEBSITE,
+			    t.DELIVERY_CONTACT_FK_ADDRESS = s.FK_ADDRESS;
+		</sql>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-053">
+		<comment>merge delivery addresses</comment>
+
+		<sql dbms="mysql,mariadb">INSERT INTO TMP_CONTACTS_WITH_ADDRESSES
+		SELECT t.BILLING_ADDRESS_ID,
+		    t.BILLING_ADDRESS_CITY,
+		    t.BILLING_ADDRESS_CITYADDON,
+		    t.BILLING_ADDRESS_COUNTRYCODE,
+		    t.BILLING_ADDRESS_DATEADDED,
+		    t.BILLING_ADDRESS_DELETED,
+		    t.BILLING_ADDRESS_MANUALADDRESS,
+		    t.BILLING_ADDRESS_MODIFIED,
+		    t.BILLING_ADDRESS_MODIFIEDBY,
+		    t.BILLING_ADDRESS_NAME,
+		    t.BILLING_ADDRESS_STREET,
+		    t.BILLING_ADDRESS_VALIDFROM,
+		    t.BILLING_ADDRESS_VALIDTO,
+		    t.BILLING_ADDRESS_ZIP,
+		    t.BILLING_CONTACT_ID,
+		    t.BILLING_CONTACT_DTYPE,
+		    t.BILLING_CONTACT_BIRTHDAY,
+		    t.BILLING_CONTACT_COMPANY,
+		    t.BILLING_CONTACT_CONTACTTYPE,
+		    t.BILLING_CONTACT_CUSTOMERNUMBER,
+		    t.BILLING_CONTACT_DATEADDED,
+		    t.BILLING_CONTACT_DELETED,
+		    t.BILLING_CONTACT_DISCOUNT,
+		    t.BILLING_CONTACT_EMAIL,
+		    t.BILLING_CONTACT_FAX,
+		    t.BILLING_CONTACT_FIRSTNAME,
+		    t.BILLING_CONTACT_GENDER,
+		    t.BILLING_CONTACT_GLN,
+		    t.BILLING_CONTACT_MANDATEREFERENCE,
+		    t.BILLING_CONTACT_MOBILE,
+		    t.BILLING_CONTACT_MODIFIED,
+		    t.BILLING_CONTACT_MODIFIEDBY,
+		    t.BILLING_CONTACT_NAME,
+		    t.BILLING_CONTACT_NOTE,
+		    t.BILLING_CONTACT_PHONE,
+		    t.BILLING_CONTACT_RELIABILITY,
+		    t.BILLING_CONTACT_SUPPLIERNUMBER,
+		    t.BILLING_CONTACT_TITLE,
+		    t.BILLING_CONTACT_USENETGROSS,
+		    t.BILLING_CONTACT_USESALESEQUALIZATIONTAX,
+		    t.BILLING_CONTACT_VALIDFROM,
+		    t.BILLING_CONTACT_VALIDTO,
+		    t.BILLING_CONTACT_VATNUMBER,
+		    t.BILLING_CONTACT_VATNUMBERVALID,
+		    t.BILLING_CONTACT_WEBSHOPNAME,
+		    t.BILLING_CONTACT_WEBSITE,
+		    t.BILLING_CONTACT_FK_ADDRESS,
+		    t.BILLING_CONTACT_FK_ALTERNATECONTACT,
+		    t.BILLING_CONTACT_FK_BANKACCOUNT,
+		    t.BILLING_CONTACT_FK_CATEGORY,
+		    t.BILLING_CONTACT_FK_PAYMENT,
+		    t.DELIVERY_ADDRESS_ID,
+		    t.DELIVERY_ADDRESS_CITY,
+		    t.DELIVERY_ADDRESS_CITYADDON,
+		    t.DELIVERY_ADDRESS_COUNTRYCODE,
+		    t.DELIVERY_ADDRESS_DATEADDED,
+		    t.DELIVERY_ADDRESS_DELETED,
+		    t.DELIVERY_ADDRESS_MANUALADDRESS,
+		    t.DELIVERY_ADDRESS_MODIFIED,
+		    t.DELIVERY_ADDRESS_MODIFIEDBY,
+		    t.DELIVERY_ADDRESS_NAME,
+		    t.DELIVERY_ADDRESS_STREET,
+		    t.DELIVERY_ADDRESS_VALIDFROM,
+		    t.DELIVERY_ADDRESS_VALIDTO,
+		    t.DELIVERY_ADDRESS_ZIP,
+		    t.DELIVERY_CONTACT_ID,
+		    t.DELIVERY_CONTACT_DTYPE,
+		    t.DELIVERY_CONTACT_BIRTHDAY,
+		    t.DELIVERY_CONTACT_COMPANY,
+		    t.DELIVERY_CONTACT_CONTACTTYPE,
+		    t.DELIVERY_CONTACT_DATEADDED,
+		    t.DELIVERY_CONTACT_DELETED,
+		    t.DELIVERY_CONTACT_DISCOUNT,
+		    t.DELIVERY_CONTACT_FIRSTNAME,
+		    t.DELIVERY_CONTACT_GENDER,
+		    t.DELIVERY_CONTACT_GLN,
+		    t.DELIVERY_CONTACT_MODIFIED,
+		    t.DELIVERY_CONTACT_MODIFIEDBY,
+		    t.DELIVERY_CONTACT_NAME,
+		    t.DELIVERY_CONTACT_NOTE,
+		    t.DELIVERY_CONTACT_TITLE,
+		    t.DELIVERY_CONTACT_VALIDFROM,
+		    t.DELIVERY_CONTACT_VALIDTO,
+		    t.DELIVERY_CONTACT_WEBSHOPNAME,
+		    t.DELIVERY_CONTACT_WEBSITE,
+		    t.DELIVERY_CONTACT_FK_ADDRESS
+		FROM FKT_ADDRESS s, TMP_CONTACTS_WITH_ADDRESSES t
+		where t.DELIVERY_CONTACT_FK_ADDRESS = s.id
+		ON DUPLICATE KEY UPDATE
+			    DELIVERY_ADDRESS_ID = s.ID,
+			    DELIVERY_ADDRESS_CITY = s.CITY,
+			    DELIVERY_ADDRESS_CITYADDON = s.CITYADDON,
+			    DELIVERY_ADDRESS_COUNTRYCODE = s.COUNTRYCODE,
+			    DELIVERY_ADDRESS_DATEADDED = s.DATEADDED,
+			    DELIVERY_ADDRESS_DELETED = s.DELETED,
+			    DELIVERY_ADDRESS_MANUALADDRESS = s.MANUALADDRESS,
+			    DELIVERY_ADDRESS_MODIFIED = s.MODIFIED,
+			    DELIVERY_ADDRESS_MODIFIEDBY = s.MODIFIEDBY,
+			    DELIVERY_ADDRESS_NAME = s.NAME,
+			    DELIVERY_ADDRESS_STREET = s.STREET,
+			    DELIVERY_ADDRESS_VALIDFROM = s.VALIDFROM,
+			    DELIVERY_ADDRESS_VALIDTO = s.VALIDTO,
+			    DELIVERY_ADDRESS_ZIP = s.ZIP;
+		</sql>
+
+		<sql dbms="h2, hsqldb">MERGE INTO TMP_CONTACTS_WITH_ADDRESSES t
+			USING FKT_ADDRESS s
+			ON t.DELIVERY_CONTACT_FK_ADDRESS = s.id
+			WHEN MATCHED THEN
+			UPDATE SET
+			    t.DELIVERY_ADDRESS_ID = s.ID,
+			    t.DELIVERY_ADDRESS_CITY = s.CITY,
+			    t.DELIVERY_ADDRESS_CITYADDON = s.CITYADDON,
+			    t.DELIVERY_ADDRESS_COUNTRYCODE = s.COUNTRYCODE,
+			    t.DELIVERY_ADDRESS_DATEADDED = s.DATEADDED,
+			    t.DELIVERY_ADDRESS_DELETED = s.DELETED,
+			    t.DELIVERY_ADDRESS_MANUALADDRESS = s.MANUALADDRESS,
+			    t.DELIVERY_ADDRESS_MODIFIED = s.MODIFIED,
+			    t.DELIVERY_ADDRESS_MODIFIEDBY = s.MODIFIEDBY,
+			    t.DELIVERY_ADDRESS_NAME = s.NAME,
+			    t.DELIVERY_ADDRESS_STREET = s.STREET,
+			    t.DELIVERY_ADDRESS_VALIDFROM = s.VALIDFROM,
+			    t.DELIVERY_ADDRESS_VALIDTO = s.VALIDTO,
+			    t.DELIVERY_ADDRESS_ZIP = s.ZIP;
+		</sql>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-054">
+		<comment>update some null field values</comment>
+	    <update tableName="TMP_CONTACTS_WITH_ADDRESSES">
+	        <column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX" valueBoolean="false"/>
+	        <where>BILLING_CONTACT_USESALESEQUALIZATIONTAX IS NULL</where>
+	    </update>
+	    <update tableName="TMP_CONTACTS_WITH_ADDRESSES">
+	        <column name="BILLING_CONTACT_USESALESEQUALIZATIONTAX" valueBoolean="false"/>
+	        <where>BILLING_CONTACT_USESALESEQUALIZATIONTAX IS NULL</where>
+	    </update>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-056">
+		<comment>fill new contacts table</comment>
+		<sql>INSERT INTO TMP_FKT_CONTACT
+			    (   ID,
+			        DTYPE,
+			        BIRTHDAY,
+			        COMPANY,
+			        CUSTOMERNUMBER,
+			        DATEADDED,
+			        DELETED,
+			        DISCOUNT,
+			        FIRSTNAME,
+			        GENDER,
+			        GLN,
+			        MANDATEREFERENCE,
+			        MODIFIED,
+			        MODIFIEDBY,
+			        NAME,
+			        NOTE,
+			        RELIABILITY,
+			        SUPPLIERNUMBER,
+			        TITLE,
+			        USENETGROSS,
+			        USESALESEQUALIZATIONTAX,
+			        VALIDFROM,
+			        VALIDTO,
+			        VATNUMBER,
+			        VATNUMBERVALID,
+			        WEBSHOPNAME,
+			        WEBSITE,
+			        FK_BANKACCOUNT,
+			        FK_CATEGORY,
+			        FK_PAYMENT,
+			        OLD_ID )
+			SELECT
+			    BILLING_CONTACT_ID,
+			    BILLING_CONTACT_DTYPE,
+			    BILLING_CONTACT_BIRTHDAY,
+			    BILLING_CONTACT_COMPANY,
+			    BILLING_CONTACT_CUSTOMERNUMBER,
+			    BILLING_CONTACT_DATEADDED,
+			    BILLING_CONTACT_DELETED,
+			    BILLING_CONTACT_DISCOUNT,
+			    BILLING_CONTACT_FIRSTNAME,
+			    BILLING_CONTACT_GENDER,
+			    BILLING_CONTACT_GLN,
+			    BILLING_CONTACT_MANDATEREFERENCE,
+			    BILLING_CONTACT_MODIFIED,
+			    BILLING_CONTACT_MODIFIEDBY,
+			    BILLING_CONTACT_NAME,
+			    BILLING_CONTACT_NOTE,
+			    BILLING_CONTACT_RELIABILITY,
+			    BILLING_CONTACT_SUPPLIERNUMBER,
+			    BILLING_CONTACT_TITLE,
+			    BILLING_CONTACT_USENETGROSS,
+			    BILLING_CONTACT_USESALESEQUALIZATIONTAX,
+			    BILLING_CONTACT_VALIDFROM,
+			    BILLING_CONTACT_VALIDTO,
+			    BILLING_CONTACT_VATNUMBER,
+			    BILLING_CONTACT_VATNUMBERVALID,
+			    BILLING_CONTACT_WEBSHOPNAME,
+			    BILLING_CONTACT_WEBSITE,
+			    BILLING_CONTACT_FK_BANKACCOUNT,
+			    BILLING_CONTACT_FK_CATEGORY,
+			    BILLING_CONTACT_FK_PAYMENT,
+			    BILLING_CONTACT_ID
+			FROM TMP_CONTACTS_WITH_ADDRESSES;
+		</sql>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-057">
+	<comment>Insert billing addresses.</comment>
+		<sql>INSERT INTO TMP_FKT_ADDRESS
+			    (   ID,
+			        CITY,
+			        CITYADDON,
+			        COUNTRYCODE,
+			        DATEADDED,
+			        DELETED,
+			        EMAIL,
+			        FAX,
+			        MOBILE,
+			        MODIFIED,
+			        MODIFIEDBY,
+			        NAME,
+			        PHONE,
+			        STREET,
+			        VALIDFROM,
+			        VALIDTO,
+			        ZIP,
+			        CONTACT_ADDRESSES )
+			SELECT
+			    BILLING_ADDRESS_ID,
+			    BILLING_ADDRESS_CITY,
+			    BILLING_ADDRESS_CITYADDON,
+			    BILLING_ADDRESS_COUNTRYCODE,
+			    BILLING_ADDRESS_DATEADDED,
+			    BILLING_ADDRESS_DELETED,
+			    BILLING_CONTACT_EMAIL,
+			    BILLING_CONTACT_FAX,
+			    BILLING_CONTACT_MOBILE,
+			    BILLING_ADDRESS_MODIFIED,
+			    BILLING_ADDRESS_MODIFIEDBY,
+			    BILLING_ADDRESS_NAME,
+			    BILLING_CONTACT_PHONE,
+			    BILLING_ADDRESS_STREET,
+			    BILLING_ADDRESS_VALIDFROM,
+			    BILLING_ADDRESS_VALIDTO,
+			    BILLING_ADDRESS_ZIP,
+			    BILLING_CONTACT_ID
+			FROM TMP_CONTACTS_WITH_ADDRESSES;
+		</sql>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-058">
+		<sql>insert into FKT_ADDRESS_CONTACTTYPES (ADDRESS_CONTACTTYPES,
+			T_ELEMENT) select BILLING_ADDRESS_ID, 'BILLING' from TMP_CONTACTS_WITH_ADDRESSES;
+		</sql>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-059">
+		<sql>insert into FKT_ADDRESS_CONTACTTYPES (ADDRESS_CONTACTTYPES,
+			T_ELEMENT) select DELIVERY_ADDRESS_ID, 'DELIVERY' from
+			TMP_CONTACTS_WITH_ADDRESSES where DELIVERY_CONTACT_ID is not null;
+		</sql>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-060">
+	<comment>Insert delivery addresses.</comment>
+		<sql>INSERT INTO TMP_FKT_ADDRESS
+			    (   ID,
+			        CITY,
+			        CITYADDON,
+			        COUNTRYCODE,
+			        DATEADDED,
+			        DELETED,
+			        EMAIL,
+			        FAX,
+			        MOBILE,
+			        MODIFIED,
+			        MODIFIEDBY,
+			        NAME,
+			        PHONE,
+			        STREET,
+			        VALIDFROM,
+			        VALIDTO,
+			        ZIP,
+			        CONTACT_ADDRESSES )
+			SELECT
+			    DELIVERY_ADDRESS_ID,
+			    DELIVERY_ADDRESS_CITY,
+			    DELIVERY_ADDRESS_CITYADDON,
+			    DELIVERY_ADDRESS_COUNTRYCODE,
+			    DELIVERY_ADDRESS_DATEADDED,
+			    DELIVERY_ADDRESS_DELETED,
+			    BILLING_CONTACT_EMAIL,
+			    BILLING_CONTACT_FAX,
+			    BILLING_CONTACT_MOBILE,
+			    DELIVERY_ADDRESS_MODIFIED,
+			    DELIVERY_ADDRESS_MODIFIEDBY,
+			    DELIVERY_ADDRESS_NAME,
+			    BILLING_CONTACT_PHONE,
+			    DELIVERY_ADDRESS_STREET,
+			    DELIVERY_ADDRESS_VALIDFROM,
+			    DELIVERY_ADDRESS_VALIDTO,
+			    DELIVERY_ADDRESS_ZIP,
+			    BILLING_CONTACT_ID
+			FROM TMP_CONTACTS_WITH_ADDRESSES
+			WHERE DELIVERY_CONTACT_ID IS NOT NULL;
+		</sql>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-061">
+		<comment>Create DocumentReceivers</comment>
+		<sql><comment>DocumentReceivers (BILLING) for all documents</comment>
+			INSERT INTO FKT_DOCUMENTRECEIVER
+			    (   BILLINGTYPE,
+			        CITY,
+			        CITYADDON,
+			        COMPANY,
+			        CONSULTANT,
+			        COUNTRYCODE,
+			        CUSTOMERNUMBER,
+			        DATEADDED,
+			        EMAIL,
+			        FAX,
+			        FIRSTNAME,
+			        NAME,
+			        GENDER,
+			        GLN,
+			        MANDATEREFERENCE,
+			        MANUALADDRESS,
+			        MOBILE,
+			        ORIGINADDRESSID,
+			        ORIGINCONTACTID,
+			        PHONE,
+			        STREET,
+			        SUPPLIERNUMBER,
+			        TITLE,
+			        VATNUMBER,
+			        ZIP,
+			        FK_DOCUMENT,
+			        VALIDFROM )
+			SELECT
+			    d.billingtype,
+			    BILLING_ADDRESS_CITY,
+			    BILLING_ADDRESS_CITYADDON,
+			    BILLING_CONTACT_COMPANY,
+			    d.consultant,
+			    BILLING_ADDRESS_COUNTRYCODE,
+			    BILLING_CONTACT_CUSTOMERNUMBER,
+			    BILLING_CONTACT_DATEADDED,
+			    BILLING_CONTACT_EMAIL,
+			    BILLING_CONTACT_FAX,
+			    BILLING_CONTACT_FIRSTNAME,
+			    BILLING_CONTACT_NAME,
+			    BILLING_CONTACT_GENDER,
+			    BILLING_CONTACT_GLN,
+			    BILLING_CONTACT_MANDATEREFERENCE,
+			    BILLING_ADDRESS_MANUALADDRESS,
+			    BILLING_CONTACT_MOBILE,
+			    BILLING_ADDRESS_ID,
+			    BILLING_CONTACT_ID,
+			    BILLING_CONTACT_PHONE,
+			    BILLING_ADDRESS_STREET,
+			    BILLING_CONTACT_SUPPLIERNUMBER,
+			    BILLING_CONTACT_TITLE,
+			    BILLING_CONTACT_VATNUMBER,
+			    BILLING_ADDRESS_ZIP,
+			    d.id,
+			    BILLING_CONTACT_VALIDFROM
+			FROM TMP_CONTACTS_WITH_ADDRESSES,
+			    FKT_DOCUMENT d
+			WHERE
+			    d.fk_contact = billing_contact_id
+			    and d.dtype != 'Delivery';</sql>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20190915-062">
+		<comment>Create DocumentReceivers</comment>
+		<sql><comment>DocumentReceivers (delivery address) for all documents.
+			Some attributes like customer number e-mail, fax, mobile, phone are copied from BILLING_CONTACT fields.
+		</comment>
+			INSERT INTO FKT_DOCUMENTRECEIVER
+			    (   BILLINGTYPE,
+			        CITY,
+			        CITYADDON,
+			        COMPANY,
+			        CONSULTANT,
+			        COUNTRYCODE,
+			        CUSTOMERNUMBER,
+			        DATEADDED,
+			        EMAIL,
+			        FAX,
+			        FIRSTNAME,
+			        NAME,
+			        GENDER,
+			        GLN,
+			        MANDATEREFERENCE,
+			        MANUALADDRESS,
+			        MOBILE,
+			        ORIGINADDRESSID,
+			        ORIGINCONTACTID,
+			        PHONE,
+			        STREET,
+			        SUPPLIERNUMBER,
+			        TITLE,
+			        VATNUMBER,
+			        ZIP,
+			        FK_DOCUMENT,
+			        VALIDFROM )
+			SELECT
+			    '5',
+			    /* delivery address */
+			    DELIVERY_ADDRESS_CITY,
+			    DELIVERY_ADDRESS_CITYADDON,
+			    DELIVERY_CONTACT_COMPANY,
+			    d.consultant,
+			    DELIVERY_ADDRESS_COUNTRYCODE,
+			    BILLING_CONTACT_CUSTOMERNUMBER,
+			    BILLING_CONTACT_DATEADDED,
+			    BILLING_CONTACT_EMAIL,
+			    BILLING_CONTACT_FAX,
+			    DELIVERY_CONTACT_FIRSTNAME,
+			    DELIVERY_CONTACT_NAME,
+			    DELIVERY_CONTACT_GENDER,
+			    BILLING_CONTACT_GLN,
+			    BILLING_CONTACT_MANDATEREFERENCE,
+			    DELIVERY_ADDRESS_MANUALADDRESS,
+			    BILLING_CONTACT_MOBILE,
+			    DELIVERY_ADDRESS_ID,
+			    BILLING_CONTACT_ID,
+			    /* delivery contact address is related to billing (main) contact */
+			    BILLING_CONTACT_PHONE,
+			    DELIVERY_ADDRESS_STREET,
+			    BILLING_CONTACT_SUPPLIERNUMBER,
+			    DELIVERY_CONTACT_TITLE,
+			    BILLING_CONTACT_VATNUMBER,
+			    DELIVERY_ADDRESS_ZIP,
+			    d.id,
+			    DELIVERY_CONTACT_VALIDFROM
+			FROM TMP_CONTACTS_WITH_ADDRESSES
+			JOIN FKT_DOCUMENT d
+			ON (d.fk_contact = billing_contact_id)
+			AND delivery_contact_id IS NOT NULL
+			and d.dtype != 'Delivery';
+	</sql>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20190915-063">
+		<comment>Create DocumentReceivers</comment>
+		<sql><comment>DocumentReceivers (DELIVERY) for all documents</comment>
+			INSERT INTO FKT_DOCUMENTRECEIVER
+			    (   BILLINGTYPE,
+			        CITY,
+			        CITYADDON,
+			        COMPANY,
+			        CONSULTANT,
+			        COUNTRYCODE,
+			        CUSTOMERNUMBER,
+			        DATEADDED,
+			        EMAIL,
+			        FAX,
+			        FIRSTNAME,
+			        NAME,
+			        GENDER,
+			        GLN,
+			        MANDATEREFERENCE,
+			        MANUALADDRESS,
+			        MOBILE,
+			        ORIGINADDRESSID,
+			        ORIGINCONTACTID,
+			        PHONE,
+			        STREET,
+			        SUPPLIERNUMBER,
+			        TITLE,
+			        VATNUMBER,
+			        ZIP,
+			        FK_DOCUMENT,
+			        VALIDFROM
+			    )
+		/* DocumentReceivers for DELIVERY have a switched address (common billing address for
+		other document types is the delivery address in this special case), the delivery address is
+		therefore to interpret as billing address. Since the records are already in the database we only have to 
+		switch the billing type.*/
+			SELECT
+			    CASE
+				    WHEN DELIVERY_CONTACT_FK_ADDRESS is null THEN '5'
+				    ELSE '0'
+				END AS BillingType,
+			    BILLING_ADDRESS_CITY,
+			    BILLING_ADDRESS_CITYADDON,
+			    BILLING_CONTACT_COMPANY,
+			    d.consultant,
+			    BILLING_ADDRESS_COUNTRYCODE,
+			    BILLING_CONTACT_CUSTOMERNUMBER,
+			    BILLING_CONTACT_DATEADDED,
+			    BILLING_CONTACT_EMAIL,
+			    BILLING_CONTACT_FAX,
+			    BILLING_CONTACT_FIRSTNAME,
+			    BILLING_CONTACT_NAME,
+			    BILLING_CONTACT_GENDER,
+			    BILLING_CONTACT_GLN,
+			    BILLING_CONTACT_MANDATEREFERENCE,
+			    BILLING_ADDRESS_MANUALADDRESS,
+			    BILLING_CONTACT_MOBILE,
+			    BILLING_ADDRESS_ID,
+			    BILLING_CONTACT_ID,
+			    BILLING_CONTACT_PHONE,
+			    BILLING_ADDRESS_STREET,
+			    BILLING_CONTACT_SUPPLIERNUMBER,
+			    BILLING_CONTACT_TITLE,
+			    BILLING_CONTACT_VATNUMBER,
+			    BILLING_ADDRESS_ZIP,
+			    d.id,
+			    BILLING_CONTACT_VALIDFROM
+			FROM TMP_CONTACTS_WITH_ADDRESSES,
+			    FKT_DOCUMENT d
+			WHERE
+			    d.fk_contact = billing_contact_id
+			    and d.dtype = 'Delivery';</sql>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20190915-064">
+		<comment>Create DocumentReceivers</comment>
+		<sql><comment>DocumentReceivers (delivery address) for all documents.
+			Some attributes like customer number e-mail, fax, mobile, phone are copied from BILLING_CONTACT fields.
+		</comment>
+			INSERT INTO FKT_DOCUMENTRECEIVER
+			    (   BILLINGTYPE,
+			        CITY,
+			        CITYADDON,
+			        COMPANY,
+			        CONSULTANT,
+			        COUNTRYCODE,
+			        CUSTOMERNUMBER,
+			        DATEADDED,
+			        EMAIL,
+			        FAX,
+			        FIRSTNAME,
+			        NAME,
+			        GENDER,
+			        GLN,
+			        MANDATEREFERENCE,
+			        MANUALADDRESS,
+			        MOBILE,
+			        ORIGINADDRESSID,
+			        ORIGINCONTACTID,
+			        PHONE,
+			        STREET,
+			        SUPPLIERNUMBER,
+			        TITLE,
+			        VATNUMBER,
+			        ZIP,
+			        FK_DOCUMENT,
+			        VALIDFROM )
+			SELECT
+			    '5',
+			    /* delivery address */
+			    DELIVERY_ADDRESS_CITY,
+			    DELIVERY_ADDRESS_CITYADDON,
+			    DELIVERY_CONTACT_COMPANY,
+			    d.consultant,
+			    DELIVERY_ADDRESS_COUNTRYCODE,
+			    BILLING_CONTACT_CUSTOMERNUMBER,
+			    BILLING_CONTACT_DATEADDED,
+			    BILLING_CONTACT_EMAIL,
+			    BILLING_CONTACT_FAX,
+			    DELIVERY_CONTACT_FIRSTNAME,
+			    DELIVERY_CONTACT_NAME,
+			    DELIVERY_CONTACT_GENDER,
+			    BILLING_CONTACT_GLN,
+			    BILLING_CONTACT_MANDATEREFERENCE,
+			    DELIVERY_ADDRESS_MANUALADDRESS,
+			    BILLING_CONTACT_MOBILE,
+			    DELIVERY_ADDRESS_ID,
+			    BILLING_CONTACT_ID,
+			    /* delivery contact address is related to billing (main) contact */
+			    BILLING_CONTACT_PHONE,
+			    DELIVERY_ADDRESS_STREET,
+			    BILLING_CONTACT_SUPPLIERNUMBER,
+			    DELIVERY_CONTACT_TITLE,
+			    BILLING_CONTACT_VATNUMBER,
+			    DELIVERY_ADDRESS_ZIP,
+			    d.id,
+			    DELIVERY_CONTACT_VALIDFROM
+			FROM TMP_CONTACTS_WITH_ADDRESSES
+			JOIN FKT_DOCUMENT d
+			ON (d.fk_contact = billing_contact_id)
+			AND delivery_contact_id IS NOT NULL
+			and d.dtype = 'Delivery';
+	</sql>
+	</changeSet>
+		
+	<changeSet author="rheydenr" id="20190915-065">
+	<comment>Update DocumentReceivers. If a DocumentReceiver
+	has a manual address, the contact and address field has to be cleared.</comment>
+	    <update tableName="FKT_DOCUMENTRECEIVER">
+	        <column name="ORIGINCONTACTID" value="NULL"/>
+	        <column name="ORIGINADDRESSID" value="NULL"/>
+	        <where>MANUALADDRESS IS NOT NULL</where>
+	    </update>
+	</changeSet>
+
+	<changeSet author="rheydenr" id="20190915-070">
+		<comment>Rename old tables, delete not necessary temp tables and switch temporary tables to active tables.</comment>
+		<renameTable oldTableName="FKT_ADDRESS"
+			newTableName="OLD_FKT_ADDRESS" />
+		<renameTable oldTableName="FKT_CONTACT"
+			newTableName="OLD_FKT_CONTACT" />
+		<renameTable oldTableName="TMP_FKT_CONTACT"
+			newTableName="FKT_CONTACT" />
+		<renameTable oldTableName="TMP_FKT_ADDRESS"
+			newTableName="FKT_ADDRESS" />
+			
+		<!-- (left for testing purposes) <dropTable tableName="TMP_CONTACTS_WITH_ADDRESSES"/> -->
+	</changeSet>
+	
+<!-- Create indexes and constraints -->
+	<changeSet author="rheydenr" id="20190915-102">
+        <createIndex indexName="FK_FKT_ADDRESS_CONTACTTYPES_ADDRESS_CONTACTTYPES" tableName="FKT_ADDRESS_CONTACTTYPES">
+            <column name="ADDRESS_CONTACTTYPES"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-137">
+        <createIndex indexName="FK_FKT_ADDRESS_CONTACT_ADDRESSES" tableName="FKT_ADDRESS">
+            <column name="CONTACT_ADDRESSES"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-139">
+        <createIndex indexName="FK_FKT_CATEGORY_FK_PARENT_CATEGORY" tableName="FKT_CATEGORY">
+            <column name="FK_PARENT_CATEGORY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-140">
+        <createIndex indexName="FK_FKT_CONTACT_FK_BANKACCOUNT" tableName="FKT_CONTACT">
+            <column name="FK_BANKACCOUNT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-141">
+        <createIndex indexName="FK_FKT_CONTACT_FK_CATEGORY" tableName="FKT_CONTACT">
+            <column name="FK_CATEGORY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-142">
+        <createIndex indexName="FK_FKT_CONTACT_FK_PAYMENT" tableName="FKT_CONTACT">
+            <column name="FK_PAYMENT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-143">
+        <createIndex indexName="FK_FKT_DOCUMENTITEM_FK_DOCUMENT" tableName="FKT_DOCUMENTITEM">
+            <column name="FK_DOCUMENT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-144">
+        <createIndex indexName="FK_FKT_DOCUMENTITEM_FK_PRODUCT" tableName="FKT_DOCUMENTITEM">
+            <column name="FK_PRODUCT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-145">
+        <createIndex indexName="FK_FKT_DOCUMENTITEM_FK_VAT" tableName="FKT_DOCUMENTITEM">
+            <column name="FK_VAT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-146">
+        <createIndex indexName="FK_FKT_DOCUMENTRECEIVER_FK_DOCUMENT" tableName="FKT_DOCUMENTRECEIVER">
+            <column name="FK_DOCUMENT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-147">
+        <createIndex indexName="FK_FKT_DOCUMENT_DOCUMENT_INVOICEREFERENCE" tableName="FKT_DOCUMENT">
+            <column name="DOCUMENT_INVOICEREFERENCE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-148">
+        <createIndex indexName="FK_FKT_DOCUMENT_FK_INDIVIDUALINFO" tableName="FKT_DOCUMENT">
+            <column name="FK_INDIVIDUALINFO"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-149">
+        <createIndex indexName="FK_FKT_DOCUMENT_FK_NOVATREF" tableName="FKT_DOCUMENT">
+            <column name="FK_NOVATREF"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-150">
+        <createIndex indexName="FK_FKT_DOCUMENT_FK_PAYMENT" tableName="FKT_DOCUMENT">
+            <column name="FK_PAYMENT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-151">
+        <createIndex indexName="FK_FKT_DOCUMENT_FK_SHIPPING" tableName="FKT_DOCUMENT">
+            <column name="FK_SHIPPING"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-152">
+        <createIndex indexName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT" tableName="FKT_DOCUMENT">
+            <column name="FK_SRCDOCUMENT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-153">
+        <createIndex indexName="FK_FKT_ITEMACCOUNTTYPE_FK_CATEGORY" tableName="FKT_ITEMACCOUNTTYPE">
+            <column name="FK_CATEGORY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-170">
+        <addForeignKeyConstraint baseColumnNames="ADDRESS_CONTACTTYPES" baseTableName="FKT_ADDRESS_CONTACTTYPES" constraintName="FK_FKT_ADDRESS_CONTACTTYPES_ADDRESS_CONTACTTYPES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_ADDRESS"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-171">
+        <addForeignKeyConstraint baseColumnNames="CONTACT_ADDRESSES" baseTableName="FKT_ADDRESS" constraintName="FK_FKT_ADDRESS_CONTACT_ADDRESSES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CONTACT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-173">
+        <addForeignKeyConstraint baseColumnNames="FK_PARENT_CATEGORY" baseTableName="FKT_CATEGORY" constraintName="FK_FKT_CATEGORY_FK_PARENT_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-174">
+        <addForeignKeyConstraint baseColumnNames="CONFIRMATION_PARENT_ID" baseTableName="FKT_CONFIRMATION" constraintName="FK_FKT_CONFIRMATION_CONFIRMATION_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-175">
+        <addForeignKeyConstraint baseColumnNames="FK_BANKACCOUNT" baseTableName="FKT_CONTACT" constraintName="FK_FKT_CONTACT_FK_BANKACCOUNT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_BANKACCOUNT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-176">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_CONTACT" constraintName="FK_FKT_CONTACT_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-177">
+        <addForeignKeyConstraint baseColumnNames="FK_PAYMENT" baseTableName="FKT_CONTACT" constraintName="FK_FKT_CONTACT_FK_PAYMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PAYMENT"/>
+    </changeSet>
+     <changeSet author="rheydenreich (generated)" id="20190915-178">
+        <addForeignKeyConstraint baseColumnNames="CREDIT_PARENT_ID" baseTableName="FKT_CREDIT" constraintName="FK_FKT_CREDIT_CREDIT_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-179">
+        <addForeignKeyConstraint baseColumnNames="DELIVERY_PARENT_ID" baseTableName="FKT_DELIVERY" constraintName="FK_FKT_DELIVERY_DELIVERY_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-180">
+        <addForeignKeyConstraint baseColumnNames="FK_DOCUMENT" baseTableName="FKT_DOCUMENTITEM" constraintName="FK_FKT_DOCUMENTITEM_FK_DOCUMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-181">
+        <addForeignKeyConstraint baseColumnNames="FK_PRODUCT" baseTableName="FKT_DOCUMENTITEM" constraintName="FK_FKT_DOCUMENTITEM_FK_PRODUCT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PRODUCT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-182">
+        <addForeignKeyConstraint baseColumnNames="FK_VAT" baseTableName="FKT_DOCUMENTITEM" constraintName="FK_FKT_DOCUMENTITEM_FK_VAT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-183">
+        <addForeignKeyConstraint baseColumnNames="FK_DOCUMENT" baseTableName="FKT_DOCUMENTRECEIVER" constraintName="FK_FKT_DOCUMENTRECEIVER_FK_DOCUMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+   <changeSet author="rheydenreich (generated)" id="20190915-184">
+        <addForeignKeyConstraint baseColumnNames="DOCUMENT_INVOICEREFERENCE" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_DOCUMENT_INVOICEREFERENCE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-185">
+        <addForeignKeyConstraint baseColumnNames="FK_INDIVIDUALINFO" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_INDIVIDUALINFO" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_INDIVIDUALDOCUMENTINFO"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-186">
+        <addForeignKeyConstraint baseColumnNames="FK_NOVATREF" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_NOVATREF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-187">
+        <addForeignKeyConstraint baseColumnNames="FK_PAYMENT" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_PAYMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PAYMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-188">
+        <addForeignKeyConstraint baseColumnNames="FK_SHIPPING" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_SHIPPING" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_SHIPPING"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-189">
+        <addForeignKeyConstraint baseColumnNames="FK_SRCDOCUMENT" baseTableName="FKT_DOCUMENT" constraintName="FK_FKT_DOCUMENT_FK_SRCDOCUMENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+     <changeSet author="rheydenreich (generated)" id="20190915-190">
+        <addForeignKeyConstraint baseColumnNames="DUNNING_PARENT_ID" baseTableName="FKT_DUNNING" constraintName="FK_FKT_DUNNING_DUNNING_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-191">
+        <addForeignKeyConstraint baseColumnNames="INVOICE_PARENT_ID" baseTableName="FKT_INVOICE" constraintName="FK_FKT_INVOICE_INVOICE_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-192">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_ITEMACCOUNTTYPE" constraintName="FK_FKT_ITEMACCOUNTTYPE_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+     <changeSet author="rheydenreich (generated)" id="20190915-193">
+        <addForeignKeyConstraint baseColumnNames="LETTER_PARENT_ID" baseTableName="FKT_LETTER" constraintName="FK_FKT_LETTER_LETTER_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+   <changeSet author="rheydenreich (generated)" id="20190915-194">
+        <addForeignKeyConstraint baseColumnNames="OFFER_PARENT_ID" baseTableName="FKT_OFFER" constraintName="FK_FKT_OFFER_OFFER_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-195">
+        <addForeignKeyConstraint baseColumnNames="ORDER_PARENT_ID" baseTableName="FKT_ORDER" constraintName="FK_FKT_ORDER_ORDER_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>    
+    <changeSet author="rheydenreich (generated)" id="20190915-196">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_PAYMENT" constraintName="FK_FKT_PAYMENT_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-197">
+        <addForeignKeyConstraint baseColumnNames="FK_PRODUCT" baseTableName="FKT_PRODUCTBLOCKPRICE" constraintName="FK_FKT_PRODUCTBLOCKPRICE_FK_PRODUCT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PRODUCT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-198">
+        <addForeignKeyConstraint baseColumnNames="FK_PRODUCT" baseTableName="FKT_PRODUCTOPTIONS" constraintName="FK_FKT_PRODUCTOPTIONS_FK_PRODUCT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_PRODUCT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-199">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_PRODUCT" constraintName="FK_FKT_PRODUCT_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1100">
+        <addForeignKeyConstraint baseColumnNames="FK_VAT" baseTableName="FKT_PRODUCT" constraintName="FK_FKT_PRODUCT_FK_VAT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
+    </changeSet>
+   <changeSet author="rheydenreich (generated)" id="20190915-1101">
+        <addForeignKeyConstraint baseColumnNames="PROFORMA_PARENT_ID" baseTableName="FKT_PROFORMA" constraintName="FK_FKT_PROFORMA_PROFORMA_PARENT_ID" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_DOCUMENT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1102">
+        <addForeignKeyConstraint baseColumnNames="FK_USER" baseTableName="FKT_ROLE" constraintName="FK_FKT_ROLE_FK_USER" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_USER"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1103">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_SHIPPING" constraintName="FK_FKT_SHIPPING_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1104">
+        <addForeignKeyConstraint baseColumnNames="FK_VAT" baseTableName="FKT_SHIPPING" constraintName="FK_FKT_SHIPPING_FK_VAT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1105">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_TEXTMODULE" constraintName="FK_FKT_TEXTMODULE_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1106">
+        <addForeignKeyConstraint baseColumnNames="FK_TENANT" baseTableName="FKT_USER" constraintName="FK_FKT_USER_FK_TENANT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_TENANT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1107">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_VAT" constraintName="FK_FKT_VAT_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1108">
+        <addForeignKeyConstraint baseColumnNames="FK_ACCOUNTTYPE" baseTableName="FKT_VOUCHERITEMS" constraintName="FK_FKT_VOUCHERITEMS_FK_ACCOUNTTYPE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_ITEMACCOUNTTYPE"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1109">
+        <addForeignKeyConstraint baseColumnNames="FK_VAT" baseTableName="FKT_VOUCHERITEMS" constraintName="FK_FKT_VOUCHERITEMS_FK_VAT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VAT"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1110">
+        <addForeignKeyConstraint baseColumnNames="FK_VOUCHER" baseTableName="FKT_VOUCHERITEMS" constraintName="FK_FKT_VOUCHERITEMS_FK_VOUCHER" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_VOUCHERS"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1111">
+        <addForeignKeyConstraint baseColumnNames="FK_CATEGORY" baseTableName="FKT_VOUCHERS" constraintName="FK_FKT_VOUCHERS_FK_CATEGORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_CATEGORY"/>
+    </changeSet>
+    <changeSet author="rheydenreich (generated)" id="20190915-1112">
+        <addForeignKeyConstraint baseColumnNames="FK_WEBSHOP" baseTableName="FKT_WEBSHOPSTATEMAPPING" constraintName="FK_FKT_WEBSHOPSTATEMAPPING_FK_WEBSHOP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="FKT_WEBSHOP"/>
+    </changeSet>	
+
+	<changeSet author="rheydenr" id="20191211-001"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_PRODUCT">
+			<column name="SUPPLIERITEMNUMBER" type="varchar(255)" />
+			<column name="ALLOWANCE" type="varchar(255)" />
+			<column name="NOTE" type="LONGTEXT" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20191211-002"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_DOCUMENTITEM">
+			<column name="SUPPLIERITEMNUMBER" type="varchar(255)" />
+		</addColumn>
+		<dropColumn tableName="FKT_DOCUMENTITEM">
+			<column name="TARA" />
+		</dropColumn>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20191211-004"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_DOCUMENT">
+			<column name="TARA" type="DOUBLE"/>
+			<column name="VERSION" type="BIGINT" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="rheydenr" id="20200317-001"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<comment>update name addon and local consultant for delivery addresses</comment>
+		<sql>UPDATE FKT_ADDRESS g SET NAME = (SELECT DELIVERY_CONTACT_COMPANY 
+		         FROM TMP_CONTACTS_WITH_ADDRESSES t WHERE t.DELIVERY_ADDRESS_ID = g.ID),
+		     LOCALCONSULTANT = (SELECT CONCAT(DELIVERY_CONTACT_FIRSTNAME, ' ', DELIVERY_CONTACT_NAME) 
+		         FROM TMP_CONTACTS_WITH_ADDRESSES t WHERE t.DELIVERY_ADDRESS_ID = g.ID)</sql>
+	</changeSet>
+	
+	<changeSet id="20190317-010" author="rheydenr">
+		<tagDatabase tag="version_2.1"/>
+	</changeSet>
+
+</databaseChangeLog>
+    

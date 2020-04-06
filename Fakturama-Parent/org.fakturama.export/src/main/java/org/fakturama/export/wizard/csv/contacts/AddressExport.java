@@ -27,14 +27,19 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.fakturama.wizards.ExporterHelper;
 
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.util.ContactUtil;
 
 
@@ -57,6 +62,9 @@ public class AddressExport {
     
 	@Inject
 	private INumberFormatterService numberFormatterService;
+    
+    @Inject
+    private IDocumentAddressManager addressManager;
 
 	/**
 	 * 	Do the export job.
@@ -83,7 +91,6 @@ public class AddressExport {
 					//T: Used as heading of a table. Keep the word short.
 					"\"id\";"+ 
 					"\"category\";"+
-					
 					"\"gender\";"+
 					"\"title\";"+
 					"\"firstname\";"+
@@ -93,6 +100,10 @@ public class AddressExport {
 					"\"zip\";"+
 					"\"city\";"+
 					"\"country\";"+
+					"\"phone\";"+
+					"\"fax\";"+
+					"\"mobile\";"+
+					"\"email\";"+
 
 					"\"delivery_gender\";"+
 					"\"delivery_title\";"+
@@ -103,10 +114,12 @@ public class AddressExport {
 					"\"delivery_zip\";"+
 					"\"delivery_city\";"+
 					"\"delivery_country\";"+
+					"\"delivery_phone\";"+
+					"\"delivery_fax\";"+
+					"\"delivery_mobile\";"+
+					"\"delivery_email\";"+
 					
 					"\"account_holder\";"+
-					"\"account\";"+
-					"\"bank_code\";"+
 					"\"bank_name\";"+
 					"\"iban\";"+
 					"\"bic\";"+
@@ -117,15 +130,13 @@ public class AddressExport {
 					"\"date_added\";"+
 					"\"payment\";"+
 					"\"reliability\";"+
-					"\"phone\";"+
-					"\"fax\";"+
-					"\"mobile\";"+
-					"\"email\";"+
 					"\"website\";"+
 					"\"vatnr\";"+
 					"\"vatnrvalid\";"+
 					"\"discount\";"+
-					"\"birthday\""+
+					"\"birthday\";"+
+					"\"supplier_nr\";"+
+					"\"username\"" +
 					NEW_LINE);
 		
 			// Get all undeleted contacts
@@ -137,8 +148,10 @@ public class AddressExport {
 				// Place the contacts information into the table
 				StringBuffer stringBuffer = new StringBuffer();
 				stringBuffer.append(contact.getId()).append(";");
-				if(contact.getCategories() != null) {
-					stringBuffer.append(ExporterHelper.inQuotes(contact.getCategories().getName()));
+				if(contact.getCategories() != null && StringUtils.isNotBlank(contact.getCategories().getName())) {
+					stringBuffer.append(ExporterHelper.inQuotes(CommonConverter.getCategoryName(contact.getCategories(), "/")));
+//				} else {
+//					stringBuffer.append(";");
 				}
 				stringBuffer.append(";")
 					.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(contact.getGender()))).append(";")
@@ -147,45 +160,47 @@ public class AddressExport {
 					.append(ExporterHelper.inQuotes(contact.getName())).append(";")
 					.append(ExporterHelper.inQuotes(contact.getCompany())).append(";");
 				
-				if(contact.getAddress() != null) {
-						stringBuffer.append(ExporterHelper.inQuotes(contact.getAddress().getStreet())).append(";")
-						   .append(ExporterHelper.inQuotes(contact.getAddress().getZip())).append(";")
-						   .append(ExporterHelper.inQuotes(contact.getAddress().getCity())).append(";")
-						   .append(ExporterHelper.inQuotes(localeUtil.findByCode(contact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
+				Address billingAddress = addressManager.getAddressFromContact(contact, ContactType.BILLING).orElse(null);
+				if(billingAddress != null) {
+						stringBuffer.append(ExporterHelper.inQuotes(billingAddress.getStreet())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getZip())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getCity())).append(";")
+						   .append(ExporterHelper.inQuotes(localeUtil.findByCode(billingAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getPhone())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getFax())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getMobile())).append(";")
+						   .append(ExporterHelper.inQuotes(billingAddress.getEmail())).append(";");
 				} else {
-					stringBuffer.append(";;;;");
+					stringBuffer.append(";;;;;;;;");
 				}
 		
 				
-				Contact deliveryContact;
-				if (contact.getAlternateContacts() != null) {
-					deliveryContact = contact.getAlternateContacts();
+				Address deliveryAddress = addressManager.getAddressFromContact(contact, ContactType.DELIVERY).orElse(null);
+				stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(contact.getGender()))).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getTitle())).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getFirstName())).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getName())).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getCompany())).append(";");
+				if (deliveryAddress != null) {
+					stringBuffer.append(ExporterHelper.inQuotes(deliveryAddress.getStreet())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getZip())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getCity())).append(";")
+					   .append(ExporterHelper.inQuotes(localeUtil.findByCode(deliveryAddress.getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getPhone())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getFax())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getMobile())).append(";")
+					   .append(ExporterHelper.inQuotes(deliveryAddress.getEmail())).append(";");
 				} else {
-					deliveryContact = contact;
-				}
-				stringBuffer.append(ExporterHelper.inQuotes(contactUtil.getSalutationString(deliveryContact.getGender()))).append(";")
-				   .append(ExporterHelper.inQuotes(deliveryContact.getTitle())).append(";")
-				   .append(ExporterHelper.inQuotes(deliveryContact.getFirstName())).append(";")
-				   .append(ExporterHelper.inQuotes(deliveryContact.getName())).append(";")
-				   .append(ExporterHelper.inQuotes(deliveryContact.getCompany())).append(";");
-				if (deliveryContact.getAddress() != null) {
-					stringBuffer.append(ExporterHelper.inQuotes(deliveryContact.getAddress().getStreet())).append(";")
-					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getZip())).append(";")
-					   .append(ExporterHelper.inQuotes(deliveryContact.getAddress().getCity())).append(";")
-					   .append(ExporterHelper.inQuotes(localeUtil.findByCode(deliveryContact.getAddress().getCountryCode()).orElse(localeUtil.getDefaultLocale()).getDisplayCountry())).append(";");
-				} else {
-					stringBuffer.append(";;;;");
+					stringBuffer.append(";;;;;;;;");
 				}
 				
 				if(contact.getBankAccount() != null) {
 					stringBuffer.append(ExporterHelper.inQuotes(contact.getBankAccount().getAccountHolder())).append(";")
-					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getName())).append(";")
-					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getBankCode() != null ? Integer.toString(contact.getBankAccount().getBankCode()) : "")).append(";")
 					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getBankName())).append(";")
 					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getIban())).append(";")
 					   .append(ExporterHelper.inQuotes(contact.getBankAccount().getBic())).append(";");
 				} else {
-					stringBuffer.append(";;;;;;");
+					stringBuffer.append(";;;;");
 				}
 				
 				stringBuffer.append(ExporterHelper.inQuotes(contact.getCustomerNumber())).append(";")
@@ -202,19 +217,18 @@ public class AddressExport {
 				}
 				stringBuffer.append(";");
 				
-				stringBuffer.append(ExporterHelper.inQuotes(contact.getPhone())).append(";")
-				   .append(ExporterHelper.inQuotes(contact.getFax())).append(";")
-				   .append(ExporterHelper.inQuotes(contact.getMobile())).append(";")
-				   .append(ExporterHelper.inQuotes(contact.getEmail())).append(";")
-				   .append(ExporterHelper.inQuotes(contact.getWebsite())).append(";")
+				stringBuffer.append(ExporterHelper.inQuotes(contact.getWebsite())).append(";")
 				   .append(ExporterHelper.inQuotes(contact.getVatNumber())).append(";")
 				   .append(BooleanUtils.isTrue(contact.getVatNumberValid())).append(";")
-				   .append(ExporterHelper.inQuotes(numberFormatterService.DoubleToDecimalFormatedValue(contact.getDiscount(), "0.00"))).append(";");
+				   .append(ExporterHelper.inQuotes(numberFormatterService.DoubleToDecimalFormatedValue(contact.getDiscount(), "0.00"))).append(";")
+				;
 				
 				if(contact.getBirthday() != null) {
 					stringBuffer.append(sdf.format(contact.getBirthday()));
 				}				
-				stringBuffer.append(";");
+				stringBuffer.append(";")
+				   .append(ExporterHelper.inQuotes(contact.getSupplierNumber())).append(";")
+				   .append(ExporterHelper.inQuotes(contact.getWebshopName())).append(";");
 
 				bos.write(stringBuffer.toString() + NEW_LINE);
 			}

@@ -17,9 +17,13 @@ package com.sebulli.fakturama.views.datatable.tree.ui;
 import java.util.Arrays;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -33,9 +37,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.AbstractCategory;
-import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
@@ -52,13 +58,26 @@ import ca.odell.glazedlists.event.ListEventListener;
  * 
  */
 public class TopicTreeViewer<T extends AbstractCategory> {
+	public static final String PARENT_COMPOSITE = "TopicTreeViewer_ParentComposite";
+	public static final String USE_DOCUMENT_AND_CONTACT_FILTER = "TopicTreeViewer_useDocumentAndContactFilter";
+	public static final String USE_ALL = "TopicTreeViewer_useAll";
 
-protected static final String TABLEDATA_CATEGORY_FILTER = "CategoryFilter";
-protected static final String TABLEDATA_TRANSACTION_FILTER = "TransactionFilter";
-protected static final String TABLEDATA_CONTACT_FILTER = "ContactFilter";
-protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
+	protected static final String TABLEDATA_CATEGORY_FILTER = "CategoryFilter";
+	protected static final String TABLEDATA_TRANSACTION_FILTER = "TransactionFilter";
+	protected static final String TABLEDATA_CONTACT_FILTER = "ContactFilter";
+	protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
-    private Messages msg;
+	@Inject
+	@Translation
+	protected Messages msg;
+	
+	@Inject
+	private IEclipseContext context;
+	
+	@Inject
+	private ILogger logger;
+    
+    private IDocumentAddressManager addressManager;
 
     TreeViewer internalTreeViewer;
 	
@@ -83,21 +102,24 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	private AbstractViewDataTable<? extends IEntity, T> viewDataSetTable;
     private TreeObjectContentProvider<T> contentProvider;
     
+    public TopicTreeViewer() {
+    	
+    }
+
 	/**
-	 * Constructor Creates a
+	 * Constructor Creates a new TopicTreeViewer
 	 * 
 	 * @param parent
-	 * @param msg2 
 	 * @param style
-	 * @param elementClass the concrete Class of this TreeViewer
 	 * @param useDocumentAndContactFilter
 	 * @param useAll
 	 */
-	public TopicTreeViewer(Composite parent, Messages msg, /*int style, */boolean useDocumentAndContactFilter, final boolean useAll) {
+	@PostConstruct
+	public void init() {
+		Composite parent = (Composite) context.get(PARENT_COMPOSITE);
 		this.internalTreeViewer = new TreeViewer(parent, SWT.BORDER /*style*/);
-		// Messages can't be injected because this class is not called via application context
-		this.msg = msg;
-//		this.useAll = useAll;
+		Boolean useAll = (Boolean) context.get(USE_ALL);
+		Boolean useDocumentAndContactFilter = (Boolean)context.get(USE_DOCUMENT_AND_CONTACT_FILTER);
 		
 		// Create a new root element
 		root = new TreeObject("");
@@ -141,11 +163,11 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 				String categoryFilter = "";
 				long transactionFilter = -1;
 				long contactFilter = -1;
-				ISelection selection = event.getSelection();
+        		IStructuredSelection structuredSelection = event.getStructuredSelection();
 
 				// Get the selection
-				if (selection != null && selection instanceof IStructuredSelection) {
-					Object obj = ((IStructuredSelection) selection).getFirstElement();
+				if (structuredSelection != null) {
+					Object obj = structuredSelection.getFirstElement();
 					if (obj != null) {
 
 						// Get the selected object
@@ -189,6 +211,11 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 		});
 		
 		internalTreeViewer.setComparator(new TreePathViewerSorter());
+	}
+	
+	public void disableSorting() {
+		// needed for DocumentsListView
+		internalTreeViewer.setComparator(null);
 	}
 		
 	public Tree getTree() {
@@ -410,17 +437,21 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 	 *            ID of the contact
 	 */
 	public void setContactFromDocument(Document selectedDocument) {
-		if (contactItem == null || selectedDocument == null)
+		if (contactItem == null || selectedDocument == null) {
 			return;
-		Contact contact = selectedDocument.getBillingType().isDELIVERY() ? selectedDocument.getDeliveryContact() : selectedDocument.getBillingContact();
-		String name = selectedDocument.getAddressFirstLine(); 
-		contactItem.setContactId(contact.getId());
-		contactItem.setName(name);
-		internalTreeViewer.refresh();
+		}
+		
+		DocumentReceiver contact = addressManager.getAdressForBillingType(selectedDocument, selectedDocument.getBillingType());
+		if(contact == null) {
+			logger.error(String.format("no contact found for current document with ID %d", selectedDocument.getId()));
+		} else {
+			String name = selectedDocument.getAddressFirstLine();
+			contactItem.setContactId(contact.getId());
+			contactItem.setName(name);
+			internalTreeViewer.refresh();
+		}
 	}
 	
-	
-
 	/**
 	 * Sets the input of the tree
 	 * 
@@ -477,6 +508,14 @@ protected static final String TABLEDATA_TREE_OBJECT = "TreeObject";
 
 	public void setLabelProvider(TreeCategoryLabelProvider treeTableLabelProvider) {
 		internalTreeViewer.setLabelProvider(treeTableLabelProvider);
+	}
+
+	public IDocumentAddressManager getAddressManager() {
+		return addressManager;
+	}
+
+	public void setAddressManager(IDocumentAddressManager addressManager) {
+		this.addressManager = addressManager;
 	}
 	
 }

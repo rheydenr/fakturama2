@@ -27,12 +27,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.util.ContactUtil;
 
@@ -47,13 +50,22 @@ public class CustomerStatistics {
     private DocumentsDAO documentsDAO;
     
     @Inject
+    private IDocumentAddressManager addressManager;
+    
+    @Inject
     private IEclipseContext context;
+    
+    @Inject
+    private ContactsDAO contactsDAO;
 
 	/**
      * @param contact the contact to set
      */
-    public void setContact(Contact contact) {
-        this.contact = contact;
+    public void setContact(DocumentReceiver documentReceiver) {
+		if(documentReceiver.getOriginContactId() != null) {
+			Contact contact = contactsDAO.findById(documentReceiver.getOriginContactId());
+			this.contact = contact;
+		}
     }
 
     /**
@@ -76,7 +88,7 @@ public class CustomerStatistics {
 	private String invoices = "";
 	
 	// The total volume
-	private Double total = 0.0;
+	private Double total = Double.valueOf(0.0);
 	
 	// Customer to test
 	private Contact contact = null;
@@ -90,11 +102,8 @@ public class CustomerStatistics {
 	 * @param 
 	 * 		contactID of the customer
 	 */
-	public CustomerStatistics (Contact contact) {
-		if (contact != null) {
-    		this.contact = contact;
-    		makeStatistics(true);
-		}
+	public CustomerStatistics (DocumentReceiver documentReceiver) {
+		this(documentReceiver, null);
 	}
 	
 	/**
@@ -108,7 +117,14 @@ public class CustomerStatistics {
 	public CustomerStatistics (Contact contact, String address) {
 		this.contact = contact;
 		this.address = address;
-		makeStatistics(false);
+	}
+	
+	public CustomerStatistics (DocumentReceiver documentReceiver, String address) {
+		if(documentReceiver.getOriginContactId() != null) {
+			Contact contact = contactsDAO.findById(documentReceiver.getOriginContactId());
+			this.contact = contact;
+		}
+		this.address = address;
 	}
 	
 
@@ -135,10 +151,10 @@ public class CustomerStatistics {
 			    // in this case we found the document through documentsDAO, therefore it's always true
 				customerFound = true;
 			}
-			
+			JaroWinklerDistance jaroWinklerDistance = new JaroWinklerDistance();
 			// Compare the the address
             if (!byID && address.length() > 10 && 
-            		StringUtils.getJaroWinklerDistance(contactUtil.getAddressAsString(document.getBillingContact()), address) > 0.7) {
+            		jaroWinklerDistance.apply(contactUtil.getAddressAsString(addressManager.getBillingAdress(document)), address) > 0.7) {
 				customerFound = true;
 			}
 			

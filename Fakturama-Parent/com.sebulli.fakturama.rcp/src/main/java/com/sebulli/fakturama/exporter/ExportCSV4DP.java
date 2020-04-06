@@ -44,6 +44,8 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.util.ContactUtil;
 
@@ -74,6 +76,9 @@ public class ExportCSV4DP implements ICSVExporter {
     
     @Inject
     private IEclipseContext context;
+    
+	@Inject
+	private IDocumentAddressManager addressManager;
 
 	private ContactUtil contactUtil;
 
@@ -83,14 +88,14 @@ public class ExportCSV4DP implements ICSVExporter {
 		MPart activePart = partService.getActivePart();
 		DocumentEditor activeEditor = (DocumentEditor) activePart.getObject();
     	contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
-		Contact billingContact = activeEditor.getDocument().getBillingContact();
+		DocumentReceiver billingContact = addressManager.getBillingAdress(activeEditor.getDocument());
 		exportCSV4DP(shell, billingContact);
 	}
 
 	@Override
-	public Path exportCSV4DP(Shell shell, Contact contact) {
+	public Path exportCSV4DP(Shell shell, DocumentReceiver receiver) {
 		// Create a File object in workspace
-		Path csvFile = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "dp-addressimport-" + contact.getCustomerNumber() + ".csv");
+		Path csvFile = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), "dp-addressimport-" + receiver.getCustomerNumber() + ".csv");
 
 		// Create a new file
 		try (BufferedWriter bos = Files.newBufferedWriter(csvFile, Charset.forName("CP1252"), StandardOpenOption.CREATE,
@@ -105,7 +110,7 @@ public class ExportCSV4DP implements ICSVExporter {
 			StatefulBeanToCsv<DPAddress> beanToCsv = new StatefulBeanToCsvBuilder<DPAddress>(bos)
 					.withMappingStrategy(strategy).withLineEnd("\r\n").withSeparator(';').withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
 			
-			DPAddress dpAddressBean = createDPBean(contact);
+			DPAddress dpAddressBean = createDPBean(receiver);
 			if(dpAddressBean.isValid()) {
 				List<DPAddress> beans = new ArrayList<>();
 				beans.add(dpAddressBean);
@@ -120,7 +125,7 @@ public class ExportCSV4DP implements ICSVExporter {
 		return csvFile;
 	}
 
-	private DPAddress createDPBean(Contact contact) {
+	private DPAddress createDPBean(DocumentReceiver receiverAddress) {
 		DPAddress dpAddressBean = new DPAddress();
 		dpAddressBean.setSenderName(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME));
 		dpAddressBean.setAdditionalSenderName(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER));
@@ -131,9 +136,8 @@ public class ExportCSV4DP implements ICSVExporter {
         java.util.Optional<ULocale> locale = localeUtil.findLocaleByDisplayCountry(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY));
 		dpAddressBean.setSenderISO3Country(locale.orElse(ULocale.getDefault()).getISO3Country());
 		
-		dpAddressBean.setReceiverName(contactUtil.getCompanyOrLastname(contact));
-		dpAddressBean.setAdditionalReceiverName(contactUtil.getFirstAndLastName(contact));
-		Address receiverAddress = contact.getAddress();
+		dpAddressBean.setReceiverName(contactUtil.getCompanyOrLastname(receiverAddress));
+		dpAddressBean.setAdditionalReceiverName(contactUtil.getFirstAndLastName(receiverAddress));
 		dpAddressBean.setReceiverStreet(contactUtil.getStreetName(receiverAddress.getStreet()));
 		dpAddressBean.setReceiverHousenumber(contactUtil.getStreetNo(receiverAddress.getStreet()));
 		dpAddressBean.setReceiverZipCode(receiverAddress.getZip());

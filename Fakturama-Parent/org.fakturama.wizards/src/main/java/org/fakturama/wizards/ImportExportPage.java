@@ -21,13 +21,19 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.fakturama.wizards.internal.AbstractWorkbenchWizardNode;
+import org.fakturama.wizards.internal.AdaptableList;
+import org.fakturama.wizards.internal.DataTransferWizardCollectionComparator;
+import org.fakturama.wizards.internal.WizardTreeContentProvider;
 import org.fakturama.wizards.internal.dialogs.DialogUtil;
 import org.fakturama.wizards.internal.dialogs.WizardActivityFilter;
 import org.fakturama.wizards.internal.dialogs.WizardPatternFilter;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
 import org.fakturama.wizards.internal.dialogs.WorkbenchWizardSelectionPage;
-import org.fakturama.wizards.internal.registry.IWorkbenchRegistryConstants;
-import org.fakturama.wizards.model.AdaptableList;
+import org.fakturama.wizards.internal.dialogs.model.WorkbenchLabelProvider;
+
+import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  * Abstract wizard page class from which an import or export wizard can be chosen.
@@ -173,7 +179,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
 	 */
 	protected ImportExportPage(IWorkbench aWorkbench, IStructuredSelection currentSelection){
 		super("importExportPage", aWorkbench, currentSelection, null, null);	//$NON-NLS-1$
-		setTitle("WorkbenchMessages.Select");
+		setTitle(WorkbenchMessages.Select);
 	}
 	
 	/*
@@ -389,8 +395,8 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
      * order to recreate this page's state in the next instance of this page.
      */
     protected void storeSelectedCategoryAndWizard(String setting, TreeViewer viewer) {
-        Object selected = ((IStructuredSelection) viewer
-                .getSelection()).getFirstElement();
+        Object selected = viewer
+                .getStructuredSelection().getFirstElement();
 
         if (selected != null) {
             if (selected instanceof IE4WizardCategory) {

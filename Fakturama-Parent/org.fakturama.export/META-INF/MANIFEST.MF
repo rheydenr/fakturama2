@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Export Wizard Service
 Bundle-SymbolicName: org.fakturama.export;singleton:=true
-Bundle-Version: 2.0.5
+Bundle-Version: 2.1.0
 Bundle-Vendor: Fakturama.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/exportservice.xml
@@ -14,7 +14,6 @@ Import-Package: com.sebulli.fakturama.i18n,
  com.sebulli.fakturama.resources.core,
  javax.annotation;version="1.2.0",
  javax.money,
- org.apache.commons.lang3,
  org.eclipse.core.runtime;version="3.5.0",
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di,
@@ -43,6 +42,7 @@ Require-Bundle: com.sebulli.fakturama.rcp;bundle-version="2.0.0",
  org.eclipse.nebula.widgets.cdatetime;bundle-version="0.14.0",
  org.eclipse.jface;bundle-version="3.11.0",
  com.sebulli.fakturama.common;bundle-version="2.0.0",
- com.ibm.icu;bundle-version="58.2.0"
+ com.ibm.icu;bundle-version="58.2.0",
+ com.opencsv;bundle-version="4.5.0"
 Bundle-ClassPath: .
 Automatic-Module-Name: org.fakturama.export

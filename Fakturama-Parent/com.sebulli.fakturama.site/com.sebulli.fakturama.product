@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.5" useFeatures="true" includeLaunchers="true">
+<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.1.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icon://APP_ABOUT_ICON"/>
@@ -14,7 +14,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true --add-modules=ALL-SYSTEM
+      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true --add-modules=ALL-SYSTEM -clean
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:name=Fakturama -Xdock:icon=../Resources/app.icns
       </vmArgsMac>
@@ -231,10 +231,10 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </plugins>
 
    <features>
-      <feature id="com.sebulli.fakturama.feature" version="2.0.5"/>
-      <feature id="org.fakturama.exporter.zugferd.feature" version="2.0.5"/>
-      <feature id="org.fakturama.export.feature" version="2.0.5"/>
-      <feature id="org.fakturama.import.feature" version="2.0.5"/>
+      <feature id="com.sebulli.fakturama.feature" version="2.1.0"/>
+      <feature id="org.fakturama.exporter.zugferd.feature" version="2.1.0"/>
+      <feature id="org.fakturama.export.feature" version="2.1.0"/>
+      <feature id="org.fakturama.import.feature" version="2.1.0"/>
       <feature id="org.eclipse.gemini.dbaccess.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" version="1.1.0.RELEASE"/>
@@ -243,16 +243,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="com.mysql.jdbc.feature"/>
       <feature id="org.hsql.jdbc.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
-      <feature id="org.slf4j.osgi.feature" version="1.0.0"/>
       <feature id="org.eclipse.nebula.widgets.nattable.core.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
-      <feature id="org.eclipse.persistence.jpa"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.ecf.core.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
@@ -270,8 +267,11 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_uk"/>
       <feature id="org.eclipse.babel.nls_eclipse_sk"/>
       <feature id="org.eclipse.babel.nls_eclipse_el"/>
+      <feature id="org.eclipse.babel.nls_eclipse_sv"/>
       <feature id="org.eclipse.persistence.moxy"/>
       <feature id="com.opencsv.feature"/>
+      <feature id="org.eclipse.persistence.jpa" installMode="root"/>
+      <feature id="org.slf4j.osgi.feature" installMode="root"/>
    </features>
 
    <configurations>
@@ -285,12 +285,12 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <plugin id="org.eclipse.gemini.dbaccess.hsqldb" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.dbaccess.mysql" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="3" />
-      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
       <property name="eclipse.p2.data.area" value="@config.dir/../p2" />
+      <property name="osgi.instance.area" value="@user.home/.fakturama2" />
       <property name="eclipse.p2.profile" value="profile" />
       <property name="org.eclipse.swt.browser.IEVersion" value="12001" os="win32" />
       <property name="org.eclipse.update.reconcile" value="false" />
-      <property name="osgi.instance.area" value="@user.home/.fakturama2" />
+      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
    </configurations>
 
    <repositories>

@@ -102,7 +102,7 @@ public class SelectDeliveryNoteDialog extends AbstractSelectionDialog<Delivery> 
 		context.set(IEventBroker.class, evtBroker);
 		MPart part = modelService.createModelElement(MPart.class);
 		part.setContext(context);
-		part.getProperties().put(Constants.PROPERTY_DELIVERIES_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
+		part.getTransientData().put(Constants.PROPERTY_DELIVERIES_CLICKHANDLER, Constants.COMMAND_SELECTITEM);
 		context.set(MPart.class, part);
 		deliveriesListTable = ContextInjectionFactory.make(DocumentsListTable.class, context);
 

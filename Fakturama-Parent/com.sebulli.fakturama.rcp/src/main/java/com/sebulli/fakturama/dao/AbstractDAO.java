@@ -242,7 +242,7 @@ em.joinTransaction();
      * @param id the primary key to search
      * @return found object
      */
-    public T findById(long id) {
+    public T findById(Long id) {
         return findById(id, false);
     }
 
@@ -258,7 +258,11 @@ em.joinTransaction();
      *  object with database content
      * @return found object
      */
-    public T findById(long id, boolean forceReadFromDatabase) {
+    public T findById(Long id, boolean forceReadFromDatabase) {
+    	if(id == null) {
+    		return null;
+    	}
+    	
     	T find = getEntityManager().find(getEntityClass(), id);
     	if(forceReadFromDatabase) {
     	    getEntityManager().refresh(find);
@@ -310,24 +314,29 @@ em.joinTransaction();
      * @return found or newly created Entity
      * @throws FakturamaStoringException 
      */
-    public T findOrCreate(T object, boolean checkOnly) throws FakturamaStoringException {
-        T retval = null;
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<T> query = criteriaBuilder.createQuery(getEntityClass());
-        Root<T> root = query.from(getEntityClass());
-        Set<Predicate> restrictions = getRestrictions(object, criteriaBuilder, root);
-        CriteriaQuery<T> select = query.select(root).where(restrictions.toArray(new Predicate[]{}));
+	public T findOrCreate(T object, boolean checkOnly) throws FakturamaStoringException {
+		T retval = null;
+		CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<T> query = criteriaBuilder.createQuery(getEntityClass());
+		Root<T> root = query.from(getEntityClass());
+		Set<Predicate> restrictions = getRestrictions(object, criteriaBuilder, root);
+		CriteriaQuery<T> select = query.select(root).where(restrictions.toArray(new Predicate[] {}));
 
-        List<T> resultList = getEntityManager().createQuery(select).getResultList();
-        if (!checkOnly && resultList.isEmpty()) {
-        	((IEntity)object).setValidFrom(new Date());
-            retval = save(object);
-        } else if(!resultList.isEmpty()){
-            retval = resultList.get(0);
-        }
-        return retval;
-    }
-    
+		List<T> resultList = getEntityManager().createQuery(select).getResultList();
+		if (checkOnly) {
+			if (!resultList.isEmpty()) {
+				retval = resultList.get(0);
+			}
+		} else {
+			if (resultList.isEmpty()) {
+				((IEntity) object).setValidFrom(new Date());
+				retval = save(object);
+			} else /* !resultList.isEmpty() */ {
+				retval = resultList.get(0);
+			}
+		}
+		return retval;
+	}    
   
     /**
      * Restrictions for {@link AbstractDAO#findOrCreate} method. Has to be overridden by sub classes.
@@ -364,7 +373,7 @@ em.joinTransaction();
         QueryByExamplePolicy policy = new QueryByExamplePolicy();
         policy.addSpecialOperation(String.class, "containsSubstring");
         policy.setAttributesToAlwaysInclude(getAlwaysIncludeAttributes());
-        policy.setShouldUseEqualityForNulls(true);
+        policy.setShouldUseEqualityForNulls(false);
         return policy;
     }
     
@@ -376,7 +385,7 @@ em.joinTransaction();
     protected Map<Class<T>, Vector<String>> getAlwaysIncludeAttributes() {return Collections.emptyMap();}
 
     /**
-     * Gets the count of all entities of this sort.
+     * Gets the count of all entities of this type.
      * 
      * @return count of entities
      */

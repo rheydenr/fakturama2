@@ -8,16 +8,19 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
@@ -58,7 +61,10 @@ public class CoolbarViewPart {
 
 	@Inject
 	private ECommandService cmdService;
-	
+
+	@Inject
+	private EPartService partService;
+
 	@Inject
 	private EHandlerService handlerService;
 	
@@ -172,8 +178,6 @@ public class CoolbarViewPart {
 
 		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
         Map<String, Object> params = new HashMap<>();
-		// if called from CoolBar it is *always* a new one...
-        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
         params.put(CallEditor.PARAM_EDITOR_TYPE, ProductEditor.ID);
         createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewProductName, msg.commandNewProductTooltip, 
         		Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize), null,
@@ -181,7 +185,6 @@ public class CoolbarViewPart {
 
         params = new HashMap<>();
 //        params.put(CallEditor.PARAM_EDITOR_TYPE, DebitorEditor.ID);
-//        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
 		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.toolbarNewContactName, msg.commandNewContactTooltip, 
 		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
@@ -227,8 +230,6 @@ public class CoolbarViewPart {
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, DocumentEditor.ID);
         params.put(CallEditor.PARAM_CATEGORY, docType.name());
-		// if called from CoolBar it is *always* a new one...
-        params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
         return params;
     }
 
@@ -279,7 +280,7 @@ public class CoolbarViewPart {
 //    @Inject
 //    @Optional
 //    public void reactOnPrefColorChange(@Preference(value = Constants.TOOLBAR_SHOW_SAVE) Boolean colorKey) {
-//        System.out.println("React on a change in preferences with colorkey = " + colorKey);
+//        log.debug("React on a change in preferences with colorkey = " + colorKey);
 //        if ((top != null) && !top.isDisposed()) {
 //            toolItemsByKey.get("org.eclipse.ui.file.save"/*Constants.TOOLBAR_SHOW_SAVE*/).dispose();
 //        }
@@ -353,7 +354,31 @@ public class CoolbarViewPart {
 			log.error(e1, "Fehler!");
 		}
 		item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-				if (handlerService.canExecute(pCmd)) {
+			if (handlerService.canExecute(pCmd)) {
+				final IEclipseContext staticContext = EclipseContextFactory.create("fakturama-static-context");
+				
+				// if CTRL key is pressed then we try to duplicate the current editor into a new one
+				if ((e.stateMask & SWT.MOD1) == SWT.MOD1) {
+					// dows only work under certain circumstances
+					ParameterizedCommand duplicateCmd = cmdService.createCommand("com.sebulli.fakturama.editor.duplicate");
+					if(handlerService.canExecute(duplicateCmd)) {
+						MPart activePart = partService.getActivePart();
+						// item has to correspond to the active editor!
+						if (activePart != null && activePart.getObject() instanceof Editor) {
+							String editorType = (String) pCmd.getParameterMap().get(CallEditor.PARAM_EDITOR_TYPE);
+							if (editorType != null && activePart.getElementId().equalsIgnoreCase(editorType)) {
+								staticContext.set(CallEditor.PARAM_COPY, Boolean.TRUE);
+								staticContext.set(CallEditor.PARAM_FORCE_NEW, Boolean.FALSE);
+								staticContext.set(CallEditor.PARAM_OBJ_ID,
+										activePart.getTransientData().get(CallEditor.PARAM_OBJ_ID));
+							}
+						}
+					}
+				} else {
+			        // if called from CoolBar it is *always* a new one...
+                    staticContext.set(CallEditor.PARAM_FORCE_NEW, Boolean.TRUE);
+                    // NOTE: You can't set it if it was set before. Therefore we set it here.
+				}
 				/*
 				 * Dirty hack. The HandlerService first determines the active leaf in the
 				 * current context before it is executing the command. The current active leaf
@@ -365,11 +390,16 @@ public class CoolbarViewPart {
 					if(ctx != null && ctx.getActiveLeaf() != null) {
 						ctx.getActiveLeaf().remove(CallEditor.PARAM_CATEGORY);
 					}
-					handlerService.executeHandler(pCmd);
-				} else {
-					MessageDialog.openInformation(toolBar.getShell(),
-							"Action Info", "current action can't be executed!");
-				}
+					
+					// clear SelectionService so that following calls don't get confused (esp. CallEditor)
+					// Important: Use the correct SelectionService from WorkbenchContext!
+					ctx.getParent().get(ESelectionService.class).setSelection(null);
+					ctx.get(ESelectionService.class).setSelection(null);
+					handlerService.executeHandler(pCmd, staticContext);
+			} else {
+				MessageDialog.openInformation(toolBar.getShell(),
+						"Action Info", "current action can't be executed!");
+			}
 		}));
         item.setImage(iconImage);
         return item;

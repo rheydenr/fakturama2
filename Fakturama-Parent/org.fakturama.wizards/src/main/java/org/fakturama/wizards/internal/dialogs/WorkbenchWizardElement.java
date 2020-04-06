@@ -2,6 +2,8 @@ package org.fakturama.wizards.internal.dialogs;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Adapters;
+
 /*******************************************************************************
  * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -17,7 +19,6 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -28,10 +29,11 @@ import org.fakturama.wizards.Activator;
 import org.fakturama.wizards.IE4WizardCategory;
 import org.fakturama.wizards.IE4WizardDescriptor;
 import org.fakturama.wizards.IWorkbenchWizard;
-import org.fakturama.wizards.internal.WorkbenchAdapter;
-import org.fakturama.wizards.internal.registry.IWorkbenchRegistryConstants;
+import org.fakturama.wizards.internal.dialogs.model.WorkbenchAdapter;
 import org.fakturama.wizards.internal.registry.RegistryReader;
-import org.fakturama.wizards.model.IWorkbenchAdapter;
+
+import com.sebulli.fakturama.ui.dialogs.model.IWorkbenchAdapter;
+import com.sebulli.fakturama.ui.dialogs.registry.IWorkbenchRegistryConstants;
 
 /**
  * Instances represent registered wizards.
@@ -128,7 +130,7 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
         else if (adapter == IConfigurationElement.class) {
         	return configurationElement;
         }
-        return Platform.getAdapterManager().getAdapter(this, adapter);
+        return Adapters.adapt(this, adapter);
     }
 
     /**

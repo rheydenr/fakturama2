@@ -40,6 +40,7 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
+import liquibase.exception.ValidationFailedException;
 import liquibase.osgi.OSGiResourceAccessor;
 
 /**
@@ -51,6 +52,9 @@ public class DbUpdateService implements IDbUpdateService {
     private static final String PROP_HSQLFILEDB = "hsqlfiledb";
 	private Preferences eclipsePrefs;
 	private IActivateDbServer currentService;
+    
+//    @Inject
+//    protected ILogger log;
 
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.dbservice.IDbUpdateService#updateDatabase()
@@ -68,19 +72,23 @@ public class DbUpdateService implements IDbUpdateService {
 		this.eclipsePrefs = Activator.getPreferences();
 		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 		try (java.sql.Connection connection = openConnection(context);) {
+			if(connection == null) {
+				throw new SQLException("can't create database connection!");
+			}
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-//			if(!eclipsePrefs.get("GENERAL_WORKSPACE_REQUEST", "").isEmpty()) {
-//				System.err.println("dropping old database schema for workspace request");
-//				CatalogAndSchema cat = new CatalogAndSchema("", database.getDefaultSchemaName());
-//				database.dropDatabaseObjects(cat);
-//			}
-			this.getClass().getResourceAsStream("/changelog/db.changelog-master.xml");
 			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
 					new OSGiResourceAccessor(context.getBundle()), database);
+//			if(!eclipsePrefs.get("GENERAL_WORKSPACE_REQUEST", "").isEmpty()) {
+//				System.err.println("dropping old database schema for workspace request");
+//				liquibase.dropAll();
+//			}
 //			liquibase.forceReleaseLocks();   // workaround!
 			liquibase.update(new Contexts(), new LabelExpression());
+		} catch (ValidationFailedException exc) {
+    		System.err.println("Database has not the correct version! " + exc.getMessage());
+			retval = false;
 		} catch (LiquibaseException | SQLException | NullPointerException ex) {
-			ex.printStackTrace();
+			System.err.println(ex);
 			retval = false;
 		}
 		return retval;
@@ -121,7 +129,7 @@ public class DbUpdateService implements IDbUpdateService {
 			 */
 			if(dataSource.startsWith("jdbc:hsqldb:file") || dataSource.endsWith("fakdbneu")) {
 				allServiceReferences = context.getAllServiceReferences(IActivateDbServer.class.getName(), null);
-				if(allServiceReferences.length > 0) {
+				if(allServiceReferences != null && allServiceReferences.length > 0) {
 					ServiceReference<IActivateDbServer> serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
 					prop.put(PROP_HSQLFILEDB, eclipsePrefs.get(PROP_HSQLFILEDB, ""));
 					prop.put("encoding", "UTF-8");

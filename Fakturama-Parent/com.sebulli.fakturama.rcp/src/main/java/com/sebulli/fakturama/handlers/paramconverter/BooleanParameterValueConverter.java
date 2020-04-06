@@ -36,6 +36,9 @@ public class BooleanParameterValueConverter extends AbstractParameterValueConver
 		String retval = "";
 		if (parameterValue instanceof Boolean) {
 			retval = BooleanUtils.toStringTrueFalse((Boolean) parameterValue);
+		} else if(parameterValue instanceof String) {
+			// try to convert a String into boolean
+			retval = (String) parameterValue;
 		}
 		return retval;
 	}

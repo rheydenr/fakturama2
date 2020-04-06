@@ -156,9 +156,9 @@ public class LifecycleManager {
 
         	splashService.setMessage("checking database...");
         	
-        	boolean dbupdate = dbUpdateService.updateDatabase(); // TODO what if this fails???
+        	boolean dbupdate = dbUpdateService.updateDatabase();
         	if(!dbupdate) {
-        		log.error(null, "couldn't create or update database!");
+        		log.error("couldn't create or update database!");
         		System.exit(1);
         	}
         	
@@ -187,14 +187,10 @@ public class LifecycleManager {
         	
             // register event handler for saving and closing editors before shutdown
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
-                new EventHandler() {
-                        @Override
-                        public void handleEvent(Event event) {
+                event -> {
                         	// formerly known as Workbench.busyClose()
                         	closeAndSaveEditors(context);
 //                        	eventBroker.unsubscribe(eventHandler)
-                        }
-
                 });            
             
         } else {
@@ -385,12 +381,6 @@ public class LifecycleManager {
 			log.debug("Storing preferences in database");
             preferencesInDatabase.savePreferencesInDatabase();
         }
-		
-//		dbUpdateService.shutDownDb();
-//		
-//		// #0000604: Create a database backup
-//		BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
-//		backupManager.createBackup();
         
     	saveDialogSettings(instanceLocation);
     }
@@ -431,7 +421,7 @@ public class LifecycleManager {
     @ProcessAdditions
     void processAdditions(final IEventBroker eventBroker, MApplication app, EModelService modelService, IApplicationContext appContext,
     		@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation, final ISplashService splashService) {
-        
+    	
     	// TODO put the Login Dialog in here
         if(eclipsePrefs.getBoolean("isreinit", false)) {
         	dbUpdateService.updateDatabase();
