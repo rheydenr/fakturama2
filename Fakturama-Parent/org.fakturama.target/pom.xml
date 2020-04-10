@@ -17,9 +17,36 @@
 		<targetPlatform.application.feature>fr.obeo.releng.targetplatform-feature_3.8</targetPlatform.application.feature>
 	</properties>
   
-  <!--  build>
-		<plugins>
-			<plugin>
+  <build>
+		<plugins><plugin>
+		   <groupId>org.eclipse.tycho</groupId>
+		   <artifactId>target-platform-configuration</artifactId>
+		   <version>${tycho.version}</version>
+		   <configuration>
+		      <filters>
+			     	      
+		      
+		         <!-- example 1: restrict version of a bundle -->
+         <filter>
+            <type>eclipse-plugin</type>
+            <id>javax.persistence</id>
+            <versionRange>[2.0.0,2.2.2)</versionRange>
+            <removeAll/>
+         </filter>
+		         
+		         
+		         
+		         
+		      </filters>
+		   </configuration>
+		</plugin>
+		
+		
+		
+		
+		
+		
+			<!--  plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-eclipserun-plugin</artifactId>
 				<version>${tycho-extras-version}</version>
@@ -59,7 +86,7 @@
 						<phase>validate</phase>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin -->
 		</plugins>
-	</build -->
+	</build>
 </project>
