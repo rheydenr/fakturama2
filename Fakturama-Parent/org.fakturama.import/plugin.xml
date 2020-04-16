@@ -47,5 +47,15 @@
             %wizard.import.csv.creditors.description
          </description>
       </wizard>
+      <wizard
+            category="com.sebulli.fakturama.importWizards.csv"
+            class="org.fakturama.imp.wizard.csv.kontist.KontistCsvImportWizard"
+            icon="icons/16/kontist.png"
+            id="com.sebulli.fakturama.importer.csv.kontist.importWizard"
+            name="%wizard.import.csv.kontist.name">
+         <description>
+            %wizard.import.csv.kontist.description
+         </description>
+      </wizard>
    </extension>
 </plugin>
