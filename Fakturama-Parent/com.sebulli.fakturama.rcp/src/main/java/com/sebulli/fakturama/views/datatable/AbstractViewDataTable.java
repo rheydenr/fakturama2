@@ -166,7 +166,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 	 */
 	public Control createPartControl(Composite parent, Class<?> elementClass, boolean useFilter, String contextHelpId) {
 	    // Create the top composite
-		top = new Composite(parent, SWT.NONE);
+		top = new Composite(parent, SWT.BORDER);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(2).applyTo(top);
 //		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).applyTo(top);
 

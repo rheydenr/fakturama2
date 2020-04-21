@@ -1385,6 +1385,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
 			// set weight widgets
 			double netWeightValue = itemListTable.getDocumentItemsListData().stream()
+			        .filter(d -> d.getWeight() != null)
 					.mapToDouble(DocumentItemDTO::getWeight).sum();
 			netWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue));
 			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
