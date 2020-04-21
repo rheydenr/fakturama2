@@ -94,7 +94,9 @@ public class ProductsDAO extends AbstractDAO<Product> {
         CriteriaQuery<Product> criteria = cb.createQuery(Product.class);
         Root<Product> root = criteria.from(Product.class);
         CriteriaQuery<Product> cq = criteria.where(root.get(Product_.id).in(selectedIds));
-        return getEntityManager().createQuery(cq).getResultList();
+        TypedQuery<Product> typedQuery = getEntityManager().createQuery(cq);
+        typedQuery.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+        return typedQuery.getResultList();
     }
 
     /**
