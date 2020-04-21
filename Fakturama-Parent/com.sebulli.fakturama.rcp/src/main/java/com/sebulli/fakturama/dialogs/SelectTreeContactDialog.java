@@ -29,10 +29,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 
+import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.widget.contacttree.ContactTreeListTable;
+import com.sebulli.fakturama.parts.widget.contacttree.CreditorTreeListTable;
 import com.sebulli.fakturama.parts.widget.contacttree.DebitorTreeListTable;
 
 /**
@@ -60,7 +63,7 @@ public class SelectTreeContactDialog<T extends Address> extends AbstractSelectio
     
     private Control top;
 
-	private DebitorTreeListTable contactListTable;
+	private ContactTreeListTable<DebitorAddress> contactListTable;
 
     @Inject
     public SelectTreeContactDialog(Shell shell, @Translation Messages msg) {
@@ -90,8 +93,8 @@ public class SelectTreeContactDialog<T extends Address> extends AbstractSelectio
         // FIXME Workaround (quick & dirty), please use enums
         if(StringUtils.equals((String) context.get("CONTACT_TYPE"), "DEBITOR")) {
         	contactListTable = (DebitorTreeListTable) ContextInjectionFactory.make(DebitorTreeListTable.class, context);
-//        } else {
-//        	contactListTable = (ContactListTable<T>) ContextInjectionFactory.make(CreditorListTable.class, context);
+        } else {
+        	contactListTable = (CreditorTreeListTable) ContextInjectionFactory.make(CreditorTreeListTable.class, context);
         }
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
