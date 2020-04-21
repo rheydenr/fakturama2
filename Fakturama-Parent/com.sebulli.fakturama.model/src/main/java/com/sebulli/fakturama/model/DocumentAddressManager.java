@@ -4,6 +4,10 @@ package com.sebulli.fakturama.model;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BillingType;
@@ -12,16 +16,21 @@ import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.util.ContactUtil;
 
 public class DocumentAddressManager implements IDocumentAddressManager {
+    private ContactUtil contactUtil;
+    
+    @Inject
+    private IEclipseContext ctx;
+    
 	/**
 	 * the model factory
 	 */
 	private FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
 
 	@PostConstruct
-	public void init() {
-		// nothing to do at the moment
+	public void init(IEclipseContext ctx) {
 	}
 
 	/**
@@ -150,4 +159,11 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		document.getReceiver().add(documentReceiver);
 		return document;
 	}
+
+    private ContactUtil getContactUtil() {
+        if(contactUtil == null) {
+            contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
+        }
+        return contactUtil;
+    }
 }

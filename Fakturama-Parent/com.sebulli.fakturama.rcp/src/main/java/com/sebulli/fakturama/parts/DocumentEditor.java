@@ -940,6 +940,7 @@ public class DocumentEditor extends Editor<Document> {
     	}
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
         this.contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+        context.set(ContactUtil.class, contactUtil);
         this.currencyUnit = numberFormatterService.getCurrencyUnit(localeUtil.getCurrencyLocale());
         pendingDeliveryMerges = new ArrayList<>();
         
@@ -2973,7 +2974,7 @@ public class DocumentEditor extends Editor<Document> {
                 	log.error(String.format("Something weird happened. Selected Address with ID %ld couldn't be found in your database.", addressId));
                 	return;
                 }
-
+                
                 // this selected contact is from now on the main receiver for this document
                 DocumentReceiver documentReceiver = addressManager.createDocumentReceiverFromAddress(address, document.getBillingType());
                 
