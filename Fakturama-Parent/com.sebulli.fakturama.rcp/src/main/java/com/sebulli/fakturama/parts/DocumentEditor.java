@@ -1221,6 +1221,13 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setMessage(parentDoc.getMessage());
 		retval.setMessage2(parentDoc.getMessage2());
 		retval.setMessage3(parentDoc.getMessage3());
+		
+		retval.setTara(parentDoc.getTara());
+		
+		// TODO check:
+//		parentDoc.getAdditionalInfo();
+//		parentDoc.getTotalValue();
+		
 		return retval;
 	}
 
