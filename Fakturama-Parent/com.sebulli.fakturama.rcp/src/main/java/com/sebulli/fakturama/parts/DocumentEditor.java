@@ -1383,16 +1383,21 @@ public class DocumentEditor extends Editor<Document> {
 			totalValue.getControl().setToolTipText(msg.documentOrderStatePaid + ": " + document.getPaidValue());
 		}
 		
-		if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
+		calculateWeight();
+	}
+
+    private void calculateWeight() {
+        if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
 			// set weight widgets
 			double netWeightValue = itemListTable.getDocumentItemsListData().stream()
 			        .filter(d -> d.getWeight() != null)
-					.mapToDouble(DocumentItemDTO::getWeight).sum();
+					.mapToDouble(i -> i.getWeight() * i.getDocumentItem().getQuantity()).sum();
 			netWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue));
 			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
 			totalWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue));
 		}
-	}
+    }
+	
 
 	/**
 	 * Get the total text, net or gross
@@ -2362,7 +2367,7 @@ public class DocumentEditor extends Editor<Document> {
 		tara.getControl().addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				calculate();
+		        calculateWeight();
 			}
 		});
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(tara.getControl());
@@ -2497,7 +2502,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Calculate the total sum
 		if(documentType != DocumentType.DUNNING) {
-			calculate();
+			calculate(true);
 		}
 		
 		bindModel();
@@ -3257,7 +3262,7 @@ public class DocumentEditor extends Editor<Document> {
             // TODO check if this has to be done in a synchronous or asynchronous call
             // within UISynchronize
             if ((Boolean) event.getProperty(DOCUMENT_RECALCULATE)) {
-                calculate();
+                calculate(true);
             }
             setDirty(true);
         }
