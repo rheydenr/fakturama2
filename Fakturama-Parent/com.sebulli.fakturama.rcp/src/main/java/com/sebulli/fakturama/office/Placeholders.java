@@ -52,10 +52,14 @@ import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Dunning;
+import com.sebulli.fakturama.model.FakturamaModelFactory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
+//import com.sebulli.fakturama.model.ModelObject;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
@@ -289,6 +293,10 @@ public class Placeholders {
 	private static NumberFormat localizedNumberFormat = NumberFormat.getInstance(ULocale.getDefault());
 
     private ContactUtil contactUtil;
+
+    private static final FakturamaModelFactory fakturamaModelFactory = new FakturamaModelFactory();
+
+    private static final FakturamaModelPackage fakturamaModelPackage = new FakturamaModelPackage();
 	
 	/**
 	 * Get a part of the telephone number
@@ -921,102 +929,22 @@ public class Placeholders {
 	
 		DocumentReceiver contact = billingAdress;
 		// There is a reference to a contact. Use this (but only if it's a valid contact!)
-		if (contact != null) {
-		    if (key.equals("ADDRESS")) return contactUtil.getAddressAsString(contact);
-			if (key.equals("ADDRESS.GENDER")) return contactUtil.getGenderString(contact);
-			if (key.equals("ADDRESS.GREETING")) return contactUtil.getGreeting(contact);
-			if (key.equals("ADDRESS.TITLE")) return contactUtil.getGenderString(contact);
-			if (key.equals("ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
-			if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
-			if (key.equals("ADDRESS.FIRSTANDLASTNAME")) return contactUtil.getFirstAndLastName(contact);
-			if (key.equals("ADDRESS.FIRSTNAME")) return contact.getFirstName();
-			if (key.equals("ADDRESS.LASTNAME")) return contact.getName();
-			if (key.equals("ADDRESS.COMPANY")) return contact.getCompany();
-
-			if (key.equals("ADDRESS.STREET")) return contact.getStreet();
-			if (key.equals("ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
-			if (key.equals("ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
-			if (key.equals("ADDRESS.ZIP")) return contact.getZip();
-			if (key.equals("ADDRESS.CITY")) return contact.getCity();
-            if (key.equals("ADDRESS.COUNTRY.CODE2")) return contact.getCountryCode();
-            
-            Optional<ULocale> locale = localeUtil.findByCode(contact.getCountryCode());
-            if (key.equals("ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : "??";
-            if (key.equals("ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : "???";
-            if (key.startsWith("ADDRESS") && contact.getOriginContactId() != null) {
-				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
-				if(originContact != null) {
-				    if (key.equals("ADDRESS.BIRTHDAY")) return originContact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(originContact.getBirthday());
-			        if (key.equals("ADDRESS.ALIAS")) return originContact.getAlias();
-			        if (key.equals("ADDRESS.REGISTERNUMBER")) return originContact.getRegisterNumber();
-    				if (key.equals("ADDRESS.WEBSITE")) return originContact.getWebsite();
-    				if (key.equals("ADDRESS.VATNR")) return originContact.getVatNumber();
-    				if (key.equals("ADDRESS.NOTE")) return originContact.getNote();
-    				if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(originContact.getDiscount()).orElse(Double.valueOf(0)).toString();
-    				if (key.equals("ADDRESS.MANDATEREFERENCE")) return originContact.getMandateReference();
-
-				    if(contact.getOriginAddressId() != null) {
-				        Address address = addressDAO.findById(contact.getOriginAddressId());
-				        if (key.equals("ADDRESS.NAMESUFFIX")) return address == null ? "" : address.getName();
-				        if (key.equals("ADDRESS.CITYADDON")) return address == null ? "" : address.getCityAddon();
-				        if (key.equals("ADDRESS.ADDRESSADDON")) return address == null ? "" : address.getAddressAddon();
-				        if (key.equals("ADDRESS.PHONE2")) return address == null ? "" : address.getAdditionalPhone();
-				    }
-				    BankAccount bankAccount = originContact.getBankAccount();
-					if(bankAccount != null) {
-		                if (key.equals("ADDRESS.BANK.ACCOUNT.HOLDER")) return bankAccount.getAccountHolder();
-		    			if (key.equals("ADDRESS.BANK.ACCOUNT")) return bankAccount.getName();
-		    			if (key.equals("ADDRESS.BANK.CODE")) return Optional.ofNullable(bankAccount.getBankCode()).orElse(Integer.valueOf(0)).toString();
-		    			if (key.equals("ADDRESS.BANK.NAME")) return bankAccount.getBankName();
-		    			if (key.equals("ADDRESS.BANK.IBAN")) return bankAccount.getIban();
-		    			if (key.equals("ADDRESS.BANK.BIC")) return bankAccount.getBic();
-					}
-				}
-            }
-			if (key.equals("ADDRESS.NR")) return contact.getCustomerNumber();
-			if (key.equals("ADDRESS.PHONE")) return contact.getPhone();
-			if (key.equals("ADDRESS.PHONE.PRE")) return getTelPrePost(contact.getPhone(), true);
-			if (key.equals("ADDRESS.PHONE.POST")) return getTelPrePost(contact.getPhone(), false);
-			if (key.equals("ADDRESS.FAX")) return contact.getFax();
-			if (key.equals("ADDRESS.FAX.PRE")) return getTelPrePost(contact.getFax(), true);
-			if (key.equals("ADDRESS.FAX.POST")) return getTelPrePost(contact.getFax(), false);
-			if (key.equals("ADDRESS.MOBILE")) return contact.getMobile();
-			if (key.equals("ADDRESS.MOBILE.PRE")) return getTelPrePost(contact.getMobile(), true);
-			if (key.equals("ADDRESS.MOBILE.POST")) return getTelPrePost(contact.getMobile(), false);
-			if (key.equals("ADDRESS.SUPPLIER.NUMBER")) return contact.getSupplierNumber();
-			if (key.equals("ADDRESS.EMAIL")) return contact.getEmail();
-			
-			if (key.equals("ADDRESS.GLN")) return Optional.ofNullable(contact.getGln()).orElse(Long.valueOf(0)).toString();
+		if (contact != null && (key.startsWith("ADDRESS") || key.startsWith("DELIVERY"))) {
+		    Optional<String> checked = checkAddressPlaceholders(contact, key, ContactType.BILLING);
+		    if(checked.isPresent()) {
+		        return checked.get();
+		    }
 			
 			// now switch to delivery contact, if any
 			if(deliveryAdress != null) {
 			    contact = deliveryAdress;
 			    // if no delivery contact is available, use billing contact
 			}
-			if (key.equals("DELIVERY.ADDRESS")) return contactUtil.getAddressAsString(contact);
-			if (key.equals("DELIVERY.ADDRESS.GENDER")) return contactUtil.getGenderString(contact);
-			if (key.equals("DELIVERY.ADDRESS.GREETING")) return contactUtil.getGreeting(contact);
-			if (key.equals("DELIVERY.ADDRESS.TITLE")) return contactUtil.getGenderString(contact);
-			if (key.equals("DELIVERY.ADDRESS.NAME")) return contactUtil.getFirstAndLastName(contact);
-			if (key.equals("DELIVERY.ADDRESS.NAMEWITHCOMPANY")) return contactUtil.getNameWithCompany(contact);
-			if (key.equals("DELIVERY.ADDRESS.FIRSTNAME")) return contact.getFirstName();
-			if (key.equals("DELIVERY.ADDRESS.LASTNAME")) return contact.getName();
-			if (key.equals("DELIVERY.ADDRESS.COMPANY")) return contact.getCompany();
-            if(contact.getOriginContactId() != null) {
-				Contact originContact = contactsDAO.findById(contact.getOriginContactId());
-				if (key.equals("DELIVERY.ADDRESS.BIRTHDAY")) return originContact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(originContact.getBirthday());
+            checked = checkAddressPlaceholders(contact, key, ContactType.DELIVERY);
+            if(checked.isPresent()) {
+                return checked.get();
             }
-
-			if (key.equals("DELIVERY.ADDRESS.STREET")) return contact.getStreet();
-			if (key.equals("DELIVERY.ADDRESS.STREETNAME")) return contactUtil.getStreetName(contact.getStreet());
-			if (key.equals("DELIVERY.ADDRESS.STREETNO")) return contactUtil.getStreetNo(contact.getStreet());
-			if (key.equals("DELIVERY.ADDRESS.ZIP")) return contact.getZip();
-			if (key.equals("DELIVERY.ADDRESS.CITY")) return contact.getCity();
-			locale = localeUtil.findByCode(contact.getCountryCode());
-			if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE2")) return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
-			if (key.equals("DELIVERY.ADDRESS.COUNTRY")) return locale.isPresent() ? locale.get().getDisplayCountry() : localeUtil.getDefaultLocale().getDisplayCountry();
-		    if (key.equals("DELIVERY.ADDRESS.COUNTRY.CODE3")) return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
-		}
+  		}
 		// There is no reference - Try to get the information from the address field
 		else {
 			if (key2.equals("ADDRESS.GENDER")) return "";
@@ -1069,7 +997,106 @@ public class Placeholders {
 		return null;
 	}
 
-	/**
+	private Optional<String> checkAddressPlaceholders(DocumentReceiver contact, String key, ContactType billing) {
+	    if(key.startsWith(billing.getName())) {
+	        key = key.replaceAll(billing.getName() + "\\.", "");
+	    }
+        if (key.equals("ADDRESS")) return Optional.ofNullable(contactUtil.getAddressAsString(contact));
+        if (key.equals("ADDRESS.GENDER")) return Optional.ofNullable(contactUtil.getGenderString(contact));
+        if (key.equals("ADDRESS.GREETING")) return Optional.ofNullable(contactUtil.getGreeting(contact));
+        if (key.equals("ADDRESS.TITLE")) return Optional.ofNullable(contactUtil.getGenderString(contact));
+        if (key.equals("ADDRESS.NAME")) return Optional.ofNullable(contactUtil.getFirstAndLastName(contact));
+        if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return Optional.ofNullable(contactUtil.getNameWithCompany(contact));
+        if (key.equals("ADDRESS.FIRSTANDLASTNAME")) return Optional.ofNullable(contactUtil.getFirstAndLastName(contact));
+        if (key.equals("ADDRESS.FIRSTNAME")) return Optional.ofNullable(contact.getFirstName());
+        if (key.equals("ADDRESS.LASTNAME")) return Optional.ofNullable(contact.getName());
+        if (key.equals("ADDRESS.COMPANY")) return Optional.ofNullable(contact.getCompany());
+
+        if (key.equals("ADDRESS.STREET")) return Optional.ofNullable(contact.getStreet());
+        if (key.equals("ADDRESS.STREETNAME")) return Optional.ofNullable(contactUtil.getStreetName(contact.getStreet()));
+        if (key.equals("ADDRESS.STREETNO")) return Optional.ofNullable(contactUtil.getStreetNo(contact.getStreet()));
+        if (key.equals("ADDRESS.ZIP")) return Optional.ofNullable(contact.getZip());
+        if (key.equals("ADDRESS.CITY")) return Optional.ofNullable(contact.getCity());
+        if (key.equals("ADDRESS.COUNTRY.CODE2")) return Optional.ofNullable(contact.getCountryCode());
+        
+        Optional<ULocale> locale = localeUtil.findByCode(contact.getCountryCode());
+        if (key.equals("ADDRESS.COUNTRY")) return Optional.ofNullable(locale.isPresent() ? locale.get().getDisplayCountry() : "??");
+        if (key.equals("ADDRESS.COUNTRY.CODE3")) return Optional.ofNullable(locale.isPresent() ? locale.get().getISO3Country() : "???");
+
+        Contact originContact;
+        originContact = contact.getOriginContactId() != null ? contactsDAO.findById(contact.getOriginContactId()) : null;
+        if(originContact != null) {
+            Optional<String> checker = checkForField(key, originContact);
+            if(checker.isPresent()) return checker;
+            if (key.equals("ADDRESS.BIRTHDAY")) return Optional.ofNullable(originContact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(originContact.getBirthday()));
+            if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(Optional.ofNullable(originContact.getDiscount()).orElse(Double.valueOf(0)).toString());
+            if (key.equals("ADDRESS.MANDATEREFERENCE")) return Optional.ofNullable(originContact.getMandateReference());
+
+            if(contact.getOriginAddressId() != null) {
+                Address address = addressDAO.findById(contact.getOriginAddressId());
+                if (key.equals("ADDRESS.NAMESUFFIX")) return Optional.ofNullable(address == null ? "" : address.getName());
+                if (key.equals("ADDRESS.CITYADDON")) return Optional.ofNullable(address == null ? "" : address.getCityAddon());
+                if (key.equals("ADDRESS.ADDRESSADDON")) return Optional.ofNullable(address == null ? "" : address.getAddressAddon());
+                if (key.equals("ADDRESS.PHONE2")) return Optional.ofNullable(address == null ? "" : address.getAdditionalPhone());
+            }
+            BankAccount bankAccount = originContact.getBankAccount();
+            if(bankAccount != null) {
+                if (key.equals("ADDRESS.BANK.ACCOUNT.HOLDER")) return Optional.ofNullable(bankAccount.getAccountHolder());
+                if (key.equals("ADDRESS.BANK.ACCOUNT")) return Optional.ofNullable(bankAccount.getName());
+                if (key.equals("ADDRESS.BANK.CODE")) return Optional.ofNullable(Optional.ofNullable(bankAccount.getBankCode()).orElse(Integer.valueOf(0)).toString());
+                if (key.equals("ADDRESS.BANK.NAME")) return Optional.ofNullable(bankAccount.getBankName());
+                if (key.equals("ADDRESS.BANK.IBAN")) return Optional.ofNullable(bankAccount.getIban());
+                if (key.equals("ADDRESS.BANK.BIC")) return Optional.ofNullable(bankAccount.getBic());
+            }
+        }
+        if (key.equals("ADDRESS.NR")) return Optional.ofNullable(contact.getCustomerNumber());
+        if (key.equals("ADDRESS.PHONE")) return Optional.ofNullable(contact.getPhone());
+        if (key.equals("ADDRESS.PHONE.PRE")) return Optional.ofNullable(getTelPrePost(contact.getPhone(), true));
+        if (key.equals("ADDRESS.PHONE.POST")) return Optional.ofNullable(getTelPrePost(contact.getPhone(), false));
+        if (key.equals("ADDRESS.FAX")) return Optional.ofNullable(contact.getFax());
+        if (key.equals("ADDRESS.FAX.PRE")) return Optional.ofNullable(getTelPrePost(contact.getFax(), true));
+        if (key.equals("ADDRESS.FAX.POST")) return Optional.ofNullable(getTelPrePost(contact.getFax(), false));
+        if (key.equals("ADDRESS.MOBILE")) return Optional.ofNullable(contact.getMobile());
+        if (key.equals("ADDRESS.MOBILE.PRE")) return Optional.ofNullable(getTelPrePost(contact.getMobile(), true));
+        if (key.equals("ADDRESS.MOBILE.POST")) return Optional.ofNullable(getTelPrePost(contact.getMobile(), false));
+        if (key.equals("ADDRESS.SUPPLIER.NUMBER")) return Optional.ofNullable(contact.getSupplierNumber());
+        if (key.equals("ADDRESS.EMAIL")) return Optional.ofNullable(contact.getEmail());
+        
+        if (key.equals("ADDRESS.GLN")) return Optional.ofNullable(Optional.ofNullable(contact.getGln()).orElse(Long.valueOf(0)).toString());
+        return Optional.empty();
+    }
+	
+    private Optional<String> checkForField(String key, Contact originContact) {
+        Optional<String> result = Optional.empty();
+ 
+        if (originContact != null) {
+            switch (key) {
+            case "ADDRESS.ALIAS":
+                result = Optional.ofNullable(originContact.getAlias());
+                break;
+            case "ADDRESS.REGISTERNUMBER":
+                result = Optional.ofNullable(originContact.getRegisterNumber());
+                break;
+            case "ADDRESS.WEBSITE":
+                result = Optional.ofNullable(originContact.getWebsite());
+                break;
+            case "ADDRESS.VATNR":
+                result = Optional.ofNullable(originContact.getVatNumber());
+                break;
+            case "ADDRESS.NOTE":
+                result = Optional.ofNullable(originContact.getNote());
+                break;
+
+            default:
+                break;
+            }
+            return result;
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
 	 * Creates the {@link Payment} text according to the document infos. 
 	 * 
      * @param document the {@link Document} which contains the {@link Payment} information
