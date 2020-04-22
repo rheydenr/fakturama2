@@ -1026,8 +1026,22 @@ public class Placeholders {
         Contact originContact;
         originContact = contact.getOriginContactId() != null ? contactsDAO.findById(contact.getOriginContactId()) : null;
         if(originContact != null) {
-            Optional<String> checker = checkForField(key, originContact);
-            if(checker.isPresent()) return checker;
+            switch (key) {
+            case "ADDRESS.ALIAS":
+                return Optional.ofNullable(originContact.getAlias());
+            case "ADDRESS.REGISTERNUMBER":
+                return Optional.ofNullable(originContact.getRegisterNumber());
+            case "ADDRESS.WEBSITE":
+                return Optional.ofNullable(originContact.getWebsite());
+            case "ADDRESS.VATNR":
+                return Optional.ofNullable(originContact.getVatNumber());
+            case "ADDRESS.NOTE":
+                return Optional.ofNullable(originContact.getNote());
+                
+            // to be continued...
+            default:
+                break;
+            }
             if (key.equals("ADDRESS.BIRTHDAY")) return Optional.ofNullable(originContact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(originContact.getBirthday()));
             if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(Optional.ofNullable(originContact.getDiscount()).orElse(Double.valueOf(0)).toString());
             if (key.equals("ADDRESS.MANDATEREFERENCE")) return Optional.ofNullable(originContact.getMandateReference());
@@ -1066,36 +1080,6 @@ public class Placeholders {
         return Optional.empty();
     }
 	
-    private Optional<String> checkForField(String key, Contact originContact) {
-        Optional<String> result = Optional.empty();
- 
-        if (originContact != null) {
-            switch (key) {
-            case "ADDRESS.ALIAS":
-                result = Optional.ofNullable(originContact.getAlias());
-                break;
-            case "ADDRESS.REGISTERNUMBER":
-                result = Optional.ofNullable(originContact.getRegisterNumber());
-                break;
-            case "ADDRESS.WEBSITE":
-                result = Optional.ofNullable(originContact.getWebsite());
-                break;
-            case "ADDRESS.VATNR":
-                result = Optional.ofNullable(originContact.getVatNumber());
-                break;
-            case "ADDRESS.NOTE":
-                result = Optional.ofNullable(originContact.getNote());
-                break;
-
-            default:
-                break;
-            }
-            return result;
-        } else {
-            return Optional.empty();
-        }
-    }
-
     /**
 	 * Creates the {@link Payment} text according to the document infos. 
 	 * 

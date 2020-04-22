@@ -1300,7 +1300,7 @@ public class DocumentEditor extends Editor<Document> {
 	 */
 	public void calculate(boolean forceCalc) {
 		// Recalculate only documents that contains price values.
-		if (!getDocumentType().hasPrice() && !forceCalc) {
+		if (!getDocumentType().hasPrice() || !forceCalc) {
 			return;
 		}
 		
@@ -2347,14 +2347,14 @@ public class DocumentEditor extends Editor<Document> {
 		}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
 		
-		Composite taraComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) ? top : invisible, SWT.NONE | SWT.RIGHT);
+		Composite taraComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? top : invisible, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(taraComposite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraComposite);
 		Label taraLabel = new Label(taraComposite, SWT.NONE);
 		taraLabel.setText(msg.editorDocumentFieldTara);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraLabel);
 		
-		Composite weightComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) ? top : invisible, SWT.NONE);
+		Composite weightComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? top : invisible, SWT.NONE);
 		GridLayoutFactory.fillDefaults().numColumns(5).applyTo(weightComposite);
 		GridDataFactory.swtDefaults().span(3, 1).applyTo(weightComposite);
 		tara = new FormattedText(weightComposite, SWT.BORDER | SWT.RIGHT);
