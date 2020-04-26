@@ -24,7 +24,7 @@
 			<listitem>Überprüfen, ob <trademark>Java</trademark> bereits installiert ist: <link xl:href="http://www.java.com/de/download/installed.jsp">TEST</link></listitem>
 		</itemizedlist>
 		<para>Wird Fakturama zusammen mit einem Webshop betrieben, ist zusätzlich die entsprechende 
-		Webshop-Schnittstelle zu installieren. Diese befinden sich im <link xl:href="http://vorlagen.fakturama.info/webshops/">Vorlagenportal</link>.
+		Webshop-Schnittstelle zu installieren. Diese befinden sich auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> bzw. im <link xl:href="https://dms.fakturama.info/out/out.ViewFolder.php?folderid=3">Vorlagenportal</link>.
 		</para>
 	</section>
 	
@@ -42,7 +42,7 @@
 	<section>
 			<anchor xreflabel="" xml:id="install_install_windows"/>
 		<title>Installation unter einem <trademark>Windows</trademark>-Betriebssystem</title>
-		<para>Laden Sie den für Ihr Betriebssystem geeigneten Fakturama-Installer 
+		<para>Laden Sie den für Ihr Betriebssystem geeigneten 
 			<inlinemediaobject>
 				<imageobject role="html">
 					<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
@@ -50,8 +50,8 @@
 				<imageobject role="fo">
 					<imagedata width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 				</imageobject>
-			</inlinemediaobject>(Installer_Fakturama_windows-x64_x_x_x.zip) von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter und entpacken Sie die ZIP-Datei in ein leeres Verzeichnis.</para>
-		<para>Vor dem Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden die Firmendatenbank und alle 
+			</inlinemediaobject> Fakturama-Installer von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter und entpacken Sie die ZIP-Datei in ein leeres Verzeichnis.</para>
+		<para>Beim ersten Start von Fakturama wird ein Arbeitsverzeichnis angelegt. In diesem werden die Firmendatenbank sowie alle 
 		Dokumente und Vorlagen abgelegt. Das Arbeitsverzeichnis muss sich in einem Ordner befinden, der ohne Administratorrechte 
 		beschrieben werden darf. Beispiel:</para>
 		<programlisting>C:\Projekte\MeineFirma\</programlisting>		
@@ -65,7 +65,7 @@
 		<title>Installation unter einem <trademark>Linux</trademark>-Betriebssystem</title>
 		<sect2>
 			<title>Für Debian- und Ubuntu-Betriebssysteme:</title>
-			<para>Laden Sie den Fakturama-Debian-Package-Installer
+			<para>Laden Sie den 
 				<inlinemediaobject>
 					<imageobject role="html">
 						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
@@ -73,37 +73,36 @@
 					<imageobject role="fo">
 						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 					</imageobject>
-				</inlinemediaobject>(Installer_Fakturama_linux_x64_x_x_x.deb) von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
+				</inlinemediaobject> Fakturama-Debian-Package-Installer von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
 		</sect2>
 		<sect2>
 			<title>Für <trademark class="registered">RedHat</trademark>, SUSE Linux- und <trademark class="registered">Fedora</trademark>-Betriebssysteme:</title>
-			<para>Laden Sie den Fakturama-RedHat-Package-Installer
-				<inlinemediaobject>
+			<para>Laden Sie den <inlinemediaobject>
 					<imageobject role="html">
 						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
 						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 					</imageobject>
-				</inlinemediaobject>(Installer_Fakturama_linux_-x64_x_x_x.rpm) von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
+				</inlinemediaobject> Fakturama-RedHat-Package-Installer
+				 von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama Installer. Sie werden durch den Installationsprozess geführt.</para>
 		</sect2>
 		<sect2>
 			<title>Für sonstige Linux-Systeme</title>
-			<para>Laden Sie den für Linux gebauten Installer 
-				<inlinemediaobject>
+			<para>Laden Sie den für Linux gebauten <inlinemediaobject>
 					<imageobject role="html">
 						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
 						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 					</imageobject>
-				</inlinemediaobject>(Installer_Fakturama_unix_x64_x_x_x.sh) von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
+				</inlinemediaobject> Installer von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf dem System sollte OpenOffice (oder LibreOffice) und Java 8 installiert sein. Auf einigen Systemen muss auch die Bibliothek <code>libwebkitgtk</code> installiert sein (das hängt von der jeweiligen Konfiguration des Fenstermanagers ab).</para>
 			<para>Alternativ können Sie auch die gepackte Archivdatei (*.tar.gz) herunterladen und in einem beliebigen Verzeichnis entpacken. Für Arch-Linux gibt es ebenfalls ein separates <link xl:href="https://aur.archlinux.org/packages/fakturama/">Installationspaket</link>.</para>
-			<para>Vor dem ersten Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank 
-			und alle Dokumente und Vorlagen abgelegt. Beispiel:</para>
+			<para>Beim ersten Start von Fakturama wird ein Arbeitsverzeichnis angelegt. In diesem werden die Firmendatenbank sowie alle 
+		Dokumente und Vorlagen abgelegt. Beispiel:</para>
 			<programlisting>/home/Benutzername/Dokumente/MeineFirma/</programlisting>
 			<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 			</para>
@@ -112,15 +111,14 @@
 	<section>
 			<anchor xreflabel="" xml:id="install_install_mac_os_x"/>
 		<title>Installation unter einem Mac OS X Betriebssystem</title>
-		<para>Laden Sie den Fakturama-Installer 
-			<inlinemediaobject>
+		<para>Laden Sie den <inlinemediaobject>
 				<imageobject role="html">
 					<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 				</imageobject>
 				<imageobject role="fo">
 					<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 				</imageobject>
-			</inlinemediaobject>(Installer_Fakturama_macos_x64_x_x_x.dmg) als Disk-Image von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter. Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: 
+			</inlinemediaobject> Fakturama-Installer als Disk-Image von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter. Öffnen Sie das Disk-Image und ziehen Sie das Anwendungs-Logo auf den Anwendungsordner: 
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
@@ -145,7 +143,8 @@
 			</informalfigure>
 		</para>
 		<para>Damit ist Fakturama fertig installiert.</para>
-		<para>Vor dem ersten Start von Fakturama sollte ein Arbeitsverzeichnis angelegt werden. In diesem werden Firmendatenbank und alle Dokumente abgelegt. Beispiel:</para>
+		<para>Beim ersten Start von Fakturama wird ein Arbeitsverzeichnis angelegt. In diesem werden die Firmendatenbank sowie alle 
+		Dokumente und Vorlagen abgelegt. Beispiel:</para>
 		<programlisting>/Benutzer/IhrName/Dokumente/MeineFirma/</programlisting>
 		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 		</para>
@@ -155,7 +154,7 @@
 		<title>Erstes Starten von Fakturama</title>
 		<para>Starten Sie Fakturama.</para>
 		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch über den Dateidialog geschehen.
-		Falls Sie Fakturama von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://www.fakturama.info/migration-der-altdaten">Wiki-Artikel</link>. Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die entsprechende Datenbank auswählen. Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend:
+		Falls Sie Fakturama von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://www.fakturama.info/migration-der-altdaten">Wiki-Artikel</link>. Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die Datenbank auswählen. Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend:
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
@@ -279,6 +278,9 @@
 				</listitem>
                 <listitem>
                         <emphasis role="bold">-nl tr_TR</emphasis> Türkisch
+                </listitem>
+                <listitem>
+                        <emphasis role="bold">-nl sv</emphasis> Schwedisch
                 </listitem>
                 <listitem>
                         <emphasis role="bold">-nl ar -Dforce.rtl=true</emphasis> Arabisch
