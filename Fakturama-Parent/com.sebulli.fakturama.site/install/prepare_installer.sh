@@ -4,7 +4,7 @@
 echo "Fix tar archive for Linux"
 mkdir ../target/products/Fakturama.ID/tmp
 cd ../target/products/Fakturama.ID/tmp
-tar -xvf ../../Fakturama.ID-linux.gtk.x86_64.tar.gz
+tar -xf ../../Fakturama.ID-linux.gtk.x86_64.tar.gz
 cd -
 
 echo "Fix config.ini (remove javax.persistence)..."
