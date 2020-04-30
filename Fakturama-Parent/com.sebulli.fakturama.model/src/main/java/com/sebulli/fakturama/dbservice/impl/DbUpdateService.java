@@ -83,6 +83,7 @@ public class DbUpdateService implements IDbUpdateService {
 //				liquibase.dropAll();
 //			}
 //			liquibase.forceReleaseLocks();   // workaround!
+//			liquibase.generateDocumentation("f:\\tmp\\f2_007\\");
 			liquibase.update(new Contexts(), new LabelExpression());
 		} catch (ValidationFailedException exc) {
     		System.err.println("Database has not the correct version! " + exc.getMessage());

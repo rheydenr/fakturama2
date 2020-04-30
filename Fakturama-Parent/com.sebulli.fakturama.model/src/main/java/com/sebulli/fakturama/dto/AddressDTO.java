@@ -32,6 +32,7 @@ public class AddressDTO {
 			.withCustomerNumber(documentReceiver.getCustomerNumber())
 			.withCountryCode(documentReceiver.getCountryCode())
 			.withGender(documentReceiver.getGender())
+			.withTitle(documentReceiver.getTitle())
 			.withStreet(documentReceiver.getStreet())
 			.withCity(documentReceiver.getCity())
 			.withZip(documentReceiver.getZip())
@@ -44,6 +45,7 @@ public class AddressDTO {
 				.withName(contact.getName()) //
 				.withFirstName(contact.getFirstName()) //
 				.withCustomerNumber(contact.getCustomerNumber()) //
+	            .withTitle(contact.getTitle())
 				.withGender(contact.getGender()); //
 		if (specificAddress != null) {
 			addressDTO = addressDTO.withAddressId(specificAddress.getId())
