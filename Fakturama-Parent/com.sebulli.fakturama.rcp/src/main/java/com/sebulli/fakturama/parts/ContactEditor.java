@@ -115,6 +115,7 @@ import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
+import com.sebulli.fakturama.parts.widget.contacttree.ContactTreeListTable;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
 import com.sebulli.fakturama.parts.widget.contentprovider.HashMapContentProvider;
 import com.sebulli.fakturama.parts.widget.contentprovider.StringHashMapContentProvider;
@@ -342,7 +343,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         String callerDocument = (String) part.getTransientData().get(CallEditor.PARAM_CALLING_DOC);
         if(callerDocument != null) {
             eventParams.put(DocumentEditor.DOCUMENT_ID, callerDocument);
-            eventParams.put(ContactListTable.SELECTED_CONTACT_ID, Long.valueOf(editorContact.getId()));
+            eventParams.put(ContactTreeListTable.SELECTED_CONTACT_ID, Long.valueOf(editorContact.getId()));
+            eventParams.put(ContactTreeListTable.SELECTED_ADDRESS_ID, Long.valueOf(editorContact.getAddresses().get(0).getId()));
             selectionService.setSelection(editorContact);
             evtBroker.post("DialogSelection/Contact", eventParams);
         }

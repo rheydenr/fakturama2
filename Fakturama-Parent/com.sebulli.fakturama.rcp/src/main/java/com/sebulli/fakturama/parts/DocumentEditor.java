@@ -2983,7 +2983,7 @@ public class DocumentEditor extends Editor<Document> {
                 
                 Address address = contactDAO.findByAddressId(addressId);
                 if(address == null) {
-                	log.error(String.format("Something weird happened. Selected Address with ID %ld couldn't be found in your database.", addressId));
+                	log.error(String.format("Something weird happened. Selected Address with ID %s couldn't be found in your database.", addressId != null ? addressId : "null"));
                 	return;
                 }
                 
