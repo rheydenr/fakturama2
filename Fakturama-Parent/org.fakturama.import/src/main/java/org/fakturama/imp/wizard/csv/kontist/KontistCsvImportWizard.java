@@ -113,12 +113,21 @@ public class KontistCsvImportWizard extends Wizard implements IImportWizard {
 
 			// Find the expenditure table view
 			// Refresh it
-		    evtBroker.post("VoucherEditor", "update");
+		    evtBroker.post("ExpenditureVoucherEditor", "update");
 		    
 			// Find the receipt table view
 			// Refresh it
 		    evtBroker.post("ReceiptVoucherEditor", "update");
 
+			// Refresh the table view of all contacts
+	        evtBroker.post("ContactEditor", "update");
+	        
+			// Refresh vendors
+		    evtBroker.post("DebitorEditor", "update");
+	        
+			// Refresh customers
+		    evtBroker.post("CreditorEditor", "update");
+	        
 			// Find the VAT table view
 			// Refresh it
 		    evtBroker.post("VATEditor", "update");
