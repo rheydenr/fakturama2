@@ -124,7 +124,6 @@ import com.sebulli.fakturama.parts.widget.labelprovider.EntityLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.NumberLabelProvider;
 import com.sebulli.fakturama.parts.widget.labelprovider.StringComboBoxLabelProvider;
 import com.sebulli.fakturama.util.ContactUtil;
-import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 
 /**
  * The contact editor.
