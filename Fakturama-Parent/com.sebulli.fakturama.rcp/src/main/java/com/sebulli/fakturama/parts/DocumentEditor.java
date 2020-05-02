@@ -457,7 +457,7 @@ public class DocumentEditor extends Editor<Document> {
 		// If this document contains no payment widgets, but..
 		else {
 			// the customer changed and so there is a new payment. Set it.
-			if (!newPaymentDescription.isEmpty() && document.getPayment() != null) {
+			if (StringUtils.isNotEmpty(newPaymentDescription) && document.getPayment() != null) {
 			    document.setPaid(Boolean.FALSE);
 			    document.setPaidValue(Double.valueOf(0.0));
 
