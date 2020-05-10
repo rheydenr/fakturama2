@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.sebulli.fakturama</groupId>
     <artifactId>Fakturama-Parent</artifactId>
-    <version>2.1.0</version>
+    <version>2.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>com.sebulli.fakturama.site</artifactId>
   <packaging>eclipse-repository</packaging>
@@ -19,6 +19,13 @@
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
                     <includeAllDependencies>true</includeAllDependencies>
+         <!-- example 2: remove all providers of the package javax.persistence -->
+         <filter>
+            <type>java-package</type>
+            <id>javax.persistence</id>
+            <removeAll />
+         </filter>
+
 					<environments>
 						<environment>
 							<os>linux</os>
