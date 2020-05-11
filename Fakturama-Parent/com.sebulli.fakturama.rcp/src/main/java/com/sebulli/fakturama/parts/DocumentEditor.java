@@ -1307,7 +1307,7 @@ public class DocumentEditor extends Editor<Document> {
 	 */
 	public void calculate(boolean forceCalc) {
 		// Recalculate only documents that contains price values.
-		if (!getDocumentType().hasPrice() || !forceCalc) {
+		if (!getDocumentType().hasPrice() && !forceCalc) {
 			return;
 		}
 		
