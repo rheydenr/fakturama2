@@ -42,7 +42,6 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -74,7 +73,6 @@ import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
 
 import com.ibm.icu.text.NumberFormat;
-import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
@@ -136,9 +134,6 @@ public class ProductEditor extends Editor<Product> {
     
     @Inject
     protected IEclipseContext context;
-    
-    @Inject @Optional
-    protected NumberGenerator numberGenerator;
 
 	// SWT widgets of the editor
 	private Composite top;
@@ -217,7 +212,7 @@ public class ProductEditor extends Editor<Product> {
         
 		if (newProduct) {
 			// Check, if the item number is the next one
-			int result = getNumberGenerator().setNextFreeNumberInPrefStore(textItemNr.getText(), Product_.itemNumber.getName());
+			int result = getNumberGenerator().setNextFreeNumberInPrefStore(textItemNr.getText(), getEditorID());
 			if (result == ERROR_NOT_NEXT_ID) {
 				// It's not the next free ID
 				// Display an error message
@@ -327,9 +322,6 @@ public class ProductEditor extends Editor<Product> {
 	public void init(Composite parent) {
         this.part = (MPart) parent.getData("modelElement");
         this.part.setIconURI(Icon.COMMAND_PRODUCT.getIconURI());
-        if(numberGenerator == null) {
-        	numberGenerator = ContextInjectionFactory.make(NumberGenerator.class, context);
-        }
         
 		String tmpObjId = (String) part.getTransientData().get(CallEditor.PARAM_OBJ_ID);
 		if (StringUtils.isNumeric(tmpObjId)) {
@@ -342,7 +334,7 @@ public class ProductEditor extends Editor<Product> {
 		    if(BooleanUtils.toBoolean((String)part.getTransientData().get(CallEditor.PARAM_COPY))) {
 		    	// clone the product and use it as new one
 		    	editorProduct = new ObjectDuplicator().duplicateProduct(editorProduct);
-		    	editorProduct.setItemNumber(numberGenerator.getNextNr(ID));
+		    	editorProduct.setItemNumber(getNumberGenerator().getNextNr(ID));
 		    	getMDirtyablePart().setDirty(true);
 		    }
 		}
