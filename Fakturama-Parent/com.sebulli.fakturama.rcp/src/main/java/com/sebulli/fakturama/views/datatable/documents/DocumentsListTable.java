@@ -533,14 +533,16 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Inject
     @Optional
     public void handleRefreshEvent(@UIEventTopic(DocumentEditor.EDITOR_ID) String message) {
-    	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
-	        sync.syncExec(() -> top.setRedraw(false));
-	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-	        GlazedLists.replaceAll(documentListData, GlazedLists.eventList(documentsDAO.findAll(true)), false);
-	        treeFilteredIssues.setMatcher(currentFilter);
-	        GlazedLists.replaceAll(categories, GlazedLists.eventList(documentsDAO.getCategoryStrings()), false);
-	        sync.syncExec(() -> top.setRedraw(true));
-    	}
+        if (StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
+            sync.asyncExec(() -> {
+                top.setRedraw(false);
+                // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+                GlazedLists.replaceAll(documentListData, GlazedLists.eventList(documentsDAO.findAll(true)), false);
+                treeFilteredIssues.setMatcher(currentFilter);
+                GlazedLists.replaceAll(categories, GlazedLists.eventList(documentsDAO.getCategoryStrings()), false);
+                top.setRedraw(true);
+            });
+        }
     }
 
     /**

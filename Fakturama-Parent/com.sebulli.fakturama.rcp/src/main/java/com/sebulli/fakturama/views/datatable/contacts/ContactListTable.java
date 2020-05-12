@@ -366,13 +366,15 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     }
     
     public void handleRefreshEvent(String message) {
-    	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
-	        sync.syncExec(() -> top.setRedraw(false));
-	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-	        GlazedLists.replaceAll(treeFilteredIssues, getListData(true), false);
-	        GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
-	        sync.syncExec(() -> top.setRedraw(true));
-    	}
+        if (StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
+            sync.asyncExec(() -> {
+                top.setRedraw(false);
+                // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+                GlazedLists.replaceAll(treeFilteredIssues, getListData(true), false);
+                GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
+                top.setRedraw(true);
+            });
+        }
     }
 
     /* (non-Javadoc)
