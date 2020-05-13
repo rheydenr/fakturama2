@@ -980,8 +980,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 
 	public void copySelectedEntry() {
     	@SuppressWarnings("unchecked")
-		Collection<DocumentItemDTO> selectedEntries = (Collection<DocumentItemDTO>)selectionService.getSelection(DocumentEditor.ID);
-        if(selectedEntries != null && selectedEntries.size() > 0) {
+        Collection<DocumentItemDTO> selectedEntries = (Collection<DocumentItemDTO>) selectionService.getSelection();
+    	if(selectedEntries != null && selectedEntries.size() > 0) {
         	
         	// at first, close an open cell editor, if any
         	if(natTable.getActiveCellEditor() != null) {
