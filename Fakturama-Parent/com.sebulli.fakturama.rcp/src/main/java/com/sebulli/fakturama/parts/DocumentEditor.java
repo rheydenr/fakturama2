@@ -1394,7 +1394,7 @@ public class DocumentEditor extends Editor<Document> {
 	}
 
     private void calculateWeight() {
-        if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT)) {
+        if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && itemListTable != null) {
 			// set weight widgets
 			double netWeightValue = itemListTable.getDocumentItemsListData().stream()
 			        .filter(d -> d.getWeight() != null)

@@ -332,7 +332,7 @@ public class CoolbarViewPart {
 	        return null;
 	    }
 	    
-		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
+		ToolItem item = new ToolItem(toolBar, SWT.PUSH);  // mit Chevron: |SWT.DROP_DOWN
         final ParameterizedCommand pCmd = cmdService.createCommand(commandId, params);
 		try {
 			if(pCmd != null) {
