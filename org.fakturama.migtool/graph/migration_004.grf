@@ -1,48 +1,47 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Graph author="Ralf" created="Sat Jan 20 21:59:55 CET 2018" guiVersion="4.8.0" id="1516484859780" licenseCode="RegCode" name="migration_002" showComponentDetails="true">
+<?xml version="1.0" encoding="UTF-8"?><Graph author="Ralf" created="Sat Jan 20 21:59:55 CET 2018" guiVersion="3.3.0.P" id="1516484859780" licenseType="Commercial" modified="Sat May 23 23:15:55 CEST 2020" modifiedBy="Ralf" name="migration_002" revision="1.4" showComponentDetails="true">
 <Global>
-<Metadata id="Metadata9">
+<Metadata id="Metadata9" previewAttachmentCharset="UTF-8">
 <Record fieldDelimiter=";" name="ADDRESS_CONTACTTYPES" previewAttachmentCharset="UTF-8" recordDelimiter="\n" type="delimited">
 <Field name="ADDRESS_CONTACTTYPES" size="64" type="long"/>
 <Field name="T_ELEMENT" size="255" type="string"/>
 </Record>
 </Metadata>
 <Metadata id="Metadata0">
-<Record fieldDelimiter=";" name="DOCUMENTRECEIVER_METADATA" previewAttachmentCharset="UTF-8" recordDelimiter="\n" type="delimited">
-<Field name="ID" size="64" type="long"/>
-<Field name="BILLINGTYPE" size="32" type="integer"/>
-<Field name="CITY" size="255" type="string"/>
-<Field name="CITYADDON" size="255" type="string"/>
-<Field name="COMPANY" size="255" type="string"/>
-<Field name="CONSULTANT" size="255" type="string"/>
-<Field name="COUNTRYCODE" size="255" type="string"/>
-<Field name="CUSTOMERNUMBER" size="255" type="string"/>
-<Field format="yyyy-MM-dd" name="DATEADDED" size="10" type="date"/>
-<Field name="DELETED" type="boolean"/>
-<Field name="DESCRIPTION" type="string"/>
-<Field name="EMAIL" size="255" type="string"/>
-<Field name="FAX" size="255" type="string"/>
-<Field name="FIRSTNAME" size="255" type="string"/>
-<Field name="GENDER" size="32" type="integer"/>
-<Field name="GLN" size="64" type="long"/>
-<Field name="MANDATEREFERENCE" size="255" type="string"/>
-<Field name="MANUALADDRESS" size="255" type="string"/>
-<Field name="MOBILE" size="255" type="string"/>
-<Field format="yyyy-MM-dd" name="MODIFIED" size="10" type="date"/>
-<Field name="MODIFIEDBY" size="255" type="string"/>
-<Field name="NAME" size="255" type="string"/>
-<Field name="ORIGINADDRESSID" size="64" type="long"/>
-<Field name="ORIGINCONTACTID" size="64" type="long"/>
-<Field name="PHONE" size="255" type="string"/>
-<Field name="STREET" size="255" type="string"/>
-<Field name="SUPPLIERNUMBER" size="255" type="string"/>
-<Field name="TITLE" size="255" type="string"/>
-<Field format="yyyy-MM-dd" name="VALIDFROM" size="10" type="date"/>
-<Field format="yyyy-MM-dd" name="VALIDTO" size="10" type="date"/>
-<Field name="VATNUMBER" size="255" type="string"/>
-<Field name="ZIP" size="255" type="string"/>
-<Field name="FK_DOCUMENT" size="64" type="long"/>
-<Field name="T_ALIAS" size="255" type="string"/>
+<Record fieldDelimiter=";" name="DOCUMENTRECEIVER_METADATA" recordDelimiter="\n" recordSize="-1" type="delimited">
+<Field eofAsDelimiter="false" name="ID" nullable="true" shift="0" size="64" type="long"/>
+<Field eofAsDelimiter="false" name="BILLINGTYPE" nullable="true" shift="0" size="32" type="integer"/>
+<Field eofAsDelimiter="false" name="CITY" nullable="true" shift="0" size="255" type="string"/>
+<Field eofAsDelimiter="false" name="CITYADDON" nullable="true" shift="0" size="255" type="string"/>
+<Field eofAsDelimiter="false" name="COMPANY" nullable="true" shift="0" size="255" type="string"/>
+<Field eofAsDelimiter="false" name="CONSULTANT" nullable="true" shift="0" size="255" type="string"/>
+<Field eofAsDelimiter="false" name="COUNTRYCODE" nullable="true" shift="0" size="8" type="string"/>
+<Field eofAsDelimiter="false" name="CUSTOMERNUMBER" nullable="true" shift="0" size="32" type="string"/>
+<Field eofAsDelimiter="false" format="yyyy-MM-dd" name="DATEADDED" nullable="true" shift="0" size="10" type="date"/>
+<Field eofAsDelimiter="false" name="DELETED" nullable="true" shift="0" size="0" type="boolean"/>
+<Field eofAsDelimiter="false" name="DESCRIPTION" nullable="true" shift="0" size="1073741824" type="string"/>
+<Field eofAsDelimiter="false" name="EMAIL" nullable="true" shift="0" size="128" type="string"/>
+<Field eofAsDelimiter="false" name="FAX" nullable="true" shift="0" size="64" type="string"/>
+<Field eofAsDelimiter="false" name="FIRSTNAME" nullable="true" shift="0" size="128" type="string"/>
+<Field eofAsDelimiter="false" name="GENDER" nullable="true" shift="0" size="32" type="integer"/>
+<Field eofAsDelimiter="false" name="GLN" nullable="true" shift="0" size="64" type="long"/>
+<Field eofAsDelimiter="false" name="MANDATEREFERENCE" nullable="true" shift="0" size="128" type="string"/>
+<Field eofAsDelimiter="false" name="MANUALADDRESS" nullable="true" shift="0" size="1073741824" type="string"/>
+<Field eofAsDelimiter="false" name="MOBILE" nullable="true" shift="0" size="64" type="string"/>
+<Field eofAsDelimiter="false" format="yyyy-MM-dd" name="MODIFIED" nullable="true" shift="0" size="10" type="date"/>
+<Field eofAsDelimiter="false" name="MODIFIEDBY" nullable="true" shift="0" size="32" type="string"/>
+<Field eofAsDelimiter="false" name="NAME" nullable="true" shift="0" size="255" type="string"/>
+<Field eofAsDelimiter="false" name="ORIGINADDRESSID" nullable="true" shift="0" size="64" type="long"/>
+<Field eofAsDelimiter="false" name="ORIGINCONTACTID" nullable="true" shift="0" size="64" type="long"/>
+<Field eofAsDelimiter="false" name="PHONE" nullable="true" shift="0" size="64" type="string"/>
+<Field eofAsDelimiter="false" name="STREET" nullable="true" shift="0" size="255" type="string"/>
+<Field eofAsDelimiter="false" name="SUPPLIERNUMBER" nullable="true" shift="0" size="32" type="string"/>
+<Field eofAsDelimiter="false" name="T_ALIAS" nullable="true" shift="0" size="255" type="string"/>
+<Field eofAsDelimiter="false" name="TITLE" nullable="true" shift="0" size="32" type="string"/>
+<Field eofAsDelimiter="false" format="yyyy-MM-dd" name="VALIDFROM" nullable="true" shift="0" size="10" type="date"/>
+<Field eofAsDelimiter="false" format="yyyy-MM-dd" name="VALIDTO" nullable="true" shift="0" size="10" type="date"/>
+<Field eofAsDelimiter="false" name="VATNUMBER" nullable="true" shift="0" size="32" type="string"/>
+<Field eofAsDelimiter="false" name="ZIP" nullable="true" shift="0" size="16" type="string"/>
+<Field eofAsDelimiter="false" name="FK_DOCUMENT" nullable="true" shift="0" size="64" type="long"/>
 </Record>
 </Metadata>
 <Metadata id="Metadata7">
@@ -64,25 +63,22 @@
 </Record>
 </Metadata>
 <Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fktest" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fktestuser" type="JDBC" user="fktestuser"/>
-<Connection database="HSQLDB" dbURL="jdbc:hsqldb:hsql://localhost/Fakturama2" id="JDBC0" jdbcSpecific="HSQLDB" name="hsqldb" type="JDBC" user="sa"/>
-<GraphParameters>
-<GraphParameterFile fileURL="workspace.prm"/>
-</GraphParameters>
+<Connection dbDriver="org.hsqldb.jdbcDriver" dbURL="jdbc:hsqldb:hsql://localhost:9002/Fakturama2" driverLibrary="file:/D:/Javalibs/hsqldb-2.5.0/hsqldb/lib/hsqldb.jar" id="JDBC0" jdbcSpecific="GENERIC" name="hsqldb" type="JDBC" user="sa"/>
 <Dictionary/>
 </Global>
 <Phase number="0">
-<Node dbConnection="JDBC0" guiName="Address_Contacttypes" guiX="35" guiY="460" id="ADDRESS_CONTACTTYPES" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="Address_Contacttypes" guiWidth="152" guiX="35" guiY="460" id="ADDRESS_CONTACTTYPES" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_ADDRESS_CONTACTTYPES]]></attr>
 </Node>
-<Node dbConnection="JDBC1" dbTable="fkt_documentreceiver" fieldMap="$ID:=ID;$BILLINGTYPE:=BILLINGTYPE;$CITY:=CITY;$CITYADDON:=CITYADDON;$COMPANY:=COMPANY;$CONSULTANT:=CONSULTANT;$COUNTRYCODE:=COUNTRYCODE;$CUSTOMERNUMBER:=CUSTOMERNUMBER;$DATEADDED:=DATEADDED;$DELETED:=DELETED;$DESCRIPTION:=DESCRIPTION;$EMAIL:=EMAIL;$FAX:=FAX;$FIRSTNAME:=FIRSTNAME;$GENDER:=GENDER;$GLN:=GLN;$MANDATEREFERENCE:=MANDATEREFERENCE;$MANUALADDRESS:=MANUALADDRESS;$MOBILE:=MOBILE;$MODIFIED:=MODIFIED;$MODIFIEDBY:=MODIFIEDBY;$NAME:=NAME;$ORIGINADDRESSID:=ORIGINADDRESSID;$ORIGINCONTACTID:=ORIGINCONTACTID;$PHONE:=PHONE;$STREET:=STREET;$SUPPLIERNUMBER:=SUPPLIERNUMBER;$TITLE:=TITLE;$VALIDFROM:=VALIDFROM;$VALIDTO:=VALIDTO;$VATNUMBER:=VATNUMBER;$ZIP:=ZIP;$FK_DOCUMENT:=FK_DOCUMENT;$T_ALIAS:=T_ALIAS;" guiName="DBOutputTable" guiX="447" guiY="376" id="DBOUTPUT_TABLE" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC1" dbTable="fkt_address_contacttypes" fieldMap="$ADDRESS_CONTACTTYPES:=ADDRESS_CONTACTTYPES;$T_ELEMENT:=T_ELEMENT;" guiName="DBOutputTable" guiX="447" guiY="460" id="DBOUTPUT_TABLE10" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC0" guiName="FKT_DOCUMENTRECEIVER" guiX="35" guiY="376" id="FKT_DOCUMENTRECEIVER" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC1" dbTable="fkt_documentreceiver" enabled="enabled" fieldMap="$ID:=ID;$BILLINGTYPE:=BILLINGTYPE;$CITY:=CITY;$CITYADDON:=CITYADDON;$COMPANY:=COMPANY;$CONSULTANT:=CONSULTANT;$COUNTRYCODE:=COUNTRYCODE;$CUSTOMERNUMBER:=CUSTOMERNUMBER;$DATEADDED:=DATEADDED;$DELETED:=DELETED;$DESCRIPTION:=DESCRIPTION;$EMAIL:=EMAIL;$FAX:=FAX;$FIRSTNAME:=FIRSTNAME;$GENDER:=GENDER;$GLN:=GLN;$MANDATEREFERENCE:=MANDATEREFERENCE;$MANUALADDRESS:=MANUALADDRESS;$MOBILE:=MOBILE;$MODIFIED:=MODIFIED;$MODIFIEDBY:=MODIFIEDBY;$NAME:=NAME;$ORIGINADDRESSID:=ORIGINADDRESSID;$ORIGINCONTACTID:=ORIGINCONTACTID;$PHONE:=PHONE;$STREET:=STREET;$SUPPLIERNUMBER:=SUPPLIERNUMBER;$TITLE:=TITLE;$VALIDFROM:=VALIDFROM;$VALIDTO:=VALIDTO;$VATNUMBER:=VATNUMBER;$ZIP:=ZIP;$FK_DOCUMENT:=FK_DOCUMENT;$T_ALIAS:=T_ALIAS;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="447" guiY="376" id="DBOUTPUT_TABLE" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC1" dbTable="fkt_address_contacttypes" enabled="enabled" fieldMap="$ADDRESS_CONTACTTYPES:=ADDRESS_CONTACTTYPES;$T_ELEMENT:=T_ELEMENT;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="447" guiY="460" id="DBOUTPUT_TABLE10" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="FKT_DOCUMENTRECEIVER" guiWidth="176" guiX="35" guiY="376" id="FKT_DOCUMENTRECEIVER" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_DOCUMENTRECEIVER]]></attr>
 </Node>
 <Edge fromNode="ADDRESS_CONTACTTYPES:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" metadata="Metadata9" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE10:0"/>
 <Edge fromNode="FKT_DOCUMENTRECEIVER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE:0"/>
 </Phase>
-<Phase number="2">
-<Node dbConnection="JDBC1" enabled="enabled" guiName="DBExecute" guiX="35" guiY="597" id="DB_EXECUTE0" type="DB_EXECUTE" url="${PROJECT}/enable_fk.sql"/>
+<Phase number="1">
+<Node dbConnection="JDBC1" enabled="enabled" guiHeight="67" guiName="DBExecute" guiWidth="128" guiX="35" guiY="597" id="DB_EXECUTE0" type="DB_EXECUTE" url="D:/User/GitHome/fakturama-2/org.fakturama.migtool/enable_fk.sql"/>
 </Phase>
 </Graph>
