@@ -15,7 +15,7 @@
     </jaxb:globalBindings>
  
     <!-- Annotate the following classes with XmlRootElement -->
-    <jaxb:bindings schemaLocation="schema/ZUGFeRD_1p0.xsd" node="/xs:schema">
+    <jaxb:bindings schemaLocation="ZUGFeRD_1p0.xsd" node="/xs:schema">
         <jaxb:schemaBindings><jaxb:package name="org.fakturama.export.zugferd.modelgen" /></jaxb:schemaBindings>
         <jaxb:bindings node="xs:element[@name='CrossIndustryDocument']">
             <annox:annotate>

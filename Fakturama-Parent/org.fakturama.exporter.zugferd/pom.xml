@@ -83,8 +83,9 @@
                         </plugin>
                     </plugins>
                     <verbose>false</verbose>
+                    
                     <schemaDirectory>src/main/resources/schema</schemaDirectory>
-                    <!-- xjb doesn't work :-(  --> <bindingDirectory>src/main/resources</bindingDirectory>
+                    <!-- xjb doesn't work :-( --> <bindingDirectory>src/main/resources/schema</bindingDirectory> 
                     <generateDirectory>src-gen/main/java</generateDirectory>
                     <encoding>${encoding}</encoding>
                     <generatePackage>org.fakturama.export.zugferd.modelgen</generatePackage>
@@ -97,6 +98,7 @@
                     </execution>
                 </executions>
             </plugin>
+ 
 <!-- alternative
            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -112,6 +114,11 @@
                 </executions>
                 <configuration>
                 
+			       <xjbSources>
+			            <xjbSource>src/main/resources/schema</xjbSource>
+			            <xjbSource>src/main/resources/schema-v2</xjbSource>
+			        </xjbSources>                
+			                
                     <extension>true</extension>
                     <forceRegenerate>false</forceRegenerate>
                   
