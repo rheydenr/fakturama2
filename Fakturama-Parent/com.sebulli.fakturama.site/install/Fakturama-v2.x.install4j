@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="8.0.4" transformSequenceNumber="8">
-  <directoryPresets config="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
-  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.0a" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" jdkMode="jdk" jdkName="JDK 1.8 x64">
+<install4j version="8.0.6" transformSequenceNumber="8">
+  <directoryPresets config="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" />
+  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.0e" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="10" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true">
       <principalLanguage id="de" />
       <additionalLanguages>
@@ -19,7 +19,7 @@
         <language id="tr" />
       </additionalLanguages>
     </languages>
-    <codeSigning macEnabled="true" macPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
+    <codeSigning macEnabled="true" macPkcs12File="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" />
   </application>
   <files keepModificationTimes="true" globalExcludeSuffixes=".svn,.git">
     <filesets>
@@ -662,7 +662,7 @@ return console.askYesNo(message, true);
         <entry filesetId="54" />
       </exclude>
     </macosFolder>
-    <windows name="Windows 64bit" id="45" mediaFileName="Installer_Fakturama_windows-x64_${compiler:sys.version}" installDir="${compiler:sys.fullName}">
+    <windows name="Windows 64bit" id="45" mediaFileName="Installer_Fakturama_windows-x64_${compiler:sys.version}" installDir="Fakturama2">
       <excludedLaunchers>
         <launcher id="35" />
         <launcher id="58" />
@@ -674,7 +674,7 @@ return console.askYesNo(message, true);
         <entry filesetId="54" />
       </exclude>
     </windows>
-    <unixInstaller name="Unix Installer (Linux 64bit)" id="59" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share">
+    <unixInstaller name="Unix Installer (Linux 64bit)" id="59" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2">
       <excludedLaunchers>
         <launcher id="35" />
         <launcher id="44" />
@@ -686,7 +686,7 @@ return console.askYesNo(message, true);
         <entry filesetId="49" />
       </exclude>
     </unixInstaller>
-    <linuxRPM name="Linux RPM" id="119" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" arch="x86_64">
+    <linuxRPM name="Linux RPM" id="119" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2" arch="x86_64">
       <excludedLaunchers>
         <launcher id="35" />
         <launcher id="44" />
@@ -699,7 +699,7 @@ return console.askYesNo(message, true);
       </exclude>
       <postInstallScript>${compiler:file("./linux_32bit/make_executable.sh")}</postInstallScript>
     </linuxRPM>
-    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedLaunchers>
         <launcher id="35" />
         <launcher id="44" />
