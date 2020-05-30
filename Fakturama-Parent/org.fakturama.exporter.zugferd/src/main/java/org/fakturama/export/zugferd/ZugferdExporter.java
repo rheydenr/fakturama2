@@ -116,7 +116,6 @@ import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
-import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -893,8 +892,9 @@ public class ZugferdExporter {
 		
 		Date out = Date.from(dueDate.atZone(ZoneId.systemDefault()).toInstant());
 		
-		TradePaymentTermsType tradePaymentTerms = factory.createTradePaymentTermsType()
-			.withDescription(createText(placeholders.createPaymentText(invoice, documentSummary, percent)))
+		Optional<String> paymentText = Optional.ofNullable(placeholders.createPaymentText(invoice, documentSummary, percent));
+        TradePaymentTermsType tradePaymentTerms = factory.createTradePaymentTermsType()
+			.withDescription(createText(paymentText.orElse("unknown")))
 			.withDueDateDateTime(createDateTime(out));
 		// TODO EXTENDED: Applicable. Trade_ Payment Penalty Terms
 		// TODO EXTENDED: Applicable. Trade_ Payment Discount Terms
