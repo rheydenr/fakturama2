@@ -19,7 +19,7 @@ h1. Features
 
 h1. Available platforms and languages
 
-Fakturama is available for Windows, Linux and Mac OS. It is localized in Romanian, Ukrainian, Italian, English, German, Spanish, Russian, Hungarian and Basque (Euskara).
+Fakturama is available for Windows, Linux and Mac OS. It is localized in Romanian, Ukrainian, Italian, English, German, Spanish, Russian, Hungarian, Basque (Euskara) and many other languages.
 
 h1. Contributing
 

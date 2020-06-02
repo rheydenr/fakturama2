@@ -185,6 +185,8 @@ public class Messages {
 	public String editorContactFieldAlias;
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
+	public String editorContactQuestionRemoveaddress;
+	public String editorContactHintAddaddresstooltip;
 
 	public String Data653;
 	public String dataDefaultContactFormatExcludedcountries;
