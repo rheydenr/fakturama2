@@ -2117,8 +2117,8 @@
 			<title>Adresse</title>
 			<para>Der Reiter unterteilt sich in allgemeine Angaben wie Firmenname und/oder Name des Kontaktes. Daneben
 			gibt es einen weiteren Bereich, in dem verschiedene Adressen zu diesem Kontakt erfasst werden können. Diese Adressen
-			können über das [+]-Symbol hinzugefügt werden. </para>
-			<warning>Derzeit ist es leider noch nicht möglich, eine Adresse auch wieder zu löschen.</warning>
+			können über das [+]-Symbol hinzugefügt werden. Mit dem Schließen eines Tabs wird die entsprechende Zusatzadresse
+			gelöscht (auf Nachfrage). Die Hauptdresse kann nicht gelöscht werden.</para>
 			<para>Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine, 
 			diese Auswahl wird in den kommenden Versionen von Fakturama vervollständigt). Lässt man
 			die Auswahl leer, kann die Adresse für beliebige Arten von Dokumenten verwendet werden. Ansonsten werden die Adressen
