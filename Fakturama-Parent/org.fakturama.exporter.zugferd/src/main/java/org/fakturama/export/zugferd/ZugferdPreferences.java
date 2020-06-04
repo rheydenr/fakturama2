@@ -16,15 +16,19 @@ package org.fakturama.export.zugferd;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.RadioGroupFieldEditor;
 
 import com.sebulli.fakturama.preferences.IInitializablePreference;
+import com.sebulli.fakturama.preferences.PreferencesInDatabase;
 
 /**
  *
@@ -35,6 +39,9 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
     @Translation
     protected ZFMessages msg;
     
+    @Inject @Optional
+    private PreferencesInDatabase preferencesInDatabase;
+
     /**
      * The Constructor.
      */
@@ -52,11 +59,10 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 		addField(new DirectoryFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, getFieldEditorParent()));
 		
 		addField(new BooleanFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_TEST, msg.zugferdPreferencesTestmode, getFieldEditorParent()));
-		// TODO enable if necessary
-//		addField(new RadioGroupFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_VERSION, msg.zugferdPreferencesVersion, 2, new String[][] { 
-//			{ "1", "1" },
-//			{ "2", "2" }},
-//			getFieldEditorParent()));
+		addField(new RadioGroupFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_VERSION, msg.zugferdPreferencesVersion, 2, new String[][] { 
+			{ "1", "1" },
+			{ "2.1", "2.1 (XRechnung / Factur-X)" }},
+			getFieldEditorParent()));
 		
 		ComboFieldEditor conformanceLevelCombo = new ComboFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, msg.zugferdPreferencesProfile, 
 				new String[][] { { ConformanceLevel.BASIC.toString(), ConformanceLevel.BASIC.toString() }, 
@@ -67,16 +73,31 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 		addField(conformanceLevelCombo);
 	}
 
+    /**
+     * Write or read the preference settings to or from the data base
+     * 
+     * @param write
+     *            TRUE: Write to the data base
+     */
+    public void syncWithPreferencesFromDatabase(boolean write) {
+        preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_VERSION, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_TEST, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, write);
+    }
+
     @Override
     public void setInitValues(IPreferenceStore node) {
-        node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_VERSION, "1");
+        node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_VERSION, "2.1");
         node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_TEST, Boolean.TRUE);
         node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, "COMFORT");
     }
 
     @Override
     public void loadOrSaveUserValuesFromDB(IEclipseContext context) {
-        // TODO implement!
+        if(preferencesInDatabase != null) {
+            Boolean isWrite = (Boolean)context.get(PreferencesInDatabase.LOAD_OR_SAVE_PREFERENCES_FROM_OR_IN_DATABASE);
+            syncWithPreferencesFromDatabase(BooleanUtils.toBoolean(isWrite));
+        }
     }
 
 }

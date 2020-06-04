@@ -157,6 +157,7 @@ public class ZugferdHelper {
 //            XMPMetadata defaultXmp = builder.parse(zfExtensionIs);
 //            metadata.addSchema(defaultXmp.getPDFExtensionSchema());
 //
+        
         XMPSchemaZugferd zf = new XMPSchemaZugferd(metadata, level/*, "1.0"*/);
             zf.setAbout(""); //$NON-NLS-1$
             metadata.addSchema(zf);

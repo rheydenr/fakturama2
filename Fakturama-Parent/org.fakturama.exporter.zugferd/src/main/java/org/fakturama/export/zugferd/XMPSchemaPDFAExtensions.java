@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
  * @author jstaerk
  * 
  */
+// TODO replace by PDFAExtensionSchema (XMPBox)
 public class XMPSchemaPDFAExtensions extends XMPSchemaBasic {
 
 	private void addProperty(Element listNode, String name, String type,

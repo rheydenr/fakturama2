@@ -15,7 +15,6 @@ package org.fakturama.export.zugferd;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -65,6 +64,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.fakturama.export.facturx.modelgen.FormattedDateTimeType;
 import org.fakturama.export.zugferd.modelgen.AmountType;
 import org.fakturama.export.zugferd.modelgen.CodeType;
 import org.fakturama.export.zugferd.modelgen.CountryIDType;
@@ -107,6 +107,7 @@ import org.fakturama.export.zugferd.modelgen.TradeSettlementMonetarySummationTyp
 import org.fakturama.export.zugferd.modelgen.TradeSettlementPaymentMeansType;
 import org.fakturama.export.zugferd.modelgen.TradeTaxType;
 import org.javamoney.moneta.Money;
+import org.osgi.service.component.annotations.Component;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.CEFACTCodeDAO;
@@ -131,6 +132,7 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.office.IPdfPostProcessor;
 import com.sebulli.fakturama.office.Placeholders;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
@@ -143,17 +145,21 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
  * This code has many TODOs because the ZUGFeRD specification wasn't final. Furthermore,
  * the invoice document doesn't have all the needed fields (esp. for EXTENDED profile). 
  * 
+ * NOTE: The injection of all the services has to be done by caller (because this is an OSGi service,
+ * but the injected services are from Eclipse context).
+ * 
  */
-public class ZugferdExporter {
+@Component()
+public class ZugferdExporter implements IPdfPostProcessor {
 
 	@Inject
 	@Translation
 	protected ZFMessages msg;
     
-    @Inject
+    @Inject // node: org.fakturama.export.zugferd
     private IPreferenceStore preferences;
     
-    @Inject
+    @Inject @org.eclipse.e4.core.di.annotations.Optional
     @Preference
     private IEclipsePreferences eclipsePrefs;
 
@@ -184,7 +190,8 @@ public class ZugferdExporter {
     @Inject
     private IDocumentAddressManager addressManager;
 
-    private Shell shell;
+    @Inject @org.eclipse.e4.core.di.annotations.Optional
+    public Shell shell;
 	
 	/** The Constant DEFAULT_PRICE_SCALE. */
     private static final int DEFAULT_AMOUNT_SCALE = 4;
@@ -243,10 +250,10 @@ public class ZugferdExporter {
 
 	/**
 	 * At the moment we support only the COMFORT profile.
-	 * 
+	 * @deprecated use only {@link #processPdf(Optional)}
 	 */
 	@Execute
-    public Object execute(Shell shell, IEclipseContext context, EPartService partService) {
+    public void execute(Shell shell, EPartService partService) {
 		/*
 		* Zunächst muß geprüft werden, ob OO/LO auch PDF/A erzeugt. Dazu muß man in der Datei 
 		d:\Programme\LibreOffice 5\share\registry\main.xcd
@@ -261,34 +268,46 @@ public class ZugferdExporter {
 		Idee: Vor dem Speichern den Wert umsetzen und am Schluß wieder zurücksetzen.
 		*/
 		this.shell = shell;
-		Document invoice = findSelectedInvoice(partService);
-		if(invoice != null) {
+		Optional<Document> invoice = findSelectedInvoice(partService);
+        if(invoice.isPresent()) {
 			// 1. check if PDF file exists
 			// (neu erzeugte PDFs sind automatisch PDF/A-1
 			//  siehe OfficeDocument#saveOODocument())
-		    if(StringUtils.isEmpty(invoice.getPdfPath())) {
+		    if(StringUtils.isEmpty(invoice.get().getPdfPath())) {
 		    	MessageDialog.openError(shell, msg.zugferdExportCommandTitle, msg.zugferdExportErrorNosource);
-		    	return null;
 		    }
+		    
+		    Path pdfFile = Paths.get(invoice.get().getPdfPath());
+		    if(Files.notExists(pdfFile)) {
+		    	MessageDialog.openError(shell, msg.zugferdExportCommandTitle, 
+		    			MessageFormat.format(msg.zugferdExportErrorWrongpath, invoice.get().getPdfPath()));
+		    }
+		    
+		processPdf(invoice, true);
+        }
+	}
+	
+	@Override
+	public boolean canProcess() {// ;
+	    return eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, null) != null;
+	}
+
+	@Override
+    public boolean processPdf(Optional<Document> invoice, boolean withSelectFilename) {
+        boolean result = false;
+        if(invoice.isPresent()) {
 		    
 		    netPricesPerVat.clear();
-		    
-		    if(!(new File(invoice.getPdfPath()).exists())) {
-		    	MessageDialog.openError(shell, msg.zugferdExportCommandTitle, 
-		    			MessageFormat.format(msg.zugferdExportErrorWrongpath, invoice.getPdfPath()));
-		    	return null;
-		    }
-		    
 			String conformanceLevel = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, "COMFORT");
 			ConformanceLevel zugferdProfile = ConformanceLevel.valueOf(conformanceLevel);
 
 			// 2. create XML file
-			CrossIndustryDocument root = createInvoiceFromDataset(invoice, zugferdProfile);
+			CrossIndustryDocument root = createInvoiceFromDataset(invoice.get(), zugferdProfile);
 
 //			testOutput(root);
 			
 			// 3. merge XML & PDF/A-1 to PDF/A-3
-			boolean result = createPdf(invoice, root, zugferdProfile);
+            result = createPdf(invoice.get(), root, zugferdProfile, withSelectFilename);
 			if(result) {
 				// Display an info message
 				MessageDialog.openInformation(shell, msg.zugferdExportCommandTitle, msg.zugferdExportInfoSuccessfully);
@@ -300,7 +319,7 @@ public class ZugferdExporter {
 			// Display a warning message
 			MessageDialog.openWarning(shell, msg.zugferdExportCommandTitle, msg.zugferdExportWarningChooseinvoice);
 		}
-		return null;
+        return result;
 	}
 	
 	/**
@@ -337,7 +356,7 @@ public class ZugferdExporter {
 	 * @param root
 	 * @param zugferdProfile 
 	 */
-	private boolean createPdf(Document invoice, CrossIndustryDocument root, ConformanceLevel zugferdProfile) {
+	private boolean createPdf(Document invoice, CrossIndustryDocument root, ConformanceLevel zugferdProfile, boolean withSelectFilename) {
 		boolean retval = true;
 		String pdfFile = invoice.getPdfPath();
 		PDDocument pdfa3 = null;
@@ -354,24 +373,30 @@ public class ZugferdExporter {
 			// embed XML
 			pdfa3 = ZugferdHelper.attachZugferdFile(retvalPDFA3, buffo.toByteArray());
 			
-			String fileSelected = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, "");
-			
-			// extract filename for further use
-			// filename w/o separator
-			Path fileName = Paths.get(pdfFile).getFileName();
-			
-			if(StringUtils.isBlank(fileSelected)) {
-				// store file
-				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-				dialog.setFilterExtensions(new String[] { "*.pdf", "*.*" });
-				dialog.setFilterPath(workspace); 
-				dialog.setOverwrite(true); 
-				dialog.setFileName("ZF-" + fileName);
-				dialog.setFilterNames(new String[] { "PDF/A-3 File (ZUGFeRD)", "All Files" });
-				fileSelected = dialog.open();
+			String fileSelected;
+			if(withSelectFilename) { // only for compatibility purposes
+                fileSelected = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, "");
+    			
+    			// extract filename for further use
+    			// filename w/o separator
+    			Path fileName = Paths.get(pdfFile).getFileName();
+    			
+    			if(StringUtils.isBlank(fileSelected)) {
+    				// store file
+    				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+    				dialog.setFilterExtensions(new String[] { "*.pdf", "*.*" });
+    				dialog.setFilterPath(workspace); 
+    				dialog.setOverwrite(true); 
+    				dialog.setFileName("ZF-" + fileName);
+    				dialog.setFilterNames(new String[] { "PDF/A-3 File (ZUGFeRD)", "All Files" });
+    				fileSelected = dialog.open();
+    			} else {
+    				fileSelected = Paths.get(fileSelected, fileName.toString()).toString();
+    			}
 			} else {
-				fileSelected = Paths.get(fileSelected, fileName.toString()).toString();
+			    fileSelected = pdfFile;
 			}
+			
 			if (fileSelected != null) {
 				pdfa3.save(Paths.get(fileSelected).toFile());
 				//	Files.write(outFile, pdfa3, StandardOpenOption.CREATE);
@@ -379,7 +404,7 @@ public class ZugferdExporter {
 				retval = false;
 			}
 		}
-        catch (JAXBException | IOException | TransformerException | /*FakturamaStoringException |*/ COSVisitorException exception) {
+        catch (JAXBException | IOException | TransformerException/* | FakturamaStoringException | COSVisitorException*/ | COSVisitorException exception) {
 			log.error(exception, "error creating ZUGFeRD document: " + exception.getMessage());
 			retval = false;
 		} finally {
@@ -1272,16 +1297,16 @@ public class ZugferdExporter {
 		printDocument(doc, streamResult);
 	}
 	
-	private Document findSelectedInvoice(EPartService partService) {
-		Document retval = null;
+	private Optional<Document> findSelectedInvoice(EPartService partService) {
+	    Optional<Document> retval = null;
 		
 		// at first we try to use an open editor
 		if(partService != null && StringUtils.equalsIgnoreCase(partService.getActivePart().getElementId(), DocumentEditor.ID)) {
 			DocumentEditor editor = (DocumentEditor)partService.getActivePart().getObject();
-			retval = editor.getDocument();
+			retval = Optional.ofNullable(editor.getDocument());
 		} else if(selectionService != null && selectionService.getSelection() != null) {
 			List<Document> tmpList = (List<Document>) selectionService.getSelection();
-			retval = tmpList.isEmpty() ? null : tmpList.get(0);
+			retval = tmpList.isEmpty() ? Optional.empty() : Optional.ofNullable(tmpList.get(0));
 		}
 
 		return retval;
