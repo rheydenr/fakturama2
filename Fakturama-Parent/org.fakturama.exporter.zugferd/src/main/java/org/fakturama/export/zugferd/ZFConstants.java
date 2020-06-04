@@ -19,6 +19,7 @@ package org.fakturama.export.zugferd;
  */
 public class ZFConstants {
 
+    public static final String PREFERENCES_ZUGFERD_ACTIVE = "ZUGFERD_ACTIVE";
 	public static final String PREFERENCES_ZUGFERD_PATH = "ZUGFERD_PATH";
 	public static final String PREFERENCES_ZUGFERD_VERSION = "ZUGFERD_VERSION";
 	public static final String PREFERENCES_ZUGFERD_PROFILE = "ZUGFERD_PROFILE";

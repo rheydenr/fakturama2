@@ -38,4 +38,6 @@ public class ZFMessages {
 	public String zugferdPreferencesTitle;
 	public String zugferdPreferencesVersion;
 	public String zugferdPreferencesTestmode;
+    public String zugferdPreferencesIsActive;
+
 }

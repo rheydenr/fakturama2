@@ -288,8 +288,8 @@ public class ZugferdExporter implements IPdfPostProcessor {
 	}
 	
 	@Override
-	public boolean canProcess() {// ;
-	    return eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, null) != null;
+	public boolean canProcess() {
+	    return eclipsePrefs.getBoolean(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE, Boolean.FALSE);
 	}
 
 	@Override

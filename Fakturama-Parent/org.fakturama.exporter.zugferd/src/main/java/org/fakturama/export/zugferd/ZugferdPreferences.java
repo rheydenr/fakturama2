@@ -56,6 +56,7 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 	 */
 	@Override
 	protected void createFieldEditors() {
+        addField(new BooleanFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE, msg.zugferdPreferencesIsActive, getFieldEditorParent()));
 		addField(new DirectoryFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, getFieldEditorParent()));
 		
 		addField(new BooleanFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_TEST, msg.zugferdPreferencesTestmode, getFieldEditorParent()));
@@ -80,6 +81,7 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
      *            TRUE: Write to the data base
      */
     public void syncWithPreferencesFromDatabase(boolean write) {
+        preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_VERSION, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_TEST, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, write);
@@ -87,6 +89,7 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 
     @Override
     public void setInitValues(IPreferenceStore node) {
+        node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE, Boolean.FALSE);
         node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_VERSION, "2.1");
         node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_TEST, Boolean.TRUE);
         node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, "COMFORT");
