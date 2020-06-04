@@ -25,7 +25,6 @@ import org.eclipse.e4.core.services.nls.Message;
 @Message
 public class ZFMessages {
 	public String zugferdExportCommandTitle;
-	public String zugferdExportErrorNosource;
 	public String zugferdExportErrorWrongpath;
 	public String zugferdExportErrorCancelled;
 	public String zugferdExportInfoSuccessfully;
@@ -33,11 +32,9 @@ public class ZFMessages {
 	public String zugferdExportWarningOverwrite;
 	public String zugferdExportLabelRebate;
 
-	public String zugferdPreferencesFilelocation;
 	public String zugferdPreferencesProfile;
 	public String zugferdPreferencesTitle;
 	public String zugferdPreferencesVersion;
 	public String zugferdPreferencesTestmode;
     public String zugferdPreferencesIsActive;
-
 }

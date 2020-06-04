@@ -22,7 +22,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
-import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
@@ -57,12 +56,11 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 	@Override
 	protected void createFieldEditors() {
         addField(new BooleanFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE, msg.zugferdPreferencesIsActive, getFieldEditorParent()));
-		addField(new DirectoryFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, getFieldEditorParent()));
 		
 		addField(new BooleanFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_TEST, msg.zugferdPreferencesTestmode, getFieldEditorParent()));
 		addField(new RadioGroupFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_VERSION, msg.zugferdPreferencesVersion, 2, new String[][] { 
 			{ "1", "1" },
-			{ "2.1", "2.1 (XRechnung / Factur-X)" }},
+			{ "2.1 (XRechnung / Factur-X)", "2.1" }},
 			getFieldEditorParent()));
 		
 		ComboFieldEditor conformanceLevelCombo = new ComboFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, msg.zugferdPreferencesProfile, 

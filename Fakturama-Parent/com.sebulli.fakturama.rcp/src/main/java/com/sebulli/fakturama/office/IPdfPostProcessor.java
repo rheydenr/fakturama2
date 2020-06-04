@@ -36,9 +36,7 @@ public interface IPdfPostProcessor {
      * Process the PDF.
      * 
      * @param inputDocument {@link Document} which is the base for the PDF
-     * @param withSelectFilename for compatibility purposes we set a flag which determines if
-     * a filename can be chosen. If <code>false</code>, the filename is got from given document (the PDF path)
      * @return <code>true</code>, if the operation was successful
      */
-    public boolean processPdf(Optional<Document> inputDocument, boolean withSelectFilename);
+    public boolean processPdf(Optional<Document> inputDocument);
 }

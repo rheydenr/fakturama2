@@ -496,7 +496,7 @@ public class OfficeDocument {
                     IPdfPostProcessor currentProcessor = Activator.getContext().getService(serviceReference);
                     ContextInjectionFactory.inject(currentProcessor, context);
                     if (currentProcessor.canProcess()) {
-                        currentProcessor.processPdf(Optional.ofNullable(document), false);
+                        currentProcessor.processPdf(Optional.ofNullable(document));
                     }
                 }
             } catch (InvalidSyntaxException e) {

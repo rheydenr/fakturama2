@@ -23,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -54,15 +53,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.facturx.modelgen.FormattedDateTimeType;
 import org.fakturama.export.zugferd.modelgen.AmountType;
@@ -200,7 +196,6 @@ public class ZugferdExporter implements IPdfPostProcessor {
 
 	private static SimpleDateFormat sdfDest = new SimpleDateFormat("yyyyMMdd");
 	private ObjectFactory factory;
-	private String workspace;
 
 	private Map<String, MonetaryAmount> netPricesPerVat = new HashMap<>();;
 
@@ -240,20 +235,10 @@ public class ZugferdExporter implements IPdfPostProcessor {
 //
 //		// sets a default 16x16 pixel icon.
 //		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/shop_16.png"));
-		if(preferences != null) {
-			workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
-		} else {
-			// this only happens at first run (from installation phase) and shouldn't be a problem
-			workspace = "NO_WORKSPACE_SELECTED";
-		}
 	}
 
-	/**
-	 * At the moment we support only the COMFORT profile.
-	 * @deprecated use only {@link #processPdf(Optional)}
-	 */
-	@Execute
-    public void execute(Shell shell, EPartService partService) {
+	@Override
+	public boolean canProcess() {
 		/*
 		* Zunächst muß geprüft werden, ob OO/LO auch PDF/A erzeugt. Dazu muß man in der Datei 
 		d:\Programme\LibreOffice 5\share\registry\main.xcd
@@ -267,33 +252,11 @@ public class ZugferdExporter implements IPdfPostProcessor {
 		prüfen. Der Wert muß auf "1" stehen. Siehe dazu https://wiki.openoffice.org/wiki/API/Tutorials/PDF_export
 		Idee: Vor dem Speichern den Wert umsetzen und am Schluß wieder zurücksetzen.
 		*/
-		this.shell = shell;
-		Optional<Document> invoice = findSelectedInvoice(partService);
-        if(invoice.isPresent()) {
-			// 1. check if PDF file exists
-			// (neu erzeugte PDFs sind automatisch PDF/A-1
-			//  siehe OfficeDocument#saveOODocument())
-		    if(StringUtils.isEmpty(invoice.get().getPdfPath())) {
-		    	MessageDialog.openError(shell, msg.zugferdExportCommandTitle, msg.zugferdExportErrorNosource);
-		    }
-		    
-		    Path pdfFile = Paths.get(invoice.get().getPdfPath());
-		    if(Files.notExists(pdfFile)) {
-		    	MessageDialog.openError(shell, msg.zugferdExportCommandTitle, 
-		    			MessageFormat.format(msg.zugferdExportErrorWrongpath, invoice.get().getPdfPath()));
-		    }
-		    
-		processPdf(invoice, true);
-        }
-	}
-	
-	@Override
-	public boolean canProcess() {
 	    return eclipsePrefs.getBoolean(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE, Boolean.FALSE);
 	}
 
 	@Override
-    public boolean processPdf(Optional<Document> invoice, boolean withSelectFilename) {
+    public boolean processPdf(Optional<Document> invoice) {
         boolean result = false;
         if(invoice.isPresent()) {
 		    
@@ -307,7 +270,7 @@ public class ZugferdExporter implements IPdfPostProcessor {
 //			testOutput(root);
 			
 			// 3. merge XML & PDF/A-1 to PDF/A-3
-            result = createPdf(invoice.get(), root, zugferdProfile, withSelectFilename);
+            result = createPdf(invoice.get(), root, zugferdProfile);
 			if(result) {
 				// Display an info message
 				MessageDialog.openInformation(shell, msg.zugferdExportCommandTitle, msg.zugferdExportInfoSuccessfully);
@@ -356,7 +319,7 @@ public class ZugferdExporter implements IPdfPostProcessor {
 	 * @param root
 	 * @param zugferdProfile 
 	 */
-	private boolean createPdf(Document invoice, CrossIndustryDocument root, ConformanceLevel zugferdProfile, boolean withSelectFilename) {
+	private boolean createPdf(Document invoice, CrossIndustryDocument root, ConformanceLevel zugferdProfile) {
 		boolean retval = true;
 		String pdfFile = invoice.getPdfPath();
 		PDDocument pdfa3 = null;
@@ -373,32 +336,8 @@ public class ZugferdExporter implements IPdfPostProcessor {
 			// embed XML
 			pdfa3 = ZugferdHelper.attachZugferdFile(retvalPDFA3, buffo.toByteArray());
 			
-			String fileSelected;
-			if(withSelectFilename) { // only for compatibility purposes
-                fileSelected = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, "");
-    			
-    			// extract filename for further use
-    			// filename w/o separator
-    			Path fileName = Paths.get(pdfFile).getFileName();
-    			
-    			if(StringUtils.isBlank(fileSelected)) {
-    				// store file
-    				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-    				dialog.setFilterExtensions(new String[] { "*.pdf", "*.*" });
-    				dialog.setFilterPath(workspace); 
-    				dialog.setOverwrite(true); 
-    				dialog.setFileName("ZF-" + fileName);
-    				dialog.setFilterNames(new String[] { "PDF/A-3 File (ZUGFeRD)", "All Files" });
-    				fileSelected = dialog.open();
-    			} else {
-    				fileSelected = Paths.get(fileSelected, fileName.toString()).toString();
-    			}
-			} else {
-			    fileSelected = pdfFile;
-			}
-			
-			if (fileSelected != null) {
-				pdfa3.save(Paths.get(fileSelected).toFile());
+			if (pdfFile != null) {
+				pdfa3.save(Paths.get(pdfFile).toFile());
 				//	Files.write(outFile, pdfa3, StandardOpenOption.CREATE);
 			} else {  // dialog cancelled
 				retval = false;
