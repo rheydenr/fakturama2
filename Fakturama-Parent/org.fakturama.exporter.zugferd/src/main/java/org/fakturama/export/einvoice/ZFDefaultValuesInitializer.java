@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.fakturama.export.zugferd;
+package org.fakturama.export.einvoice;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;

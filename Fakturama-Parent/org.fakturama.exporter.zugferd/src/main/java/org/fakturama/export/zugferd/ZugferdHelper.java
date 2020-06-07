@@ -59,17 +59,18 @@ import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpSerializer;
+import org.fakturama.export.einvoice.ConformanceLevel;
+import org.fakturama.export.einvoice.IPdfHelper;
 
 
 /**
  *
  */
-public class ZugferdHelper {
+public class ZugferdHelper implements IPdfHelper {
 
-	private static final String ZUGFERD_PREFIX = "zf";
+	private static final String ZUGFERD_FILENAME = "ZUGFeRD-invoice.xml";
+    private static final String ZUGFERD_PREFIX = "zf";
     private static final String ZUGFERD_URN = "urn:ferd:pdfa:invoice:rc#";
-    private static final String PDFA_EXTENSION_SCHEMA_PREFIX = "pdfaSchema";
-    private static final String PDFA_EXTENSION_SCHEMA_NAMESPACE = "http://www.aiim.org/pdfa/ns/schema#";
 
     /**
 	 * Makes A PDF/A-3a-compliant document from a PDF/A-1 compliant document (on
@@ -81,7 +82,8 @@ public class ZugferdHelper {
 	 * @throws XmpParsingException 
 	 * @throws XmpSchemaException 
 	 * */
-	public static PDDocument makeA3Acompliant(String pdfFileName, ConformanceLevel level) throws IOException, TransformerException, XmpParsingException, XmpSchemaException {
+	@Override
+    public PDDocument makeA3Acompliant(String pdfFileName, ConformanceLevel level) throws IOException, TransformerException, XmpParsingException, XmpSchemaException {
 	    Path pdfFile = Paths.get(pdfFileName);
 	    if(Files.notExists(pdfFile)) {
 	        return null;
@@ -144,8 +146,8 @@ public class ZugferdHelper {
 //        }
 
         xmpBasicSchema.setTextPropertyValue("ConformanceLevel", conformanceLevel);
-        xmpBasicSchema.setTextPropertyValue("DocumentType", "INVOICE");
-        xmpBasicSchema.setTextPropertyValue("DocumentFileName", "ZUGFeRD-invoice.xml");
+        xmpBasicSchema.setTextPropertyValue("DocumentType", DOCTYPE_INVOICE);
+        xmpBasicSchema.setTextPropertyValue("DocumentFileName", ZUGFERD_FILENAME);
         xmpBasicSchema.setTextPropertyValue("Version", "1.0");
         
         XmpSerializer serializer = new XmpSerializer();
@@ -164,7 +166,7 @@ public class ZugferdHelper {
 	 * attachment if ZUGFeRD, this namespace has to be described in a PDFA
 	 * Extension Schema.
 	 */
-    private static void createExtensionSchema(XMPMetadata xmp, TypeMapping tm) {
+    private void createExtensionSchema(XMPMetadata xmp, TypeMapping tm) {
         PDFAExtensionSchema extSchema = Optional.ofNullable(xmp.getPDFExtensionSchema()).orElse(xmp.createAndAddPDFAExtensionSchemaWithDefaultNS());
         extSchema.addNamespace(PDFA_EXTENSION_SCHEMA_NAMESPACE, PDFA_EXTENSION_SCHEMA_PREFIX);
         extSchema.addNamespace("http://www.aiim.org/pdfa/ns/property#", "pdfaProperty");
@@ -209,7 +211,7 @@ public class ZugferdHelper {
         li.addProperty(newValType);
     }
 	
-    private static PDFAPropertyType createProperty(XMPMetadata metadata, String name, String type, String category, String description) {
+    private PDFAPropertyType createProperty(XMPMetadata metadata, String name, String type, String category, String description) {
 
         TypeMapping tm = new TypeMapping(metadata);
         PDFAPropertyType li = new PDFAPropertyType(metadata);
@@ -234,23 +236,26 @@ public class ZugferdHelper {
 	 * embed the ZUGFeRD XML structure in a file named ZUGFeRD-invoice.xml
 	 * @throws IOException 
 	 * */
-    public static PDDocument attachZugferdFile(PDDocument doc, ByteArrayOutputStream baos) throws IOException {
+    @Override
+    public PDDocument attachZugferdFile(PDDocument doc, ByteArrayOutputStream baos) throws IOException {
         
         if(doc == null) {
             return null;
         }
 
-		String filename="ZUGFeRD-invoice.xml";
 		// first create the file specification, which holds the embedded file
 		PDComplexFileSpecification fs = new PDComplexFileSpecification();
-		fs.setFile(filename);
-        fs.setFileUnicode(filename);
+		fs.setFile(ZUGFERD_FILENAME);
+        fs.setFileUnicode(ZUGFERD_FILENAME);
         fs.setFileDescription("electronical invoice according to ZUGFeRD standard");
 
         COSDictionary dict = fs.getCOSObject();
 		// Relation "Source" for linking with eg. catalog
+        // TODO ZF21: MINIMUM & BASIC WL ==> Data
+        // TODO ZF21: in FR ==> Source
 		dict.setName("AFRelationship", "Alternative"); // as defined in ZUGFeRD standard
-		dict.setString("UF", filename);
+		
+		dict.setString("UF", ZUGFERD_FILENAME);
 
 		// create a data stream from given byte array
 		byte[] zugferdData = baos.toByteArray();
@@ -270,7 +275,7 @@ public class ZugferdHelper {
         PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
 
 		// now add the entry to the embedded file tree and set in the document.
-		efTree.setNames(Collections.singletonMap(filename, fs));
+		efTree.setNames(Collections.singletonMap(ZUGFERD_FILENAME, fs));
 		PDDocumentNameDictionary names = new PDDocumentNameDictionary(
 				doc.getDocumentCatalog());
 		names.setEmbeddedFiles(efTree);

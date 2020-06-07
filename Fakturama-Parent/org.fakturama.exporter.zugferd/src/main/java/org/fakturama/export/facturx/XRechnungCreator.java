@@ -1,5 +1,6 @@
-package org.fakturama.export.zugferd;
+package org.fakturama.export.facturx;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -20,49 +21,50 @@ import org.fakturama.export.einvoice.ContactType;
 import org.fakturama.export.einvoice.IPdfHelper;
 import org.fakturama.export.einvoice.PriceType;
 import org.fakturama.export.einvoice.ZFConstants;
-import org.fakturama.export.facturx.XRechnungCreator;
+import org.fakturama.export.facturx.modelgen.AmountType;
+import org.fakturama.export.facturx.modelgen.CodeType;
+import org.fakturama.export.facturx.modelgen.CountryIDType;
+import org.fakturama.export.facturx.modelgen.CreditorFinancialAccountType;
+import org.fakturama.export.facturx.modelgen.CreditorFinancialInstitutionType;
+import org.fakturama.export.facturx.modelgen.CrossIndustryInvoice;
+import org.fakturama.export.facturx.modelgen.DateTimeType;
+import org.fakturama.export.facturx.modelgen.DebtorFinancialAccountType;
+import org.fakturama.export.facturx.modelgen.DocumentCodeType;
+import org.fakturama.export.facturx.modelgen.DocumentContextParameterType;
+import org.fakturama.export.facturx.modelgen.DocumentLineDocumentType;
+import org.fakturama.export.facturx.modelgen.ExchangedDocumentContextType;
+import org.fakturama.export.facturx.modelgen.ExchangedDocumentType;
 import org.fakturama.export.facturx.modelgen.FormattedDateTimeType;
-import org.fakturama.export.zugferd.modelgen.AmountType;
-import org.fakturama.export.zugferd.modelgen.CodeType;
-import org.fakturama.export.zugferd.modelgen.CountryIDType;
-import org.fakturama.export.zugferd.modelgen.CreditorFinancialAccountType;
-import org.fakturama.export.zugferd.modelgen.CreditorFinancialInstitutionType;
-import org.fakturama.export.zugferd.modelgen.CrossIndustryDocument;
-import org.fakturama.export.zugferd.modelgen.DateTimeType;
-import org.fakturama.export.zugferd.modelgen.DateTimeType.DateTimeString;
-import org.fakturama.export.zugferd.modelgen.DebtorFinancialAccountType;
-import org.fakturama.export.zugferd.modelgen.DebtorFinancialInstitutionType;
-import org.fakturama.export.zugferd.modelgen.DocumentCodeType;
-import org.fakturama.export.zugferd.modelgen.DocumentContextParameterType;
-import org.fakturama.export.zugferd.modelgen.DocumentLineDocumentType;
-import org.fakturama.export.zugferd.modelgen.ExchangedDocumentContextType;
-import org.fakturama.export.zugferd.modelgen.ExchangedDocumentType;
-import org.fakturama.export.zugferd.modelgen.IDType;
-import org.fakturama.export.zugferd.modelgen.LogisticsServiceChargeType;
-import org.fakturama.export.zugferd.modelgen.NoteType;
-import org.fakturama.export.zugferd.modelgen.ObjectFactory;
-import org.fakturama.export.zugferd.modelgen.PaymentMeansCodeType;
-import org.fakturama.export.zugferd.modelgen.QuantityType;
-import org.fakturama.export.zugferd.modelgen.ReferencedDocumentType;
-import org.fakturama.export.zugferd.modelgen.SupplyChainEventType;
-import org.fakturama.export.zugferd.modelgen.SupplyChainTradeAgreementType;
-import org.fakturama.export.zugferd.modelgen.SupplyChainTradeDeliveryType;
-import org.fakturama.export.zugferd.modelgen.SupplyChainTradeLineItemType;
-import org.fakturama.export.zugferd.modelgen.SupplyChainTradeSettlementType;
-import org.fakturama.export.zugferd.modelgen.SupplyChainTradeTransactionType;
-import org.fakturama.export.zugferd.modelgen.TaxCategoryCodeType;
-import org.fakturama.export.zugferd.modelgen.TaxRegistrationType;
-import org.fakturama.export.zugferd.modelgen.TaxTypeCodeType;
-import org.fakturama.export.zugferd.modelgen.TextType;
-import org.fakturama.export.zugferd.modelgen.TradeAddressType;
-import org.fakturama.export.zugferd.modelgen.TradeAllowanceChargeType;
-import org.fakturama.export.zugferd.modelgen.TradePartyType;
-import org.fakturama.export.zugferd.modelgen.TradePaymentTermsType;
-import org.fakturama.export.zugferd.modelgen.TradePriceType;
-import org.fakturama.export.zugferd.modelgen.TradeProductType;
-import org.fakturama.export.zugferd.modelgen.TradeSettlementMonetarySummationType;
-import org.fakturama.export.zugferd.modelgen.TradeSettlementPaymentMeansType;
-import org.fakturama.export.zugferd.modelgen.TradeTaxType;
+import org.fakturama.export.facturx.modelgen.FormattedDateTimeType.DateTimeString;
+import org.fakturama.export.facturx.modelgen.HeaderTradeAgreementType;
+import org.fakturama.export.facturx.modelgen.IDType;
+import org.fakturama.export.facturx.modelgen.LineTradeAgreementType;
+import org.fakturama.export.facturx.modelgen.LineTradeDeliveryType;
+import org.fakturama.export.facturx.modelgen.LineTradeSettlementType;
+import org.fakturama.export.facturx.modelgen.NoteType;
+import org.fakturama.export.facturx.modelgen.ObjectFactory;
+import org.fakturama.export.facturx.modelgen.PaymentMeansCodeType;
+import org.fakturama.export.facturx.modelgen.QuantityType;
+import org.fakturama.export.facturx.modelgen.ReferencedDocumentType;
+import org.fakturama.export.facturx.modelgen.SupplyChainEventType;
+import org.fakturama.export.facturx.modelgen.SupplyChainTradeLineItemType;
+import org.fakturama.export.facturx.modelgen.SupplyChainTradeTransactionType;
+import org.fakturama.export.facturx.modelgen.TaxCategoryCodeContentType;
+import org.fakturama.export.facturx.modelgen.TaxCategoryCodeType;
+import org.fakturama.export.facturx.modelgen.TaxRegistrationType;
+import org.fakturama.export.facturx.modelgen.TaxTypeCodeContentType;
+import org.fakturama.export.facturx.modelgen.TaxTypeCodeType;
+import org.fakturama.export.facturx.modelgen.TextType;
+import org.fakturama.export.facturx.modelgen.TradeAddressType;
+import org.fakturama.export.facturx.modelgen.TradeAllowanceChargeType;
+import org.fakturama.export.facturx.modelgen.TradePartyType;
+import org.fakturama.export.facturx.modelgen.TradePaymentTermsType;
+import org.fakturama.export.facturx.modelgen.TradePriceType;
+import org.fakturama.export.facturx.modelgen.TradeProductType;
+import org.fakturama.export.facturx.modelgen.TradeSettlementFinancialCardType;
+import org.fakturama.export.facturx.modelgen.TradeSettlementLineMonetarySummationType;
+import org.fakturama.export.facturx.modelgen.TradeSettlementPaymentMeansType;
+import org.fakturama.export.facturx.modelgen.TradeTaxType;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
@@ -85,46 +87,66 @@ import com.sebulli.fakturama.office.Placeholders;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
- * Implementation for the (deprecated) ZUGFeRD standard. Use {@link XRechnungCreator} instead.
+ * Generator class for XRechnung /Factur-x files.
+ * 
+ * <p>
+ * HINTS (from German documentation):<br/>
+ * <ul>
+ * <li>Bei Dezimalzahlen müssen die Nachkommastellen durch einen Dezimalpunkt
+ * getrennt sein.
+ * <li>Die Codelisten werden analog zu CEN/TS 16931-3-3 definiert
+ * <li>Bis zum Profil EN 16931 (COMFORT) gelten die Design-Prinzipien der Norm,
+ * dass sich eine Rechnung immer nur auf genau eine Bestellung und genau eine
+ * Lieferung beziehen darf.
+ * <li>Nettopreis als verbindliche Preisinformation
+ * <li>Der Nettopreis des Artikels in diesem Zusammenhang ist der Preis eines
+ * Artikels ohne Umsatzsteuer nach Abzug des Nachlasses auf den Artikelpreis.
+ * Der Nettobetrag der Rechnungsposition ist der „Netto“-Betrag d. h. ohne die
+ * Umsatzsteuer, aber einschließlich aller für die Positionsebene geltenden Zu-
+ * und Abschläge sowie sonstiger anfallender Steuern.
+ * <li>Die EN 16931-1 unterstützt nur Nachlass auf den Bruttopreis des Artikels.
+ * </ul>
+ * </p>
  *
  */
-public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
+public class XRechnungCreator extends AbstractEInvoiceCreator {
+
     private ObjectFactory factory;
     private IPdfHelper pdfHelper;
 
     @Override
     public boolean createEInvoice(Optional<Document> invoice, ConformanceLevel zugferdProfile) {
         factory = new ObjectFactory();
-      
+        
         // 2. create XML file
-        CrossIndustryDocument root = createInvoiceFromDataset(invoice.get(), zugferdProfile);
+        CrossIndustryInvoice root = createInvoiceFromDataset(invoice.get(), zugferdProfile);
 
-//      testOutput(root);
+      testOutput(root);
         
         // 3. merge XML & PDF/A-1 to PDF/A-3
         return createPdf(invoice.get(), () -> root, zugferdProfile);
     }
-    
-    private CrossIndustryDocument createInvoiceFromDataset(Document invoice, ConformanceLevel zugferdProfile) {
+
+    private CrossIndustryInvoice createInvoiceFromDataset(Document invoice, ConformanceLevel zugferdProfile) {
         // Recalculate the sum of the document before exporting
         DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, eclipseContext);
         DocumentSummary documentSummary = documentSummaryCalculator.calculate(invoice);
 
         Boolean testMode = BooleanUtils.toBooleanObject(eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_TEST, "TRUE"));
 
-        CrossIndustryDocument root = factory.createCrossIndustryDocument();
+        CrossIndustryInvoice root = factory.createCrossIndustryInvoice();
         // at first create a reasonable context
+        // Element 'ram:TestIndicator' is marked as not used in the given context.
+        //        .withTestIndicator(factory.createIndicatorType().withIndicator(testMode));
+        DocumentContextParameterType ctxParam = factory.createDocumentContextParameterType().withID(createIdFromString("urn:cen.eu:en16931:2017"));
         ExchangedDocumentContextType exchangedDocCtx = factory.createExchangedDocumentContextType()
-                .withTestIndicator(factory.createIndicatorType().withIndicator(testMode));
-        DocumentContextParameterType ctxParam = factory.createDocumentContextParameterType()
-                .withID(createIdFromString("urn:ferd:CrossIndustryDocument:invoice:1p0:" + zugferdProfile.toString().toLowerCase()));
-        exchangedDocCtx.getGuidelineSpecifiedDocumentContextParameter().add(ctxParam );
-        root.setSpecifiedExchangedDocumentContext(exchangedDocCtx);
+                .withGuidelineSpecifiedDocumentContextParameter(ctxParam);
+        root.setExchangedDocumentContext(exchangedDocCtx);
         
         // now the header information follows
         ExchangedDocumentType exchangedDocumentType = factory.createExchangedDocumentType()
                 .withID(createIdFromString(invoice.getName()))
-                .withName(createText(DocumentTypeUtil.findByBillingType(invoice.getBillingType()).name()));
+        /*.withName(createText(DocumentTypeUtil.findByBillingType(invoice.getBillingType()).name()))*/;
         DocumentCodeType docTypeCode = factory.createDocumentCodeType()
                 .withValue("380"); // this is static for BASIC and COMFORT
         exchangedDocumentType.setTypeCode(docTypeCode);
@@ -148,16 +170,16 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
             owner = "(unknown)";
         }
 
-        note.getContent().add(createText(owner));
+        note.setContent(createText(owner));
         note.setSubjectCode(createCode("REG"));
         exchangedDocumentType.getIncludedNote().add(note);
-        root.setHeaderExchangedDocument(exchangedDocumentType);
+        root.setExchangedDocument(exchangedDocumentType);
         
         // now follows the huge part for trade transaction
         SupplyChainTradeTransactionType tradeTransaction = factory.createSupplyChainTradeTransactionType();
-        SupplyChainTradeAgreementType tradeAgreement = factory.createSupplyChainTradeAgreementType()
+        HeaderTradeAgreementType tradeAgreement = factory.createHeaderTradeAgreementType()
                 .withBuyerReference(createText(invoice.getCustomerRef()));  // "Kundenreferenz"
-        tradeTransaction.getApplicableSupplyChainTradeAgreement().add(tradeAgreement);
+        tradeTransaction.setApplicableHeaderTradeAgreement(tradeAgreement);
         
         // create seller information
         TradePartyType seller = factory.createTradePartyType()
@@ -180,17 +202,16 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
         tradeAgreement.setBuyerTradeParty(buyer);
             
             // EXTENDED: Applicable.Trade_DeliveryTerms (not yet available) => Incoterms
-//          tradeAgreement.
         
         // referenced order
         Transaction transaction = ContextInjectionFactory.make(Transaction.class, eclipseContext).of(invoice);
         if(transaction != null) {
             ReferencedDocumentType orderRef = factory.createReferencedDocumentType()
-                    .withIssueDateTime(createSimpleDateTime(invoice.getOrderDate()))
-                    .withID(createIdFromString(transaction.getReference(DocumentType.ORDER)));
+                    .withFormattedIssueDateTime(createFormattedDateTime(invoice.getOrderDate()))
+                    .withIssuerAssignedID(createIdFromString(transaction.getReference(DocumentType.ORDER)));
             // only if ID is not empty!
             if(!StringUtils.isEmpty(transaction.getReference(DocumentType.ORDER))) {
-                tradeAgreement.getBuyerOrderReferencedDocument().add(orderRef);
+                tradeAgreement.setBuyerOrderReferencedDocument(orderRef);
             }
         }
 
@@ -206,11 +227,9 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
 //          ReferencedDocumentType custOrder = factory.createReferencedDocumentType(); + IssueDateTime, ID
 //          tradeAgreement.setCustomerOrderReferencedDocument(custOrder);
             
-        SupplyChainTradeDeliveryType tradeDelivery = factory.createSupplyChainTradeDeliveryType();
             // Related.SupplyChain_Consignment => EXTENDED (not yet available)
         SupplyChainEventType deliveryEvent = factory.createSupplyChainEventType();
-        deliveryEvent.getOccurrenceDateTime().add(createDateTime(invoice.getServiceDate()));
-        tradeDelivery.getActualDeliverySupplyChainEvent().add(deliveryEvent);
+        deliveryEvent.setOccurrenceDateTime(createDateTime(invoice.getServiceDate()));
             
         // Despatch Advice_ Referenced.Referenced_ Document => EXTENDED (not yet available)
 
@@ -218,48 +237,48 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
         String deliveryRef = transaction != null ? transaction.getReference(DocumentType.DELIVERY) : "";
         String splitted[] = StringUtils.isEmpty(deliveryRef) ? new String[]{} : deliveryRef.split(",");
         for (String string : splitted) {
-            refDoc.getID().add(createIdFromString(string));
+            refDoc.setIssuerAssignedID(createIdFromString(string));
             break; // ONLY FIRST ID IS USED (according to the specification only ONE document can be referenced!)
         }
         if (transaction != null) {
-            refDoc.setIssueDateTime(dateFormatterService.DateAsISO8601String(transaction.getFirstReferencedDocumentDate(DocumentType.DELIVERY)));
+            refDoc.setFormattedIssueDateTime(createFormattedDateTime(new Date())); // FIXME: transaction.getFirstReferencedDocumentDate(DocumentType.DELIVERY
         }
-        if(!refDoc.getID().isEmpty()) {
-            tradeDelivery.setDeliveryNoteReferencedDocument(refDoc);
-        }
-        tradeTransaction.setApplicableSupplyChainTradeDelivery(tradeDelivery);
+        
+        // FIXME woher kommt denn das?
+//        if(refDoc.getIssuerAssignedID() == null) {
+//            tradeDelivery.setDeliveryNoteReferencedDocument(refDoc);
+//        }
+//        tradeTransaction.setApplicableSupplyChainTradeDelivery(tradeDelivery);
         String currency = getGlobalCurrencyCode();
-//      
+      
 //      // Verwendungszweck, Kassenzeichen 
-        SupplyChainTradeSettlementType tradeSettlement = factory.createSupplyChainTradeSettlementType()
-                .withPaymentReference(createText(invoice.getName())) /* customerref ? */
-                .withInvoiceCurrencyCode(createCurrencyCode(currency));
-        // Detailinformationen zum abweichenden Rechnungsempfänger
-//      tradeSettlement.setInvoiceeTradeParty(createTradeParty(invoice));  // das wird gar nicht erfaßt!
+        TradeSettlementPaymentMeansType tradeSettlement = factory.createTradeSettlementPaymentMeansType()
+                    .withTypeCode(createPaymentTypeCode(invoice))
+                    .withInformation(createText(invoice.getPayment().getName()))/*.withID(id)*/;
+//                .withPaymentReference(createText(invoice.getName())) /* customerref ? */
+        /*.withInvoiceCurrencyCode(createCurrencyCode(currency))*/;
+//        // Detailinformationen zum abweichenden Rechnungsempfänger
+////      tradeSettlement.setInvoiceeTradeParty(createTradeParty(invoice));  // das wird gar nicht erfaßt!
 
         DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
         Contact contact = getOriginContact(documentReceiver);
         if (contact != null) {
             DebtorFinancialAccountType debtorAccount = createDebtorAccount(contact.getBankAccount());
+            if (debtorAccount != null) {
+                tradeSettlement.setPayerPartyDebtorFinancialAccount(debtorAccount);
+//                paymentType.setPayerSpecifiedDebtorFinancialInstitution(createDebtorFinancialInstitution(invoice));
+            }
             IDType id = StringUtils.isNotBlank(contact.getMandateReference())
-                    ? factory.createIDType().withValue(contact.getMandateReference()).withSchemeAgencyID(
+                    ? factory.createIDType().withValue(contact.getMandateReference()).withSchemeID(
                             preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CREDITORID))
                     : null;
 
-            TradeSettlementPaymentMeansType paymentType = factory.createTradeSettlementPaymentMeansType()
-                    .withTypeCode(createPaymentTypeCode(invoice))
-                    .withInformation(createText(invoice.getPayment().getName())).withID(id);
             CreditorFinancialAccountType creditor = createCreditorAccount();
             if (creditor != null) {
-                paymentType.setPayeePartyCreditorFinancialAccount(creditor);
-                paymentType.setPayeeSpecifiedCreditorFinancialInstitution(createCreditorFinancialInstitution());
+                tradeSettlement.setPayeePartyCreditorFinancialAccount(creditor);
+                tradeSettlement.setPayeeSpecifiedCreditorFinancialInstitution(createCreditorFinancialInstitution());
 
             }
-            if (debtorAccount != null) {
-                paymentType.setPayerPartyDebtorFinancialAccount(debtorAccount);
-                paymentType.setPayerSpecifiedDebtorFinancialInstitution(createDebtorFinancialInstitution(invoice));
-            }
-            tradeSettlement.getSpecifiedTradeSettlementPaymentMeans().add(paymentType);
         }
 
         // Get the items of the UniDataSet document
@@ -272,22 +291,22 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
         
         // Detailinformationen zur Rechnungsperiode 
         // TODO tradeSettlement.setBillingSpecifiedPeriod(createPeriod(invoice));
-        tradeSettlement.getSpecifiedTradeAllowanceCharge().add(createTradeAllowance(documentSummary));
-        tradeSettlement.getSpecifiedLogisticsServiceCharge().add(createLogisticsServiceCharge(invoice, documentSummary));
-        tradeSettlement.getSpecifiedTradePaymentTerms().add(createTradePaymentTerms(invoice, documentSummary));
-        tradeSettlement.setSpecifiedTradeSettlementMonetarySummation(createTradeSettlementMonetarySummation(invoice, documentSummary));
-        // TODO EXTENDED: tradeSettlement.setReceivableSpecifiedTradeAccountingAccount(null);
-        
-        tradeTransaction.setApplicableSupplyChainTradeSettlement(tradeSettlement);
-
-        // Get the VAT summary of the UniDataSet document
-        VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, eclipseContext);
-        vatSummarySetManager.add(invoice, Double.valueOf(1.0));
-        for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
-            // für jeden Steuerbetrag muß es einen eigenen Eintrag geben
-            tradeSettlement.getApplicableTradeTax().add(createTradeTax(vatSummaryItem));
-        }
-        root.setSpecifiedSupplyChainTradeTransaction(tradeTransaction);
+//        tradeSettlement.getSpecifiedTradeAllowanceCharge().add(createTradeAllowance(documentSummary));
+//        tradeSettlement.getSpecifiedLogisticsServiceCharge().add(createLogisticsServiceCharge(invoice, documentSummary));
+//        tradeSettlement.getSpecifiedTradePaymentTerms().add(createTradePaymentTerms(invoice, documentSummary));
+//        tradeSettlement.setSpecifiedTradeSettlementMonetarySummation(createTradeSettlementMonetarySummation(invoice, documentSummary));
+//        // TODO EXTENDED: tradeSettlement.setReceivableSpecifiedTradeAccountingAccount(null);
+//        
+//        tradeTransaction.setApplicableSupplyChainTradeSettlement(tradeSettlement);
+//
+//        // Get the VAT summary of the UniDataSet document
+//        VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, eclipseContext);
+//        vatSummarySetManager.add(invoice, Double.valueOf(1.0));
+//        for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
+//            // für jeden Steuerbetrag muß es einen eigenen Eintrag geben
+//            tradeSettlement.getApplicableTradeTax().add(createTradeTax(vatSummaryItem));
+//        }
+        root.setSupplyChainTradeTransaction(tradeTransaction);
         return root;
     }
 
@@ -298,11 +317,12 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
     private void createNote(String message, ExchangedDocumentType exchangedDocumentType) {
         if(!StringUtils.isEmpty(message)) {
             NoteType note = factory.createNoteType(); // free text on header level
-            note.getContent().add(createText(message));
+            note.setContent(createText(message));
             note.setSubjectCode(createCode("AAK"));
             exchangedDocumentType.getIncludedNote().add(note);
         }
     }
+    
     /**
      * Creates a DateTime value in the form dd.MM.yyyy'T00:00:00'
      * @param dateValue
@@ -337,9 +357,9 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
     private SupplyChainTradeLineItemType createLineItem(DocumentItem item, int row) {
         SupplyChainTradeLineItemType retval = factory.createSupplyChainTradeLineItemType()
                 .withAssociatedDocumentLineDocument(createDocumentLine(item, row))
-                .withSpecifiedSupplyChainTradeAgreement(createSpecifiedSupplyChainTradeAgreement(item, row))
-                .withSpecifiedSupplyChainTradeDelivery(createSupplyChainTradeDelivery(item))
-                .withSpecifiedSupplyChainTradeSettlement(createSupplyChainTradeSettlement(item))
+                .withSpecifiedLineTradeAgreement(createSpecifiedSupplyChainTradeAgreement(item, row))
+                .withSpecifiedLineTradeDelivery(createSupplyChainTradeDelivery(item))
+                .withSpecifiedLineTradeSettlement(createSupplyChainTradeSettlement(item))
                 .withSpecifiedTradeProduct(createTradeProduct(item))
                 ;
         return retval;
@@ -368,17 +388,19 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
      * @param item
      * @return
      */
-    private SupplyChainTradeSettlementType createSupplyChainTradeSettlement(DocumentItem item) {
-        SupplyChainTradeSettlementType retval = factory.createSupplyChainTradeSettlementType()
-                .withApplicableTradeTax(createTradeTax(item.getItemVat()))
-                .withSpecifiedTradeSettlementMonetarySummation(createTradeSettlementMonetarySummation(item))
+    private LineTradeSettlementType createSupplyChainTradeSettlement(DocumentItem item) {
+        LineTradeSettlementType retval = factory.createLineTradeSettlementType()
+                .withApplicableTradeTax(createTradeTax(item.getItemVat())) // FIXME!!!
+//                .withBillingSpecifiedPeriod(null)
+//                .withSpecifiedTradeAllowanceCharge(values)
+                .withSpecifiedTradeSettlementLineMonetarySummation(createTradeSettlementLineMonetarySummation(item))
                 ;
         return retval;
     }
 
-    private SupplyChainTradeDeliveryType createSupplyChainTradeDelivery(DocumentItem item) {
+    private LineTradeDeliveryType createSupplyChainTradeDelivery(DocumentItem item) {
         String qunit = determineQuantityUnit(item.getQuantityUnit());
-        return factory.createSupplyChainTradeDeliveryType()
+        return factory.createLineTradeDeliveryType()
                 .withBilledQuantity(createQuantity(item.getQuantity(), qunit))
 // TODO EXTENDED:   .withActualDeliverySupplyChainEvent(createSupplyChainEvent(item))
 // TODO EXTENDED:   Despatch Advice_ Referenced.Referenced_ Document   
@@ -401,7 +423,7 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
 
     private QuantityType createQuantity(Double value, String unit) {
         return factory.createQuantityType()
-                .withValue(String.format(Locale.ENGLISH, "%.4f", value))
+                .withValue(BigDecimal.valueOf(value))
                 // use a default value since this field shouldn't be empty
                 .withUnitCode(StringUtils.isBlank(unit) ? "C62" : unit);
     }
@@ -412,8 +434,8 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
      * @param row
      * @return
      */
-    private SupplyChainTradeAgreementType createSpecifiedSupplyChainTradeAgreement(DocumentItem item, int row) {
-        SupplyChainTradeAgreementType retval = factory.createSupplyChainTradeAgreementType()
+    private LineTradeAgreementType createSpecifiedSupplyChainTradeAgreement(DocumentItem item, int row) {
+        LineTradeAgreementType retval = factory.createLineTradeAgreementType()
 //TODO EXTENDED
 //          .withBuyerOrderReferencedDocument(createBuyerOrderReferencedDocument(item))
 //          .withContractReferencedDocument(createContractReferencedDocument(item))
@@ -425,7 +447,7 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
                 ;
         return retval;
     }
-
+//
 //  /**
 //   * Detailangaben zum zugehörigen Vertrag 
 //   * @param item
@@ -445,7 +467,7 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
 //      // TODO Auto-generated method stub
 //      return null;
 //    }
-
+//
     /**
      * Detailinformationen zum Preis gemäß Bruttokalkulation 
      * exklusive Umsatzsteuer.
@@ -469,7 +491,7 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
                 ;
                 if(discount != 0) {
                     // Rabatt / Zuschlag auf Positionsebene
-                    retval.getAppliedTradeAllowanceCharge().add(createTradeAllowance(item));
+                    retval.setAppliedTradeAllowanceCharge(createTradeAllowance(item));
                 }
             break;
         case NET_PRICE:
@@ -541,7 +563,7 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
      * @param documentSummary 
      * @return
      */
-    private TradeSettlementMonetarySummationType createTradeSettlementMonetarySummation(Document invoice, DocumentSummary documentSummary) {
+    private TradeSettlementLineMonetarySummationType createTradeSettlementMonetarySummation(Document invoice, DocumentSummary documentSummary) {
         MonetaryAmount allowanceAmount = documentSummary.getDiscountGross();
         boolean isAllowance = allowanceAmount.isPositiveOrZero();
         if(!isAllowance) {
@@ -552,13 +574,13 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
             totalAmount = totalAmount.add(amt);
         }
         MonetaryAmount taxBasisTotalAmount = totalAmount.add(documentSummary.getShippingNet()).subtract(allowanceAmount);
-        TradeSettlementMonetarySummationType retval = factory.createTradeSettlementMonetarySummationType()
+        TradeSettlementLineMonetarySummationType retval = factory.createTradeSettlementLineMonetarySummationType()
                 .withLineTotalAmount(createAmount(totalAmount))
-                .withChargeTotalAmount(createAmount(documentSummary.getShippingNet()))
-                .withAllowanceTotalAmount(createAmount(allowanceAmount))
-                .withTaxBasisTotalAmount(createAmount(taxBasisTotalAmount))
-                .withTaxTotalAmount(createAmount(documentSummary.getTotalVat()))
-                .withGrandTotalAmount(createAmount(taxBasisTotalAmount.add(documentSummary.getTotalVat())))
+//                .withChargeTotalAmount(createAmount(documentSummary.getShippingNet()))
+//                .withAllowanceTotalAmount(createAmount(allowanceAmount))
+//                .withTaxBasisTotalAmount(createAmount(taxBasisTotalAmount))
+//                .withTaxTotalAmount(createAmount(documentSummary.getTotalVat()))
+//                .withGrandTotalAmount(createAmount(taxBasisTotalAmount.add(documentSummary.getTotalVat())))
             //  .withTotalPrepaidAmount(createAmount(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit())))
             //  .withDuePayableAmount(createAmount(documentSummary.getTotalGross().subtract(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit()))
             //          )
@@ -566,13 +588,13 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
         return retval;
     }
 
-    private TradeSettlementMonetarySummationType createTradeSettlementMonetarySummation(DocumentItem item) {
+    private TradeSettlementLineMonetarySummationType createTradeSettlementLineMonetarySummation(DocumentItem item) {
         /*
          * Der Gesamtpositionsbetrag ist der Nettobetrag unter Berücksichtigung von Zu- und Abschlägen ohne 
          * Angabe des Umsatzsteuerbetrages. 
          */
         Price price = new Price(item);
-        TradeSettlementMonetarySummationType retval = factory.createTradeSettlementMonetarySummationType()
+        TradeSettlementLineMonetarySummationType retval = factory.createTradeSettlementLineMonetarySummationType()
                 .withLineTotalAmount(createAmount(price.getTotalNetRounded()));
         
         storeNetPrice(price.getVatPercent(), price.getTotalNetRounded());
@@ -595,42 +617,42 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
         netPricesPerVat.put(vatPercent, newAmount);
     }
 
-    private TradePaymentTermsType createTradePaymentTerms(Document invoice, DocumentSummary documentSummary) {
-        LocalDateTime dueDate = 
-                DataUtils.getInstance().addToDate(invoice.getDocumentDate(), invoice.getDueDays());
-        Placeholders placeholders = ContextInjectionFactory.make(Placeholders.class, eclipseContext);
-        double percent = invoice.getPayment().getDiscountValue();
-        
-        Date out = Date.from(dueDate.atZone(ZoneId.systemDefault()).toInstant());
-        
-        Optional<String> paymentText = Optional.ofNullable(placeholders.createPaymentText(invoice, documentSummary, percent));
-        TradePaymentTermsType tradePaymentTerms = factory.createTradePaymentTermsType()
-            .withDescription(createText(paymentText.orElse("unknown")))
-            .withDueDateDateTime(createDateTime(out));
-        // TODO EXTENDED: Applicable. Trade_ Payment Penalty Terms
-        // TODO EXTENDED: Applicable. Trade_ Payment Discount Terms
-        return tradePaymentTerms;
-    }
-
-    private LogisticsServiceChargeType createLogisticsServiceCharge(Document invoice, DocumentSummary documentSummary) {
-        LogisticsServiceChargeType logisticsServiceCharge;
-        if(invoice.getShipping() != null) {
-            logisticsServiceCharge = factory.createLogisticsServiceChargeType()
-                .withDescription(createText(invoice.getShipping().getDescription()))            
-                .withAppliedAmount(createAmount(documentSummary.getShippingNet(), 2, true));
-            VAT shippingVat = invoice.getShipping().getShippingVat();
-            if(shippingVat != null) {
-                logisticsServiceCharge.getAppliedTradeTax().add(createTradeTax(shippingVat));
-            }
-        } else if(invoice.getShippingValue() != null) {
-            logisticsServiceCharge = factory.createLogisticsServiceChargeType()
-                    .withAppliedAmount(createAmount(documentSummary.getShippingNet(), 2, true));
-        } else {
-            logisticsServiceCharge = factory.createLogisticsServiceChargeType();
-        }
-        
-        return logisticsServiceCharge;
-    }
+//    private TradePaymentTermsType createTradePaymentTerms(Document invoice, DocumentSummary documentSummary) {
+//        LocalDateTime dueDate = 
+//                DataUtils.getInstance().addToDate(invoice.getDocumentDate(), invoice.getDueDays());
+//        Placeholders placeholders = ContextInjectionFactory.make(Placeholders.class, eclipseContext);
+//        double percent = invoice.getPayment().getDiscountValue();
+//        
+//        Date out = Date.from(dueDate.atZone(ZoneId.systemDefault()).toInstant());
+//        
+//        Optional<String> paymentText = Optional.ofNullable(placeholders.createPaymentText(invoice, documentSummary, percent));
+//        TradePaymentTermsType tradePaymentTerms = factory.createTradePaymentTermsType()
+//            .withDescription(createText(paymentText.orElse("unknown")))
+//            .withDueDateDateTime(createDateTime(out));
+//        // TODO EXTENDED: Applicable. Trade_ Payment Penalty Terms
+//        // TODO EXTENDED: Applicable. Trade_ Payment Discount Terms
+//        return tradePaymentTerms;
+//    }
+//
+//    private LogisticsServiceChargeType createLogisticsServiceCharge(Document invoice, DocumentSummary documentSummary) {
+//        LogisticsServiceChargeType logisticsServiceCharge;
+//        if(invoice.getShipping() != null) {
+//            logisticsServiceCharge = factory.createLogisticsServiceChargeType()
+//                .withDescription(createText(invoice.getShipping().getDescription()))            
+//                .withAppliedAmount(createAmount(documentSummary.getShippingNet(), 2, true));
+//            VAT shippingVat = invoice.getShipping().getShippingVat();
+//            if(shippingVat != null) {
+//                logisticsServiceCharge.getAppliedTradeTax().add(createTradeTax(shippingVat));
+//            }
+//        } else if(invoice.getShippingValue() != null) {
+//            logisticsServiceCharge = factory.createLogisticsServiceChargeType()
+//                    .withAppliedAmount(createAmount(documentSummary.getShippingNet(), 2, true));
+//        } else {
+//            logisticsServiceCharge = factory.createLogisticsServiceChargeType();
+//        }
+//        
+//        return logisticsServiceCharge;
+//    }
 
     /**
      * Detailinformationen zu Zu- und Abschlägen.
@@ -675,9 +697,9 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
 
     private TradeTaxType createTradeTax(VAT vatValue) {
         return factory.createTradeTaxType()
-                .withApplicablePercent(factory.createPercentType().withValue(String.format(Locale.ENGLISH, "%.2f", vatValue.getTaxValue() * 100)))
-                .withCategoryCode(createTaxCategoryCode("S"))   // Standard rate, FIXME for other uses!
-                .withTypeCode(createTaxTypeCode("VAT"))
+                .withRateApplicablePercent(factory.createPercentType().withValue(BigDecimal.valueOf(vatValue.getTaxValue() * 100)))
+                .withCategoryCode(createTaxCategoryCode(TaxCategoryCodeContentType.S))   // Standard rate, FIXME for other uses!
+                .withTypeCode(createTaxTypeCode(TaxTypeCodeContentType.VAT))
                 ;
     }
 
@@ -688,11 +710,11 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
         MonetaryAmount basisAmount = Optional.ofNullable(netPricesPerVat.get(numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getVatPercent()))).orElse(Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()));
         TradeTaxType retval = factory.createTradeTaxType()
                 .withCalculatedAmount(createAmount(basisAmount.multiply(vatSummaryItem.getVatPercent())))
-                .withApplicablePercent(factory.createPercentType().withValue(String.format(Locale.ENGLISH, "%.2f", DataUtils.getInstance().round(vatSummaryItem.getVatPercent() * 100))))
+                .withRateApplicablePercent(factory.createPercentType().withValue(BigDecimal.valueOf( DataUtils.getInstance().round(vatSummaryItem.getVatPercent() * 100))))
                 .withBasisAmount(createAmount(basisAmount))
-                .withCategoryCode(createTaxCategoryCode("S"))   // Standard rate, FIXME for other uses!
+                .withCategoryCode(createTaxCategoryCode(TaxCategoryCodeContentType.S))   // Standard rate, FIXME for other uses!
                 //.withExemptionReason(TODO)
-                .withTypeCode(createTaxTypeCode("VAT"))
+                .withTypeCode(createTaxTypeCode(TaxTypeCodeContentType.VAT))
                 ; 
         return retval;
     }
@@ -704,20 +726,21 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
      */
     private TradeTaxType createTradeTax(Double vatPercent) {
         TradeTaxType retval = factory.createTradeTaxType()
-                .withApplicablePercent(factory.createPercentType()
-                .withValue(String.format(Locale.ENGLISH, "%.2f", (vatPercent * 100.0))))
-                .withCategoryCode(createTaxCategoryCode("S")) // Standard rate, FIXME for other uses!
+                .withRateApplicablePercent(factory.createPercentType()
+                .withValue(BigDecimal.valueOf(vatPercent * 100.0)))
+                .withCategoryCode(createTaxCategoryCode(TaxCategoryCodeContentType.S)) // Standard rate, FIXME for other uses!
                 //.withExemptionReason(TODO)
-                .withTypeCode(createTaxTypeCode("VAT"));
+                .withTypeCode(createTaxTypeCode(TaxTypeCodeContentType.VAT));
         return retval;
     }
 
-    private TaxTypeCodeType createTaxTypeCode(String string) {
+    private TaxTypeCodeType createTaxTypeCode(TaxTypeCodeContentType string) {
+        
         return factory.createTaxTypeCodeType()
                 .withValue(string);
     }
 
-    private TaxCategoryCodeType createTaxCategoryCode(String taxCat) {
+    private TaxCategoryCodeType createTaxCategoryCode(TaxCategoryCodeContentType taxCat) {
         return factory.createTaxCategoryCodeType()
                 .withValue(taxCat);
     }
@@ -744,7 +767,7 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
      */
     private AmountType createAmount(MonetaryAmount amount, int scale, boolean withCurrency) {
         return factory.createAmountType()
-                .withValue(String.format(Locale.ENGLISH, "%."+scale+"f", amount.getNumber().doubleValue()))
+                .withValue(BigDecimal.valueOf(amount.getNumber().doubleValueExact()))
                 .withCurrencyID(withCurrency ? amount.getCurrency().getCurrencyCode() : null);      
     }
 
@@ -752,17 +775,17 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
         return factory.createCreditorFinancialInstitutionType()
                 .withBICID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BIC)))
 //              .withGermanBankleitzahlID(createIdFromString(preferences.getString("YOURCOMPANY_COMPANY_BANKCODE")))
-                .withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BANK)));
+        /*.withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BANK)))*/;
     }
 
-    private DebtorFinancialInstitutionType createDebtorFinancialInstitution(Document invoice) {
+    private DebtorFinancialAccountType createDebtorFinancialInstitution(Document invoice) {
         DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
         Contact billingAddress = getOriginContact(documentReceiver);
         if(!StringUtils.isEmpty(billingAddress.getBankAccount().getBic())) {
-            return factory.createDebtorFinancialInstitutionType()
-                    .withBICID(createIdFromString(billingAddress.getBankAccount().getBic()))
+            return factory.createDebtorFinancialAccountType()
+                    .withIBANID(createIdFromString(billingAddress.getBankAccount().getIban()))
 //                  .withGermanBankleitzahlID(createIdFromString(invoice.getFormatedStringValueByKeyFromOtherTable("addressid.CONTACTS:bank_code")))
-                    .withName(createText(billingAddress.getBankAccount().getBankName()));
+            /*.withName(createText(billingAddress.getBankAccount().getBankName()))*/;
         } else return null;
     }
 
@@ -938,7 +961,24 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
         DateTimeType dateValue = null;
         if(dateString != null) {
             dateValue = factory.createDateTimeType();
-            DateTimeString dateTypeString = factory.createDateTimeTypeDateTimeString();
+            DateTimeType.DateTimeString dateTypeString = factory.createDateTimeTypeDateTimeString();
+            dateTypeString.setValue(sdfDest.format(dateString));
+            dateTypeString.setFormat("102");
+            dateValue.setDateTimeString(dateTypeString);
+        }
+        return dateValue;
+    }
+    /**
+     * Creates a {@link FormattedDateTimeType} from a given date string ("YYYY-MM-DD").
+     * 
+     * @param dateString the date String
+     * @return {@link FormattedDateTimeType}
+     */
+    private FormattedDateTimeType createFormattedDateTime(final Date dateString) {
+        FormattedDateTimeType dateValue = null;
+        if(dateString != null) {
+            dateValue = factory.createFormattedDateTimeType();
+            DateTimeString dateTypeString = factory.createFormattedDateTimeTypeDateTimeString();
             dateTypeString.setValue(sdfDest.format(dateString));
             dateTypeString.setFormat("102");
             dateValue.setDateTimeString(dateTypeString);
@@ -969,7 +1009,7 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
     @Override
     protected IPdfHelper getPdfHelper() {
         if(pdfHelper == null) {
-            pdfHelper = new ZugferdHelper();
+            pdfHelper = new FacturXHelper();
         }
         return pdfHelper;
     }

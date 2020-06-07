@@ -11,7 +11,7 @@
  * Contributors: Gerd Bartelt - initial API and implementation
  */
 
-package org.fakturama.export.zugferd;
+package org.fakturama.export.einvoice;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

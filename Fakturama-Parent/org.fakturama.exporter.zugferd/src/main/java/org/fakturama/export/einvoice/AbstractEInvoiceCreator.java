@@ -1,10 +1,11 @@
-package org.fakturama.export.zugferd;
+package org.fakturama.export.einvoice;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,7 +45,9 @@ import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 
 public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
@@ -90,7 +93,7 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
     protected static final int DEFAULT_AMOUNT_SCALE = 4;
 
     protected static SimpleDateFormat sdfDest = new SimpleDateFormat("yyyyMMdd");
-    Map<String, MonetaryAmount> netPricesPerVat = new HashMap<>();;
+    protected Map<String, MonetaryAmount> netPricesPerVat = new HashMap<>();;
 
     /**
      * Erzeugt aus einem bereits gedruckten PDF-Dokument (PDF/A-1) und einem
@@ -115,10 +118,10 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
             org.w3c.dom.Document zugferdXml = (org.w3c.dom.Document) res.getNode();
             printDocument(zugferdXml, buffo);
     
-            PDDocument retvalPDFA3 = ZugferdHelper.makeA3Acompliant(pdfFile, zugferdProfile/*, zugferdXml, invoice.getName()*/);
+            PDDocument retvalPDFA3 = getPdfHelper().makeA3Acompliant(pdfFile, zugferdProfile/*, zugferdXml, invoice.getName()*/);
     
             // embed XML
-            pdfa3 = ZugferdHelper.attachZugferdFile(retvalPDFA3, buffo);
+            pdfa3 = getPdfHelper().attachZugferdFile(retvalPDFA3, buffo);
             
             if (pdfFile != null) {
                 pdfa3.save(Paths.get(pdfFile).toFile());
@@ -140,6 +143,8 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
         return retval;
     }
     
+    protected abstract IPdfHelper getPdfHelper();
+
     private void printDocument(org.w3c.dom.Document doc, StreamResult streamResult) throws IOException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
@@ -163,7 +168,7 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
      * @param root the document 
      */
     @SuppressWarnings("unused")
-    private void testOutput(CrossIndustryDocument root) {
+    protected void testOutput(Serializable root) {
         /* * * * * * TEST ONLY!!! * * * * * */
         Path path = Paths.get("d:\\temp\\ZUGTEST.XML");
         try(BufferedWriter newBufferedWriter = Files.newBufferedWriter(path, Charset.defaultCharset(), StandardOpenOption.CREATE);) {
@@ -181,6 +186,13 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
         /* * * * * *  END TEST ONLY!!! * * * * * */
         
         
+    }
+
+    protected Contact getOriginContact(DocumentReceiver contact) {
+        if(contact.getOriginContactId() != null) {
+            return contactsDAO.findById(contact.getOriginContactId());
+        }
+        return null;
     }
 
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.fakturama.export.zugferd;
+package org.fakturama.export.einvoice;
 
 /**
  * Abbildung der Levels für die einzelnen ZUGFeRD-Ausbaustufen

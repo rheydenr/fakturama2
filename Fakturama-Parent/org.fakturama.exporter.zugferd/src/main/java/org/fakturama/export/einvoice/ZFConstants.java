@@ -12,7 +12,7 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package org.fakturama.export.zugferd;
+package org.fakturama.export.einvoice;
 
 /**
  * Constants for ZUGFeRD plugin.

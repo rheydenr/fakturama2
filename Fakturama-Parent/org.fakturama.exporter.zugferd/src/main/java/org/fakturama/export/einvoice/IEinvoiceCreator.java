@@ -1,4 +1,4 @@
-package org.fakturama.export.zugferd;
+package org.fakturama.export.einvoice;
 
 import java.util.Optional;
 

@@ -35,6 +35,6 @@ Import-Package: com.sebulli.fakturama.model,
  com.sebulli.fakturama.util,
  org.eclipse.e4.ui.model,
  org.eclipse.e4.ui.model.application.ui.basic
-Bundle-Activator: org.fakturama.export.zugferd.Activator
+Bundle-Activator: org.fakturama.export.einvoice.Activator
 Automatic-Module-Name: org.fakturama.exporter.zugferd
-Service-Component: OSGI-INF/org.fakturama.export.zugferd.ZugferdExporter.xml
+Service-Component: OSGI-INF/org.fakturama.export.einvoice.ZugferdExporter.xml

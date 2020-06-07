@@ -11,7 +11,7 @@
  * Contributors:
  *   Ralf Heydenreich - initial API and implementation
  */
-package org.fakturama.export.zugferd;
+package org.fakturama.export.einvoice;
 
 import java.util.Optional;
 
@@ -23,7 +23,10 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
+import org.fakturama.export.facturx.XRechnungCreator;
+import org.fakturama.export.zugferd.ZUGFeRDCreator;
 import org.osgi.service.component.annotations.Component;
 
 import com.sebulli.fakturama.model.Document;
@@ -47,6 +50,9 @@ public class ZugferdExporter implements IPdfPostProcessor {
     @Inject @org.eclipse.e4.core.di.annotations.Optional
     @Preference
     private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    IPreferenceStore prefStore;
 
     @Inject @org.eclipse.e4.core.di.annotations.Optional
     public Shell shell;
@@ -58,20 +64,8 @@ public class ZugferdExporter implements IPdfPostProcessor {
     @Inject
     private IEclipseContext eclipseContext;
 
-	/**
-	 * This is for distinguishing the different contact entries.
-	 *
-	 */
-	enum ContactType { SELLER, BUYER }
 	enum FinancialRole { DEBTOR, CREDITOR }
-//	enum InvoiceeTradeParty { DERIVED, }
-	enum PriceType {
-	    GROSS_PRICE,
-	    NET_PRICE,
-	    NET_PRICE_DISCOUNTED
-    }
-
-	@Override
+@Override
 	public boolean canProcess() {
 		/*
 		* Zunächst muß geprüft werden, ob OO/LO auch PDF/A erzeugt. Dazu muß man in der Datei 
@@ -99,7 +93,7 @@ public class ZugferdExporter implements IPdfPostProcessor {
 			ConformanceLevel zugferdProfile = ConformanceLevel.valueOf(conformanceLevel);
     	    // create e-invoice according to selected preferences
 			IEinvoiceCreator invoiceCreator;
-    	    if(eclipsePrefs.getInt(ZFConstants.PREFERENCES_ZUGFERD_VERSION, 1) == 1) {
+    	    if(eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_VERSION, "3").contentEquals("2")) {
     	        invoiceCreator = ContextInjectionFactory.make(ZUGFeRDCreator.class, eclipseContext);
     	    } else { // 2.1
     	        invoiceCreator = ContextInjectionFactory.make(XRechnungCreator.class, eclipseContext);

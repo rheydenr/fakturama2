@@ -90,7 +90,6 @@
 		                    <extension>true</extension>
 		                    <!-- see https://github.com/highsource/maven-jaxb2-plugin/wiki/Do-Not-Use-forceRegenerate -->
 		                    <!--  forceRegenerate>true</forceRegenerate --> 
-		                    <forceRegenerate>true</forceRegenerate>
 		                    <locale>en</locale>
 		                    <args>
 		                        <arg>-Xfluent-api</arg>
