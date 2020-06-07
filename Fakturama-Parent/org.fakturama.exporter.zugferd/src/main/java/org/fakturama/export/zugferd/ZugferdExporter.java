@@ -13,27 +13,21 @@
  */
 package org.fakturama.export.zugferd;
 
-import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.component.annotations.Component;
 
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.office.IPdfPostProcessor;
-import com.sebulli.fakturama.parts.DocumentEditor;
 
 /**
  * This is the main class for the exporter interface for the ZUGFeRD invoice. At the
@@ -64,10 +58,6 @@ public class ZugferdExporter implements IPdfPostProcessor {
     @Inject
     private IEclipseContext eclipseContext;
 
-    @Inject
-    private ESelectionService selectionService;
-
-
 	/**
 	 * This is for distinguishing the different contact entries.
 	 *
@@ -80,30 +70,6 @@ public class ZugferdExporter implements IPdfPostProcessor {
 	    NET_PRICE,
 	    NET_PRICE_DISCOUNTED
     }
-	
-	/**
-	 * Constructor
-	 */
-	@PostConstruct
-	public void initializeZugferdExporter() {
-
-//		super(ACTIONTEXT);
-//		ZFDefaultValuesInitializer make = ContextInjectionFactory.make(ZFDefaultValuesInitializer.class, eclipseContext);
-//		make.initializeDefaultPreferences();
-
-		//T: Tool Tip Text
-//		setToolTipText(_("Export an invoice to a ZUGFeRD PDF"));
-//
-//		// The id is used to refer to the action in a menu or toolbar
-//		setId(ICommandIds.CMD_EXPORT_ZUGFERD);
-//
-//		// Associate the action with a pre-defined command, to allow key
-//		// bindings.
-//		setActionDefinitionId(ICommandIds.CMD_EXPORT_ZUGFERD);
-//
-//		// sets a default 16x16 pixel icon.
-//		setImageDescriptor(com.sebulli.fakturama.Activator.getImageDescriptor("/icons/16/shop_16.png"));
-	}
 
 	@Override
 	public boolean canProcess() {
@@ -141,11 +107,8 @@ public class ZugferdExporter implements IPdfPostProcessor {
 			
             result = invoiceCreator.createEInvoice(invoice, zugferdProfile);
             
-			if(result) {
-				// Display an info message
-				MessageDialog.openInformation(shell, msg.zugferdExportCommandTitle, msg.zugferdExportInfoSuccessfully);
-			} else {
-				// Display an info message
+			if(!result) {
+				// Display an error message
 				MessageDialog.openError(shell, msg.zugferdExportCommandTitle, msg.zugferdExportErrorCancelled);
 			}
 		} else {

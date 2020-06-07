@@ -118,7 +118,7 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
             PDDocument retvalPDFA3 = ZugferdHelper.makeA3Acompliant(pdfFile, zugferdProfile/*, zugferdXml, invoice.getName()*/);
     
             // embed XML
-            pdfa3 = ZugferdHelper.attachZugferdFile(retvalPDFA3, buffo.toByteArray());
+            pdfa3 = ZugferdHelper.attachZugferdFile(retvalPDFA3, buffo);
             
             if (pdfFile != null) {
                 pdfa3.save(Paths.get(pdfFile).toFile());
