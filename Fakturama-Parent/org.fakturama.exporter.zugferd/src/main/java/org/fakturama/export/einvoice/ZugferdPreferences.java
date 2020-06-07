@@ -64,9 +64,9 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 			getFieldEditorParent()));
 		
 		ComboFieldEditor conformanceLevelCombo = new ComboFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, msg.zugferdPreferencesProfile, 
-				new String[][] { { ConformanceLevel.BASIC.toString(), ConformanceLevel.BASIC.toString() }, 
-			{ ConformanceLevel.COMFORT.toString(), ConformanceLevel.COMFORT.toString()}, 
-			{ ConformanceLevel.EXTENDED.toString(), ConformanceLevel.EXTENDED.toString() }
+				new String[][] { { ConformanceLevel.ZUGFERD_V1_BASIC.toString(), ConformanceLevel.ZUGFERD_V1_BASIC.toString() }, 
+			{ ConformanceLevel.ZUGFERD_V1_COMFORT.toString(), ConformanceLevel.ZUGFERD_V1_COMFORT.toString()}, 
+			{ ConformanceLevel.ZUGFERD_V1_EXTENDED.toString(), ConformanceLevel.ZUGFERD_V1_EXTENDED.toString() }
 		 }, getFieldEditorParent());
 		conformanceLevelCombo.setEnabled(false, getFieldEditorParent());
 		addField(conformanceLevelCombo);

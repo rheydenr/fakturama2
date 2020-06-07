@@ -1,3 +1,16 @@
+/* 
+ * Fakturama - Free Invoicing Software - http://www.fakturama.org
+ * 
+ * Copyright (C) 2020 Ralf Heydenreich
+ * 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *   Ralf Heydenreich - initial API and implementation
+ */
 package org.fakturama.export.facturx;
 
 import java.math.BigDecimal;
@@ -6,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import javax.money.MonetaryAmount;
@@ -17,9 +29,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.fakturama.export.einvoice.AbstractEInvoiceCreator;
 import org.fakturama.export.einvoice.ConformanceLevel;
-import org.fakturama.export.einvoice.ContactType;
 import org.fakturama.export.einvoice.IPdfHelper;
-import org.fakturama.export.einvoice.PriceType;
 import org.fakturama.export.einvoice.ZFConstants;
 import org.fakturama.export.facturx.modelgen.AmountType;
 import org.fakturama.export.facturx.modelgen.CodeType;
@@ -65,7 +75,6 @@ import org.fakturama.export.facturx.modelgen.TradePartyType;
 import org.fakturama.export.facturx.modelgen.TradePaymentTermsType;
 import org.fakturama.export.facturx.modelgen.TradePriceType;
 import org.fakturama.export.facturx.modelgen.TradeProductType;
-import org.fakturama.export.facturx.modelgen.TradeSettlementFinancialCardType;
 import org.fakturama.export.facturx.modelgen.TradeSettlementHeaderMonetarySummationType;
 import org.fakturama.export.facturx.modelgen.TradeSettlementLineMonetarySummationType;
 import org.fakturama.export.facturx.modelgen.TradeSettlementPaymentMeansType;
@@ -89,7 +98,6 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.office.Placeholders;
-import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
  * Generator class for XRechnung /Factur-x files.

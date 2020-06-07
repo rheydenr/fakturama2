@@ -65,7 +65,8 @@ public class ZugferdExporter implements IPdfPostProcessor {
     private IEclipseContext eclipseContext;
 
 	enum FinancialRole { DEBTOR, CREDITOR }
-@Override
+
+	@Override
 	public boolean canProcess() {
 		/*
 		* Zunächst muß geprüft werden, ob OO/LO auch PDF/A erzeugt. Dazu muß man in der Datei 
@@ -89,13 +90,16 @@ public class ZugferdExporter implements IPdfPostProcessor {
         boolean result = false;
         if(invoice.isPresent()) {
 	    
-			String conformanceLevel = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, "COMFORT");
-			ConformanceLevel zugferdProfile = ConformanceLevel.valueOf(conformanceLevel);
+            // currently only COMFORT profile is supported
+//			String conformanceLevel = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, "COMFORT");
+			ConformanceLevel zugferdProfile;
     	    // create e-invoice according to selected preferences
 			IEinvoiceCreator invoiceCreator;
     	    if(eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_VERSION, "3").contentEquals("2")) {
+    	        zugferdProfile = ConformanceLevel.FACTURX_EN16931;
     	        invoiceCreator = ContextInjectionFactory.make(ZUGFeRDCreator.class, eclipseContext);
     	    } else { // 2.1
+    	        zugferdProfile = ConformanceLevel.ZUGFERD_V1_COMFORT;
     	        invoiceCreator = ContextInjectionFactory.make(XRechnungCreator.class, eclipseContext);
     	    }
 			

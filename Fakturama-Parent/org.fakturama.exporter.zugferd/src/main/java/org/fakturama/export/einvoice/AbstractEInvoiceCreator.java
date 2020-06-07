@@ -1,3 +1,16 @@
+/* 
+ * Fakturama - Free Invoicing Software - http://www.fakturama.org
+ * 
+ * Copyright (C) 2020 Ralf Heydenreich
+ * 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *   Ralf Heydenreich - initial API and implementation
+ */
 package org.fakturama.export.einvoice;
 
 import java.io.BufferedWriter;
@@ -51,7 +64,19 @@ import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 
 public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
+    /**
+     * This is for distinguishing the different contact entries.
+     *
+     */
+    public enum ContactType { SELLER, BUYER }
 
+    //  enum InvoiceeTradeParty { DERIVED, }
+    public enum PriceType {
+        GROSS_PRICE,
+        NET_PRICE,
+        NET_PRICE_DISCOUNTED
+    }
+    
     @Inject
     @Translation
     protected ZFMessages msg;
