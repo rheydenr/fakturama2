@@ -492,7 +492,7 @@ public class OfficeDocument {
                 
                 context.set(Shell.class, shell);
                 for (ServiceReference<IPdfPostProcessor> serviceReference : serviceReferences) {
-                    // enrich postprocessor service with available Eclipse services
+                    // enrich post processor service with available Eclipse services
                     IPdfPostProcessor currentProcessor = Activator.getContext().getService(serviceReference);
                     ContextInjectionFactory.inject(currentProcessor, context);
                     if (currentProcessor.canProcess()) {

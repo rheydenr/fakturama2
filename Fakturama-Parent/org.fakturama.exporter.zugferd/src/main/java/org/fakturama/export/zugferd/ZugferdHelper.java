@@ -17,18 +17,15 @@ package org.fakturama.export.zugferd;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.Optional;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.jempbox.xmp.XMPSchemaBasic;
-import org.apache.jempbox.xmp.XMPSchemaDublinCore;
-import org.apache.jempbox.xmp.XMPSchemaPDF;
-import org.apache.jempbox.xmp.pdfa.XMPSchemaPDFAId;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -40,151 +37,193 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.e4.core.internal.services.ResourceBundleHelper;
-import org.osgi.framework.Bundle;
-
-import com.sebulli.fakturama.exception.FakturamaStoringException;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.XmpConstants;
+import org.apache.xmpbox.schema.AdobePDFSchema;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.PDFAExtensionSchema;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.schema.XMPSchema;
+import org.apache.xmpbox.schema.XmpSchemaException;
+import org.apache.xmpbox.type.AbstractField;
+import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.Attribute;
+import org.apache.xmpbox.type.Cardinality;
+import org.apache.xmpbox.type.ChoiceType;
+import org.apache.xmpbox.type.DefinedStructuredType;
+import org.apache.xmpbox.type.IntegerType;
+import org.apache.xmpbox.type.PDFAPropertyType;
+import org.apache.xmpbox.type.PDFASchemaType;
+import org.apache.xmpbox.type.StructuredType;
+import org.apache.xmpbox.type.TextType;
+import org.apache.xmpbox.type.TypeMapping;
+import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
+import org.apache.xmpbox.xml.XmpSerializer;
 
 
 /**
- * @author rheydenr
  *
  */
 public class ZugferdHelper {
-    private static final String XMP_SCHEMALOCATION = "/ZUGFeRD_Extension-Schema-neu.xmp";
 
-	/**
-	 * Makes A PDF/A3a-compliant document from a PDF-A1 compliant document (on
+	private static final String PDFA_EXTENSION_SCHEMA_PREFIX = "pdfaSchema";
+    private static final String PDFA_EXTENSION_SCHEMA_NAMESPACE = "http://www.aiim.org/pdfa/ns/schema#";
+
+    /**
+	 * Makes A PDF/A-3a-compliant document from a PDF/A-1 compliant document (on
 	 * the metadata level, this will not e.g. convert graphics to JPG-2000)
 	 * 
 	 * @return 
 	 * @throws TransformerException 
 	 * @throws IOException 
+	 * @throws XmpParsingException 
+	 * @throws XmpSchemaException 
 	 * */
-	public static PDDocument makeA3Acompliant(String pdfFile, ConformanceLevel level) throws IOException, TransformerException {
-		PDDocument doc = PDDocument.load(pdfFile);
-			PDDocumentCatalog cat = doc.getDocumentCatalog();
-			PDMetadata metadata = cat.getMetadata();
-			// we're using the jempbox org.apache.jempbox.xmp.XMPMetadata version,
-			// not the xmpbox one
-			XMPMetadata xmp = new XMPMetadata();
+	public static PDDocument makeA3Acompliant(String pdfFileName, ConformanceLevel level) throws IOException, TransformerException, XmpParsingException, XmpSchemaException {
+	    Path pdfFile = Paths.get(pdfFileName);
+	    if(Files.notExists(pdfFile)) {
+	        return null;
+	    }
+	    
+		PDDocument doc = PDDocument.load(Files.newInputStream(pdfFile));
+        PDDocumentCatalog catalog = doc.getDocumentCatalog();
+        PDMetadata metadata = catalog.getMetadata();
 
-			XMPSchemaPDFAId pdfaid = new XMPSchemaPDFAId(xmp);
-			pdfaid.setAbout(""); //$NON-NLS-1$
-			xmp.addSchema(pdfaid);
-
-			XMPSchemaDublinCore dc = xmp.addDublinCoreSchema();
-			String creator = System.getProperty("user.name"); // set current (operating system) user name as (mandatory) human creator //$NON-NLS-1$
-			String producer = "Fakturama.org"; // (mandatory) producer application is Fakturama 
-			dc.addCreator(creator);
-			dc.setAbout(""); //$NON-NLS-1$
-
-			XMPSchemaBasic xsb = xmp.addBasicSchema();
-			xsb.setAbout(""); //$NON-NLS-1$
-
-			xsb.setCreatorTool("Fakturama invoicing software");
-			xsb.setCreateDate(GregorianCalendar.getInstance());
-			PDDocumentInformation pdi=doc.getDocumentInformation();
-			pdi.setProducer(producer);
-			pdi.setAuthor(creator);
-			doc.setDocumentInformation(pdi);
-
-			XMPSchemaPDF pdf = xmp.addPDFSchema();
-			pdf.setProducer(producer);
-			pdf.setAbout(""); //$NON-NLS-1$
-
-			/*
-			// Mandatory: PDF/A3-a is tagged PDF which has to be expressed using a
-			// MarkInfo dictionary (PDF A/3 Standard sec. 6.7.2.2)*/
-			PDMarkInfo markinfo = new PDMarkInfo();
-			markinfo.setMarked(true);
-			doc.getDocumentCatalog().setMarkInfo(markinfo);
-	
-	/*
-		To be on the safe side, we use level B without Markinfo because we can not 
-		guarantee that the user  correctly tagged the templates for the PDF. 
-	 * */
-			pdfaid.setConformance("B");//$NON-NLS-1$
-        /*  * All files are PDF/A-3, setConformance
-         * refers to the level conformance, e.g.
-         * PDF/A-3-B where B means only visually
-         * preservable, U means visually and unicode
-         * preservable and A -like in this case-
-         * means full compliance, i.e. visually,
-         * unicode and structurally preservable
-         * 
-         */
-			pdfaid.setPart(3);
-
-				addZugferdXMP(xmp, level); /*
-									 * this is the only line where we do something
-									 * Zugferd-specific, i.e. add PDF metadata
-									 * specifically for Zugferd, not generically for
-									 * an embedded file
-									 */
-
-			metadata.importXMPMetadata(xmp);
-			
-//			XmpSerializer serializer = new XmpSerializer();
-//			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//			serializer.serialize(xmp, baos, true);
-//			metadata.importXMPMetadata(baos.toByteArray());
-//			doc.getDocumentCatalog().setMetadata(metadata);			
-			
-			
-			return doc;
-		}
-
-/***
- * This will add both the RDF-indication which embedded file is Zugferd and the 
- * necessary PDF/A schema extension description to be able to add this information to RDF 
- * @param metadata
- */
-	private static void addZugferdXMP(XMPMetadata metadata, ConformanceLevel level) {
-        Bundle definingBundle = ResourceBundleHelper.getBundleForName(org.fakturama.export.zugferd.Activator.PLUGIN_ID);
-        URL fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
-                XMP_SCHEMALOCATION), null);
-        if(fileResource == null) {
-            // try resource from src
-            fileResource = FileLocator.find(definingBundle, new org.eclipse.core.runtime.Path(
-                "/src/main/resources/"+XMP_SCHEMALOCATION), null);
-        }
-//        try(InputStream zfExtensionIs = fileResource.openStream();) {
-//            DomXmpParser builder = new DomXmpParser();
-//            builder.setStrictParsing(true);
-//            
-//            XMPMetadata defaultXmp = builder.parse(zfExtensionIs);
-//            metadata.addSchema(defaultXmp.getPDFExtensionSchema());
-//
+        DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(metadata.createInputStream());
+        TypeMapping tm = new TypeMapping(xmp);
         
-        XMPSchemaZugferd zf = new XMPSchemaZugferd(metadata, level/*, "1.0"*/);
-            zf.setAbout(""); //$NON-NLS-1$
-            metadata.addSchema(zf);
-//        } catch (IOException | NullPointerException e) {
-//            throw new FakturamaStoringException("can't parse XMP file", e);
+        DublinCoreSchema dcSchema = Optional.ofNullable(xmp.getDublinCoreSchema()).orElse(xmp.createAndAddDublinCoreSchema());
+        String creator = System.getProperty("user.name"); // set current (operating system) user name as (mandatory) human creator //$NON-NLS-1$
+        dcSchema.addCreator(creator);
+        dcSchema.setAboutAsSimple(""); //$NON-NLS-1$
+
+        XMPBasicSchema basicSchema = Optional.ofNullable(xmp.getXMPBasicSchema()).orElse(xmp.createAndAddXMPBasicSchema());
+        basicSchema.setAboutAsSimple(""); //$NON-NLS-1$
+        basicSchema.setCreatorTool("Fakturama invoicing software");
+        basicSchema.setCreateDate(GregorianCalendar.getInstance());
+        
+        PDDocumentInformation pdi = doc.getDocumentInformation();
+        String producer = "Fakturama.org"; // (mandatory) producer application is Fakturama 
+        pdi.setProducer(producer);
+        pdi.setAuthor(creator);
+        doc.setDocumentInformation(pdi);
+
+        AdobePDFSchema pdfSchema = Optional.ofNullable(xmp.getAdobePDFSchema()).orElse(xmp.createAndAddAdobePDFSchema());
+        pdfSchema.setProducer(producer);
+        pdfSchema.setAboutAsSimple(""); //$NON-NLS-1$
+
+        /*
+        // Mandatory: PDF/A3-a is tagged PDF which has to be expressed using a
+        // MarkInfo dictionary (PDF A/3 Standard sec. 6.7.2.2)*/
+        PDMarkInfo markinfo = new PDMarkInfo();
+        markinfo.setMarked(true);
+        doc.getDocumentCatalog().setMarkInfo(markinfo);
+
+        PDFAIdentificationSchema pdfaid = Optional.ofNullable(xmp.getPDFIdentificationSchema()).orElse(xmp.createAndAddPFAIdentificationSchema());
+        TextType conf2 = (TextType) pdfaid.getProperty("conformance");
+        conf2.setValue("B");
+        IntegerType pdfConformance = (IntegerType) pdfaid.getProperty("part");
+        pdfConformance.setValue(3);
+        
+        PDFAExtensionSchema extSchema = Optional.ofNullable(xmp.getPDFExtensionSchema()).orElse(xmp.createAndAddPDFAExtensionSchemaWithDefaultNS());
+        extSchema.addNamespace( PDFA_EXTENSION_SCHEMA_NAMESPACE, PDFA_EXTENSION_SCHEMA_PREFIX);
+        extSchema.addNamespace( "http://www.aiim.org/pdfa/ns/property#", "pdfaProperty");
+        
+        ArrayProperty newBag = extSchema.createArrayProperty("schemas", Cardinality.Bag);
+        DefinedStructuredType li = new DefinedStructuredType(xmp,"urn:ferd:pdfa:invoice:rc#", "zf", XmpConstants.LIST_NAME);
+        li.setAttribute(new Attribute("urn:ferd:pdfa:invoice:rc#", XmpConstants.PARSE_TYPE, XmpConstants.RESOURCE_NAME));
+
+        newBag.addProperty(li);
+        extSchema.addProperty(newBag);
+        
+        TextType pdfa1 = tm.createText(PDFA_EXTENSION_SCHEMA_NAMESPACE, PDFA_EXTENSION_SCHEMA_PREFIX, PDFASchemaType.SCHEMA, "ZUGFeRD PDFA Extension Schema");
+        li.addProperty(pdfa1);
+        
+        AbstractField obj = new TextType(xmp,PDFA_EXTENSION_SCHEMA_NAMESPACE, PDFA_EXTENSION_SCHEMA_PREFIX, "namespaceURI", "urn:ferd:pdfa:invoice:rc#");
+        li.addProperty(obj );
+        AbstractField obj1 = new TextType(xmp,PDFA_EXTENSION_SCHEMA_NAMESPACE, PDFA_EXTENSION_SCHEMA_PREFIX, "prefix", "zf");
+        li.addProperty(obj1 );
+
+        ArrayProperty newSeq = tm.createArrayProperty(PDFA_EXTENSION_SCHEMA_NAMESPACE, PDFA_EXTENSION_SCHEMA_PREFIX,  PDFASchemaType.PROPERTY, Cardinality.Seq);
+        
+        li.addProperty(newSeq);
+        
+        newSeq.addProperty(createProperty(xmp, "DocumentFileName", "Text", "external", "name of the embedded XML invoice file"));
+        newSeq.addProperty(createProperty(xmp,"DocumentType", "Text", "external", "INVOICE"));
+        newSeq.addProperty(createProperty(xmp, "Version", "Text", "external", "The actual version of the ZUGFeRD XML schema"));
+        newSeq.addProperty(createProperty(xmp,"ConformanceLevel", "Text", "external", "The conformance level of the embedded ZUGFeRD data"));
+
+        ArrayProperty newValType= tm.createArrayProperty(PDFA_EXTENSION_SCHEMA_NAMESPACE, PDFA_EXTENSION_SCHEMA_PREFIX, PDFASchemaType.VALUE_TYPE, Cardinality.Seq);             
+        li.addProperty(newValType);         
+        
+        TypeMapping typeMapping = new TypeMapping(xmp);
+        XMPSchema xmpBasicSchema = typeMapping.getSchemaFactory("http://www.aiim.org/pdfa/ns/extension/").createXMPSchema(xmp, "zf");
+        xmpBasicSchema.addNamespace("urn:ferd:pdfa:invoice:rc#", "zf");
+        
+        xmpBasicSchema.setAboutAsSimple("");
+
+        String conformanceLevel = "COMFORT";
+//        if (conformanceLevel == null) {
+//            conformanceLevel = CONFORMANCELEVEL;
 //        }
 
-		XMPSchemaPDFAExtensions pdfaex = new XMPSchemaPDFAExtensions(metadata);
-		pdfaex.setAbout(""); //$NON-NLS-1$
-		metadata.addSchema(pdfaex);
-	}
+        xmpBasicSchema.setTextPropertyValue("ConformanceLevel", conformanceLevel);
+        xmpBasicSchema.setTextPropertyValue("DocumentType", "INVOICE");
+        xmpBasicSchema.setTextPropertyValue("DocumentFileName", "ZUGFeRD-invoice.xml");
+        xmpBasicSchema.setTextPropertyValue("Version", "1.0");
+        
+        XmpSerializer serializer = new XmpSerializer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        serializer.serialize(xmp, baos, true);
+
+        PDMetadata pdMetadata = new PDMetadata(doc);
+        pdMetadata.importXMPMetadata(baos.toByteArray());
+        doc.getDocumentCatalog().setMetadata(pdMetadata);
+
+        return doc;
+    }
+	
+    private static DefinedStructuredType createProperty(XMPMetadata metadata, String name, String type, String category, String description) {
+
+        TypeMapping tm = new TypeMapping(metadata);
+        DefinedStructuredType li = new DefinedStructuredType(metadata, PDFA_EXTENSION_SCHEMA_NAMESPACE, PDFA_EXTENSION_SCHEMA_PREFIX, XmpConstants.LIST_NAME);
+        li.setAttribute(new Attribute( PDFA_EXTENSION_SCHEMA_NAMESPACE, XmpConstants.PARSE_TYPE, XmpConstants.RESOURCE_NAME));
+        
+        StructuredType stPdfaExt = PDFAPropertyType.class.getAnnotation(StructuredType.class);
+        stPdfaExt.preferedPrefix();
+        
+        ChoiceType pdfa2 = tm.createChoice(stPdfaExt.namespace(), stPdfaExt.preferedPrefix(), PDFAPropertyType.NAME, name);
+        li.addProperty(pdfa2);
+        
+        pdfa2 = tm.createChoice(stPdfaExt.namespace(), stPdfaExt.preferedPrefix(), PDFAPropertyType.VALUETYPE, type);
+        li.addProperty(pdfa2);
+
+        pdfa2 = tm.createChoice(stPdfaExt.namespace(), stPdfaExt.preferedPrefix(), PDFAPropertyType.CATEGORY, category);
+        li.addProperty(pdfa2);
+
+        pdfa2 = tm.createChoice(stPdfaExt.namespace(), stPdfaExt.preferedPrefix(), PDFAPropertyType.DESCRIPTION, description);
+        li.addProperty(pdfa2);
+
+        return li;
+    }  
 
 	/**
 	 * embed the Zugferd XML structure in a file named ZUGFeRD-invoice.xml
 	 * @throws IOException 
 	 * */
-public static PDDocument attachZugferdFile(PDDocument doc, byte[] data) throws IOException {
-
-		// embedded files are stored in a named tree
-		PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
+    public static PDDocument attachZugferdFile(PDDocument doc, byte[] data) throws IOException {
 
 		String filename="ZUGFeRD-invoice.xml"; //$NON-NLS-1$
 		// first create the file specification, which holds the embedded file
 		PDComplexFileSpecification fs = new PDComplexFileSpecification();
 		fs.setFile(filename);
+        fs.setFileUnicode(filename);
+        fs.setFileDescription("electronical invoice according to XRechnung standard");
 
-		COSDictionary dict = fs.getCOSDictionary();
+        COSDictionary dict = fs.getCOSObject();
 		// Relation "Source" for linking with eg. catalog
 		dict.setName("AFRelationship", "Alternative"); // as defined in Zugferd standard //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -202,7 +241,12 @@ public static PDDocument attachZugferdFile(PDDocument doc, byte[] data) throws I
 
 		ef.setModDate(GregorianCalendar.getInstance());
 
-		fs.setEmbeddedFile(ef);
+        // use both methods for backwards, cross-platform and cross-language compatibility.
+        fs.setEmbeddedFile( ef );
+        fs.setEmbeddedFileUnicode(ef);
+
+        // embedded files are stored in a named tree
+        PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
 
 		// now add the entry to the embedded file tree and set in the document.
 		efTree.setNames(Collections.singletonMap(filename, fs));
@@ -210,12 +254,12 @@ public static PDDocument attachZugferdFile(PDDocument doc, byte[] data) throws I
 				doc.getDocumentCatalog());
 		names.setEmbeddedFiles(efTree);
 		doc.getDocumentCatalog().setNames(names);
+		
 		// AF entry (Array) in catalog with the FileSpec
 		COSArray cosArray = new COSArray();
 		cosArray.add(fs);
-		doc.getDocumentCatalog().getCOSDictionary().setItem("AF", cosArray); //$NON-NLS-1$
+		doc.getDocumentCatalog().getCOSObject().setItem("AF", cosArray); //$NON-NLS-1$
 		return doc;
-
 	}
 
 }
