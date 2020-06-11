@@ -109,6 +109,8 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 
 	private ContactMatcher currentFilter;
 
+    private EventList<T> contactListData;
+
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
 //        log.info("create Contact list part");
@@ -286,8 +288,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
      */
     @Override
     protected NatTable createListTable(Composite searchAndTableComposite) {
-        // fill the underlying data source (GlazedList)
-    	EventList<T> contactListData = getListData(true);
+        contactListData = getListData(true);
 
         // get the visible properties to show in list view
         String[] propertyNames = contactDAO.getVisibleProperties();
@@ -368,9 +369,9 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     public void handleRefreshEvent(String message) {
         if (StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
             sync.asyncExec(() -> {
-                top.setRedraw(false);
+                top.setRedraw(false); 
                 // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-                GlazedLists.replaceAll(treeFilteredIssues, getListData(true), false);
+                GlazedLists.replaceAll(contactListData, getListData(true), false);
                 GlazedLists.replaceAll(categories, GlazedLists.eventList(contactCategoriesDAO.findAll(true)), false);
                 top.setRedraw(true);
             });
