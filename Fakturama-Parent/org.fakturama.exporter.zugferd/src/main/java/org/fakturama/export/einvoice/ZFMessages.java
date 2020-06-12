@@ -32,6 +32,7 @@ public class ZFMessages {
 	public String zugferdExportWarningOverwrite;
 	public String zugferdExportLabelRebate;
 
+    public String zugferdPreferencesFilelocation;
 	public String zugferdPreferencesProfile;
 	public String zugferdPreferencesTitle;
 	public String zugferdPreferencesVersion;

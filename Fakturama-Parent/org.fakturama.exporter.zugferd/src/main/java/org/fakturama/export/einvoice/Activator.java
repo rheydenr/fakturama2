@@ -48,6 +48,8 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         Activator.context = bundleContext;
+        ZFDefaultValuesInitializer f = new ZFDefaultValuesInitializer();
+        f.initializeDefaultPreferences();
    }
 
     /*

@@ -9,13 +9,10 @@ Bundle-ClassPath: .,
  lib/xmpbox-2.0.19.jar
 Bundle-Vendor: Fakturama.org
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.swt;bundle-version="3.105.0",
  org.eclipse.e4.core.contexts;bundle-version="[1.5.0,1.9.0)",
  org.eclipse.e4.core.services;bundle-version="2.0.100",
  org.eclipse.jface;bundle-version="3.12.0",
  org.eclipse.e4.core.di;bundle-version="1.6.0",
- org.eclipse.e4.ui.workbench;bundle-version="1.4.0",
- org.eclipse.e4.ui.model.workbench;bundle-version="1.2.0",
  javax.inject;bundle-version="1.0.0",
  org.apache.commons.logging;bundle-version="1.1.1",
  com.opcoach.e4.preferences;bundle-version="1.0.0",
@@ -32,9 +29,7 @@ Export-Package: org.fakturama.export.zugferd
 Bundle-ActivationPolicy: lazy
 Import-Package: com.sebulli.fakturama.model,
  com.sebulli.fakturama.preferences,
- com.sebulli.fakturama.util,
- org.eclipse.e4.ui.model,
- org.eclipse.e4.ui.model.application.ui.basic
+ com.sebulli.fakturama.util
 Bundle-Activator: org.fakturama.export.einvoice.Activator
 Automatic-Module-Name: org.fakturama.exporter.zugferd
 Service-Component: OSGI-INF/org.fakturama.export.einvoice.ZugferdExporter.xml
