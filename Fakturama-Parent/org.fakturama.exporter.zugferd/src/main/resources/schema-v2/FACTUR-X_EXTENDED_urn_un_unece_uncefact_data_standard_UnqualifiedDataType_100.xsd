@@ -38,6 +38,7 @@
           </xs:simpleContent>
         </xs:complexType>
       </xs:element>
+      <xs:element name="DateTime" type="xs:dateTime"/>
     </xs:choice>
   </xs:complexType>
   <xs:complexType name="DateType">
@@ -65,6 +66,18 @@
       <xs:element name="Indicator" type="xs:boolean"/>
     </xs:choice>
   </xs:complexType>
+  <xs:complexType name="MeasureType">
+    <xs:simpleContent>
+      <xs:extension base="xs:decimal">
+        <xs:attribute name="unitCode" type="xs:token" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="NumericType">
+    <xs:simpleContent>
+      <xs:extension base="xs:decimal"/>
+    </xs:simpleContent>
+  </xs:complexType>
   <xs:complexType name="PercentType">
     <xs:simpleContent>
       <xs:extension base="xs:decimal"/>
@@ -75,6 +88,11 @@
       <xs:extension base="xs:decimal">
         <xs:attribute name="unitCode" type="xs:token" use="required"/>
       </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="RateType">
+    <xs:simpleContent>
+      <xs:extension base="xs:decimal"/>
     </xs:simpleContent>
   </xs:complexType>
   <xs:complexType name="TextType">

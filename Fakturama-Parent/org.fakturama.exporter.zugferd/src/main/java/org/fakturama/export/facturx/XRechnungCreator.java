@@ -184,7 +184,8 @@ public class XRechnungCreator extends AbstractEInvoiceCreator {
                 preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY),
                 preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR));
         if(StringUtils.isBlank(owner)) {
-            MessageDialog.openWarning(shell, "Warning", "Your company information is empty. Please specify it in preferences. The generated file could be not valid.");
+            MessageDialog.openWarning(shell, "Warning", "Your company information is empty. Please specify it "
+                    + "in preferences. The generated file could be not valid.");
             owner = "(unknown)";
         }
 
@@ -314,7 +315,7 @@ public class XRechnungCreator extends AbstractEInvoiceCreator {
             tradeSettlement.getSpecifiedTradeAllowanceCharge().add(createTradeAllowance(invoice));
         }
 //        tradeSettlement.getSpecifiedLogisticsServiceCharge().add(createLogisticsServiceCharge(invoice, documentSummary));
-        tradeSettlement.setSpecifiedTradePaymentTerms(createTradePaymentTerms(invoice, documentSummary));
+        tradeSettlement.getSpecifiedTradePaymentTerms().add(createTradePaymentTerms(invoice, documentSummary));
         tradeSettlement.setSpecifiedTradeSettlementHeaderMonetarySummation(createTradeSettlementMonetarySummation(invoice, documentSummary));
         // TODO EXTENDED: tradeSettlement.setReceivableSpecifiedTradeAccountingAccount(null);
         
@@ -517,7 +518,7 @@ public class XRechnungCreator extends AbstractEInvoiceCreator {
                 ;
                 if(discount != 0) {
                     // Rabatt / Zuschlag auf Positionsebene
-                    retval.setAppliedTradeAllowanceCharge(createTradeAllowance(item));
+                    retval.getAppliedTradeAllowanceCharge().add(createTradeAllowance(item));
                 }
             break;
         case NET_PRICE:
@@ -529,10 +530,10 @@ public class XRechnungCreator extends AbstractEInvoiceCreator {
             // TODO Preisbasismenge??? (1, 10, 100,...)
 //          .withBasisQuantity(createQuantity(1d, qunit))
             ;
-//          if(discount != 0) {
-//              // Rabatt / Zuschlag auf Positionsebene
-//              retval.getAppliedTradeAllowanceCharge().add(createTradeAllowance(item));
-//          }
+          if(discount != 0) {
+              // Rabatt / Zuschlag auf Positionsebene
+              retval.getAppliedTradeAllowanceCharge().add(createTradeAllowance(item));
+          }
             break;
         case NET_PRICE_DISCOUNTED:
             // Detailinformationen zum Preis gemäß Nettokalkulation exklusive Umsatzsteuer
@@ -600,17 +601,18 @@ public class XRechnungCreator extends AbstractEInvoiceCreator {
             totalAmount = totalAmount.add(amt);
         }
         MonetaryAmount taxBasisTotalAmount = totalAmount.add(documentSummary.getShippingNet()).subtract(allowanceAmount);
+        MonetaryAmount grandTotalAmount = taxBasisTotalAmount.add(documentSummary.getTotalVat());
         TradeSettlementHeaderMonetarySummationType retval = factory.createTradeSettlementHeaderMonetarySummationType()
                 .withLineTotalAmount(createAmount(totalAmount))
                 .withChargeTotalAmount(createAmount(documentSummary.getShippingNet()))
                 .withAllowanceTotalAmount(createAmount(allowanceAmount))
                 .withTaxBasisTotalAmount(createAmount(taxBasisTotalAmount))
                 .withTaxTotalAmount(createAmount(documentSummary.getTotalVat(), 2, true))
-                .withGrandTotalAmount(createAmount(taxBasisTotalAmount.add(documentSummary.getTotalVat())))
-              .withTotalPrepaidAmount(createAmount(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit())))
-              .withDuePayableAmount(
-                      createAmount(documentSummary.getTotalGross().subtract(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit()))
-                      ))
+                .withGrandTotalAmount(createAmount(grandTotalAmount))
+                .withTotalPrepaidAmount(createAmount(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit())))
+                .withDuePayableAmount(
+                      createAmount(grandTotalAmount
+                              .subtract(Money.of(invoice.getPaidValue(), DataUtils.getInstance().getDefaultCurrencyUnit()))))
                 ;
         return retval;
     }

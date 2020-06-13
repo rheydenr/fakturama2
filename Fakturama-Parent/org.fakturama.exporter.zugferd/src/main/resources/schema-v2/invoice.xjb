@@ -15,7 +15,7 @@
     </jaxb:globalBindings>
  
     <!-- Annotate the following classes with XmlRootElement -->
-    <jaxb:bindings schemaLocation="FACTUR-X_EN16931.xsd" node="/xs:schema">
+    <jaxb:bindings schemaLocation="FACTUR-X_EXTENDED.xsd" node="/xs:schema">
         <jaxb:schemaBindings><jaxb:package name="org.fakturama.export.facturx.modelgen" /></jaxb:schemaBindings>
         <jaxb:bindings node="xs:element[@name='CrossIndustryInvoice']">
             <annox:annotate>
