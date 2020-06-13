@@ -162,6 +162,7 @@ public class ImportOptionPage extends WizardPage {
 		
 		quoteChar = new Text(top, SWT.BORDER);
 		quoteChar.setText(options.getQuoteChar());
+		// FIXME das greift hier irgendwie nicht mehr?!
 		quoteChar.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -228,6 +229,7 @@ public class ImportOptionPage extends WizardPage {
     }
 
     public ImportOptions getImportOptions() {
+        options.setSeparator(separator.getText());
         return options;
     }
     

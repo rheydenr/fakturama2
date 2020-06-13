@@ -35,7 +35,7 @@ public class CopyPerspectiveSnippetProcessor {
         MPerspectiveStack perspectiveStack = (MPerspectiveStack) modelService.find(MAIN_PERSPECTIVE_STACK_ID, application);
 
         // Only do this when no other children, or the restored workspace state will be overwritten.
-        if (!perspectiveStack.getChildren().isEmpty())
+        if (perspectiveStack == null || !perspectiveStack.getChildren().isEmpty())
             return;
 
         // clone each snippet that is a perspective and add the cloned perspective into the main PerspectiveStack
