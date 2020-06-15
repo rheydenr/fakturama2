@@ -384,7 +384,11 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     @Override
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         currentFilter = new ContactMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
-		treeFilteredIssues.setMatcher(currentFilter);
+        if(currentFilter.isRootNode) {
+            treeFilteredIssues.setMatcherEditor(createTextWidgetMatcherEditor());
+        } else {
+            treeFilteredIssues.setMatcher(currentFilter);
+        }
     }
 
     /* (non-Javadoc)
