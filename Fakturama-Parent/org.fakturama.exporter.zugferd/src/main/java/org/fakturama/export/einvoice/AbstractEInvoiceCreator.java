@@ -50,7 +50,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
-import org.fakturama.export.zugferd.modelgen.CrossIndustryDocument;
+import org.fakturama.export.facturx.AbstractEInvoice;
 
 import com.sebulli.fakturama.dao.CEFACTCodeDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -128,7 +128,7 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
      * @param root
      * @param zugferdProfile
      */
-    protected boolean createPdf(Document invoice, Supplier<Object> root, ConformanceLevel zugferdProfile) {
+    protected boolean createPdf(Document invoice, Supplier<? extends Serializable> root, ConformanceLevel zugferdProfile) {
         boolean retval = true;
         String pdfFile = invoice.getPdfPath();
         PDDocument pdfa3 = null;
@@ -209,10 +209,13 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
             e.printStackTrace();
         }
         /* * * * * *  END TEST ONLY!!! * * * * * */
-        
-        
     }
 
+    /**
+     * @deprecated use {@link AbstractEInvoice} method
+     * @param contact
+     * @return
+     */
     protected Contact getOriginContact(DocumentReceiver contact) {
         if(contact.getOriginContactId() != null) {
             return contactsDAO.findById(contact.getOriginContactId());

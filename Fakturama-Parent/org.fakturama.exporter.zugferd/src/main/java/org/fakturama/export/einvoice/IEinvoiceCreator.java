@@ -19,6 +19,14 @@ import com.sebulli.fakturama.model.Document;
 
 public interface IEinvoiceCreator {
 
+    /**
+     * Create an e-Invoice based on invoice document and {@link ConformanceLevel}. 
+     * A PDF is created in the location which is given by invoice document. 
+     *  
+     * @param invoice an invoice document
+     * @param zugferdProfile the {@link ConformanceLevel} of the resulting file
+     * @return <code>true</code>, if the conversion was successful
+     */
     boolean createEInvoice(Optional<Document> invoice, ConformanceLevel zugferdProfile);
 
 }
