@@ -85,18 +85,21 @@ public class ZugferdExporter implements IPdfPostProcessor {
 	    
         boolean result = false;
         if(invoice.isPresent()) {
-            // currently only COMFORT profile is supported
-//			String conformanceLevel = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, "COMFORT");
 			ConformanceLevel zugferdProfile;
     	    // create e-invoice according to selected preferences
 			
 			IEinvoiceCreator invoiceCreator;
-    	    if(eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_VERSION, "1").contentEquals("2")) {
-    	        zugferdProfile = ConformanceLevel.FACTURX_EN16931;
-    	        invoiceCreator = ContextInjectionFactory.make(ZUGFeRDCreator.class, eclipseContext);
-    	    } else { // 2.1
-    	        zugferdProfile = ConformanceLevel.ZUGFERD_V1_COMFORT;
+			// default is 2.1 - XRechnung
+			// Attention: for default settings (i.e., version is 2.1), no preference is returned! 
+			// Therefore we check this at the beginning.
+    	    if(eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_VERSION, "2.1").contentEquals("2.1")) {
+                // currently only COMFORT profile is supported
+    			String conformanceLevel = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, ConformanceLevel.ZUGFERD_V2_COMFORT.getDescriptor());
+    	        zugferdProfile = ConformanceLevel.valueOf(conformanceLevel);
     	        invoiceCreator = ContextInjectionFactory.make(XRechnungCreator.class, eclipseContext);
+    	    } else { // V1
+    	        zugferdProfile = ConformanceLevel.ZUGFERD_V1_COMFORT;
+    	        invoiceCreator = ContextInjectionFactory.make(ZUGFeRDCreator.class, eclipseContext);
     	    }
             result = invoiceCreator.createEInvoice(invoice, zugferdProfile);
             

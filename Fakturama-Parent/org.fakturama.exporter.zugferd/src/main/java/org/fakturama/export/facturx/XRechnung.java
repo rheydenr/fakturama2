@@ -31,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.fakturama.export.einvoice.ConformanceLevel;
-import org.fakturama.export.facturx.modelgen.AllowanceChargeReasonCodeType;
 import org.fakturama.export.facturx.modelgen.AmountType;
 import org.fakturama.export.facturx.modelgen.CodeType;
 import org.fakturama.export.facturx.modelgen.CountryIDType;
