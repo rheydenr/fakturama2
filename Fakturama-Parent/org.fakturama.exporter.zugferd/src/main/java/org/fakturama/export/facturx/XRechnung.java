@@ -524,7 +524,7 @@ public class XRechnung extends AbstractEInvoice {
                 ;
                 if(discount != 0) {
                     // Rabatt / Zuschlag auf Positionsebene
-                    retval.getAppliedTradeAllowanceCharge().add(createTradeAllowance(item));
+                    retval.getAppliedTradeAllowanceCharge().add(createTradeAllowance(item, false));
                 }
             break;
         case NET_PRICE:
@@ -684,6 +684,9 @@ public class XRechnung extends AbstractEInvoice {
         return tradePaymentTerms;
     }
 
+    private TradeAllowanceChargeType createTradeAllowance(DocumentItem item) {
+        return createTradeAllowance(item, true);
+    }
 
     /**
      * Detailinformationen zu Zu- und Abschlägen.
@@ -691,27 +694,32 @@ public class XRechnung extends AbstractEInvoice {
      * @param item
      * @return
      */
-    private TradeAllowanceChargeType createTradeAllowance(DocumentItem item) {
+    private TradeAllowanceChargeType createTradeAllowance(DocumentItem item, boolean withReason) {
         Double discountPercent = item.getItemRebate();
-        Double amount = item.getPrice() * discountPercent;
+//        Double amount = item.getPrice() * discountPercent;
         Price price = new Price(item);
-        double factor = Math.pow(10, DEFAULT_AMOUNT_SCALE);
-        double s = Math.round(price.getUnitNet().multiply(factor).getNumber().doubleValue()) / factor;
-        double t = Math.round(price.getUnitNetDiscounted().multiply(factor).getNumber().doubleValue()) / factor;
-        double u = Math.round((s-t) * factor) / factor;
+        Double amount = price.getTotalGross().multiply(discountPercent).getNumber().doubleValue();
+//        double factor = Math.pow(10, DEFAULT_AMOUNT_SCALE);
+//        double s = Math.round(price.getUnitNet().multiply(factor).getNumber().doubleValue()) / factor;
+//        double t = Math.round(price.getUnitNetDiscounted().multiply(factor).getNumber().doubleValue()) / factor;
+//        double u = Math.round((s-t) * factor) / factor;
         boolean isAllowance = amount > 0;
         if(!isAllowance) {
             amount *= -1;
         }
+        
+        
         TradeAllowanceChargeType tradeAllowanceCharge = factory.createTradeAllowanceChargeType()
             .withChargeIndicator(factory.createIndicatorType().withIndicator(isAllowance))
 //            .withCalculationPercent(factory.createPercentType().withValue(BigDecimal.valueOf(item.getItemRebate()))) // [CII-SR-122]
-//            .withBasisAmount(createAmount(item.getPrice(), 2))  // [CII-SR-123]
-            .withActualAmount(createAmount(Money.of(u/*amount*/, DataUtils.getInstance().getDefaultCurrencyUnit()), 2, false))
+//            .withBasisAmount(createAmount(price.getTotalNet(), 2))  // [CII-SR-123]
+            .withActualAmount(createAmount(Money.of(amount, DataUtils.getInstance().getDefaultCurrencyUnit()), 2, false))
             // see UNTDID 5189 and UNTDID 7161
-            .withReasonCode(factory.createAllowanceChargeReasonCodeType().withValue("95"))  // "Discount" [CII-SR-127]
-//            .withReason(createText(msg.zugferdExportLabelRebate))
             ;
+        if(withReason) {
+            tradeAllowanceCharge.setReason(createText(msg.zugferdExportLabelRebate));
+//            tradeAllowanceCharge.setReasonCode(factory.createAllowanceChargeReasonCodeType().withValue("95"))  // "Discount" [CII-SR-127]
+        }
         return tradeAllowanceCharge
 //            .withCategoryTradeTax(createTradeTax(item.getItemVat()))
             ;
