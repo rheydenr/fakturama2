@@ -123,6 +123,17 @@ public class DocumentSummaryCalculator {
         DocumentSummary retval = new DocumentSummary(currencyUnit);
         MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
 
+/*
+ * FIXME Hints for refactoring:
+ * - divide this method in separate calls (complexity is too hight)
+ * - the allowance for a single item isn't calculated => this is necessary in ZUGFeRD exporter!
+ *   (for the moment, the allowance is calculated separately there)
+ * - write some tests
+ * - try to simplify that method
+ * - see also Bug #855 (https://bugs.fakturama.info/view.php?id=855)
+ *         
+ */
+        
 		// This VAT summary contains only the VAT entries of this document,
 		// whereas the the parameter vatSummaryItems is a global VAT summary
 		// and contains entries from this document and from others.

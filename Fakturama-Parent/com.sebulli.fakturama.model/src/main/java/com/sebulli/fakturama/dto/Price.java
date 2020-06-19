@@ -84,6 +84,8 @@ public class Price {
 	private MonetaryAmount totalVatRounded;
 	private MonetaryAmount totalSalesEqTaxRounded;
 	private MonetaryAmount totalGrossRounded;
+    private MonetaryAmount totalAllowance;
+    private MonetaryAmount unitAllowance;
 	
 	
 	public Price(DocumentItem item) {
@@ -276,15 +278,18 @@ public class Price {
 
 		// Calculate the discounted values and use the quantity
 		this.unitNetDiscounted = this.unitNet.multiply(discountFactor);
-		this.unitVatDiscounted =  this.unitVat.multiply(discountFactor);
-		this.unitSalesEqTaxDiscounted =  this.unitSalesEqTax.multiply(discountFactor);
-		this.unitGrossDiscounted =  this.unitGross.multiply(discountFactor);
+		this.unitVatDiscounted = this.unitVat.multiply(discountFactor);
+		this.unitSalesEqTaxDiscounted = this.unitSalesEqTax.multiply(discountFactor);
+		this.unitGrossDiscounted = this.unitGross.multiply(discountFactor);
 
 		// Calculate the total values and use the quantity
 		this.totalNet = this.unitNet.multiply(discountFactor).multiply(this.quantity);
 		this.totalVat = this.unitVat.multiply(this.quantity * discountFactor);
 		this.totalSalesEqTax = this.unitSalesEqTax.multiply(this.quantity * discountFactor);
 		this.totalGross = this.unitGross.multiply(this.quantity * discountFactor);
+		
+		this.totalAllowance = this.unitNet.multiply(this.quantity).multiply(this.discount);
+		this.unitAllowance = this.unitNet.multiply(this.discount);
 
 		// Normally, the VAT and gross value is rounded,
 		// and the net value is the difference.
@@ -593,7 +598,15 @@ public class Price {
 		this.totalSalesEqTaxRounded = totalSalesEqTaxRounded;
 	}
 
-	/**
+	public MonetaryAmount getTotalAllowance() {
+        return totalAllowance;
+    }
+
+    public MonetaryAmount getUnitAllowance() {
+        return unitAllowance;
+    }
+
+    /**
      * @return the dataUtils
      */
     private DataUtils getDataUtils() {

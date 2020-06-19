@@ -110,12 +110,15 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
  */
 public class XRechnung extends AbstractEInvoice {
 
+    private DocumentAllowances itemAllowances;
+
     @Override
     public CrossIndustryInvoice getInvoiceXml(Optional<Document> invoiceDoc) {
         if(!invoiceDoc.isPresent()) {
             return null;
         }
         factory = new ObjectFactory();
+        itemAllowances = new DocumentAllowances();
 
         Document invoice = invoiceDoc.get();
         // Recalculate the sum of the document before exporting
@@ -598,9 +601,16 @@ public class XRechnung extends AbstractEInvoice {
      */
     private TradeSettlementHeaderMonetarySummationType createTradeSettlementMonetarySummation(Document invoice, DocumentSummary documentSummary) {
         MonetaryAmount allowanceAmount = documentSummary.getDiscountGross();
-        boolean isAllowance = allowanceAmount.isPositiveOrZero();
-        if(!isAllowance) {
+        if(!allowanceAmount.isPositiveOrZero()) {
             allowanceAmount = allowanceAmount.multiply(-1.0);
+        }
+     //   Money.of(BigDecimal.ONE, DataUtils.getInstance().getDefaultCurrencyUnit());
+        if(!itemAllowances.getItemAllowances().isEmpty()) {
+            MonetaryAmount allowance = itemAllowances.getItemAllowances().values().parallelStream()
+                    .collect(() -> Money.of(BigDecimal.ONE, DataUtils.getInstance().getDefaultCurrencyUnit()), 
+                            (a, t) -> t.add(a), 
+                            (a, t) -> t.add(a));
+            allowanceAmount.add(allowance);
         }
         MonetaryAmount totalAmount = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
         for (MonetaryAmount amt : netPricesPerVat.values()) {
@@ -695,25 +705,23 @@ public class XRechnung extends AbstractEInvoice {
      * @return
      */
     private TradeAllowanceChargeType createTradeAllowance(DocumentItem item, boolean withReason) {
-        Double discountPercent = item.getItemRebate();
-//        Double amount = item.getPrice() * discountPercent;
         Price price = new Price(item);
-        Double amount = price.getTotalGross().multiply(discountPercent).getNumber().doubleValue();
-//        double factor = Math.pow(10, DEFAULT_AMOUNT_SCALE);
-//        double s = Math.round(price.getUnitNet().multiply(factor).getNumber().doubleValue()) / factor;
-//        double t = Math.round(price.getUnitNetDiscounted().multiply(factor).getNumber().doubleValue()) / factor;
-//        double u = Math.round((s-t) * factor) / factor;
-        boolean isAllowance = amount > 0;
+        MonetaryAmount amount = price.getTotalAllowance();
+        boolean isAllowance = amount.isPositiveOrZero();
         if(!isAllowance) {
-            amount *= -1;
+            amount = amount.multiply(-1);
         }
         
+        itemAllowances.add(item.getItemVat(), price.getTotalAllowance());
         
         TradeAllowanceChargeType tradeAllowanceCharge = factory.createTradeAllowanceChargeType()
             .withChargeIndicator(factory.createIndicatorType().withIndicator(isAllowance))
 //            .withCalculationPercent(factory.createPercentType().withValue(BigDecimal.valueOf(item.getItemRebate()))) // [CII-SR-122]
 //            .withBasisAmount(createAmount(price.getTotalNet(), 2))  // [CII-SR-123]
-            .withActualAmount(createAmount(Money.of(amount, DataUtils.getInstance().getDefaultCurrencyUnit()), 2, false))
+            
+            // Der gesamte zur Berechnung des Nettopreises vom Bruttopreis subtrahierte Rabatt
+            // (Gilt nur, wenn der Rabatt je Einheit gegeben wird und nicht im Bruttopreis enthalten ist.)
+            .withActualAmount(createAmount(amount, 2, false))
             // see UNTDID 5189 and UNTDID 7161
             ;
         if(withReason) {
@@ -742,7 +750,7 @@ public class XRechnung extends AbstractEInvoice {
     }
     
     /**
-     * Generate allowance for shipping costs (this is fo COMFORT profile only!)
+     * Generate allowance for shipping costs (this is for COMFORT profile only!)
      * @param invoice
      * @return
      */
