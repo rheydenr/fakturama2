@@ -292,10 +292,13 @@ public class XRechnung extends AbstractEInvoice {
         }
         
         // TODO tradeSettlement.setBillingSpecifiedPeriod(createPeriod(invoice));
-        // Abschläge / Zuschläge nur aufführen wenn sie auch tatsächlich angefallen sind! Hier kommen auch die Versandkosten mit rein 
+        // Abschläge / Zuschläge nur aufführen wenn sie auch tatsächlich angefallen sind! 
+        if(Optional.ofNullable(invoice.getItemsRebate()).orElse(Double.valueOf(0.0)).compareTo(Double.valueOf(0.0)) != 0) {
+            tradeSettlement.getSpecifiedTradeAllowanceCharge().add(createTradeAllowance(documentSummary, invoice));
+        }
+        // Hier kommen auch die Versandkosten mit rein 
         // (die sind nur bei EXTENDED in einem extra Node)
-        tradeSettlement.getSpecifiedTradeAllowanceCharge().add(createTradeAllowance(documentSummary));
-        if(invoice.getShippingValue() > 0) {
+        if(invoice.getShipping() != null && invoice.getShipping().getShippingValue() > 0 || invoice.getShippingValue() > 0) {
             tradeSettlement.getSpecifiedTradeAllowanceCharge().add(createTradeAllowance(invoice));
         }
         tradeSettlement.getSpecifiedTradePaymentTerms().add(createTradePaymentTerms(invoice, documentSummary));
@@ -425,7 +428,7 @@ public class XRechnung extends AbstractEInvoice {
             retval.setBillingSpecifiedPeriod(createBillingSpecificPeriod(item));
         }
         
-        if(item.getItemRebate() != null) {
+        if(item.getItemRebate() != null && item.getItemRebate().compareTo(Double.valueOf(0.0)) != 0) {
             retval.getSpecifiedTradeAllowanceCharge().addAll(createAllowanceCharges(item));
         }
         return retval;
@@ -552,7 +555,7 @@ public class XRechnung extends AbstractEInvoice {
                 // nach Nettokalkulation;
                 .withChargeAmount(createAmount(price.getUnitNetDiscounted(), 2))
                 // TODO Preisbasismenge??? (1, 10, 100,...)
-                .withBasisQuantity(createQuantity(1d, qunit))
+//                .withBasisQuantity(createQuantity(1d, qunit))
                 ;
 //          if(discount != 0) {
 //              // Rabatt / Zuschlag auf Positionsebene
@@ -600,7 +603,7 @@ public class XRechnung extends AbstractEInvoice {
      * @return
      */
     private TradeSettlementHeaderMonetarySummationType createTradeSettlementMonetarySummation(Document invoice, DocumentSummary documentSummary) {
-        MonetaryAmount allowanceAmount = documentSummary.getDiscountGross();
+        MonetaryAmount allowanceAmount = documentSummary.getDiscountNet();
         if(!allowanceAmount.isPositiveOrZero()) {
             allowanceAmount = allowanceAmount.multiply(-1.0);
         }
@@ -733,8 +736,8 @@ public class XRechnung extends AbstractEInvoice {
             ;
     }
 
-    private TradeAllowanceChargeType createTradeAllowance(DocumentSummary summary) {
-        MonetaryAmount amount = summary.getDiscountGross();
+    private TradeAllowanceChargeType createTradeAllowance(DocumentSummary summary, Document invoice) {
+        MonetaryAmount amount = summary.getDiscountNet();
         // Abschlag ==> false
         // Zuschlag ==> true
         boolean isAllowance = amount.isPositive();
@@ -744,9 +747,10 @@ public class XRechnung extends AbstractEInvoice {
         return factory.createTradeAllowanceChargeType()
             .withChargeIndicator(factory.createIndicatorType().withIndicator(isAllowance))
             .withActualAmount(createAmount(amount, 2, false))
-            .withBasisAmount(createAmount(summary.getItemsNet(), 2))
-            .withReason(createText(msg.zugferdExportLabelRebate))  // TODO Versandkosten!!!
-            .withCategoryTradeTax(createTradeTax(summary.getTotalVat().getNumber().doubleValue()));
+            .withBasisAmount(createAmount(summary.getItemsNet().add(amount), 2))
+            .withReason(createText(msg.zugferdExportLabelRebate))
+            .withCategoryTradeTax(createTradeTax(invoice.getItems().get(0).getItemVat()))
+            ;
     }
     
     /**
@@ -763,33 +767,39 @@ public class XRechnung extends AbstractEInvoice {
                 .withBasisAmount(createAmount(Money.of(invoice.getTotalValue(), DataUtils.getInstance().getDefaultCurrencyUnit()), 2, false))
                 .withReason(createText("Shipping costs"));  // TODO Versandkosten!!!
      //   if(invoice.getShipping() != null && invoice.getShipping().getShippingVat().getTaxValue() > 0.0) {
-            retval.setCategoryTradeTax(createTradeTax(invoice.getShipping().getShippingVat(), TaxCategoryCodeContentType.Z));
+            retval.setCategoryTradeTax(createTradeTax(invoice.getShipping().getShippingVat()));
       //  }
         return retval;
     }
 
     private TradeTaxType createTradeTax(VAT vatValue) {
-        return createTradeTax(vatValue, TaxCategoryCodeContentType.S);
+        return createTradeTax(vatValue, vatValue.getTaxValue() > 0 ? TaxCategoryCodeContentType.S : TaxCategoryCodeContentType.Z);
     }
     
     private TradeTaxType createTradeTax(VAT vatValue, TaxCategoryCodeContentType taxCategoryCode) {
         return factory.createTradeTaxType()
                 .withRateApplicablePercent(
-                        factory.createPercentType().withValue(BigDecimal.valueOf(vatValue.getTaxValue()).multiply(BigDecimal.valueOf(100)).round(new MathContext(2))))
+                        factory.createPercentType().withValue(BigDecimal.valueOf(vatValue.getTaxValue()).multiply(BigDecimal.valueOf(100), new MathContext(2)).stripTrailingZeros()))
                 .withCategoryCode(createTaxCategoryCode(taxCategoryCode))  // see UNTDID 5305
                 .withTypeCode(createTaxTypeCode(TaxTypeCodeContentType.VAT))
                 ;
     }
 
+    /**
+     * Detailangaben zu Steuern 
+     * @param vatSummaryItem
+     * @return
+     */
     private TradeTaxType createTradeTax(VatSummaryItem vatSummaryItem) {
         // VAT description
         // (unused) String key = vatSummaryItem.getVatName();
         // It's the VAT value
-        MonetaryAmount basisAmount = Optional.ofNullable(netPricesPerVat.get(numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getVatPercent()))).orElse(Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()));
+        MonetaryAmount basisAmount = Optional.ofNullable(vatSummaryItem.getNet()).orElse(Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit()));
         TaxCategoryCodeContentType taxType = vatSummaryItem.getVatPercent() == 0 ? TaxCategoryCodeContentType.Z : TaxCategoryCodeContentType.S;
         TradeTaxType retval = factory.createTradeTaxType()
                 .withCalculatedAmount(createAmount(basisAmount.multiply(vatSummaryItem.getVatPercent())))
-                .withRateApplicablePercent(factory.createPercentType().withValue(BigDecimal.valueOf( DataUtils.getInstance().round(vatSummaryItem.getVatPercent() * 100))))
+                .withRateApplicablePercent(
+                        factory.createPercentType().withValue(BigDecimal.valueOf(vatSummaryItem.getVatPercent()).multiply(BigDecimal.valueOf(100), new MathContext(2)).stripTrailingZeros()))
                 .withBasisAmount(createAmount(basisAmount))
                 .withCategoryCode(createTaxCategoryCode(taxType)) 
                 //.withExemptionReason(TODO)
@@ -797,21 +807,6 @@ public class XRechnung extends AbstractEInvoice {
 //                .withDueDateTypeCode(value)
                 .withTypeCode(createTaxTypeCode(TaxTypeCodeContentType.VAT))
                 ; 
-        return retval;
-    }
-
-    /**
-     * Detailangaben zu Steuern 
-     * @param vatPercent
-     * @return
-     */
-    private TradeTaxType createTradeTax(Double vatPercent) {
-        TradeTaxType retval = factory.createTradeTaxType()
-                .withRateApplicablePercent(factory.createPercentType()
-                .withValue(BigDecimal.valueOf(vatPercent * 100.0)))
-                .withCategoryCode(createTaxCategoryCode(TaxCategoryCodeContentType.S)) // Standard rate, FIXME for other uses!
-                //.withExemptionReason(TODO)
-                .withTypeCode(createTaxTypeCode(TaxTypeCodeContentType.VAT));
         return retval;
     }
 
@@ -823,11 +818,6 @@ public class XRechnung extends AbstractEInvoice {
     private TaxCategoryCodeType createTaxCategoryCode(TaxCategoryCodeContentType taxCat) {
         return factory.createTaxCategoryCodeType()
                 .withValue(taxCat);
-    }
-
-    private AmountType createAmount(Double price, int scale) {
-        return factory.createAmountType()
-                .withValue(BigDecimal.valueOf(price).setScale(scale, RoundingMode.HALF_UP));      
     }
 
     /**
