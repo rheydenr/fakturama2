@@ -333,6 +333,7 @@ public class KontistCsvImporter {
 									}
 									expenditureItem.setAccountType(newAccountType);
 								}
+								expenditureItem.setPosNr(1);
 								expenditureItem.setPrice(Math.abs(DataUtils.getInstance().StringToDouble(prop.getProperty("betrag"))));
 		
 								String category = prop.getProperty("kategorie");
