@@ -127,6 +127,8 @@ public class KontistCsvImporter {
 	private String END2END_ID = "end_to_end_id";
 	private String BOOKING_STATUS = "Buchungsstatus";
 
+	private String END2END_ID_NOT_SET = "NOTPROVIDED";
+
 	// Defines all columns that are used and imported
 	private String[] requiredHeaders = { BOOKING_DATE, VALUTA_DATE, CATEGORY, TYPE, AMOUNT, NAME, PURPOSE, END2END_ID, BOOKING_STATUS };
 	// The result string
@@ -229,7 +231,9 @@ public class KontistCsvImporter {
 					}
 				}
 				
-				boolean isExpenditure = prop.getProperty("transaktionstyp").equalsIgnoreCase("Überweisung") ? false : true;
+				final String end2endId = prop.getProperty(END2END_ID);
+				
+				boolean isExpenditure = prop.getProperty("betrag").startsWith("-") ? true : false;
 
 				// Test if all columns are used
 				if ((prop.size() > 0) && (prop.size() != requiredHeaders.length)) {
@@ -249,18 +253,21 @@ public class KontistCsvImporter {
 
 						List<Debitor> allCustomers = debitorsDAO.findAll();
 						
-						Predicate<Voucher> sameEndtoEndId = voucher -> voucher.getVoucherNumber().equalsIgnoreCase(prop.getProperty("end_to_end_id"));
+						Predicate<Voucher> voucherFilter;
+						// if end2end ID is not set ignore it for compare and use details
+						if (end2endId.equalsIgnoreCase(END2END_ID_NOT_SET)) {
+							voucherFilter = voucher -> {
+								return voucher.getVoucherDate().compareTo(dateFormatterService.getCalendarFromDateString(prop.getProperty("buchungsdatum")).getTime())==0
+										//&& voucher.getAccount().getName().equalsIgnoreCase(prop.getProperty("transaktionstyp"))
+										&& voucher.getName().equalsIgnoreCase(prop.getProperty("empfänger"))
+										&& voucher.getItems() != null && voucher.getItems().size()>0 && voucher.getItems().get(0).getPrice() 
+										== Math.abs(DataUtils.getInstance().StringToDouble(prop.getProperty("betrag")));
+							};
+						} else {
+							voucherFilter = voucher -> voucher.getVoucherNumber().equalsIgnoreCase(end2endId);
+						}
 						
-						Predicate<Voucher> sameTransactionDetails = voucher -> {
-							return voucher.getVoucherDate().compareTo(dateFormatterService.getCalendarFromDateString(prop.getProperty("buchungsdatum")).getTime())==0
-									//&& voucher.getAccount().getName().equalsIgnoreCase(prop.getProperty("transaktionstyp"))
-									&& voucher.getName().equalsIgnoreCase(prop.getProperty("empfänger"))
-									&& voucher.getItems() != null && voucher.getItems().size()>0 && voucher.getItems().get(0).getPrice() 
-									== Math.abs(DataUtils.getInstance().StringToDouble(prop.getProperty("betrag")));
-						};
-						
-						// TODO check and filter more items ...
-						List<Voucher> foundItems = allItems.stream().filter(sameEndtoEndId.or(sameTransactionDetails)).collect(Collectors.toList());
+						List<Voucher> foundItems = allItems.stream().filter(voucherFilter).collect(Collectors.toList());
 						// import only new items
 						if (foundItems == null || foundItems.size() == 0) {
 					
@@ -308,59 +315,58 @@ public class KontistCsvImporter {
 							}
 	
 							// If the data set is already existing, stop the CSV import
-							if (!repeatedExpenditure) {
+							if (repeatedExpenditure) {
 								Voucher testExpenditure = expendituresDAO.findOrCreate(expenditure, true);
 								if (testExpenditure != null) {
 									//T: Error message Dataset is already imported
 									String message = MessageFormat.format(importMessages.wizardImportErrorAlreadyimported, prop.getProperty("name"), prop.getProperty("date"));
 									result += NL + message;
-									break;
 								}
-							}
-	
-							// Fill the expenditure item with data
-							expenditureItem.setName(account.getName());
-							if(StringUtils.isNotBlank(prop.getProperty("item category"))) {
-								ItemAccountType newAccountType = itemAccountTypeDAO.findByName(prop.getProperty("item category"));
-								if(newAccountType == null) {
-									newAccountType = modelFactory.createItemAccountType();
-									newAccountType.setName(prop.getProperty("item category"));
+							} else {
+								// Fill the expenditure item with data
+								expenditureItem.setName(account.getName());
+								if(StringUtils.isNotBlank(prop.getProperty("item category"))) {
+									ItemAccountType newAccountType = itemAccountTypeDAO.findByName(prop.getProperty("item category"));
+									if(newAccountType == null) {
+										newAccountType = modelFactory.createItemAccountType();
+										newAccountType.setName(prop.getProperty("item category"));
+									}
+									expenditureItem.setAccountType(newAccountType);
 								}
-								expenditureItem.setAccountType(newAccountType);
+								expenditureItem.setPrice(Math.abs(DataUtils.getInstance().StringToDouble(prop.getProperty("betrag"))));
+		
+								String category = prop.getProperty("kategorie");
+								if (category != null && category.contains("%")) {
+									Double vatValue = DataUtils.getInstance().StringToDouble(category.split(" ")[1].split("%")[0]);
+									VAT vat = modelFactory.createVAT();
+									vat.setTaxValue(vatValue);
+									vat.setName(category);
+									vat.setDescription(category);
+									vat.setCategory(vatCategory);
+									vat = vatsDAO.findOrCreate(vat);
+									expenditureItem.setVat(vat);
+								}
+								
+								expenditure.addToItems(expenditureItem);
+								expenditure = expendituresDAO.save(expenditure);
+		
+								importedExpenditures++;
+		
+								// Recalculate the total sum of all items and set the total value
+								VoucherSummaryCalculator calculator = new VoucherSummaryCalculator();
+								VoucherSummary summary = calculator.calculate(expenditure);
+								// Get the total result
+								Double total = Math.abs(summary.getTotalGross().getNumber().doubleValue());
+		
+								// Update the text widget
+								expenditure.setTotalValue(total);
+								expenditure.setPaidValue(total);
+		
+								expendituresDAO.update(expenditure);
+		
+								// Set the reference of the last expenditure to this one
+								lastExpenditure = expenditure;
 							}
-							expenditureItem.setPrice(Math.abs(DataUtils.getInstance().StringToDouble(prop.getProperty("betrag"))));
-	
-							String category = prop.getProperty("kategorie");
-							if (category != null && category.contains("%")) {
-								Double vatValue = DataUtils.getInstance().StringToDouble(category.split(" ")[1].split("%")[0]);
-								VAT vat = modelFactory.createVAT();
-								vat.setTaxValue(vatValue);
-								vat.setName(category);
-								vat.setDescription(category);
-								vat.setCategory(vatCategory);
-								vat = vatsDAO.findOrCreate(vat);
-								expenditureItem.setVat(vat);
-							}
-							
-							expenditure.addToItems(expenditureItem);
-							expenditure = expendituresDAO.save(expenditure);
-	
-							importedExpenditures++;
-	
-							// Recalculate the total sum of all items and set the total value
-							VoucherSummaryCalculator calculator = new VoucherSummaryCalculator();
-							VoucherSummary summary = calculator.calculate(expenditure);
-							// Get the total result
-							Double total = Math.abs(summary.getTotalGross().getNumber().doubleValue());
-	
-							// Update the text widget
-							expenditure.setTotalValue(total);
-							expenditure.setPaidValue(total);
-	
-							expendituresDAO.update(expenditure);
-	
-							// Set the reference of the last expenditure to this one
-							lastExpenditure = expenditure;
 						}
 					}
 				}
@@ -390,6 +396,10 @@ public class KontistCsvImporter {
 			return;
 		} catch (FakturamaStoringException e) {
 			log.error("can't save or update imported expenditure");
+		} catch (Exception e) {
+			log.error(e, "Unknown error occurred");
+			result += NL + "Unknown error occurred";
+			return;
 		}
 	}
 
