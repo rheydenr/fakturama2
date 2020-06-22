@@ -96,6 +96,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BankAccount;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
@@ -133,7 +134,7 @@ public class XRechnung extends AbstractEInvoice {
         // TODO specify the type in DocumentEditor (free text?)
         ExchangedDocumentContextType exchangedDocCtx = factory.createExchangedDocumentContextType()
                 .withGuidelineSpecifiedDocumentContextParameter(ctxParam)
-        /*                .withBusinessProcessSpecifiedDocumentContextParameter(
+        /*      .withBusinessProcessSpecifiedDocumentContextParameter(
                         factory.createDocumentContextParameterType()
                         .withID(createIdFromString("Baurechnung")))*/;
         
@@ -182,32 +183,16 @@ public class XRechnung extends AbstractEInvoice {
         tradeTransaction.setApplicableHeaderTradeAgreement(tradeAgreement);
         
         // create seller information
-        TradePartyType seller = factory.createTradePartyType()
-              .withID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXNR)))
-              .withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME)))
-//              .withDescription(createText(""))
-              .withSpecifiedLegalOrganization(createLegalOrganizationType(invoice))
-              .withDefinedTradeContact(createContact(invoice, ContactType.SELLER))
-                .withPostalTradeAddress(createAddress(invoice, ContactType.SELLER))
-//                .withGlobalID(createIdWithSchemeFromString("EAN", preferences.getString(Constants.PREFERENCES_YOURCOMPANY_GLN)))  // according to ISO 6523
-                .withSpecifiedTaxRegistration(createTaxNumber(invoice, ContactType.SELLER))
-                ;
-        tradeAgreement.setSellerTradeParty(seller);
+        tradeAgreement.setSellerTradeParty(createSeller(invoice));
         
         // create buyer information
-        TradePartyType buyer = factory.createTradePartyType()
-                .withID(createIdFromString(addressManager.getBillingAdress(invoice).getCustomerNumber()))
-//              .withGlobalID(createIdWithSchemeFromString("EAN|BIC or whatever", 
-//invoice.getReceiver().get(0).getOriginContactId()))
-                .withName(createText(invoice.getAddressFirstLine()))
-//                .withSpecifiedLegalOrganization(createLegalOrganizationType(invoice))
-//                .withDefinedTradeContact(value)
-                .withPostalTradeAddress(createAddress(invoice, ContactType.BUYER))
-                ;
-        tradeAgreement.setBuyerTradeParty(buyer);
+        TradePartyType buyer = createBuyer(invoice);
+        if(buyer != null) {
+            tradeAgreement.setBuyerTradeParty(buyer);
+        }
         
-//        tradeAgreement.setSellerTaxRepresentativeTradeParty(value);
-//        tradeAgreement.setSellerOrderReferencedDocument(value);
+//        tradeAgreement.setSellerTaxRepresentativeTradeParty(value);  // Steuerbevollmächtigter des Verkäufers
+//        tradeAgreement.setSellerOrderReferencedDocument(value); // Detailangaben zur zugehörigen Auftragsbestätigung
         
         // referenced order
         Transaction transaction = ContextInjectionFactory.make(Transaction.class, eclipseContext).of(invoice);
@@ -221,18 +206,18 @@ public class XRechnung extends AbstractEInvoice {
         }
 
         // there is no contract information in Fakturama!
-          ReferencedDocumentType contractRef = factory.createReferencedDocumentType()
-                  .withIssuerAssignedID(createIdFromString("contractNumber"));
+//          ReferencedDocumentType contractRef = factory.createReferencedDocumentType()
+//                  .withIssuerAssignedID(createIdFromString("contractNumber"));
 //          tradeAgreement.setContractReferencedDocument(contractRef);
             
-          ReferencedDocumentType additionalReferencedDocument = factory.createReferencedDocumentType()
-                  .withIssuerAssignedID(createIdFromString("contractNumber"))
-                  .withURIID(createIdFromString("URI"))
-                  .withTypeCode(factory.createDocumentCodeType().withValue("130"))  // UNTDID 1001
-                  .withName(createText("AttachmentName"))
-                  .withAttachmentBinaryObject(factory.createBinaryObjectType()
-                          .withFilename("filename").withMimeCode("mime").withValue(new byte[] {}))
-                  ;
+//          ReferencedDocumentType additionalReferencedDocument = factory.createReferencedDocumentType()
+//                  .withIssuerAssignedID(createIdFromString("contractNumber"))
+//                  .withURIID(createIdFromString("URI"))
+//                  .withTypeCode(factory.createDocumentCodeType().withValue("130"))  // UNTDID 1001
+//                  .withName(createText("AttachmentName"))
+//                  .withAttachmentBinaryObject(factory.createBinaryObjectType()
+//                          .withFilename("filename").withMimeCode("mime").withValue(new byte[] {}))
+//                  ;
 //          tradeAgreement.setAdditionalReferencedDocument(additionalReferencedDocument);
           
 //          tradeAgreement.setSpecifiedProcuringProject(factory.createProcuringProjectType().withName("").withID(createIdFromString("Project")));
@@ -254,13 +239,12 @@ public class XRechnung extends AbstractEInvoice {
       // Verwendungszweck, Kassenzeichen 
         HeaderTradeSettlementType tradeSettlement = factory.createHeaderTradeSettlementType()
 //                .withCreditorReferenceID(createIdWithSchemeFromString(idString, scheme))
-                .withPaymentReference(createText(invoice.getName())) /* customerref ? */
+                .withPaymentReference(createText(invoice.getName()))
 //                .withTaxCurrencyCode(createCurrencyCode(currency))  // see ISO 4217
                 .withInvoiceCurrencyCode(createCurrencyCode(currency))
                 ;
 
         // TODO tradeSettlement.setPayeeTradeParty(value);   // Zahlungsempfänger
-        
         DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
         Contact contact = getOriginContact(documentReceiver);
         if (contact != null) {
@@ -323,6 +307,70 @@ public class XRechnung extends AbstractEInvoice {
         tradeTransaction.setApplicableHeaderTradeSettlement(tradeSettlement);
         root.setSupplyChainTradeTransaction(tradeTransaction);
         return root;
+    }
+
+    private TradePartyType createBuyer(Document invoice) {
+        DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
+        if(documentReceiver != null) {
+            TradePartyType buyer = factory.createTradePartyType()
+                    .withName(createText(invoice.getAddressFirstLine()))
+    //                .withSpecifiedLegalOrganization(createLegalOrganizationType(invoice))  // not available
+                    .withPostalTradeAddress(createAddress(invoice, ContactType.BUYER))
+//                    .withURIUniversalCommunication(email)
+                    .withSpecifiedTaxRegistration(createTaxNumber(invoice, ContactType.BUYER))
+                    ;
+            Long originContactId = invoice.getReceiver().get(0).getOriginContactId();
+            if(originContactId != 0) {
+                Contact originContact = contactsDAO.findById(originContactId);
+                buyer.getGlobalID().add(createIdWithSchemeFromString(Optional.ofNullable(originContact.getGln()).orElse(Long.valueOf(0)).toString(), "0088"
+                        ));
+            } else {
+                buyer.getID().add(createIdFromString(documentReceiver.getCustomerNumber()));
+            }
+            return buyer;
+        }
+        return null;
+    }
+
+    private TradePartyType createSeller(Document invoice) {
+        UniversalCommunicationType email = factory.createUniversalCommunicationType()
+                // EM = Electronic mail (SMPT)
+                .withURIID(createIdWithSchemeFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_EMAIL), "EM"));
+
+        TradePartyType seller = factory.createTradePartyType()
+//              .withID(createIdFromString(""))  // Kennung des Verkäufers (Durch den Kunden zugewiesene Lieferantennummer)
+              .withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME)))
+//              .withDescription(createText(""))  // Sonstige rechtliche Informationen des Verkäufers
+              .withSpecifiedLegalOrganization(createLegalOrganizationType(invoice))
+              .withDefinedTradeContact(createContact(invoice, ContactType.SELLER))
+              .withPostalTradeAddress(createAddress(invoice, ContactType.SELLER))
+              .withURIUniversalCommunication(email)
+              .withSpecifiedTaxRegistration(createTaxNumber(invoice, ContactType.SELLER))
+              .withSpecifiedLegalOrganization(createLegalOrganization(invoice, ContactType.SELLER))
+                ;
+        if(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR) == null) {
+            seller.getGlobalID().add(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXNR)));
+        } else {
+            seller.getGlobalID().add(createIdWithSchemeFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR), "0088"));  // "EAN" according to ISO 6523
+        }
+        
+        return seller;
+    }
+
+
+    /**
+     * Details zur Organisation
+     * @param invoice
+     * @param seller
+     * @return
+     */
+    private LegalOrganizationType createLegalOrganization(Document invoice, ContactType seller) {
+        LegalOrganizationType retval = factory.createLegalOrganizationType()
+                .withID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR)));
+        if(!preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME).equalsIgnoreCase(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER))) {
+            retval.setTradingBusinessName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME)));
+        }
+        return retval;
     }
 
     private LegalOrganizationType createLegalOrganizationType(Document invoice) {
@@ -607,7 +655,7 @@ public class XRechnung extends AbstractEInvoice {
         if(!allowanceAmount.isPositiveOrZero()) {
             allowanceAmount = allowanceAmount.multiply(-1.0);
         }
-     //   Money.of(BigDecimal.ONE, DataUtils.getInstance().getDefaultCurrencyUnit());
+        
         if(!itemAllowances.getItemAllowances().isEmpty()) {
             MonetaryAmount allowance = itemAllowances.getItemAllowances().values().parallelStream()
                     .collect(() -> Money.of(BigDecimal.ONE, DataUtils.getInstance().getDefaultCurrencyUnit()), 
@@ -943,19 +991,24 @@ public class XRechnung extends AbstractEInvoice {
                 .withPostcodeCode(createCode(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP)))
                 .withLineOne(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET)))
     //      .withLineTwo(is empty at the moment);
+    //      .withLineThree(is empty at the moment);
                 .withCityName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY)))
-                .withCountryID(createCountry(countryCode));
+                .withCountryID(createCountry(countryCode))  // Nur die Alpha-2 Darstellung darf verwendet werden
+//                .withCountrySubDivisionName(null)
+                ;
             break;
         case BUYER:
             DocumentReceiver billingAddress = addressManager.getBillingAdress(invoice);
-            // Korrektur
             countryCode = billingAddress.getCountryCode();
             retval = factory.createTradeAddressType()
                 .withPostcodeCode(createCode(billingAddress.getZip()))
                 .withLineOne(createText(billingAddress.getStreet()))
     //      .withLineTwo(is empty at the moment)
+                //      .withLineThree(is empty at the moment);
                 .withCityName(createText(billingAddress.getCity()))
-                .withCountryID(createCountry(countryCode));
+                .withCountryID(createCountry(countryCode))  // Nur die Alpha-2 Darstellung darf verwendet werden
+//              .withCountrySubDivisionName(null)
+              ;
             break;
         default:
             break;
@@ -977,26 +1030,30 @@ public class XRechnung extends AbstractEInvoice {
         TradeContactType contact = factory.createTradeContactType();
         switch (contactType) {
         case SELLER:
-            // this is only EXTENDED profile!
-            contact.setPersonName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER))); // YOURCOMPANY.OWNER
-            //      contact.setDepartmentName(createText(dept));  // unknown
+            contact.setPersonName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER)));
+            //      contact.setDepartmentName(createText(dept));  // unknown (Kontaktstelle des Verkäufers)
             
             if(StringUtils.isNotBlank(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL))) {
                 contact.setTelephoneUniversalCommunication((createCommunicationItem(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL))));
             }
-            //          contact.getFaxUniversalCommunication().add(createCommunicationItem(preferences.getString("YOURCOMPANY_COMPANY_FAX")));
-
+            
             UniversalCommunicationType email = factory.createUniversalCommunicationType()
                     .withURIID(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_EMAIL)));
 
             contact.setEmailURIUniversalCommunication(email);
             break;
         case BUYER:
-            // "consultant"???
-            //          contact.setPersonName(createText(invoice.getFormatedStringValueByKey("addressfirstline")));
-            //            contact.setDepartmentName(createText(dept));  // unknown
-            //          contact.getTelephoneUniversalCommunication().add(createCommunicationItem(invoice.getFormatedStringValueByKeyFromOtherTable("addressid.CONTACTS:phone")));
-            //          contact.setEmailURIUniversalCommunication(createCommunicationItem(invoice.getFormatedStringValueByKeyFromOtherTable("addressid.CONTACTS:email")));
+            
+            DocumentReceiver billingAdress = addressManager.getBillingAdress(invoice);
+            if (billingAdress != null) {
+                email = factory.createUniversalCommunicationType()
+                        .withURIID(createIdWithSchemeFromString(billingAdress.getEmail(), "EM"));
+
+                contact.setPersonName(createText(invoice.getAddressFirstLine()));
+                //            contact.setDepartmentName(createText(dept));  // unknown
+                contact.setTelephoneUniversalCommunication(createCommunicationItem(billingAdress.getPhone()));
+                contact.setEmailURIUniversalCommunication(email);
+            }
             break;
         default:
             break;
