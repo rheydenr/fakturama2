@@ -227,6 +227,7 @@ public class Messages {
 	public String dialogPrintooDocumentalreadycreated;
 	public String dialogPrintooNotemplate;
 	public String dialogPrintooSuccessful;
+	public String dialogPrintooPdfsuccessful;
 	public String dialogPrintooCantprint;
 	public String dialogPrintooErrorNoactivepart;
 	public String dialogProductPicturePreview;

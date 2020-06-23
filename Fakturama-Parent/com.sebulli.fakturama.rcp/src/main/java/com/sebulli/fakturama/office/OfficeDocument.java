@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,6 +55,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Shell;
@@ -348,18 +350,18 @@ public class OfficeDocument {
      * Opens the finally created document(s). Depends on preferences (ODT, PDF or both of them).
      */
     private void openDocument() {
+        List<String> messages = new ArrayList<>();
         if(!silentMode) {
             if(preferences.getString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF).contains(TargetFormat.ODT.getPrefId())) {
                 if(preferences.getBoolean(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD) 
                 && documentPath != null) {
                     sync.asyncExec(() -> {
-                        boolean wasLaunched = Program.launch(documentPath.toString());
-                        if(!wasLaunched) {
+                        if(!Program.launch(documentPath.toString())) {
                             MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for OpenOffice document.");
                         }
                     });
                 } else {
-                    MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, msg.dialogPrintooSuccessful);
+                    messages.add(msg.dialogPrintooSuccessful);
                 }
             }
             
@@ -367,15 +369,19 @@ public class OfficeDocument {
                 if(generatedPdf != null) {
                     if (preferences.getBoolean(Constants.PREFERENCES_OPENPDF)) {
                         sync.asyncExec(() -> {
-                            boolean wasLaunched = Program.launch(generatedPdf.toString());
-                            if(!wasLaunched) {
+                            if(!Program.launch(generatedPdf.toString())) {
                                 MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Document was created but can't find a viewer for PDF.");
                             }
                         });
                     } else {
-                        MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, "PDF was created successfully.");
+                        messages.add(msg.dialogPrintooPdfsuccessful);
                     }
                 }
+            }
+            
+            if (!messages.isEmpty() && !preferences.getString(Constants.DISPLAY_SUCCESSFUL_PRINTING).contentEquals(MessageDialogWithToggle.ALWAYS)) {
+                MessageDialogWithToggle.openInformation(shell, msg.dialogMessageboxTitleInfo, String.join("\n", messages), null, false, preferences,
+                        Constants.DISPLAY_SUCCESSFUL_PRINTING);
             }
         }
     }
@@ -484,6 +490,7 @@ public class OfficeDocument {
     }
 
     private void postProcess() {
+        boolean result = true;
         if (document.getPdfPath() != null && Files.exists(Paths.get(document.getPdfPath()))) {
             try {
                 Collection<ServiceReference<IPdfPostProcessor>> serviceReferences = Activator.getContext().getServiceReferences(IPdfPostProcessor.class, null);
@@ -497,8 +504,12 @@ public class OfficeDocument {
                     IPdfPostProcessor currentProcessor = Activator.getContext().getService(serviceReference);
                     ContextInjectionFactory.inject(currentProcessor, context);
                     if (currentProcessor.canProcess()) {
-                        currentProcessor.processPdf(Optional.ofNullable(document));
+                        result = result && currentProcessor.processPdf(Optional.ofNullable(document));
                     }
+                }
+                
+                if(!result) {
+                    generatedPdf = null; // so that a message is displayed that something was wrong
                 }
             } catch (InvalidSyntaxException e) {
                 log.error(String.format("PDF post processor couldn't be started. Reason: %s", e.getMessage()));

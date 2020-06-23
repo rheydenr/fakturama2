@@ -23,21 +23,21 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.facturx.XRechnungCreator;
 import org.fakturama.export.zugferd.ZUGFeRDCreator;
 import org.osgi.service.component.annotations.Component;
 
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.office.IPdfPostProcessor;
+import com.sebulli.fakturama.office.TargetFormat;
 
 /**
  * This is the main class for the exporter interface for the ZUGFeRD invoice. At the
  * moment, a COMFORT level ZUGFeRD document is generated. This will be changed
  * in future (more flexible). 
- * 
- * This code has many TODOs because the ZUGFeRD specification wasn't final. Furthermore,
- * the invoice document doesn't have all the needed fields (esp. for EXTENDED profile). 
  * 
  * NOTE: The injection of all the services has to be done by caller (because this is an OSGi service,
  * but the injected services are from Eclipse context).
@@ -49,6 +49,9 @@ public class ZugferdExporter implements IPdfPostProcessor {
     @Inject @org.eclipse.e4.core.di.annotations.Optional
     @Preference
     private IEclipsePreferences eclipsePrefs;
+    
+    @Inject
+    private IPreferenceStore preferences;
 
     @Inject @org.eclipse.e4.core.di.annotations.Optional
     public Shell shell;
@@ -83,8 +86,8 @@ public class ZugferdExporter implements IPdfPostProcessor {
 	@Override
     public boolean processPdf(Optional<Document> invoice) {
 	    
-        boolean result = false;
-        if(invoice.isPresent()) {
+        boolean result = checkSettings();
+        if(result && invoice.isPresent()) {
 			ConformanceLevel zugferdProfile;
     	    // create e-invoice according to selected preferences
 			
@@ -107,11 +110,27 @@ public class ZugferdExporter implements IPdfPostProcessor {
 				// Display an error message
 				MessageDialog.openError(shell, msg.zugferdExportCommandTitle, msg.zugferdExportErrorCancelled);
 			}
-		} else {
-			// Display a warning message
-			MessageDialog.openWarning(shell, msg.zugferdExportCommandTitle, msg.zugferdExportWarningChooseinvoice);
 		}
         return result;
 	}
+
+	/**
+	 * Check if PDFs can be created
+	 */
+    private boolean checkSettings() {
+        boolean result = true;
+        if (!eclipsePrefs.get(Constants.PREFERENCES_OPENOFFICE_ODT_PDF, preferences.getDefaultString(Constants.PREFERENCES_OPENOFFICE_ODT_PDF))
+                .contains(TargetFormat.PDF.getPrefId())) {
+            result = false;
+            MessageDialog.openError(shell, msg.zugferdExportCommandTitle, msg.zugferdExportErrorNopdfset);
+        }
+        if (result && eclipsePrefs.get(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, "").isEmpty()) {
+            result = false;
+            MessageDialog.openError(shell, msg.zugferdExportCommandTitle, msg.zugferdExportErrorNopdfpath);
+        }
+
+        // TODO Check required company settings
+        return result;
+    }
 
 }

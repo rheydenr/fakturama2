@@ -31,6 +31,8 @@ public class ZFMessages {
 	public String zugferdExportWarningChooseinvoice;
 	public String zugferdExportWarningOverwrite;
 	public String zugferdExportLabelRebate;
+	public String zugferdExportErrorNopdfset;
+	public String zugferdExportErrorNopdfpath;
 
     public String zugferdPreferencesFilelocation;
 	public String zugferdPreferencesProfile;
