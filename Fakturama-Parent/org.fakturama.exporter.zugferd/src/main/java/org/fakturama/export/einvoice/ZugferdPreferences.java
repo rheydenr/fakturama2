@@ -86,11 +86,12 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
             { ConformanceLevel.ZUGFERD_V1_COMFORT.toString(), ConformanceLevel.ZUGFERD_V1_COMFORT.toString()}});
 		
         featureMap.put(ZugferdVersion.V2_1, new String[][] { 
-            { ConformanceLevel.ZUGFERD_V2_COMFORT.toString(), ConformanceLevel.ZUGFERD_V2_COMFORT.toString()}, 
-            { ConformanceLevel.ZUGFERD_V2_EN16931.toString(), ConformanceLevel.ZUGFERD_V2_EN16931.toString()}, 
+//            { ConformanceLevel.ZUGFERD_V2_COMFORT.toString(), ConformanceLevel.ZUGFERD_V2_COMFORT.toString()}, 
+//            { ConformanceLevel.ZUGFERD_V2_EN16931.toString(), ConformanceLevel.ZUGFERD_V2_EN16931.toString()}, 
             { ConformanceLevel.XRECHNUNG.toString(), ConformanceLevel.XRECHNUNG.toString()}, 
-            { ConformanceLevel.FACTURX_COMFORT.toString(), ConformanceLevel.FACTURX_COMFORT.toString()}, 
-            { ConformanceLevel.FACTURX_EN16931.toString(), ConformanceLevel.FACTURX_EN16931.toString()}});
+//            { ConformanceLevel.FACTURX_COMFORT.toString(), ConformanceLevel.FACTURX_COMFORT.toString()}, 
+            { ConformanceLevel.FACTURX_EN16931.toString(), ConformanceLevel.FACTURX_EN16931.toString()}}
+        );
 	}
 
 	/**
