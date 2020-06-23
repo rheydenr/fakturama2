@@ -2,7 +2,7 @@
 @REM set PATH="d:\Programme\Java\jdk1.8\bin";d:\Javalibs\fop-2.1;"%PATH%";
 
 @REM aktuelle Fakturama-Version
-set VERSION=2.1.0a
+set VERSION=2.1.1
 
 set PATH=d:\Javalibs\fop-1.1\;%PATH%;d:\Programme\Java\jdk1.8\bin;
 set CLASSPATH=.;d:\Javalibs\xalan-j_2_7_2\serializer.jar;d:\Javalibs\xalan-j_2_7_2\xalan.jar;d:\Javalibs\xalan-j_2_7_2\xercesImpl.jar;d:\Javalibs\xalan-j_2_7_2\xml-apis.jar;%CLASSPATH%
