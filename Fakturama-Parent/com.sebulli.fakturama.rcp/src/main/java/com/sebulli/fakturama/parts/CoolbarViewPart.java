@@ -12,6 +12,7 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -57,7 +58,7 @@ import com.sebulli.fakturama.resources.core.IconSize;
  */
 public class CoolbarViewPart {
     
-    private static final String TOOLITEM_COMMAND = "toolitem_command";
+    public static final String TOOLITEM_COMMAND = "toolitem_command";
 
 	@Inject
 	private ECommandService cmdService;
@@ -116,11 +117,10 @@ public class CoolbarViewPart {
 		}
 
 		coolbarmgr = new CoolBarManager(SWT.NONE);
-		IToolBarManager toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.BOTTOM);
-//		coolbarmgr.add(toolbarmgr);
 		
-		CoolBar coolbar1 = coolbarmgr.createControl(top);
-		ToolBar toolBar1 = new ToolBar(coolbar1, SWT.FLAT);
+		CoolBar coolBar = coolbarmgr.createControl(top);
+		ToolBar toolBar1 = new ToolBar(coolBar, SWT.WRAP);
+		IToolBarManager toolbarmgr = new ToolBarManager(toolBar1);
 		coolbarmgr.add(new ToolBarContributionItem(toolbarmgr));
 		/*
 		 * Leider gibt es keine vernünftige Verbindung zw. (altem) Command und der entsprechenden Preference.
@@ -136,6 +136,8 @@ public class CoolbarViewPart {
         parameters.put(WebShopCallHandler.PARAM_ACTION, WebShopCallHandler.WEBSHOP_CONNECTOR_ACTION_IMPORT);
 		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, msg.commandWebshopName, msg.commandWebshopTooltip,
 				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), null, preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP), parameters);
+
+		
 		createToolItem(toolBar1, "org.fakturama.print.oofile"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
 				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_PRINT));
@@ -143,9 +145,9 @@ public class CoolbarViewPart {
 		createToolItem(toolBar1, "org.eclipse.ui.file.save"/*IWorkbenchCommandConstants.FILE_SAVE*/, 
 				Icon.ICON_SAVE.getImage(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_SAVE));
-		finishToolbar(coolbar1, toolBar1);
+		finishToolbar(coolBar, toolBar1);
 			
-		ToolBar toolBar2 = new ToolBar(coolbar1, SWT.FLAT);
+		ToolBar toolBar2 = new ToolBar(coolBar, SWT.FLAT);
 		String tooltipPrefix = msg.commandNewTooltip + " ";
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewLetterName,
 				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
@@ -174,9 +176,9 @@ public class CoolbarViewPart {
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.documentTypeProforma, 
 				tooltipPrefix + msg.documentTypeProforma, Icon.ICON_PROFORMA_NEW.getImage(IconSize.ToolbarIconSize)
 				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA), createCommandParams(DocumentType.PROFORMA));
-		finishToolbar(coolbar1, toolBar2);
+		finishToolbar(coolBar, toolBar2);
 
-		ToolBar toolBar3 = new ToolBar(coolbar1, SWT.FLAT);
+		ToolBar toolBar3 = new ToolBar(coolBar, SWT.FLAT);
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, ProductEditor.ID);
         createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewProductName, msg.commandNewProductTooltip, 
@@ -184,10 +186,13 @@ public class CoolbarViewPart {
                 preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT), params);    
 
         params = new HashMap<>();
-//        params.put(CallEditor.PARAM_EDITOR_TYPE, DebitorEditor.ID);
-		createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.toolbarNewContactName, msg.commandNewContactTooltip, 
+		ToolItem contactToolItem = createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.toolbarNewContactName, msg.commandNewContactTooltip, 
 		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize), null,
-		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params);
+		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params, true);
+		DropdownSelectionListener contactTypeListener =  ContextInjectionFactory.make(DropdownSelectionListener.class, ctx);
+        contactTypeListener.add(new ContactTypeMenuItem(msg.commandNewCreditorName, CreditorEditor.ID, Icon.COMMAND_VENDOR));
+        contactTypeListener.add(new ContactTypeMenuItem(msg.commandNewDebtorName, DebitorEditor.ID, Icon.COMMAND_CONTACT));
+        contactToolItem.addSelectionListener(contactTypeListener);
 
         params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, ExpenditureVoucherEditor.ID);
@@ -199,9 +204,9 @@ public class CoolbarViewPart {
 		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewReceiptvoucherName,
 		        tooltipPrefix + msg.mainMenuNewReceiptvoucher, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
 		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER), params);	
-		finishToolbar(coolbar1, toolBar3);
+		finishToolbar(coolBar, toolBar3);
 		
-		ToolBar toolBar4 = new ToolBar(coolbar1, SWT.FLAT);
+		ToolBar toolBar4 = new ToolBar(coolBar, SWT.FLAT);
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize),
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE));
 		
@@ -217,7 +222,7 @@ public class CoolbarViewPart {
 		createToolItem(toolBar4, CommandIds.CMD_QRK_EXPORT, msg.commandExportQrkName, msg.commandExportQrkTooltip,
 				Icon.ICON_QRK_EXPORT.getImage(IconSize.ToolbarIconSize), null,
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_QRK_EXPORT), null);	
-		finishToolbar(coolbar1, toolBar4);	
+		finishToolbar(coolBar, toolBar4);	
 	}
 
     /**
@@ -313,6 +318,12 @@ public class CoolbarViewPart {
 		return createToolItem(toolBar, commandId, null, null, iconImage, disabledIcon, show, null);
 	}
 	
+	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
+			final String commandName, final String tooltip, final Image iconImage, final Image disabledIcon, boolean show,
+			Map<String, Object> params) {
+	    return createToolItem(toolBar, commandId, commandName, tooltip, iconImage, disabledIcon, show, params, false);
+	}
+	    
 	/**
 	 * Creates an icon in the given tool bar.
 	 * 
@@ -323,16 +334,23 @@ public class CoolbarViewPart {
 	 * @param iconImage image for the icon 
 	 * @param disabledIcon if it is disabled, which icon should be displayed?
 	 * @param show if <code>false</code>, the icon is hidden (configurable via preferences)
+	 * @param withChevron <code>true</code> if a chevron button should be created
 	 */
 	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
 			final String commandName, final String tooltip, final Image iconImage, final Image disabledIcon, boolean show,
-			Map<String, Object> params) {
+			Map<String, Object> params, boolean withChevron) {
 	    
 	    if(!show) {
 	        return null;
 	    }
 	    
-		ToolItem item = new ToolItem(toolBar, SWT.PUSH);  // mit Chevron: |SWT.DROP_DOWN
+		ToolItem item;
+		if(withChevron) {
+    		item = new ToolItem(toolBar, SWT.BORDER | SWT.DROP_DOWN);
+		} else {
+		    item = new ToolItem(toolBar, SWT.PUSH | SWT.BORDER);
+		}
+		
         final ParameterizedCommand pCmd = cmdService.createCommand(commandId, params);
 		try {
 			if(pCmd != null) {
@@ -402,6 +420,19 @@ public class CoolbarViewPart {
 			}
 		}));
         item.setImage(iconImage);
+        
+        // TODO das ist für die Verwendung von CollBarManager / ToolBarManagaer,
+        // damit man einzelne Icons anzeigen/verstecken kann. Siehe Snippet Snippet140BisWithDynamicChanges.
+//        IAction ac = new Action("id", Icon.ICON_PARCEL_SERVICE.getImageDescriptor(IconSize.ToolbarIconSize)) {
+//            
+//            @Override
+//            public void run() {
+//                System.out.println("mpf");
+//            }
+//        };
+//        ActionContributionItem i = new ActionContributionItem(ac);
+        
+        
         return item;
 	}
 }
