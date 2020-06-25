@@ -98,6 +98,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	public static final String PART_ID = "TEMP_ID";
 	public static final String EDITOR_ID = "VoucherEditor";
+    private static final int MAX_PROPOSAL_LIST_LENGTH = 10;
 
 	@Inject
 	protected VoucherCategoriesDAO voucherCategoriesDAO;
@@ -276,7 +277,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        textName.setToolTipText(labelName.getToolTipText());
 	        
 	        // Add the suggestion listener
-	        String[] nameProposals = getNameProposals();
+	        String[] nameProposals = getNameProposals(MAX_PROPOSAL_LIST_LENGTH);
 	        if(nameProposals.length > 0) {
 		        ControlDecoration decoration = new ControlDecoration(textName, SWT.LEFT | SWT.TOP);
 		        Image hintImage = FieldDecorationRegistry.getDefault()
@@ -498,7 +499,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	         * Since a newly created voucher doesn't has a unique name we have to distinguish the editor parts
 	         * another way. Therefore we use a timestamp. This is necessary while handling the item change event.
 	         */
-	        part.getProperties().put(PART_ID, java.time.LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+	        part.getTransientData().put(PART_ID, java.time.LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 	
 	        // Use the last category
 	        VoucherCategory lastCategory = getLastUsedCategory();
@@ -510,7 +511,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	        // Set the Editor's name to the voucher name.
 	        part.setLabel(voucher.getName());
-	        part.getProperties().put(PART_ID, voucher.getName());
+	        part.getTransientData().put(PART_ID, voucher.getName());
 	    }
 	    customerSupplier = getCustomerSupplierString();
 	    createPartControl(parent);
@@ -685,5 +686,5 @@ public abstract class VoucherEditor extends Editor<Voucher>{
     	getMDirtyablePart().setDirty(isDirty);
     }
     
-	protected abstract String[] getNameProposals();
+	protected abstract String[] getNameProposals(int maxLength);
 }
