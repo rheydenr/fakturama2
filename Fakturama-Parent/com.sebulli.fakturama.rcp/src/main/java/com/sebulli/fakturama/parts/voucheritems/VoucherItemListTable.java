@@ -861,7 +861,7 @@ public class VoucherItemListTable extends AbstractViewDataTable<VoucherItemDTO, 
      */
     private void notifyChangeListener(boolean calculate) {
         // Recalculate the total sum of the document if necessary
-        // do it via the messaging system and send a message to ExpenditureVoucherEditor
+        // do it via the messaging system and send a message to VoucherEditor
         Map<String, Object> event = new HashMap<>();
         event.put(DocumentEditor.DOCUMENT_ID, ((MPart)top.getParent().getParent().getData("modelElement")).getTransientData().get(VoucherEditor.PART_ID));
         event.put(DocumentEditor.DOCUMENT_RECALCULATE, calculate);
