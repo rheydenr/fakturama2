@@ -98,6 +98,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	
 	public static final String PART_ID = "TEMP_ID";
 	public static final String EDITOR_ID = "VoucherEditor";
+    private static final int MAX_PROPOSAL_LIST_LENGTH = 5;
 
 	@Inject
 	protected VoucherCategoriesDAO voucherCategoriesDAO;
@@ -276,7 +277,7 @@ public abstract class VoucherEditor extends Editor<Voucher>{
 	        textName.setToolTipText(labelName.getToolTipText());
 	        
 	        // Add the suggestion listener
-	        String[] nameProposals = getNameProposals();
+	        String[] nameProposals = getNameProposals(MAX_PROPOSAL_LIST_LENGTH);
 	        if(nameProposals.length > 0) {
 		        ControlDecoration decoration = new ControlDecoration(textName, SWT.LEFT | SWT.TOP);
 		        Image hintImage = FieldDecorationRegistry.getDefault()
@@ -685,5 +686,5 @@ public abstract class VoucherEditor extends Editor<Voucher>{
     	getMDirtyablePart().setDirty(isDirty);
     }
     
-	protected abstract String[] getNameProposals();
+	protected abstract String[] getNameProposals(int maxLength);
 }

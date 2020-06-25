@@ -68,8 +68,8 @@ public class ExpenditureVoucherEditor extends VoucherEditor {
 	}
     
     @Override
-    protected String[] getNameProposals() {
-    	return expendituresDAO.getVoucherNames();
+    protected String[] getNameProposals(int maxLength) {
+    	return expendituresDAO.getVoucherNames(maxLength);
     }
 
     @Override
