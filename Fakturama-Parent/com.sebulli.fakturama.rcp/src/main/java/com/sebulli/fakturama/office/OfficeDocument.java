@@ -577,16 +577,11 @@ public class OfficeDocument {
                 Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
                 pdfFilename = fo.getDocumentPath(pathOptions, targetFormat, document);
 
-                // FIXME How to create a PDF/A1 document?
-                // PDFFilter pdfFilter = new PDFFilter();
-                // pdfFilter.getPDFFilterProperties().setPdfVersion(1);
-
                 ProcessBuilder pb = new ProcessBuilder(ooPath.toString(),"--headless", 
                         "--convert-to", "pdf:writer_pdf_Export", 
                         "--outdir", pdfFilename.getParent().toString(), // this is the PDF path
                         documentPath.toAbsolutePath().toString());
-//              pb.redirectErrorStream(true);
-//              pb.inheritIO();
+
                 Process p = pb.start();
                 p.waitFor();
                 
