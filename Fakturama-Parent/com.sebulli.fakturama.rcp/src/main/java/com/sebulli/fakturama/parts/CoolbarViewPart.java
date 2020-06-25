@@ -190,6 +190,7 @@ public class CoolbarViewPart {
 		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params, true);
 		DropdownSelectionListener contactTypeListener =  ContextInjectionFactory.make(DropdownSelectionListener.class, ctx);
+		contactTypeListener.setDefaultCommandId(DebitorEditor.ID);
         contactTypeListener.add(new ContactTypeMenuItem(msg.commandNewCreditorName, CreditorEditor.ID, Icon.COMMAND_VENDOR));
         contactTypeListener.add(new ContactTypeMenuItem(msg.commandNewDebtorName, DebitorEditor.ID, Icon.COMMAND_CONTACT));
         contactToolItem.addSelectionListener(contactTypeListener);

@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.resources.core.IconSize;
 
 public class DropdownSelectionListener extends SelectionAdapter {
@@ -30,8 +31,13 @@ public class DropdownSelectionListener extends SelectionAdapter {
 
     @Inject
     private ECommandService commandService;
+    
+    @Inject
+    private ILogger log;
 
     private Menu menu;
+
+    private String defaultCommandId;
     
     public DropdownSelectionListener() {
     }
@@ -75,10 +81,22 @@ public class DropdownSelectionListener extends SelectionAdapter {
             // default action if clicked directly on the button
             // 
             if(event.widget.getData() == null) {
-                callHandler(DebitorEditor.ID);        
+                if(getDefaultCommandId() != null) {
+                    callHandler(getDefaultCommandId());        
+                } else {
+                    log.warn("no default command set for chevron coolitem");
+                }
             } else {
                 callHandler((String) event.widget.getData());
             }
         }
+    }
+
+    public String getDefaultCommandId() {
+        return defaultCommandId;
+    }
+
+    public void setDefaultCommandId(String defaultCommandId) {
+        this.defaultCommandId = defaultCommandId;
     }
 }
