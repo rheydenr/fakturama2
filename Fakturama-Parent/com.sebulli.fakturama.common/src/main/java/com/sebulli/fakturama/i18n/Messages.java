@@ -222,11 +222,13 @@ public class Messages {
 	public String dialogMessageboxTitleInfo;
 	public String dialogMessageboxTitleWarning;
 	public String dialogMessageboxTitleError;
+    public String dialogMessageboxDontshowagain;
 	public String dialogOrderstatusFieldNotify;
 	public String dialogOrderstatusTitle;
 	public String dialogPrintooDocumentalreadycreated;
 	public String dialogPrintooNotemplate;
 	public String dialogPrintooSuccessful;
+	public String dialogPrintooPdfsuccessful;
 	public String dialogPrintooCantprint;
 	public String dialogPrintooErrorNoactivepart;
 	public String dialogProductPicturePreview;

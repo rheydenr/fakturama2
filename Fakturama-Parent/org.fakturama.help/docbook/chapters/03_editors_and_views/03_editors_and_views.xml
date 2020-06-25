@@ -1237,7 +1237,7 @@
 					<imagedata fileref="../images/application/navigationbar.png" format="PNG" scalefit="1"/>
 				</imageobject> 
 				<imageobject role="fo">
-					<imagedata contentdepth="265%" fileref="../images/application/navigationbar.png" format="PNG" scalefit="1"/>
+					<imagedata contentdepth="245%" fileref="../images/application/navigationbar.png" format="PNG" scalefit="1"/>
 				</imageobject>
 			</mediaobject>
 		</informalfigure>

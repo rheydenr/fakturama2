@@ -1923,7 +1923,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1200, 700);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setMinSize(1100, 500);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));

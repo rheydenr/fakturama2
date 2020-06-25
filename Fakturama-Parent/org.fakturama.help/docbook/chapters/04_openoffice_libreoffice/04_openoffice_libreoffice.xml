@@ -60,7 +60,7 @@ id="04_openoffice_libreoffice">
 						<imagedata fileref="../images/openoffice/template.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata width="80%" fileref="../images/openoffice/template.png" format="PNG" scalefit="1"/>
+						<imagedata width="50%" fileref="../images/openoffice/template.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
@@ -86,7 +86,7 @@ id="04_openoffice_libreoffice">
 						<imagedata fileref="../images/openoffice/placeholder_dialog.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata fileref="../images/openoffice/placeholder_dialog.png" format="PNG" scalefit="1" width="80%"/>
+						<imagedata fileref="../images/openoffice/placeholder_dialog.png" format="PNG" scalefit="1" width="70%"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
@@ -114,7 +114,7 @@ id="04_openoffice_libreoffice">
 					<imagedata fileref="../images/openoffice/placeholders_common.png" format="PNG" scalefit="1"/>
 				</imageobject>
 				<imageobject role="fo">
-					<imagedata contentdepth="40%" fileref="../images/openoffice/placeholders_common.png" format="PNG" scalefit="1" width="40%"/>
+					<imagedata contentdepth="30%" fileref="../images/openoffice/placeholders_common.png" format="PNG" scalefit="1" width="30%"/>
 				</imageobject>
 			</mediaobject>
 		</informalfigure>
@@ -1321,5 +1321,8 @@ id="04_openoffice_libreoffice">
 								</inlinemediaobject>
 							</para>
 		</section>
+		
+    	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="zugferd_export.xml"/>
+
 	</chapter>
 	

@@ -26,7 +26,7 @@
 				<surname>Fakturama Team</surname>
 			</author>
 		</authorgroup>
-		<edition>Benutzerhandbuch für Fakturama v2.1.0a</edition>
+		<edition>Benutzerhandbuch für Fakturama v2.1.1</edition>
 		<pubdate>
 			<?dbtimestamp format="d.m.Y"?>
 		</pubdate>
@@ -131,7 +131,7 @@
 				<para>Diese "Commons Deed" ist lediglich eine vereinfachte Zusammenfassung des <link xl:href="http://creativecommons.org/licenses/by-nc-nd/3.0/de/legalcode">rechtsverbindlichen Lizenzvertrages</link> in allgemeinverständlicher Sprache.</para>
 		</legalnotice>
 
-		<releaseinfo>Version 2.1.0a</releaseinfo>
+		<releaseinfo>Version 2.1.1</releaseinfo>
 	</bookinfo>
 
 	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/01_introduction/01_introduction.xml"/>

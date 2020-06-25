@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
    <extension
-         id="org.fakturama.exporter.zugferd.fragment"
-         name="ZUGFeRD Fragment"
-         point="org.eclipse.e4.workbench.model">
-      <fragment
-            apply="always"
-            uri="zf-fragment.e4xmi">
-      </fragment>
-   </extension>
-   <extension
          point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">
       <preferenceStoreProvider
-            class="bundleclass://org.fakturama.exporter.zugferd/org.fakturama.export.zugferd.ZFPreferenceStoreProvider"
+            class="bundleclass://org.fakturama.exporter.zugferd/org.fakturama.export.einvoice.ZFPreferenceStoreProvider"
             pluginId="org.fakturama.exporter.zugferd.preferenceStoreProvider">
       </preferenceStoreProvider>
    </extension>
    <extension
          point="com.opcoach.e4.preferences.e4PreferencePages">
       <page
-            class="org.fakturama.export.zugferd.ZugferdPreferences"
+            class="org.fakturama.export.einvoice.ZugferdPreferences"
             id="org.fakturama.exporter.zugferd.page"
             name="%zugferd.preferences.title">
       </page>
@@ -27,7 +18,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.fakturama.export.zugferd.ZFDefaultValuesInitializer">
+            class="org.fakturama.export.einvoice.ZFDefaultValuesInitializer">
       </initializer>
    </extension>
 </plugin>

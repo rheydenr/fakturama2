@@ -21,20 +21,20 @@ package com.sebulli.fakturama.misc;
  */
 public enum DocumentType {
  // all 8 data types
- NONE(0, "None", "None", false, false, false, false, 1, "none"),
- LETTER(1, "toolbar.new.letter.name" /*"Letter"*/, "document.type.letter.plural", false, false, false, false, 1, "main.menu.new.letter"),
- OFFER(2, "toolbar.new.offer.name" /*"Offer"*/, "document.type.offer.plural", true, true, false, false, 1, "main.menu.new.offer"),
- ORDER(3, "toolbar.new.order.name" /*"Order"*/, "document.type.order.plural", true, true, false, false, 1, "main.menu.new.order"),
- CONFIRMATION(4, "toolbar.new.confirmation.name" /*"Confirmation"*/, "document.type.confirmation.plural", true, true, false, false, 1, "main.menu.new.confirmation"),
- INVOICE(5, "toolbar.new.invoice.name" /*"Invoice"*/, "document.type.invoice.plural", true, true, true, false, 1, "main.menu.new.invoice"),
- DELIVERY(6, "toolbar.new.deliverynote.name" /*"Delivery Note"*/, "document.type.deliverynote.plural", true, false, false, true, 1, "main.menu.new.deliverynote"),
- CREDIT(7, "toolbar.new.document.credit.name" /*"Credit"*/, "document.type.credititems.plural", true, true, true, true, -1, "main.menu.new.credit"),
- DUNNING(8, "toolbar.new.document.dunning.name" /*"Dunning"*/, "document.type.dunning.plural", false, false, false, true, 1, "main.menu.new.dunning"),
- PROFORMA(9, "document.type.proforma" /*"Proforma"*/, "document.type.proforma.plural", true, true, false, false, 1, "main.menu.new.proforma");
+ NONE(0, "None", "None", false, false, false, false, 1, "none", 0),
+ LETTER(1, "toolbar.new.letter.name" /*"Letter"*/, "document.type.letter.plural", false, false, false, false, 1, "main.menu.new.letter", 0),
+ OFFER(2, "toolbar.new.offer.name" /*"Offer"*/, "document.type.offer.plural", true, true, false, false, 1, "main.menu.new.offer", 0),
+ ORDER(3, "toolbar.new.order.name" /*"Order"*/, "document.type.order.plural", true, true, false, false, 1, "main.menu.new.order", 0),
+ CONFIRMATION(4, "toolbar.new.confirmation.name" /*"Confirmation"*/, "document.type.confirmation.plural", true, true, false, false, 1, "main.menu.new.confirmation", 0),
+ INVOICE(5, "toolbar.new.invoice.name" /*"Invoice"*/, "document.type.invoice.plural", true, true, true, false, 1, "main.menu.new.invoice", 380),
+ DELIVERY(6, "toolbar.new.deliverynote.name" /*"Delivery Note"*/, "document.type.deliverynote.plural", true, false, false, true, 1, "main.menu.new.deliverynote", 0),
+ CREDIT(7, "toolbar.new.document.credit.name" /*"Credit"*/, "document.type.credititems.plural", true, true, true, true, -1, "main.menu.new.credit", 384),
+ DUNNING(8, "toolbar.new.document.dunning.name" /*"Dunning"*/, "document.type.dunning.plural", false, false, false, true, 1, "main.menu.new.dunning", 0),
+ PROFORMA(9, "document.type.proforma" /*"Proforma"*/, "document.type.proforma.plural", true, true, false, false, 1, "main.menu.new.proforma", 325);
 	
 	// 9 types.
 	public final static int MAXID = DocumentType.values().length;
-	private int key, sign;
+	private int key, sign, code;
 	
 	/**
 	 * the l10n key for a new document (e.g., "main.menu.new.letter" => "New Letter")
@@ -65,7 +65,7 @@ public enum DocumentType {
 
 	private DocumentType(int key, String description, String plural,
 			boolean itemTable, boolean price, boolean paid,
-			boolean invoiceReference, int sign, String newText) {
+			boolean invoiceReference, int sign, String newText, int code) {
 		this.key = key;
 		this.singularKey = description;
 		this.pluralDescription = plural;
@@ -75,6 +75,7 @@ public enum DocumentType {
 		this.invoiceReference = invoiceReference;
 		this.sign = sign;
 		this.newTextKey = newText;
+		this.code = code;
 	}
 
 	/**
@@ -287,6 +288,15 @@ public enum DocumentType {
      */
     public static String getNewTextKey(DocumentType documentType) {
         return documentType.getNewText();
+    }
+
+    /**
+     * code for XRechnung
+     * 
+     * @return
+     */
+    public int getCode() {
+        return code;
     }	
     
 }

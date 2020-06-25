@@ -57,7 +57,7 @@
         <title>Dokumenten-Einstellungen</title>
         <section>
             <title>Preise in Artikelliste</title>
-            <para>Legt fest, ob die Preise in der Artikelliste der Dokumente (Rechnungen, Lieferscheine&#x2026;) als Netto oder Brutto angezeigt werden</para>
+            <para>Legt fest, ob die Preise in der Artikelliste der Dokumente (Rechnungen, Lieferscheine…) als Netto oder Brutto angezeigt werden</para>
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -706,7 +706,7 @@
                 <anchor xreflabel="" xml:id="preferences_office_path"/>
             <title>Format und Pfad der Dateien</title>
             <para>Legt den Pfad der gedruckten und gespeicherten Office und PDF Dokumente fest. Hier können auch absolute Pfadangaben eingetragen werden. Ansonsten sind die Pfade relativ zum Arbeitsverzeichnis.</para>
-            <para>Über das Hauptmenü Extras -> <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
+            <para>Über das Hauptmenü Extras -&gt; <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
             <para>Beispiel:
             <programlisting>ODT2/{doctype}/{yyyy}/{mm}/{docname}_{address}.odt</programlisting>
             Folgende Platzhalter können benutzt werden:</para>
@@ -1055,7 +1055,29 @@
             <para>Die Werkzeugleiste lässt sich so an die eigenen Bedürfnisse anpassen. Selten oder nicht benutze Icons werden ausgeblendet. Das Programm bleibt übersichtlich.</para>
         </section>
     </section>
-	<section><title>ZUGFeRD-Einstellungen</title>
-	<para>In diesem Dialog können Sie die Einstellungen für den ZUGFeRD-Export vornehmen.</para>
-	<sect2><title>Standardpfad für die ZUGFeRD-Datei</title><para>In diesem Feld legen Sie fest, wo die ZUGFeRD-Datei nach der Generierung abgelegt werden soll.</para></sect2></section>
+	<section><anchor xreflabel="" xml:id="preferences_zugferd"/>
+		<title>ZUGFeRD-Einstellungen</title>
+		<para>In diesem Dialog kann man die Einstellungen für den ZUGFeRD-Export vornehmen.<footnote><para>Der in früheren Versionen vorhandene Testschalter ist nur im Extended-Profil verfügbar, deswegen wurde er hier nicht mit aufgeführt.</para></footnote>
+		</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/preferences/zugferd-settings.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="250%" fileref="../images/preferences/zugferd-settings.png" format="PNG" scalefit="1" width="250%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<section><!-- title>Standardpfad für die ZUGFeRD-Datei</title><para>In diesem Feld legen Sie fest, wo die ZUGFeRD-Datei nach der Generierung abgelegt werden soll.</para -->
+			<title>Erzeuge ZUGFeRD-Datei</title><para>Damit wird festgelegt, ob eine ZUGFeRD-Datei erzeugt werden soll.</para>
+			<important>Damit das ZUGFeRD-PDF erzeugt werden kann, ist in den Einstellungen für die Office-Integration die PDF-Erstellung zu aktivieren sowie ein gültiger Pfad anzugeben.</important>
+		<para>Siehe auch <link linkend="preferences_openoffice">OpenOffice.org / LibreOffice-Einstellungen</link>
+		</para></section>
+		<section>
+			<title>ZUGFeRD-Version</title><para>Über die Radiobuttons kann man die zu erstellende Version auswählen.</para></section> 
+			<section><title>Profil</title><para>Aktuell ist nur das COMFORT-Profil auswählbar. Beim Umschalten zwischen den Versionen wird auch der Inhalt der Dropdown-Box aktualisiert.
+			</para>
+		</section>
+	</section>
 </chapter>

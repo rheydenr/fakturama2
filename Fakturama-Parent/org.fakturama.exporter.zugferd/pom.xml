@@ -14,18 +14,18 @@
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
-			<version>2.0.9</version>
+			<version>2.0.18</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>fontbox</artifactId>
-			<version>2.0.9</version>
+			<version>2.0.18</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox -->
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>xmpbox</artifactId>
-			<version>2.0.9</version>
+			<version>2.0.18</version>
 		</dependency>
 
 	</dependencies>
@@ -51,20 +51,63 @@
       
 <!-- generate schema file for entities
      generate JAXB classes for entities -->
-
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
                 <version>0.14.0</version>
+                <executions>
+                    <execution>
+                    	<id>schema-v1</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+		                <configuration>
+		                    <extension>true</extension>
+		                    <!-- see https://github.com/highsource/maven-jaxb2-plugin/wiki/Do-Not-Use-forceRegenerate -->
+		                    <!--  forceRegenerate>true</forceRegenerate --> 
+		                    <locale>en</locale>
+		                    <args>
+		                        <arg>-Xfluent-api</arg>
+		                        <arg>-Xannotate</arg>
+		                        <arg>-npa</arg>
+		                    </args>
+		                    <verbose>false</verbose>
+		                    
+		                    <schemaDirectory>src/main/resources/schema</schemaDirectory>
+		                    <!-- xjb doesn't work :-(  --> <bindingDirectory>src/main/resources/schema</bindingDirectory> 
+		                    <generateDirectory>src-gen/main/java</generateDirectory>
+		                    <encoding>${encoding}</encoding>
+		                    <generatePackage>org.fakturama.export.zugferd.modelgen</generatePackage>
+		                </configuration>
+
+                    </execution>
+                    <execution>
+                    	<id>schema-v2</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+		                <configuration>
+		                    <extension>true</extension>
+		                    <!-- see https://github.com/highsource/maven-jaxb2-plugin/wiki/Do-Not-Use-forceRegenerate -->
+		                    <!--  forceRegenerate>true</forceRegenerate --> 
+		                    <locale>en</locale>
+		                    <args>
+		                        <arg>-Xfluent-api</arg>
+		                        <arg>-Xannotate</arg>
+		                        <arg>-npa</arg>
+		                    </args>
+		                    <verbose>false</verbose>
+		                    
+		                    <schemaDirectory>src/main/resources/schema-v2</schemaDirectory>
+		                    <!-- xjb doesn't work :-(  --> <bindingDirectory>src/main/resources/schema-v2</bindingDirectory> 
+		                    <generateDirectory>src-gen/main/java</generateDirectory>
+		                    <encoding>${encoding}</encoding>
+		                    <generatePackage>org.fakturama.export.facturx.modelgen</generatePackage>
+		                </configuration>
+
+                    </execution>
+                </executions>
                 <configuration>
-                    <extension>true</extension>
-                    <forceRegenerate>false</forceRegenerate>
-                    <locale>en</locale>
-                    <args>
-                        <arg>-Xfluent-api</arg>
-                        <arg>-Xannotate</arg>
-                        <arg>-npa</arg>
-                    </args>
                     <plugins>
                         <plugin>
                             <groupId>org.jvnet.jaxb2_commons</groupId>
@@ -82,47 +125,41 @@
                             <version>2.1.8</version>
                         </plugin>
                     </plugins>
-                    <verbose>false</verbose>
-                    <schemaDirectory>src/main/resources/schema</schemaDirectory>
-                    <!-- xjb doesn't work :-(  --> <bindingDirectory>src/main/resources</bindingDirectory>
-                    <generateDirectory>src-gen/main/java</generateDirectory>
-                    <encoding>${encoding}</encoding>
-                    <generatePackage>org.fakturama.export.zugferd.modelgen</generatePackage>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
+               	</configuration>
             </plugin>
+ 
 <!-- alternative
            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>1.6</version>
+                <version>2.5.0</version>
+		                <configuration>
+					       <xjbSources>
+					            <xjbSource>src/main/resources/schema</xjbSource>
+					            <xjbSource>src/main/resources/schema-v2</xjbSource>
+					        </xjbSources>                
+					    </configuration>
                 <executions>
-                    <execution>
-                        <id>xjc</id>
+                	<execution>
+                		<id>schema-v1</id>
                         <goals>
                             <goal>xjc</goal>
                         </goals>
-                    </execution>
-                </executions>
-                <configuration>
+                		
+                		<configuration>
+		                    <extension>true</extension>
+		                    <forceRegenerate>false</forceRegenerate>
+		                    <schemaDirectory>src/main/resources/schema</schemaDirectory>
+		                    <schemaFiles>ZUGFeRD_1p0.xsd</schemaFiles>
+		                    <outputDirectory>src-gen/main/java</outputDirectory>
+		                    <bindingDirectory>src/main/resources/schema</bindingDirectory>
+		                    <packageName>com.sebulli.fakturama.zugferd.modelgen</packageName>
+                		</configuration>
+                 	</execution>
                 
-                    <extension>true</extension>
-                    <forceRegenerate>false</forceRegenerate>
-                  
-                    <schemaDirectory>src/main/resources/schema</schemaDirectory>
-                    <schemaFiles>ZUGFeRD_1p0.xsd</schemaFiles>
-                    <outputDirectory>src-gen/main/java</outputDirectory>
-                    <bindingDirectory>src/main/resources</bindingDirectory>
-                    <packageName>com.sebulli.fakturama.zugferd.modelgen</packageName>
-                </configuration>
-            </plugin>
- -->
+                </executions>
+            </plugin> -->
+
     </plugins>
   </build>
    <!-- To use the report goals in your POM or parent POM -->

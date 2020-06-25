@@ -40,7 +40,6 @@
         <setEntry value="com.mysql.jdbc@default:default"/>
         <setEntry value="com.opcoach.e4.preferences@default:default"/>
         <setEntry value="com.opencsv@default:default"/>
-        <setEntry value="com.sun.xml.bind.jaxb-osgi@default:default"/>
         <setEntry value="jakarta.persistence@default:default"/>
         <setEntry value="jakarta.xml.bind-api@2:default"/>
         <setEntry value="javax.annotation@default:default"/>

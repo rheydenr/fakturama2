@@ -83,12 +83,13 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<!-- forceRegenerate>true</forceRegenerate -->
+		                    <!-- see https://github.com/highsource/maven-jaxb2-plugin/wiki/Do-Not-Use-forceRegenerate -->
+		                    <!--  forceRegenerate>true</forceRegenerate --> 
 							<verbose>true</verbose>
 							<schemaDirectory>src/main/resources</schemaDirectory>
-							                <schemaIncludes>
-                    <include>webshop-import.xsd</include>
-                </schemaIncludes>							
+							<schemaIncludes>
+                    			<include>webshop-import.xsd</include>
+                			</schemaIncludes>							
 							
 							<generateDirectory>src-gen/main/java</generateDirectory>
 							<encoding>UTF-8</encoding>
@@ -97,25 +98,26 @@
 							<generatePackage>com.sebulli.fakturama.webshopimport.type</generatePackage>
 						</configuration>
 					</execution>
-										<execution>
+					<execution>
 						<id>jaxb-qrk</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<!-- forceRegenerate>true</forceRegenerate -->
+		                    <!-- see https://github.com/highsource/maven-jaxb2-plugin/wiki/Do-Not-Use-forceRegenerate -->
+		                    <!--  forceRegenerate>true</forceRegenerate --> 
 							<verbose>true</verbose>
 							<schemaDirectory>src/main/resources</schemaDirectory>
-                <schemaIncludes>
-                    <include>QRK-R2B.xsd</include>
-                </schemaIncludes>	
+			                <schemaIncludes>
+			                    <include>QRK-R2B.xsd</include>
+			                </schemaIncludes>	
                                 <!-- bindingDirectory>src/main/resources</bindingDirectory>
-                <bindingIncludes>
-                    <include>classgeneration.xjb</include>
-                </bindingIncludes-->						
-                <generateDirectory>src-gen/main/java</generateDirectory>
-							<encoding>UTF-8</encoding>
+			                <bindingIncludes>
+			                    <include>classgeneration.xjb</include>
+			                </bindingIncludes-->						
+			                <generateDirectory>src-gen/main/java</generateDirectory>
+		                    <encoding>${encoding}</encoding>
 							<markGenerated>true</markGenerated>
 							<locale>en</locale>
 							<generatePackage>at.ckvsoft.qrk.type</generatePackage>
