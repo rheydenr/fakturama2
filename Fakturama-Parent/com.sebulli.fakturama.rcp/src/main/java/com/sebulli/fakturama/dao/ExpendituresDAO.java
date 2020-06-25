@@ -184,7 +184,7 @@ public class ExpendituresDAO extends AbstractDAO<Voucher> {
 	    
 		CriteriaQuery<Voucher> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Voucher_.voucherDate)));
 	    TypedQuery<Voucher> query = getEntityManager().createQuery(cq).setMaxResults(maxLength);
-        return query.getResultList().stream().map(v -> v.getName()).sorted().collect(Collectors.toList()).toArray(new String[] {});
+        return query.getResultList().stream().map(v -> v.getName()).sorted().distinct().collect(Collectors.toList()).toArray(new String[] {});
 	}
   
     /**
