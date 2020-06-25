@@ -124,7 +124,7 @@ public class ZugferdExporter implements IPdfPostProcessor {
             result = false;
             MessageDialog.openError(shell, msg.zugferdExportCommandTitle, msg.zugferdExportErrorNopdfset);
         }
-        if (result && eclipsePrefs.get(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, "").isEmpty()) {
+        if (result && eclipsePrefs.get(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, preferences.getDefaultString(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT)).isEmpty()) {
             result = false;
             MessageDialog.openError(shell, msg.zugferdExportCommandTitle, msg.zugferdExportErrorNopdfpath);
         }
