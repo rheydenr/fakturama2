@@ -2546,7 +2546,8 @@ public class DocumentEditor extends Editor<Document> {
 	final private CTabItem createAddressTabItem(DocumentReceiver documentReceiver) {
 		CTabItem addressTabItem = new CTabItem(addressAndIconComposite, SWT.NONE);
 		addressTabItem.setData(ADDRESS_TAB_BILLINGTYPE, documentReceiver.getBillingType());
-		addressTabItem.setText(documentReceiver.getBillingType().getName());
+		DocumentType documentType = DocumentTypeUtil.findByBillingType(documentReceiver.getBillingType());
+		addressTabItem.setText(msg.getMessageFromKey(documentType.getAddressKey()));
 
 		// The address field
 		Text currentAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
