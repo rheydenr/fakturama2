@@ -2693,7 +2693,7 @@
 			<title>Der Kategoriebaum für Dokumente</title>
 			<para>Der Kategoriebaum für Dokumente unterscheidet sich etwas von dem für andere Datensätze. Dokumente werden je nach Art des Dokumentes automatisch in Kategorien sortiert.</para>
 		</sect2>
-		<!-- sect2> TODO
+		<sect2>
 			<title>Summe der unbezahlten Rechnungen</title>
 			<informalfigure>
 				<mediaobject>
@@ -2705,8 +2705,8 @@
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
-			<para>Fährt man mit der Maus über den Eintrag "unbezahlte Rechnungen", wird die Summe aller unbezahlten Rechnungen angezeigt.</para>
-		</sect2 -->
+			<para>Fährt man mit der Maus über den Eintrag "Rechnungen" oder einen der Untereinträge, wird die Summe aller unbezahlten bzw. bezahlten Rechnungen angezeigt.</para>
+		</sect2>
 		<sect2>
 			<title>Weitere Bearbeitungssymbole</title>
 			<variablelist>

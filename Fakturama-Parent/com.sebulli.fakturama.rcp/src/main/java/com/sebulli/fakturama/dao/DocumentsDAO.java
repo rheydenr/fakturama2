@@ -1,19 +1,16 @@
 package com.sebulli.fakturama.dao;
 
-import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
@@ -28,9 +25,7 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.HintValues;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 
 import com.sebulli.fakturama.dialogs.SelectDeliveryNoteDialog;
@@ -210,24 +205,23 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
         }
         
         Query q = getEntityManager().createQuery("select distinct type(d) from Document d where d.deleted = false");
+        
         @SuppressWarnings("unchecked")
         List<Class<? extends Document>> typeList = q.getResultList();
         for (Class<? extends Document> document : typeList) {
-            
+           
             // Letters
             if (document.getName().contentEquals(Letter.class.getName())) {
                 // add letter documents
                 List<DummyStringCategory> cats = createDummyCategories(
-                        DocumentType.LETTER,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.LETTER)));
+                        DocumentType.LETTER);
                 resultList.addAll(cats);
             }
             
             if (document.getName().contentEquals(Offer.class.getName())) {
                 // add order documents
                 List<DummyStringCategory> cats = createDummyCategories(
-                        DocumentType.OFFER,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.OFFER)));
+                        DocumentType.OFFER);
                 resultList.addAll(cats);
             }
             
@@ -236,7 +230,6 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
                 // add order documents
                 List<DummyStringCategory> cats = createDummyCategories(
                         DocumentType.ORDER,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.ORDER)),
                         msg.documentOrderStateNotshipped, 
                         msg.documentOrderStateShipped);
                 resultList.addAll(cats);
@@ -245,8 +238,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
             if (document.getName().contentEquals(Confirmation.class.getName())) {
                 // add letter documents
                 List<DummyStringCategory> cats = createDummyCategories(
-                        DocumentType.CONFIRMATION,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.CONFIRMATION)));
+                        DocumentType.CONFIRMATION);
                 resultList.addAll(cats);
             }
             
@@ -255,7 +247,6 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
                 // add invoice documents
                 List<DummyStringCategory> cats = createDummyCategories(
                         DocumentType.INVOICE,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.INVOICE)),
                         msg.documentOrderStateUnpaid,
                         msg.documentOrderStatePaid);
                 resultList.addAll(cats);
@@ -266,7 +257,6 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
                 // add dunning documents
                 List<DummyStringCategory> cats = createDummyCategories(
                         DocumentType.DELIVERY,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.DELIVERY)),
                         msg.documentDeliveryStateHasinvoice,
                         msg.documentDeliveryStateHasnoinvoice);
                 resultList.addAll(cats);
@@ -277,7 +267,6 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
                 // add credit documents
                 List<DummyStringCategory> cats = createDummyCategories(
                         DocumentType.CREDIT,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.CREDIT)),
                         msg.documentOrderStateUnpaid,
                         msg.documentOrderStatePaid);
                 resultList.addAll(cats);
@@ -288,7 +277,6 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
                 // add dunning documents
                 List<DummyStringCategory> cats = createDummyCategories(
                         DocumentType.DUNNING,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.DUNNING)),
                         msg.documentOrderStateUnpaid,
                         msg.documentOrderStatePaid);
                 resultList.addAll(cats);
@@ -297,8 +285,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
             if (document.getName().contentEquals(Proforma.class.getName())) {
                 // add letter documents
                 List<DummyStringCategory> cats = createDummyCategories(
-                        DocumentType.PROFORMA,
-                        msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.PROFORMA)));
+                        DocumentType.PROFORMA);
                 resultList.addAll(cats);
             }
             
@@ -318,13 +305,12 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
         DummyStringCategory parent = null;
         for (String string : pCategory) {
             if(parent == null) {
-                parent = new DummyStringCategory(string, docType);
+                parent = new DummyStringCategory(msg.getMessageFromKey(DocumentType.getPluralString(docType)), docType);
                 retList.add(parent);
-            } else {
-                DummyStringCategory cat = new DummyStringCategory(string, docType);
-                cat.setParent(parent);
-                retList.add(cat);
-            }
+            } 
+            DummyStringCategory cat = new DummyStringCategory(string, docType);
+            cat.setParent(parent);
+            retList.add(cat);
         }
         return retList;
     }
@@ -544,7 +530,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
     }
  
     /**
-     * Merge 2 transactions into one single
+     * Merge 2 transactions into a single one
      * 
      * @param mainDocument the main {@link Document}
      * @param otherDocument the {@link Document} which gets the id of the main {@link Document}
@@ -558,7 +544,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
     }    
  
     /**
-     * Merge 2 transactions into one single for a given List of {@link Document}s.
+     * Merge 2 transactions into a single one for a given List of {@link Document}s.
      * 
      * @param mainDocument the main {@link Document}
      * @param otherDocument the list of {@link Document}s which gets the id of the main {@link Document}
@@ -608,23 +594,39 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
         List<String> stringList = resultList.stream().map(d -> d.getName()).collect(Collectors.toList());
         return StringUtils.join(stringList, ",");
     }
-//
-//	public void sumAllDocumentsWithinCategory(DocumentType type, String category) {
-//        FakturamaModelFactory modelFactory = new FakturamaModelFactory();
-//        BillingType billingType = modelFactory.createBillingTypeFromString(type.getTypeAsString());
-//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-//        CriteriaQuery<Document> criteria = cb.createQuery(Document.class);
-//        Root<Document> root = criteria.from(Document.class);
-//
-//        CriteriaQuery<Document> cq = criteria.where(
-//                cb.and(
-//                        cb.equal(root.<BillingType> get(Document_.billingType), billingType),
-//                        cb.equal(root.<String> get(Document_.webshopId), webshopId),
-//                        cb.equal(root.<Date> get(Document_.webshopDate), res)
-//                      )
-//            );
-//        return getEntityManager().createQuery(cq).getResultList();
-//	}
+
+    /**
+     * Calculates the sum of all document totals in a given {@link DummyStringCategory}. Used for
+     * displaying tooltips.
+     * 
+     * @param category
+     * @return sum of all document totals in the given category
+     */
+    public Optional<Double> sumAllDocumentsWithinCategory(DummyStringCategory category) {
+        if(category.getDocType() != DocumentType.INVOICE) {
+            return null;
+        }
+        
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Double> query = cb.createQuery(Double.class);
+        Root<Invoice> root = query.from(Invoice.class);
+        CriteriaQuery<Double> cq = query.select(cb.sum(root.get(Document_.totalValue)));
+        
+        Predicate predicate;
+        if(category.getName().contentEquals(msg.getMessageFromKey(DocumentType.getPluralString(DocumentType.INVOICE)))) {
+            // sum paid and unpaid invoices
+            predicate = cb.not(root.get(Document_.deleted));
+        } else {
+            // only paid or unpaid invoices
+            predicate = cb.and(
+                cb.not(root.get(Document_.deleted)),
+                cb.equal(root.<Boolean> get(Invoice_.paid), !category.getName().contentEquals(msg.documentOrderStateUnpaid))
+            );
+        }
+        
+        CriteriaQuery<Double> cq1 = cq.where(predicate);
+        return Optional.ofNullable(getEntityManager().createQuery(cq1).getSingleResult());
+	}
 
 
     /**
@@ -680,8 +682,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 	    // take the paydate OR the document date into account
 		CriteriaQuery<Document> cq = criteria.where(predicate).orderBy(
 				cb.asc(root.get(usePaidDate ? Document_.payDate : Document_.documentDate)));
-	    TypedQuery<Document> query = getEntityManager().createQuery(cq);
-		return query.getResultList();
+	    return getEntityManager().createQuery(cq).getResultList();
 	}
 	
 	public Document findDunningByTransactionId(Integer transactionId, int dunninglevel) {
