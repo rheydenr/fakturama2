@@ -796,7 +796,7 @@
 						<imageobject role="fo">
 							<imagedata contentdepth="40%" width="20pt" fileref="../images/application/receipt_voucher_16.png" format="PNG" scalefit="1"/>
 						</imageobject>
-					</inlinemediaobject>Neuer Einnahmebelege</term>
+					</inlinemediaobject>Neuer Einnahmebeleg</term>
 
 				<listitem>
 					<para>Erstellt einen neuen Einnahmebeleg und öffnet diesen in einem Editorfenster.</para>
@@ -2586,7 +2586,6 @@
 	<section>
 		<anchor xreflabel="" xml:id="editor_editor_voucher"/><title>Editor Einnahmen- oder Ausgabebeleg</title>
 		<para>Alle Einahmen/Ausgaben können in Belegen erfasst und später tabellarisch und sortiert als OpenOffice Calc Tabelle exportiert werden.</para>
-		<para>Viele Felder des Beleges sind mit einer Autovervollständigung ausgestattet. Diese wird automatisch für das Feld abgeschaltet, sobald einmal der Wert korrigiert wurde.</para>
 		<informalfigure>
 			<mediaobject>
 				<imageobject role="html">
@@ -2619,7 +2618,9 @@
 		</varlistentry>
 		<varlistentry>
 			<term>Lieferant</term>
-			<listitem><para>Name des Lieferanten</para></listitem>
+			<listitem><para>Name des Lieferanten. Das Feld ist mit einer Autovervollständigung ausgestattet. Diese wird automatisch eingeschaltet, 
+		sobald mindestens ein Eintrag in der Datenbank vorhanden ist. Die Vorschlagsliste ist derzeit auf 10 Einträge begrenzt.</para>
+			</listitem>
 		</varlistentry>
 		<varlistentry>
 			<term>Positionen</term>
