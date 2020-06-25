@@ -249,6 +249,7 @@ public class Messages {
 	public String documentOrderStatePaid;
 	public String documentOrderStateShipped;
 	public String documentOrderStateUnpaid;
+	
 	public String documentTypeConfirmationPlural;
 	public String documentTypeCredititemsPlural;
 	public String documentTypeDeliverynotePlural;
@@ -259,6 +260,11 @@ public class Messages {
 	public String documentTypeOrderPlural;
 	public String documentTypeProforma;
 	public String documentTypeProformaPlural;
+	
+	public String documentTypeInvoiceAddress;
+	public String documentTypeDeliverynoteAddress;
+	public String documentTypeLetterAddress;
+	
 	public String editorBrowserButtonBack;
 	public String editorBrowserButtonForward;
 	public String editorBrowserButtonHome;
