@@ -116,12 +116,11 @@ public class CoolbarViewPart {
 			return;
 		}
 
-		coolbarmgr = new CoolBarManager(SWT.NONE);
+		coolbarmgr = new CoolBarManager(SWT.FLAT);
 		
 		CoolBar coolBar = coolbarmgr.createControl(top);
-		ToolBar toolBar1 = new ToolBar(coolBar, SWT.WRAP);
-		IToolBarManager toolbarmgr = new ToolBarManager(toolBar1);
-		coolbarmgr.add(new ToolBarContributionItem(toolbarmgr));
+		ToolBarManager toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.WRAP);
+		ToolBar toolBar1 = toolbarmgr.createControl(coolBar);
 		/*
 		 * Leider gibt es keine vernünftige Verbindung zw. (altem) Command und der entsprechenden Preference.
 		 * deswegen müssen wir ein händisches Mapping erstellen, das so aussieht (Beispiel):
@@ -131,12 +130,16 @@ public class CoolbarViewPart {
 		 * Das muß man dann beim Erstellen des Icons über den Preference-Store abfragen, da die Einstellung dort
 		 * beim Hochfahren der Anwendung bzw. beim Migrieren schon hinterlegt wurde.
 		 */
+		coolbarmgr.add(toolbarmgr);
+
+		ToolBarContributionItem toolBarContributionItem = (ToolBarContributionItem) coolbarmgr.getItems()[0];
+        toolBarContributionItem.setMinimumItemsToShow(1);
+
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, Boolean.TRUE);
         parameters.put(WebShopCallHandler.PARAM_ACTION, WebShopCallHandler.WEBSHOP_CONNECTOR_ACTION_IMPORT);
 		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, msg.commandWebshopName, msg.commandWebshopTooltip,
 				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), null, preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP), parameters);
-
 		
 		createToolItem(toolBar1, "org.fakturama.print.oofile"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
 				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
@@ -145,9 +148,11 @@ public class CoolbarViewPart {
 		createToolItem(toolBar1, "org.eclipse.ui.file.save"/*IWorkbenchCommandConstants.FILE_SAVE*/, 
 				Icon.ICON_SAVE.getImage(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_SAVE));
+        toolbarmgr.add(toolBarContributionItem);
 		finishToolbar(coolBar, toolBar1);
-			
+
 		ToolBar toolBar2 = new ToolBar(coolBar, SWT.FLAT);
+        IToolBarManager toolbarmgr2 = new ToolBarManager(toolBar2);
 		String tooltipPrefix = msg.commandNewTooltip + " ";
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewLetterName,
 				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
@@ -177,8 +182,10 @@ public class CoolbarViewPart {
 				tooltipPrefix + msg.documentTypeProforma, Icon.ICON_PROFORMA_NEW.getImage(IconSize.ToolbarIconSize)
 				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA), createCommandParams(DocumentType.PROFORMA));
 		finishToolbar(coolBar, toolBar2);
+        coolbarmgr.add(toolbarmgr2);
 
 		ToolBar toolBar3 = new ToolBar(coolBar, SWT.FLAT);
+        IToolBarManager toolbarmgr3 = new ToolBarManager(toolBar3);
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, ProductEditor.ID);
         createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewProductName, msg.commandNewProductTooltip, 
@@ -206,8 +213,10 @@ public class CoolbarViewPart {
 		        tooltipPrefix + msg.mainMenuNewReceiptvoucher, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
 		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER), params);	
 		finishToolbar(coolBar, toolBar3);
-		
+        coolbarmgr.add(toolbarmgr3);
+
 		ToolBar toolBar4 = new ToolBar(coolBar, SWT.FLAT);
+        IToolBarManager toolbarmgr4 = new ToolBarManager(toolBar4);
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize),
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE));
 		
@@ -224,6 +233,7 @@ public class CoolbarViewPart {
 				Icon.ICON_QRK_EXPORT.getImage(IconSize.ToolbarIconSize), null,
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_QRK_EXPORT), null);	
 		finishToolbar(coolBar, toolBar4);	
+        coolbarmgr.add(toolbarmgr4);
 	}
 
     /**
@@ -305,7 +315,7 @@ public class CoolbarViewPart {
 		coolItem.setControl(toolBar);
 	    Point preferred = coolItem.computeSize(size.x, size.y);
 	    coolItem.setPreferredSize(preferred);
-
+	    
 	    coolBarsByKey.add(toolBar);
 	}
 	
@@ -378,8 +388,8 @@ public class CoolbarViewPart {
 				
 				// if CTRL key is pressed then we try to duplicate the current editor into a new one
 				if ((e.stateMask & SWT.MOD1) == SWT.MOD1) {
-					// dows only work under certain circumstances
-					ParameterizedCommand duplicateCmd = cmdService.createCommand("com.sebulli.fakturama.editor.duplicate");
+					// does only work under certain circumstances
+					ParameterizedCommand duplicateCmd = cmdService.createCommand(CommandIds.CMD_OBJECT_DUPLICATE);
 					if(handlerService.canExecute(duplicateCmd)) {
 						MPart activePart = partService.getActivePart();
 						// item has to correspond to the active editor!
