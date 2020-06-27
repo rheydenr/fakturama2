@@ -22,18 +22,26 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.CoolBarManager;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.ToolBar;
@@ -85,9 +93,11 @@ public class CoolbarViewPart {
     private IEclipseContext ctx;
     
     private Set<ToolBar> coolBarsByKey = new HashSet<>();
-
-    private CoolBarManager coolbarmgr;
-    
+//
+//    private CoolBarManager coolbarmgr;
+//
+//    private ToolBarManager toolbarmgr;
+//    
 	/**
 	 * Fill the cool bar with 4 Toolbars.
 	 * 
@@ -104,11 +114,12 @@ public class CoolbarViewPart {
 	@PostConstruct
 	public void createControls(Composite parent) {
 	    this.top = parent;
+	    top.setLayout(new GridLayout(1, false));
 	    
 	    // now lets create our CoolBar
-		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
-		top.setLayout(layout);
-		top.setSize(SWT.DEFAULT, 70);
+//		FillLayout layout = new FillLayout(SWT.HORIZONTAL);
+//		top.setLayout(layout);
+//		top.setSize(SWT.DEFAULT, 70);
 		
 		if(preferences == null) {
 			// this is only the case if we start it for the very first time
@@ -116,11 +127,11 @@ public class CoolbarViewPart {
 			return;
 		}
 
-		coolbarmgr = new CoolBarManager(SWT.FLAT);
+//		coolbarmgr = new CoolBarManager(SWT.FLAT);
 		
-		CoolBar coolBar = coolbarmgr.createControl(top);
-		ToolBarManager toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.WRAP);
-		ToolBar toolBar1 = toolbarmgr.createControl(coolBar);
+		CoolBar coolBar = new CoolBar(top, SWT.NONE); // coolbarmgr.createControl(top);
+//		toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.WRAP);
+		ToolBar toolBar1 = new ToolBar(coolBar, SWT.NONE); //toolbarmgr.createControl(coolBar);
 		/*
 		 * Leider gibt es keine vernünftige Verbindung zw. (altem) Command und der entsprechenden Preference.
 		 * deswegen müssen wir ein händisches Mapping erstellen, das so aussieht (Beispiel):
@@ -130,10 +141,10 @@ public class CoolbarViewPart {
 		 * Das muß man dann beim Erstellen des Icons über den Preference-Store abfragen, da die Einstellung dort
 		 * beim Hochfahren der Anwendung bzw. beim Migrieren schon hinterlegt wurde.
 		 */
-		coolbarmgr.add(toolbarmgr);
+//		coolbarmgr.add(toolbarmgr);
 
-		ToolBarContributionItem toolBarContributionItem = (ToolBarContributionItem) coolbarmgr.getItems()[0];
-        toolBarContributionItem.setMinimumItemsToShow(1);
+//		ToolBarContributionItem toolBarContributionItem = (ToolBarContributionItem) coolbarmgr.getItems()[0];
+//        toolBarContributionItem.setMinimumItemsToShow(1);
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, Boolean.TRUE);
@@ -148,8 +159,9 @@ public class CoolbarViewPart {
 		createToolItem(toolBar1, "org.eclipse.ui.file.save"/*IWorkbenchCommandConstants.FILE_SAVE*/, 
 				Icon.ICON_SAVE.getImage(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToolbarIconSize),
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_SAVE));
-        toolbarmgr.add(toolBarContributionItem);
+//        toolbarmgr.add(toolBarContributionItem);
 		finishToolbar(coolBar, toolBar1);
+	    coolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		ToolBar toolBar2 = new ToolBar(coolBar, SWT.FLAT);
         IToolBarManager toolbarmgr2 = new ToolBarManager(toolBar2);
@@ -182,7 +194,7 @@ public class CoolbarViewPart {
 				tooltipPrefix + msg.documentTypeProforma, Icon.ICON_PROFORMA_NEW.getImage(IconSize.ToolbarIconSize)
 				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA), createCommandParams(DocumentType.PROFORMA));
 		finishToolbar(coolBar, toolBar2);
-        coolbarmgr.add(toolbarmgr2);
+//        coolbarmgr.add(toolbarmgr2);
 
 		ToolBar toolBar3 = new ToolBar(coolBar, SWT.FLAT);
         IToolBarManager toolbarmgr3 = new ToolBarManager(toolBar3);
@@ -213,7 +225,7 @@ public class CoolbarViewPart {
 		        tooltipPrefix + msg.mainMenuNewReceiptvoucher, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
 		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER), params);	
 		finishToolbar(coolBar, toolBar3);
-        coolbarmgr.add(toolbarmgr3);
+//        coolbarmgr.add(toolbarmgr3);
 
 		ToolBar toolBar4 = new ToolBar(coolBar, SWT.FLAT);
         IToolBarManager toolbarmgr4 = new ToolBarManager(toolBar4);
@@ -233,7 +245,7 @@ public class CoolbarViewPart {
 				Icon.ICON_QRK_EXPORT.getImage(IconSize.ToolbarIconSize), null,
 				preferences.getBoolean(Constants.TOOLBAR_SHOW_QRK_EXPORT), null);	
 		finishToolbar(coolBar, toolBar4);	
-        coolbarmgr.add(toolbarmgr4);
+//        coolbarmgr.add(toolbarmgr4);
 	}
 
     /**
@@ -310,15 +322,32 @@ public class CoolbarViewPart {
 	 */
 	private void finishToolbar(CoolBar coolbar, ToolBar toolBar) {
 		toolBar.pack();
-	    Point size = toolBar.getSize();
-		CoolItem coolItem = new CoolItem(coolbar, SWT.NONE);
+		CoolItem coolItem = new CoolItem(coolbar, SWT.DROP_DOWN);
 		coolItem.setControl(toolBar);
-	    Point preferred = coolItem.computeSize(size.x, size.y);
-	    coolItem.setPreferredSize(preferred);
+	    calcSize(coolItem);
+	    
+	    // Add a listener to handle clicks on the chevron button
+	    coolItem.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent event) {
+	        calcSize(coolItem);
+	      }
+	    });
 	    
 	    coolBarsByKey.add(toolBar);
 	}
-	
+	 
+	  /**
+	   * Helper method to calculate the size of the cool item
+	   * 
+	   * @param item the cool item
+	   */
+	  private void calcSize(CoolItem item) {
+	    Control control = item.getControl();
+	    Point pt = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	    pt = item.computeSize(pt.x, pt.y);
+	    item.setSize(pt);
+	  }
+
 	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
 			final Image iconImage, boolean show) {
 		return createToolItem(toolBar, commandId, null, null, iconImage, null, show, null);
@@ -361,6 +390,18 @@ public class CoolbarViewPart {
 		} else {
 		    item = new ToolItem(toolBar, SWT.PUSH | SWT.BORDER);
 		}
+        
+//        // TODO das ist für die Verwendung von CoolBarManager / ToolBarManagaer,
+//        // damit man einzelne Icons anzeigen/verstecken kann. Siehe Snippet Snippet140BisWithDynamicChanges.
+//        IAction ac = new Action("id", Icon.ICON_PARCEL_SERVICE.getImageDescriptor(IconSize.ToolbarIconSize)) {
+//            
+//            @Override
+//            public void run() {
+//                System.out.println("mpf");
+//            }
+//        };
+//        ActionContributionItem i = new ActionContributionItem(ac);
+//        toolbarmgr.add(i);
 		
         final ParameterizedCommand pCmd = cmdService.createCommand(commandId, params);
 		try {
@@ -431,19 +472,6 @@ public class CoolbarViewPart {
 			}
 		}));
         item.setImage(iconImage);
-        
-        // TODO das ist für die Verwendung von CollBarManager / ToolBarManagaer,
-        // damit man einzelne Icons anzeigen/verstecken kann. Siehe Snippet Snippet140BisWithDynamicChanges.
-//        IAction ac = new Action("id", Icon.ICON_PARCEL_SERVICE.getImageDescriptor(IconSize.ToolbarIconSize)) {
-//            
-//            @Override
-//            public void run() {
-//                System.out.println("mpf");
-//            }
-//        };
-//        ActionContributionItem i = new ActionContributionItem(ac);
-        
-        
         return item;
 	}
 }
