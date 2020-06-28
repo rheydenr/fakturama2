@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.ToolBar;
 
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
-import com.sebulli.fakturama.log.ILogger;
 
 /**
  *
@@ -55,13 +54,15 @@ public class FakturamaCoolbarAction extends Action {
     @Inject
     private IEclipseContext ctx;
 
-    @Inject
-    private ILogger log;
-
     private ParameterizedCommand pCmd;
 
     private ToolBar toolBar;
     private String defaultAction = null;
+    
+    /**
+     * Identifier key for the "visible preference" for each of the items
+     */
+    private String visiblePreferenceId = null;
 
     public FakturamaCoolbarAction(ParameterizedCommand pCmd, ToolBar toolBar, int style) throws NotDefinedException {
         super(pCmd.getCommand().getName(), style);
@@ -146,6 +147,16 @@ public class FakturamaCoolbarAction extends Action {
 
     public void setDefaultAction(String defaultAction) {
         this.defaultAction = defaultAction;
+    }
+
+
+    public String getVisiblePreferenceId() {
+        return visiblePreferenceId;
+    }
+
+
+    public void setVisiblePreferenceId(String visiblePreferenceId) {
+        this.visiblePreferenceId = visiblePreferenceId;
     }
 
 }

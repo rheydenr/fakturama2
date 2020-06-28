@@ -21,7 +21,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -96,8 +95,12 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 	
 	@Override
 	public boolean performOk() {
-	    evtBroker.send("EditorPart/recreateCoolBar", null);
-	    return super.performOk();
+	    boolean performOk = super.performOk();
+	    if(performOk) {
+	        // inform cool bar about changes
+	        evtBroker.send("EditorPart/recreateCoolBar", null);
+	    }
+        return performOk;
 	}
 	
 	/**

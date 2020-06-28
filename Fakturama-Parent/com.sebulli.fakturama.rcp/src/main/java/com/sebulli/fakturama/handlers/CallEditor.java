@@ -33,7 +33,6 @@ import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.descriptor.basic.MPartDescriptor;
@@ -135,9 +134,6 @@ public class CallEditor {
 	
 	@Inject
 	private EModelService modelService;
-	
-    @Inject
-    private IEventBroker evtBroker;
     
     @Inject
     private EHandlerService handlerService;
