@@ -20,6 +20,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -43,6 +44,8 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
 
+//    @Inject
+//    private Even
 	/**
 	 * Constructor
 	 */
@@ -84,6 +87,11 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_BROWSER, showIcon + msg.commandBrowserCommand, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.commandCalculatorName , getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_QRK_EXPORT, showIcon + msg.commandExportQrkName , getFieldEditorParent()));
+	}
+	
+	@Override
+	public boolean performOk() {
+	    return super.performOk();
 	}
 	
 	/**

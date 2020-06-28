@@ -1,5 +1,6 @@
 package com.sebulli.fakturama.parts;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,33 +12,24 @@ import javax.inject.Inject;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -45,7 +37,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.handlers.CallEditor;
@@ -70,12 +61,6 @@ public class CoolbarViewPart {
 
 	@Inject
 	private ECommandService cmdService;
-
-	@Inject
-	private EPartService partService;
-
-	@Inject
-	private EHandlerService handlerService;
 	
     @Inject
     private IPreferenceStore preferences;
@@ -93,11 +78,11 @@ public class CoolbarViewPart {
     private IEclipseContext ctx;
     
     private Set<ToolBar> coolBarsByKey = new HashSet<>();
-//
-//    private CoolBarManager coolbarmgr;
-//
-//    private ToolBarManager toolbarmgr;
-//    
+
+    private CoolBarManager coolbarmgr;
+
+    private ToolBarManager toolbarmgr;
+    
 	/**
 	 * Fill the cool bar with 4 Toolbars.
 	 * 
@@ -127,11 +112,11 @@ public class CoolbarViewPart {
 			return;
 		}
 
-//		coolbarmgr = new CoolBarManager(SWT.FLAT);
+		coolbarmgr = new CoolBarManager(SWT.FLAT);
 		
-		CoolBar coolBar = new CoolBar(top, SWT.NONE); // coolbarmgr.createControl(top);
-//		toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.WRAP);
-		ToolBar toolBar1 = new ToolBar(coolBar, SWT.NONE); //toolbarmgr.createControl(coolBar);
+		CoolBar coolBar = coolbarmgr.createControl(top);
+		toolbarmgr = new ToolBarManager(SWT.FLAT | SWT.WRAP);
+		ToolBar toolBar1 = toolbarmgr.createControl(coolBar);
 		/*
 		 * Leider gibt es keine vernünftige Verbindung zw. (altem) Command und der entsprechenden Preference.
 		 * deswegen müssen wir ein händisches Mapping erstellen, das so aussieht (Beispiel):
@@ -141,111 +126,119 @@ public class CoolbarViewPart {
 		 * Das muß man dann beim Erstellen des Icons über den Preference-Store abfragen, da die Einstellung dort
 		 * beim Hochfahren der Anwendung bzw. beim Migrieren schon hinterlegt wurde.
 		 */
-//		coolbarmgr.add(toolbarmgr);
-
-//		ToolBarContributionItem toolBarContributionItem = (ToolBarContributionItem) coolbarmgr.getItems()[0];
-//        toolBarContributionItem.setMinimumItemsToShow(1);
+		coolbarmgr.add(toolbarmgr);
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, Boolean.TRUE);
         parameters.put(WebShopCallHandler.PARAM_ACTION, WebShopCallHandler.WEBSHOP_CONNECTOR_ACTION_IMPORT);
-		createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, msg.commandWebshopName, msg.commandWebshopTooltip,
-				Icon.ICON_SHOP.getImage(IconSize.ToolbarIconSize), null, preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP), parameters);
+        
+        createToolItem(toolBar1, CommandIds.CMD_WEBSHOP_IMPORT, msg.commandWebshopName, msg.commandWebshopTooltip,
+				Icon.ICON_SHOP.getImageDescriptor(IconSize.ToolbarIconSize), null, preferences.getBoolean(Constants.TOOLBAR_SHOW_WEBSHOP), 
+				parameters).ifPresent(e -> toolbarmgr.add(e));
 		
-		createToolItem(toolBar1, "org.fakturama.print.oofile"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
-				Icon.ICON_PRINTOO.getImage(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImage(IconSize.ToolbarIconSize),
-				preferences.getBoolean(Constants.TOOLBAR_SHOW_PRINT));
+        createToolItem(toolBar1, "org.fakturama.print.oofile"/*IWorkbenchCommandConstants.FILE_PRINT*/, 
+				Icon.ICON_PRINTOO.getImageDescriptor(IconSize.ToolbarIconSize), Icon.ICON_PRINTOO_DIS.getImageDescriptor(IconSize.ToolbarIconSize),
+				preferences.getBoolean(Constants.TOOLBAR_SHOW_PRINT)).ifPresent(e -> toolbarmgr.add(e));
 
-		createToolItem(toolBar1, "org.eclipse.ui.file.save"/*IWorkbenchCommandConstants.FILE_SAVE*/, 
-				Icon.ICON_SAVE.getImage(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImage(IconSize.ToolbarIconSize),
-				preferences.getBoolean(Constants.TOOLBAR_SHOW_SAVE));
-//        toolbarmgr.add(toolBarContributionItem);
+        createToolItem(toolBar1, "org.eclipse.ui.file.save"/*IWorkbenchCommandConstants.FILE_SAVE*/, 
+				Icon.ICON_SAVE.getImageDescriptor(IconSize.ToolbarIconSize), Icon.ICON_SAVE_DIS.getImageDescriptor(IconSize.ToolbarIconSize),
+				preferences.getBoolean(Constants.TOOLBAR_SHOW_SAVE)).ifPresent(e -> toolbarmgr.add(e));
 		finishToolbar(coolBar, toolBar1);
-	    coolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+//        coolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		ToolBar toolBar2 = new ToolBar(coolBar, SWT.FLAT);
-        IToolBarManager toolbarmgr2 = new ToolBarManager(toolBar2);
+        ToolBar toolBar2 = new ToolBar(coolBar, SWT.FLAT);
+        ToolBarManager toolbarmgr2 = new ToolBarManager(toolBar2);
 		String tooltipPrefix = msg.commandNewTooltip + " ";
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewLetterName,
-				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImage(IconSize.ToolbarIconSize)
-				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_LETTER), createCommandParams(DocumentType.LETTER));
+				tooltipPrefix + msg.mainMenuNewLetter, Icon.ICON_LETTER_NEW.getImageDescriptor(IconSize.ToolbarIconSize)
+				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_LETTER), createCommandParams(DocumentType.LETTER)).ifPresent(e -> toolbarmgr.add(e));
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOfferName,
-				tooltipPrefix + msg.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImage(IconSize.ToolbarIconSize)
-				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_OFFER), createCommandParams(DocumentType.OFFER));
+				tooltipPrefix + msg.mainMenuNewOffer, Icon.ICON_OFFER_NEW.getImageDescriptor(IconSize.ToolbarIconSize)
+				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_OFFER), createCommandParams(DocumentType.OFFER)).ifPresent(e -> toolbarmgr.add(e));
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewOrderName,
-				tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImage(IconSize.ToolbarIconSize)
-				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_ORDER), createCommandParams(DocumentType.ORDER));
+				tooltipPrefix + msg.mainMenuNewOrder, Icon.ICON_ORDER_NEW.getImageDescriptor(IconSize.ToolbarIconSize)
+				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_ORDER), createCommandParams(DocumentType.ORDER)).ifPresent(e -> toolbarmgr.add(e));
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewConfirmationName,
-				tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImage(IconSize.ToolbarIconSize)
-				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CONFIRMATION), createCommandParams(DocumentType.CONFIRMATION));
+				tooltipPrefix + msg.mainMenuNewConfirmation, Icon.ICON_CONFIRMATION_NEW.getImageDescriptor(IconSize.ToolbarIconSize)
+				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CONFIRMATION), createCommandParams(DocumentType.CONFIRMATION)).ifPresent(e -> toolbarmgr.add(e));
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewInvoiceName,
-				tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImage(IconSize.ToolbarIconSize)
-				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_INVOICE), createCommandParams(DocumentType.INVOICE));
+				tooltipPrefix + msg.mainMenuNewInvoice, Icon.ICON_INVOICE_NEW.getImageDescriptor(IconSize.ToolbarIconSize)
+				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_INVOICE), createCommandParams(DocumentType.INVOICE)).ifPresent(e -> toolbarmgr.add(e));
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDeliveryName,
-				tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImage(IconSize.ToolbarIconSize)
-				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DELIVERY), createCommandParams(DocumentType.DELIVERY));
+				tooltipPrefix + msg.mainMenuNewDeliverynote, Icon.ICON_DELIVERY_NEW.getImageDescriptor(IconSize.ToolbarIconSize)
+				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DELIVERY), createCommandParams(DocumentType.DELIVERY)).ifPresent(e -> toolbarmgr.add(e));
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewCreditName, 
-				tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImage(IconSize.ToolbarIconSize)
-				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CREDIT), createCommandParams(DocumentType.CREDIT));
+				tooltipPrefix + msg.mainMenuNewCredit, Icon.ICON_CREDIT_NEW.getImageDescriptor(IconSize.ToolbarIconSize)
+				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_CREDIT), createCommandParams(DocumentType.CREDIT)).ifPresent(e -> toolbarmgr.add(e));
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewDocumentDunningName, 
-				tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImage(IconSize.ToolbarIconSize)
-				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DUNNING), createCommandParams(DocumentType.DUNNING));
+				tooltipPrefix + msg.mainMenuNewDunning, Icon.ICON_DUNNING_NEW.getImageDescriptor(IconSize.ToolbarIconSize)
+				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_DUNNING), createCommandParams(DocumentType.DUNNING)).ifPresent(e -> toolbarmgr.add(e));
 		createToolItem(toolBar2, CommandIds.CMD_CALL_EDITOR, msg.documentTypeProforma, 
-				tooltipPrefix + msg.documentTypeProforma, Icon.ICON_PROFORMA_NEW.getImage(IconSize.ToolbarIconSize)
-				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA), createCommandParams(DocumentType.PROFORMA));
+				tooltipPrefix + msg.documentTypeProforma, Icon.ICON_PROFORMA_NEW.getImageDescriptor(IconSize.ToolbarIconSize)
+				, null, preferences.getBoolean(Constants.TOOLBAR_SHOW_DOCUMENT_NEW_PROFORMA), createCommandParams(DocumentType.PROFORMA)).ifPresent(e -> toolbarmgr.add(e));
 		finishToolbar(coolBar, toolBar2);
-//        coolbarmgr.add(toolbarmgr2);
+        coolbarmgr.add(toolbarmgr2);
+	    coolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		ToolBar toolBar3 = new ToolBar(coolBar, SWT.FLAT);
         IToolBarManager toolbarmgr3 = new ToolBarManager(toolBar3);
         Map<String, Object> params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, ProductEditor.ID);
         createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewProductName, msg.commandNewProductTooltip, 
-        		Icon.ICON_PRODUCT_NEW.getImage(IconSize.ToolbarIconSize), null,
-                preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT), params);    
+        		Icon.ICON_PRODUCT_NEW.getImageDescriptor(IconSize.ToolbarIconSize), null,
+                preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_PRODUCT), params).ifPresent(e -> toolbarmgr.add(e));    
 
         params = new HashMap<>();
-		ToolItem contactToolItem = createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.toolbarNewContactName, msg.commandNewContactTooltip, 
-		        Icon.ICON_CONTACT_NEW.getImage(IconSize.ToolbarIconSize), null,
+		java.util.Optional<ActionContributionItem> contactToolItem = createToolItem(toolBar3, CommandIds.CMD_NEW_CONTACT, msg.toolbarNewContactName, msg.commandNewContactTooltip, 
+		        Icon.ICON_CONTACT_NEW.getImageDescriptor(IconSize.ToolbarIconSize), null,
 		        preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_CONTACT), params, true);
 		DropdownSelectionListener contactTypeListener =  ContextInjectionFactory.make(DropdownSelectionListener.class, ctx);
 		contactTypeListener.setDefaultCommandId(DebitorEditor.ID);
-        contactTypeListener.add(new ContactTypeMenuItem(msg.commandNewCreditorName, CreditorEditor.ID, Icon.COMMAND_VENDOR));
-        contactTypeListener.add(new ContactTypeMenuItem(msg.commandNewDebtorName, DebitorEditor.ID, Icon.COMMAND_CONTACT));
-        contactToolItem.addSelectionListener(contactTypeListener);
+        contactTypeListener.add(new DropdownMenuItem(msg.commandNewCreditorName, CreditorEditor.ID, Icon.COMMAND_VENDOR));
+        contactTypeListener.add(new DropdownMenuItem(msg.commandNewDebtorName, DebitorEditor.ID, Icon.COMMAND_CONTACT));
+		contactToolItem.get().getAction().setMenuCreator(contactTypeListener);
+		((FakturamaCoolbarAction)contactToolItem.get().getAction()).setDefaultAction(DebitorEditor.ID);
+        contactToolItem.ifPresent(e -> toolbarmgr.add(e));
 
         params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, ExpenditureVoucherEditor.ID);
 		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewExpenditurevoucherName,
-		        tooltipPrefix + msg.mainMenuNewExpenditurevoucher, Icon.ICON_EXPENDITURE_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
-		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER), params);	
+		        tooltipPrefix + msg.mainMenuNewExpenditurevoucher, Icon.ICON_EXPENDITURE_VOUCHER_NEW.getImageDescriptor(IconSize.ToolbarIconSize),
+		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_EXPENDITUREVOUCHER), params).ifPresent(e -> toolbarmgr.add(e));	
         params = new HashMap<>();
         params.put(CallEditor.PARAM_EDITOR_TYPE, ReceiptVoucherEditor.ID);
 		createToolItem(toolBar3, CommandIds.CMD_CALL_EDITOR, msg.toolbarNewReceiptvoucherName,
-		        tooltipPrefix + msg.mainMenuNewReceiptvoucher, Icon.ICON_RECEIPT_VOUCHER_NEW.getImage(IconSize.ToolbarIconSize),
-		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER), params);	
+		        tooltipPrefix + msg.mainMenuNewReceiptvoucher, Icon.ICON_RECEIPT_VOUCHER_NEW.getImageDescriptor(IconSize.ToolbarIconSize),
+		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER), params).ifPresent(e -> toolbarmgr.add(e));
 		finishToolbar(coolBar, toolBar3);
-//        coolbarmgr.add(toolbarmgr3);
+        coolbarmgr.add(toolbarmgr3);
 
 		ToolBar toolBar4 = new ToolBar(coolBar, SWT.FLAT);
         IToolBarManager toolbarmgr4 = new ToolBarManager(toolBar4);
-		createToolItem(toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImage(IconSize.ToolbarIconSize),
-		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE));
+		createToolItem(toolBar4, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImageDescriptor(IconSize.ToolbarIconSize),
+		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_PARCELSERVICE)).ifPresent(e -> toolbarmgr.add(e));
 		
 		params = new HashMap<>();
 		params.put(OpenBrowserEditorHandler.PARAM_USE_PROJECT_URL, Boolean.toString(true));
-		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, msg.commandOpenWwwName, msg.commandBrowserTooltip, Icon.ICON_WWW.getImage(IconSize.ToolbarIconSize),
-		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_BROWSER), params);	
+		createToolItem(toolBar4, CommandIds.CMD_OPEN_BROWSER_EDITOR, msg.commandOpenWwwName, msg.commandBrowserTooltip, Icon.ICON_WWW.getImageDescriptor(IconSize.ToolbarIconSize),
+		        null, preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_BROWSER), params).ifPresent(e -> toolbarmgr.add(e));
 		
 		createToolItem(toolBar4, CommandIds.CMD_OPEN_CALCULATOR, msg.commandCalculatorName, msg.commandCalculatorTooltip,
-				Icon.ICON_CALCULATOR.getImage(IconSize.ToolbarIconSize), null,
-		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR), null);	
+				Icon.ICON_CALCULATOR.getImageDescriptor(IconSize.ToolbarIconSize), null,
+		        preferences.getBoolean(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR), null).ifPresent(e -> toolbarmgr.add(e));	
 		
 		createToolItem(toolBar4, CommandIds.CMD_QRK_EXPORT, msg.commandExportQrkName, msg.commandExportQrkTooltip,
-				Icon.ICON_QRK_EXPORT.getImage(IconSize.ToolbarIconSize), null,
-				preferences.getBoolean(Constants.TOOLBAR_SHOW_QRK_EXPORT), null);	
+				Icon.ICON_QRK_EXPORT.getImageDescriptor(IconSize.ToolbarIconSize), null,
+				preferences.getBoolean(Constants.TOOLBAR_SHOW_QRK_EXPORT), null).ifPresent(e -> toolbarmgr.add(e));
 		finishToolbar(coolBar, toolBar4);	
-//        coolbarmgr.add(toolbarmgr4);
+        coolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        coolbarmgr.add(toolbarmgr4);
+
+        // IMPORTANT: This line is for showing the chevron if application frame is resizing 
+        // and the coolbar doesn't fit in its whole width.
+        Arrays.stream(coolbarmgr.getItems()).forEach(item -> ((ToolBarContributionItem) item).setMinimumItemsToShow(1));
+        
+        coolbarmgr.update(true);
 	}
 
     /**
@@ -288,14 +281,15 @@ public class CoolbarViewPart {
 	 * Update coolbar.
 	 */
 	private void updateCoolbar() {
-		for (ToolBar toolBar : coolBarsByKey) {
-		    for (ToolItem toolItem : toolBar.getItems()) {
-		        ParameterizedCommand pCmd = (ParameterizedCommand) toolItem.getData(TOOLITEM_COMMAND);
-		        if(pCmd != null) {
-		            toolItem.setEnabled(pCmd.getCommand().isEnabled());
-		        }
-		    }
-		}
+	    coolbarmgr.update(true);
+//		for (ToolBar toolBar : coolBarsByKey) {
+//		    for (ToolItem toolItem : toolBar.getItems()) {
+//		        ParameterizedCommand pCmd = (ParameterizedCommand) toolItem.getData(TOOLITEM_COMMAND);
+//		        if(pCmd != null) {
+//		            toolItem.setEnabled(pCmd.getCommand().isEnabled());
+//		        }
+//		    }
+//		}
 	}
 	
     @Inject
@@ -321,7 +315,7 @@ public class CoolbarViewPart {
 	 * @param toolBar
 	 */
 	private void finishToolbar(CoolBar coolbar, ToolBar toolBar) {
-		toolBar.pack();
+//		toolBar.pack();
 		CoolItem coolItem = new CoolItem(coolbar, SWT.DROP_DOWN);
 		coolItem.setControl(toolBar);
 	    calcSize(coolItem);
@@ -348,18 +342,18 @@ public class CoolbarViewPart {
 	    item.setSize(pt);
 	  }
 
-	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
-			final Image iconImage, boolean show) {
+	private java.util.Optional<ActionContributionItem> createToolItem(final ToolBar toolBar, final String commandId, 
+			final ImageDescriptor iconImage, boolean show) {
 		return createToolItem(toolBar, commandId, null, null, iconImage, null, show, null);
 	}
 	
-	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
-			final Image iconImage, final Image disabledIcon, boolean show) {
+	private java.util.Optional<ActionContributionItem> createToolItem(final ToolBar toolBar, final String commandId, 
+			final ImageDescriptor iconImage, final ImageDescriptor disabledIcon, boolean show) {
 		return createToolItem(toolBar, commandId, null, null, iconImage, disabledIcon, show, null);
 	}
 	
-	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
-			final String commandName, final String tooltip, final Image iconImage, final Image disabledIcon, boolean show,
+	private java.util.Optional<ActionContributionItem> createToolItem(final ToolBar toolBar, final String commandId, 
+			final String commandName, final String tooltip, final ImageDescriptor iconImage, final ImageDescriptor disabledIcon, boolean show,
 			Map<String, Object> params) {
 	    return createToolItem(toolBar, commandId, commandName, tooltip, iconImage, disabledIcon, show, params, false);
 	}
@@ -376,102 +370,47 @@ public class CoolbarViewPart {
 	 * @param show if <code>false</code>, the icon is hidden (configurable via preferences)
 	 * @param withChevron <code>true</code> if a chevron button should be created
 	 */
-	private ToolItem createToolItem(final ToolBar toolBar, final String commandId, 
-			final String commandName, final String tooltip, final Image iconImage, final Image disabledIcon, boolean show,
-			Map<String, Object> params, boolean withChevron) {
-	    
-	    if(!show) {
-	        return null;
-	    }
-	    
-		ToolItem item;
-		if(withChevron) {
-    		item = new ToolItem(toolBar, SWT.BORDER | SWT.DROP_DOWN);
-		} else {
-		    item = new ToolItem(toolBar, SWT.PUSH | SWT.BORDER);
-		}
-        
-//        // TODO das ist für die Verwendung von CoolBarManager / ToolBarManagaer,
-//        // damit man einzelne Icons anzeigen/verstecken kann. Siehe Snippet Snippet140BisWithDynamicChanges.
-//        IAction ac = new Action("id", Icon.ICON_PARCEL_SERVICE.getImageDescriptor(IconSize.ToolbarIconSize)) {
-//            
-//            @Override
-//            public void run() {
-//                System.out.println("mpf");
-//            }
-//        };
-//        ActionContributionItem i = new ActionContributionItem(ac);
-//        toolbarmgr.add(i);
-		
+    private java.util.Optional<ActionContributionItem> createToolItem(final ToolBar toolBar, final String commandId, final String commandName, final String tooltip,
+            final ImageDescriptor iconImage, final ImageDescriptor disabledIcon, boolean show, Map<String, Object> params, boolean withChevron) {
+
+        if (!show) {
+            return java.util.Optional.empty();
+        }
+
+        IAction item = null;
+        ActionContributionItem actionContributionItem = null;
+
         final ParameterizedCommand pCmd = cmdService.createCommand(commandId, params);
-		try {
-			if(pCmd != null) {
-				item.setText(commandName != null ? commandName : pCmd.getCommand().getName());
-				item.setToolTipText((tooltip != null) ? tooltip : pCmd.getCommand().getDescription());
-				if(disabledIcon != null) {
-					item.setDisabledImage(disabledIcon);
-				}
-				
-				item.setEnabled(pCmd.getCommand().isEnabled());
-				item.setData(TOOLITEM_COMMAND, pCmd);
-			} else {
-				// this *MUST* be a great error!
-				log.error("No command found for " + commandId + " (" + commandName + ")" + ". Please check your Applicationmodel!");
-			}
-			
-		}
-		catch (NotDefinedException e1) {
-			log.error(e1, "Fehler!");
-		}
-		item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-			if (handlerService.canExecute(pCmd)) {
-				final IEclipseContext staticContext = EclipseContextFactory.create("fakturama-static-context");
-				
-				// if CTRL key is pressed then we try to duplicate the current editor into a new one
-				if ((e.stateMask & SWT.MOD1) == SWT.MOD1) {
-					// does only work under certain circumstances
-					ParameterizedCommand duplicateCmd = cmdService.createCommand(CommandIds.CMD_OBJECT_DUPLICATE);
-					if(handlerService.canExecute(duplicateCmd)) {
-						MPart activePart = partService.getActivePart();
-						// item has to correspond to the active editor!
-						if (activePart != null && activePart.getObject() instanceof Editor) {
-							String editorType = (String) pCmd.getParameterMap().get(CallEditor.PARAM_EDITOR_TYPE);
-							if (editorType != null && activePart.getElementId().equalsIgnoreCase(editorType)) {
-								staticContext.set(CallEditor.PARAM_COPY, Boolean.TRUE);
-								staticContext.set(CallEditor.PARAM_FORCE_NEW, Boolean.FALSE);
-								staticContext.set(CallEditor.PARAM_OBJ_ID,
-										activePart.getTransientData().get(CallEditor.PARAM_OBJ_ID));
-							}
-						}
-					}
-				} else {
-			        // if called from CoolBar it is *always* a new one...
-                    staticContext.set(CallEditor.PARAM_FORCE_NEW, Boolean.TRUE);
-                    // NOTE: You can't set it if it was set before. Therefore we set it here.
-				}
-				/*
-				 * Dirty hack. The HandlerService first determines the active leaf in the
-				 * current context before it is executing the command. The current active leaf
-				 * in the context is the document editor. But in its context there's a setting
-				 * for the "category" parameter. But this parameter is not reasonable e.g. for
-				 * new product editors. Therefore we have to remove it from context. The
-				 * alternative would be to set another active leaf, but I didn't get it.
-				 */
-					if(ctx != null && ctx.getActiveLeaf() != null) {
-						ctx.getActiveLeaf().remove(CallEditor.PARAM_CATEGORY);
-					}
-					
-					// clear SelectionService so that following calls don't get confused (esp. CallEditor)
-					// Important: Use the correct SelectionService from WorkbenchContext!
-					ctx.getParent().get(ESelectionService.class).setSelection(null);
-					ctx.get(ESelectionService.class).setSelection(null);
-					handlerService.executeHandler(pCmd, staticContext);
-			} else {
-				MessageDialog.openInformation(toolBar.getShell(),
-						"Action Info", "current action can't be executed!");
-			}
-		}));
-        item.setImage(iconImage);
-        return item;
-	}
+        try {
+            if (pCmd != null) {
+
+                item = withChevron ? new FakturamaCoolbarAction(pCmd, toolBar, IAction.AS_DROP_DOWN_MENU) : new FakturamaCoolbarAction(pCmd, toolBar, IAction.AS_PUSH_BUTTON);
+                
+                item.setText(commandName != null ? commandName : pCmd.getCommand().getName());
+                item.setToolTipText((tooltip != null) ? tooltip : pCmd.getCommand().getDescription());
+                if(disabledIcon != null) {
+                    item.setDisabledImageDescriptor(disabledIcon);
+                }
+
+                ContextInjectionFactory.inject(item, ctx);
+                if (disabledIcon != null) {
+                    item.setDisabledImageDescriptor(disabledIcon);
+                }
+
+//                item.setData(TOOLITEM_COMMAND, pCmd);
+                actionContributionItem = new ActionContributionItem(item);
+                actionContributionItem.setMode(ActionContributionItem.MODE_FORCE_TEXT);
+            } else {
+                // this *MUST* be a great error!
+                log.error("No command found for " + commandId + " (" + commandName + ")" + ". Please check your Applicationmodel!");
+            }
+            item.setImageDescriptor(iconImage);
+
+        } catch (NotDefinedException e1) {
+            log.error(e1, "Fehler!");
+        }
+
+        return java.util.Optional.ofNullable(actionContributionItem);
+    }	
+
 }
