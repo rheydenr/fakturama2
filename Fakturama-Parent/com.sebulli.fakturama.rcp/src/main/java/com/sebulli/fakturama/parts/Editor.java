@@ -16,6 +16,7 @@ package com.sebulli.fakturama.parts;
 
 import java.io.IOException;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.core.databinding.Binding;
@@ -455,6 +456,7 @@ public abstract class Editor<T extends IEntity> {
         
         source.addModifyListener(e -> {
         	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+                evtBroker.post("EditorPart", "setDirty");
                 getMDirtyablePart().setDirty(true);
         	}
         });
@@ -610,4 +612,10 @@ public abstract class Editor<T extends IEntity> {
 		}
 		return numberGenerator;
 	}
+	
+	@PreDestroy
+	public void preDestroy() {
+//	    evtBroker.post("EditorPart/close", null);
+	}
+	
 }

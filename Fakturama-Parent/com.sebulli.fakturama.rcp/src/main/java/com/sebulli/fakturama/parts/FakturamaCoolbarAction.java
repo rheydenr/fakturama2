@@ -65,6 +65,7 @@ public class FakturamaCoolbarAction extends Action {
 
     public FakturamaCoolbarAction(ParameterizedCommand pCmd, ToolBar toolBar, int style) throws NotDefinedException {
         super(pCmd.getCommand().getName(), style);
+        this.setId(pCmd.getId());
         this.pCmd = pCmd;
         this.toolBar = toolBar;
     }
@@ -72,7 +73,7 @@ public class FakturamaCoolbarAction extends Action {
     
     @Override
     public boolean isEnabled() {
-        return pCmd.getCommand().isEnabled();
+        return handlerService.canExecute(pCmd);
     }
     
     @Override

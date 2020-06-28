@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -44,8 +45,12 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
 
-//    @Inject
-//    private Even
+    /**
+     * Event Broker for sending update events from the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
+    
 	/**
 	 * Constructor
 	 */
@@ -91,6 +96,7 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 	
 	@Override
 	public boolean performOk() {
+	    evtBroker.send("EditorPart/recreateCoolBar", null);
 	    return super.performOk();
 	}
 	

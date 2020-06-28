@@ -216,7 +216,7 @@ public class CallEditor {
 			// clear the objId parameter because of unwanted side effects for subsequent creation of an editor
 			editorPart.getContext().remove(PARAM_OBJ_ID);
 			editorPart.getContext().remove(PARAM_FOLLOW_UP);
-            evtBroker.post("EditorPart/updateCoolBar", editorType);			
+//            evtBroker.post("EditorPart/updateCoolBar", editorType);			
 	}
 	
 	/**
