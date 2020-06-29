@@ -72,7 +72,7 @@ import com.sebulli.fakturama.parts.DocumentEditor;
  */
 public class CreateOODocumentHandler {
 
-    private static final String OO_TEMPLATE_FILEEXTENSION = ".ott";
+    public static final String OO_TEMPLATE_FILEEXTENSION = ".ott";
 
     @Inject
     @Translation

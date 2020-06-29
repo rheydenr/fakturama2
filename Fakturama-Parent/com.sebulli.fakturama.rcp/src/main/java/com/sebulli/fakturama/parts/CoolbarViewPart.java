@@ -19,7 +19,6 @@ import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
@@ -29,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -201,7 +201,6 @@ public class CoolbarViewPart {
 		        null, Constants.TOOLBAR_SHOW_NEW_RECEIPTVOUCHER, params).ifPresent(e -> toolbarmgr3.add(e));
 		finishToolbar(coolBar, toolBar);
         coolbarmgr.add(toolbarmgr3);
-	    coolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         IToolBarManager toolbarmgr4 = new ToolBarManager(SWT.FLAT | SWT.WRAP);
 		createToolItem(toolBar, CommandIds.CMD_OPEN_PARCEL_SERVICE, Icon.ICON_PARCEL_SERVICE.getImageDescriptor(IconSize.ToolbarIconSize),
@@ -220,6 +219,7 @@ public class CoolbarViewPart {
 				Icon.ICON_QRK_EXPORT.getImageDescriptor(IconSize.ToolbarIconSize), null,
 				Constants.TOOLBAR_SHOW_QRK_EXPORT, null).ifPresent(e -> toolbarmgr4.add(e));
 		finishToolbar(coolBar, toolBar);	
+        toolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
         coolBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         coolbarmgr.add(toolbarmgr4);
 
@@ -251,7 +251,7 @@ public class CoolbarViewPart {
      */
     @Inject
     @org.eclipse.e4.core.di.annotations.Optional
-    protected void handleDialogSelection(@UIEventTopic("EditorPart/*") Event event) {
+    protected void handleDialogSelection(@UIEventTopic("EditorPart/updateCoolBar") Event event) {
         if (event != null) {
             updateCoolbar();
         }
@@ -261,31 +261,26 @@ public class CoolbarViewPart {
     @org.eclipse.e4.core.di.annotations.Optional
     protected void recreateCoolBar(@UIEventTopic("EditorPart/recreateCoolBar") Event event) {
         if (event != null) {
-            for (IContributionItem item : coolbarmgr.getItems()) {
-                ToolBarContributionItem i = (ToolBarContributionItem) item;
-//                ((FakturamaCoolbarAction)((ActionContributionItem)i.getToolBarManager().getItems()[0]).getAction()).getVisiblePreferenceId();
-                Arrays.stream(i.getToolBarManager().getItems())
-                        .forEach(item1 -> item1.setVisible(checkVisibleState((ActionContributionItem) item1)));
-            }
+            // check each action from all cool bars for visibility
+            Arrays.stream(coolbarmgr.getItems()).flatMap(i -> Arrays.stream(((ToolBarContributionItem) i).getToolBarManager().getItems()))
+                    .forEach(item1 -> item1.setVisible(checkVisibleState((ActionContributionItem) item1)));
 
             updateCoolbar();
         }
     }
-
 
     protected boolean checkVisibleState(ActionContributionItem item1) {
         FakturamaCoolbarAction f = (FakturamaCoolbarAction) item1.getAction();
         return preferences.getBoolean(f.getVisiblePreferenceId());
     }
 
-	/**
-	 * Update coolbar.
-	 */
-	private void updateCoolbar() {
-	    coolbarmgr.update(true);
-	    coolbarmgr.getItems();coolbarmgr.getControl().getItems();
-	}
-	
+    /**
+     * Update coolbar.
+     */
+    private void updateCoolbar() {
+        coolbarmgr.update(true);
+    }
+
     @Inject
     @Optional
     public void dirtyChanged(@UIEventTopic(UIEvents.Dirtyable.TOPIC_DIRTY) Event eventData) {
