@@ -12,11 +12,10 @@ Die folgende Beschreibung ist für die Konvertierung einer HSQL-DB (Standard-Dat
 
 ### Schritte für die Konvertierung
 
-- download [HSQL2MYSQL4FAK.ZIP](https://files.fakturama.info/release/HSQL2MYSQL4FAK.ZIP)
-- unzip `HSQL2MYSQL4FAK.ZIP`
+- download [HSQL2MYSQL4FAK-2.0.5.ZIP](https://files.fakturama.info/release/HSQL2MYSQL4FAK-2.0.5.ZIP) (für Migrationen von Version 2.0.5) bzw. [HSQL2MYSQL4FAK-2.1.0.ZIP](https://files.fakturama.info/release/HSQL2MYSQL4FAK-2.1.0.ZIP) (für Migrationen von Version 2.1.0)
+- unzip `HSQL2MYSQL4FAK-N.N.N.ZIP` (richtige Versionsnummer einsetzen)
 - cd `HSQL2MYSQL4FAK`
 - Zugangsdaten in allen `migration*.grf`-Dateien ändern (suche nach MYSQL) ==> URL, User und Passwort eintragen (nur diese drei Parameter sind anzupassen!); das gilt sowohl für die MySQL als auch für die HSQL-DB! (Für Windows-Nutzer: Der Pfad ist mit Backslash "\" anzugeben, wie gewohnt.)
-- in der Datei `workspace.prm` ist der Eintrag für `PROJECT`auf "." zu setzen (das ist gleich der erste Eintrag für `GraphParameter`)
 
 **Beispiel:**
 

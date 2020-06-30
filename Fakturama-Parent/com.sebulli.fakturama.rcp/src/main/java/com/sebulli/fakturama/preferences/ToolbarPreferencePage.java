@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -43,6 +44,12 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
 
+    /**
+     * Event Broker for sending update events from the list table
+     */
+    @Inject
+    protected IEventBroker evtBroker;
+    
 	/**
 	 * Constructor
 	 */
@@ -84,6 +91,16 @@ public class ToolbarPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_BROWSER, showIcon + msg.commandBrowserCommand, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_OPEN_CALCULATOR, showIcon + msg.commandCalculatorName , getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.TOOLBAR_SHOW_QRK_EXPORT, showIcon + msg.commandExportQrkName , getFieldEditorParent()));
+	}
+	
+	@Override
+	public boolean performOk() {
+	    boolean performOk = super.performOk();
+	    if(performOk) {
+	        // inform cool bar about changes
+	        evtBroker.send("EditorPart/recreateCoolBar", null);
+	    }
+        return performOk;
 	}
 	
 	/**
