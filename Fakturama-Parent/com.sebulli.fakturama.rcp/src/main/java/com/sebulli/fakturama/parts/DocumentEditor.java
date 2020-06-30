@@ -3016,11 +3016,13 @@ public class DocumentEditor extends Editor<Document> {
                 // Get the array list of all selected elements
                 for (Document deliveryNote : selectedDeliveries) {
                     // Get all items by ID from the item string
-                    List<DocumentItem> itemsString = deliveryNote.getItems();
-                    for (DocumentItem documentItem : itemsString) {
+                    List<DocumentItem> deliveryItems = deliveryNote.getItems().stream()
+                            .sorted(Comparator.comparing(DocumentItem::getPosNr))
+                            .collect(Collectors.toList());
+                    for (DocumentItem documentItem : deliveryItems) {
 	                    // And copy the item to a new one
-//	                    DocumentItem newItem = modelFactory.createDocumentItem();
 	                    DocumentItem newItem = documentItem.clone();
+	                    newItem.setId(0);
 	                    // Add the new item
 	                    itemListTable.addNewItem(new DocumentItemDTO(newItem));
 					}

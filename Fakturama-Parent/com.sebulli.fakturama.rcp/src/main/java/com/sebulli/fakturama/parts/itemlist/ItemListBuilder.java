@@ -194,7 +194,7 @@ public class ItemListBuilder {
         // The table viewer
         final DocumentItemListTable itemListTable = ContextInjectionFactory.make(DocumentItemListTable.class, context);
         Control tableComposite = itemListTable.createPartControl(parent, document/*, useGross*/, container, netgross);
-        GridDataFactory.fillDefaults().span(3, 1).grab(true, false).applyTo(tableComposite);
+        GridDataFactory.fillDefaults().span(3, 1).hint(SWT.DEFAULT, 180).grab(true, false).applyTo(tableComposite);
 
         itemListTable.setItemsNoVat(document.getNoVatReference() != null, document.getNoVatReference());
 
