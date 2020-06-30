@@ -303,11 +303,11 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
     private List<DummyStringCategory> createDummyCategories(DocumentType docType, String... pCategory) {
         List<DummyStringCategory> retList = new ArrayList<>();
         DummyStringCategory parent = null;
+        if(parent == null) {
+            parent = new DummyStringCategory(msg.getMessageFromKey(DocumentType.getPluralString(docType)), docType);
+            retList.add(parent);
+        } 
         for (String string : pCategory) {
-            if(parent == null) {
-                parent = new DummyStringCategory(msg.getMessageFromKey(DocumentType.getPluralString(docType)), docType);
-                retList.add(parent);
-            } 
             DummyStringCategory cat = new DummyStringCategory(string, docType);
             cat.setParent(parent);
             retList.add(cat);
