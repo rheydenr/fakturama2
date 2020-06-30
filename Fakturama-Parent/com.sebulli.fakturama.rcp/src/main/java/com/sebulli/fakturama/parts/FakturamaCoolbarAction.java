@@ -91,7 +91,7 @@ public class FakturamaCoolbarAction extends Action {
             if (getDefaultAction() != null) {
                 // default action if clicked directly on the button
                     Map<String, Object> params = new HashMap<>();
-                    params.put(CallEditor.PARAM_EDITOR_TYPE, ((DropdownSelectionListener)getMenuCreator()).getDefaultCommandId());
+                    params.put(CallEditor.PARAM_EDITOR_TYPE, ((DropdownMenuCreator)getMenuCreator()).getDefaultCommandId());
                     params.put(CallEditor.PARAM_FORCE_NEW, BooleanUtils.toStringTrueFalse(true));
                     parameterizedCommand = cmdService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
             }

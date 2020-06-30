@@ -181,7 +181,7 @@ public class CoolbarViewPart {
 		java.util.Optional<ActionContributionItem> contactToolItem = createToolItem(toolBar, CommandIds.CMD_NEW_CONTACT, msg.toolbarNewContactName, msg.commandNewContactTooltip, 
 		        Icon.ICON_CONTACT_NEW.getImageDescriptor(IconSize.ToolbarIconSize), null,
 		        Constants.TOOLBAR_SHOW_NEW_CONTACT, params, true);
-		DropdownSelectionListener contactTypeListener =  ContextInjectionFactory.make(DropdownSelectionListener.class, ctx);
+		DropdownMenuCreator contactTypeListener =  ContextInjectionFactory.make(DropdownMenuCreator.class, ctx);
 		contactTypeListener.setDefaultCommandId(DebitorEditor.ID);
         contactTypeListener.add(new DropdownMenuItem(msg.commandNewCreditorName, CreditorEditor.ID, Icon.COMMAND_VENDOR));
         contactTypeListener.add(new DropdownMenuItem(msg.commandNewDebtorName, DebitorEditor.ID, Icon.COMMAND_CONTACT));
