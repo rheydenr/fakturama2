@@ -842,12 +842,18 @@ public class Messages {
 	public String dialogReorganizeQuestion;
 	public String dialogReorganizeDonemessage;
 	public String startFirstRestartmessage;
+	
 	public String startFirstSelectDbCredentialsJdbc;
 	public String startFirstSelectDbCredentialsName;
 	public String startFirstSelectDbCredentialsPassword;
 	public String startFirstSelectDbCredentialsUser;
 	public String startFirstSelectDbUsedefault;
 	public String startFirstSelectDbUsedefaultTooltip;
+    public String startFirstSelectDbCheck;
+    public String startFirstSelectDbDriver;
+    public String startFirstSelectDbname;
+    public String startFirstSelectDbConnectionsuccessful;
+	
 	public String startFirstSelectOldworkdirShort;
 	public String startFirstSelectOldworkdirVerbose;
 	public String startFirstSelectWorkdir;

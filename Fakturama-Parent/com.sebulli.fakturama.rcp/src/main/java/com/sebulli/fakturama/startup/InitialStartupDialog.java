@@ -313,7 +313,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		txtPassword.setText(preferences.get(PersistenceUnitProperties.JDBC_PASSWORD, ""));
         
         Button connectionChecker = new Button(dbSettings, SWT.PUSH);
-        connectionChecker.setText("Check it!");
+        connectionChecker.setText(msg.startFirstSelectDbCheck);
         connectionChecker.addSelectionListener(new SelectionAdapter() {
             
             @Override
@@ -327,8 +327,10 @@ public class InitialStartupDialog extends TitleAreaDialog {
                     DataSource dataSource = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(sr).createDataSource(connectionProps);
                     Connection con = dataSource.getConnection();
                     
-                    String infoString = String.format("Database: %s | Driver: %s",
-                            dataSource.getConnection(txtUser.getText(), txtPassword.getText()).getMetaData().getDatabaseProductVersion(),                         
+                    String infoString = String.format("%s: %s | %s: %s",
+                            msg.startFirstSelectDbname,
+                            dataSource.getConnection(txtUser.getText(), txtPassword.getText()).getMetaData().getDatabaseProductVersion(),
+                            msg.startFirstSelectDbDriver,
                             dataSource.getConnection(txtUser.getText(), txtPassword.getText()).getMetaData().getDriverVersion()
                             );                    
                             
@@ -336,7 +338,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
                     Statement stmt = con.createStatement();
                     boolean pingResult = stmt.execute("/* ping */ select 1");
                     if(pingResult) {
-                        MessageDialog.openInformation(getShell(), msg.dialogMessageboxTitleInfo, "Connection successfully established!");
+                        MessageDialog.openInformation(getShell(), msg.dialogMessageboxTitleInfo, msg.startFirstSelectDbConnectionsuccessful);
                     }
                 } catch (SQLException k) {
                     MessageDialog.openError(getShell(), msg.dialogMessageboxTitleError, "Can't create database connection. Reason:\n" + k.getMessage());
