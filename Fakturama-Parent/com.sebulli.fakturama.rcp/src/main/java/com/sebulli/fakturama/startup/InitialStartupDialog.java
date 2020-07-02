@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +16,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -88,6 +93,7 @@ public class InitialStartupDialog extends TitleAreaDialog {
     private final DirectoryChecker dirChecker;
     private Composite dbSettings;
     private Button btnUseDefaultDb;
+    private Label databaseInfoText;
 
 	/**
 	 * Create the dialog.
@@ -108,13 +114,11 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		this.msg = messages;
 		parent.setText(msg.startFirstSelectWorkdir);
 		BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-		Collection<ServiceReference<DataSourceFactory>> serviceReferences;
         String oldJdbcDriverClass = preferences.get(PersistenceUnitProperties.JDBC_DRIVER, "org.hsqldb.jdbc.JDBCDriver");
 		try {
 			// get all available Datasources (which are registered in OSGi context)
 			// and store them in a hash for using in ComboBox
-			serviceReferences = bundleContext.getServiceReferences(DataSourceFactory.class, null);
-//			serviceReferences.stream()
+            Collection<ServiceReference<DataSourceFactory>> serviceReferences = bundleContext.getServiceReferences(DataSourceFactory.class, null);
 			int i = 0;
 			for (ServiceReference<DataSourceFactory> serviceReference : serviceReferences) {
 				connectionProviders.add(serviceReference);
@@ -193,12 +197,6 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		layoutData.minimumWidth = 450;
 		txtWorkdir.setText(StringUtils.defaultIfEmpty(workspace, ""));
 		txtWorkdir.setLayoutData(layoutData);
-//		txtWorkdir.addFocusListener(new FocusAdapter() {
-//			@Override
-//			public void focusLost(FocusEvent e) {
-//				getButton(OK).setEnabled(StringUtils.isNotBlank(txtWorkdir.getText()));
-//			}
-//		});
 
 		final Button btnDirChooser = new Button(container, SWT.NONE);
 		btnDirChooser.setText("...");
@@ -276,6 +274,9 @@ public class InitialStartupDialog extends TitleAreaDialog {
 				String driverClass = (String) ((ServiceReference<DataSourceFactory>)(event
 			      .getStructuredSelection()).getFirstElement()).getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 				txtJdbcUrl.setText(StringUtils.defaultString(jdbcUrlMap.get(driverClass), ""));
+				databaseInfoText.setText("");
+				txtUser.setText("");
+				txtPassword.setText("");
 			}
 		});
 		Combo combo = comboDriver.getCombo();
@@ -308,20 +309,47 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		lblPassword.setText(msg.startFirstSelectDbCredentialsPassword);
 
 		txtPassword = new Text(dbSettings, SWT.BORDER | SWT.PASSWORD);
-		txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		txtPassword.setText(preferences.get(PersistenceUnitProperties.JDBC_PASSWORD, ""));
+        
+        Button connectionChecker = new Button(dbSettings, SWT.PUSH);
+        connectionChecker.setText("Check it!");
+        connectionChecker.addSelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    ServiceReference<DataSourceFactory> sr = connectionProviders.get(1);
+                    Properties connectionProps = new Properties();
+                    connectionProps.put(DataSourceFactory.JDBC_URL, txtJdbcUrl.getText());
+                    connectionProps.put(DataSourceFactory.JDBC_USER, txtUser.getText());
+                    connectionProps.put(DataSourceFactory.JDBC_PASSWORD, txtPassword.getText());
+                    DataSource dataSource = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(sr).createDataSource(connectionProps);
+                    Connection con = dataSource.getConnection();
+                    
+                    String infoString = String.format("Database: %s | Driver: %s",
+                            dataSource.getConnection(txtUser.getText(), txtPassword.getText()).getMetaData().getDatabaseProductVersion(),                         
+                            dataSource.getConnection(txtUser.getText(), txtPassword.getText()).getMetaData().getDriverVersion()
+                            );                    
+                            
+                    databaseInfoText.setText(infoString);
+                    Statement stmt = con.createStatement();
+                    boolean pingResult = stmt.execute("/* ping */ select 1");
+                    if(pingResult) {
+                        MessageDialog.openInformation(getShell(), msg.dialogMessageboxTitleInfo, "Connection successfully established!");
+                    }
+                } catch (SQLException k) {
+                    MessageDialog.openError(getShell(), msg.dialogMessageboxTitleError, "Can't create database connection. Reason:\n" + k.getMessage());
+                }
+            }
+        });
+        
+        new Label(dbSettings, SWT.NONE); // blind label
+        databaseInfoText = new Label(dbSettings, SWT.NONE);
+        databaseInfoText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 	    return container;
 	}
-//	
-//	@Override
-//	protected Control createContents(Composite parent) {
-//		Control retval = super.createContents(parent);
-//		getButton(OK).setEnabled(false); // initially the ok button is disabled
-//											// (because we haven't set a new
-//											// workdir)
-//		return retval;
-//	}
 
 	/**
 	 * Try to find the old workdir path.
@@ -357,8 +385,6 @@ public class InitialStartupDialog extends TitleAreaDialog {
 		ServiceReference<DataSourceFactory> firstElement = (ServiceReference<DataSourceFactory>) selection.getFirstElement();
 		String driver = selection.isEmpty() ? DEFAULT_JDBC_CLASS : (String) firstElement.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS);
 
-//        String oldJdbcDriverClass = preferences.get(PersistenceUnitProperties.JDBC_DRIVER, "org.hsqldb.jdbc.JDBCDriver");
-		
 		// storing DB credentials
 		try {
 			workspace = txtWorkdir.getText();
@@ -432,7 +458,6 @@ public class InitialStartupDialog extends TitleAreaDialog {
                                msg.startMigrationWarning);
                     if(answer) {
                         preferences.put(ConfigurationManager.MIGRATE_OLD_DATA, selectedDirectory);
-//                        txtOldWorkdir.setText(selectedDirectory);
                     }
                     alreadyCheckedDirs.add(selectedDirectory);
                 }
