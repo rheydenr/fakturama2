@@ -154,14 +154,16 @@
 		<title>Erstes Starten von Fakturama</title>
 		<para>Starten Sie Fakturama.</para>
 		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch über den Dateidialog geschehen.
-		Falls Sie Fakturama von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://www.fakturama.info/migration-der-altdaten">Wiki-Artikel</link>. Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die Datenbank auswählen. Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend:
+		Falls Sie Fakturama von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://www.fakturama.info/migration-der-altdaten">Wiki-Artikel</link>. 
+		Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die Datenbank auswählen. Die zusätzlichen Eingabefelder werden über das Entfernen des Häkchens "verwende Standardeinstellungen" sichtbar.
+		Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend. Über den Button "Verbindung testen" kann die Datenbankverbindung mit den eingegebenen Zugangsdaten getestet werden.
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
-						<imagedata fileref="../images/install/first_install_with_question.png" format="PNG" scalefit="1"/>
+						<imagedata fileref="../images/install/first_install.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata contentdepth="50%" fileref="../images/install/first_install_with_question.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="50%" fileref="../images/install/first_install.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
@@ -189,7 +191,8 @@
 		<para>Fakturama benutzt zum Drucken von Dokumenten wie Rechnungen oder Lieferscheinen Vorlagen, die mit dem Programm OpenOffice bzw. LibreOffice erstellt wurden. 
 		Diese müssen auf das eigene Design angepasst und mit den Firmendaten versehen werden. Die Vorlagen befinden sich im Arbeitsverzeichnis im Unterordner Vorlagen (dort jeweils
 		in einem separaten Ordner).</para>
-		<para>Bitte beachten Sie, dass zum Erstellen der PDF-Dateien OpenOffice bzw. LibreOffice installiert sein muss. Wenn Sie Ihre Dokumente nur im OpenOffice-Format erzeugen möchten benötigen Sie dieses Programm nicht unbedingt. Für die Erstellung von ZUGFeRD-Dokumenten müssen Sie einmalig im LibreOffice einen PDF-Export eines beliebigen Dokumentes durchführen und dabei als Option PDF/A-1 einstellen.</para>
+		<para>Bitte beachten Sie, dass zum Erstellen der PDF-Dateien OpenOffice bzw. LibreOffice installiert sein muss. Wenn Sie Ihre Dokumente nur im OpenOffice-Format erzeugen möchten benötigen Sie dieses Programm nicht unbedingt. 
+		Für die Erstellung von ZUGFeRD-Dokumenten müssen Sie einmalig im LibreOffice einen PDF-Export eines beliebigen Dokumentes durchführen und dabei als Option PDF/A einstellen.</para>
 		<para>Siehe auch <link linkend="preferences_main">Einstellungen</link> und <link linkend="openoffice_templates">OpenOffice.org / LibreOffice Vorlagen</link>
 		</para>
 	</section>

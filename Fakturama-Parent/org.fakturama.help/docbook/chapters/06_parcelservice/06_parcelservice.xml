@@ -57,6 +57,7 @@
 			<para>Die HTML-Formularelemente der Paketdienstseite können mit Platzhaltern belegt werden. Dazu ist der Name des Formularelementes gefolgt von einem <emphasis role="bold">=</emphasis>, gefolgt vom Platzhalter anzugeben.</para>
 			<para>Als Platzhalter können die gleichen wie auch bei OpenOffice/LibreOffice-Vorlagen benutzt werden.</para>
 		</sect3>
+		<important>Falls die Bezeichner des Webseiten-Formulars Doppelpunkte enthalten müssen diese mit einem vorangestellten Backslash gekennzeichnet werden. Aus <code>content:sender:addressPanel</code> wird also dann <code>content\:sender\:addressPanel</code>.</important>
 		<sect3>
 			<title>Name der Formularfelder bestimmen</title>
 			<para>Um den Namen der Formularfelder zu bestimmen, kann entweder ein Webbrowser benutzt werden, in dem der Quelltext der Seite analysiert wird, oder man öffnet die Seite in einem Fakturama-Webbrowser-Editor und startet dann den Paketdienst. Jetzt werden die Formularfelder analysiert und der Name im Feld selbst bzw. als Kommentartext beim Überfahren mit der Maus angezeigt. Eine neue Vorlagendatei wird im Arbeitsverzeichnis abgespeichert und kann mit einem Text-Editor weiterbearbeitet werden.</para>
