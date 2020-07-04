@@ -60,19 +60,20 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<UserProperty> criteria = cb.createQuery(getEntityClass());
         Root<UserProperty> root = criteria.from(UserProperty.class);
-        criteria.where(cb.equal(root.get(UserProperty_.name), name));
-        Optional<String> retval = Optional.empty();
+        criteria.where(cb.equal(root.get(UserProperty_.name), name)).orderBy(cb.desc(root.get(UserProperty_.dateAdded)));
+        TypedQuery<UserProperty> query = null;
+        UserProperty result = null;
 		try {
-			TypedQuery<UserProperty> query = getEntityManager().createQuery(criteria);
+            query = getEntityManager().createQuery(criteria);
 			query.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
-			UserProperty result = query.getSingleResult();
-			retval = Optional.ofNullable(result.getValue());
+            result = query.getSingleResult();
 		} catch (NoResultException e) {
 			// ignore, retval is an empty Optional
 		} catch (NonUniqueResultException nuex) {
-			log.error(nuex, "non-unique result found for property " + name);
+			log.warn("non-unique result found for property " + name);
+			result = query.getResultList().get(0);
 		}
-        return retval;
+        return result != null ? Optional.ofNullable(result.getValue()) : Optional.empty();
     }
 
     /**
