@@ -53,7 +53,7 @@
         <setEntry value="org.apache.batik.util@default:default"/>
         <setEntry value="org.apache.commons.beanutils@default:default"/>
         <setEntry value="org.apache.commons.cli@default:default"/>
-        <setEntry value="org.apache.commons.codec*1.10.0.v20180409-1845@default:default"/>
+        <setEntry value="org.apache.commons.codec*1.13.0.v20200108-0001@default:default"/>
         <setEntry value="org.apache.commons.collections@default:default"/>
         <setEntry value="org.apache.commons.io@default:default"/>
         <setEntry value="org.apache.commons.jxpath@default:default"/>
@@ -223,7 +223,7 @@
         <setEntry value="org.javamoney.osgi@default:default"/>
         <setEntry value="org.sat4j.core@default:default"/>
         <setEntry value="org.sat4j.pb@default:default"/>
-        <setEntry value="org.slf4j.api@default:default"/>
+        <setEntry value="org.slf4j.api*1.7.30.v20200204-2150@default:default"/>
         <setEntry value="org.slf4j.ext@default:default"/>
         <setEntry value="org.slf4j.jul@default:default"/>
         <setEntry value="org.tukaani.xz@default:default"/>

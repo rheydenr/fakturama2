@@ -28,31 +28,6 @@
 <repository location="https://dl.bintray.com/testng-team/testng-eclipse-release/updatesites/6.10.0.201612030230/"/>
 </location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20190827152740/repository"/>
-		<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
-		<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
-		<unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
-		<unit id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
-		<unit id="ch.qos.logback.slf4j" version="1.0.7.v201505121915"/>
-		<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
-		<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
-		<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
-		<unit id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
-		<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
-		<unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
-		<unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
-		<unit id="org.apache.xerces" version="2.9.0.v201101211617"/>
-		<unit id="org.apache.xmlbeans" version="2.3.0.v201605172150"/>
-		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
-		<unit id="org.junit" version="4.12.0.v201504281640"/>
-		<unit id="org.mockito" version="2.23.0.v20190527-1420"/>
-		<unit id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
-		<unit id="org.slf4j.ext" version="1.7.2.v20121108-1250"/>
-		<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
-		<unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
-		<unit id="org.yaml.snakeyaml" version="1.14.0.v201604211500"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/nattable/releases/1.6.0/repository/"/>
 		<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.6.0.201909181823"/>
 		<unit id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group" version="1.2.0.201909181823"/>
@@ -68,27 +43,6 @@
 		<unit id="org.apache.commons.feature.feature.group" version="3.4.0"/>
 		<unit id="org.hsql.jdbc.feature.feature.group" version="2.5.0"/>
 		<unit id="org.javamoney.feature.feature.group" version="1.0.2"/>
-		<unit id="org.slf4j.osgi.feature.feature.group" version="1.0.0"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/releases/2019-12"/>
-		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
-		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.14.0.v20191115-2149"/>
-		<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.14.0.v20191115-2149"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.14.0.v20191204-0601"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.14.0.v20191204-0601"/>
-		<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.400.v20191023-2007"/>
-		<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.300.v20191023-2007"/>
-		<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.600.v20191023-2007"/>
-		<unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.100.v20191024-1546"/>
-		<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.200.v20191024-1546"/>
-		<unit id="org.eclipse.emf.common.feature.group" version="2.17.0.v20190920-0401"/>
-		<unit id="org.eclipse.emf.feature.group" version="2.20.0.v20191028-0905"/>
-		<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.11.0.v20191114-1701"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.600.v20191014-2025"/>
-		<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.400.v20191120-0247"/>
-		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.20.0.v20191122-2104"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.14.0.v20191210-0610"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://p2.fakturama.info/gemini-di"/>
@@ -124,6 +78,51 @@
 		<unit id="org.eclipse.nebula.widgets.opal.commons.feature.feature.group" version="1.0.0.202006092019"/>
 		<unit id="org.eclipse.nebula.widgets.opal.multichoice.feature.feature.group" version="1.0.0.202006092019"/>
 		<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.202006092019"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="http://download.eclipse.org/releases/2020-03"/>
+		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
+		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.15.0.v20200217-1230"/>
+		<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.15.0.v20200217-1230"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.15.0.v20200304-0601"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.15.0.v20200304-0601"/>
+		<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.500.v20200217-1548"/>
+		<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.300.v20191023-2007"/>
+		<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.700.v20200217-0016"/>
+		<unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.300.v20200217-0016"/>
+		<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.200.v20191024-1546"/>
+		<unit id="org.eclipse.emf.common.feature.group" version="2.18.0.v20191225-1014"/>
+		<unit id="org.eclipse.emf.feature.group" version="2.21.0.v20200205-0529"/>
+		<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.11.100.v20200214-1600"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.700.v20200207-2156"/>
+		<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.500.v20200221-1022"/>
+		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.20.100.v20200303-1901"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.15.0.v20200305-0155"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200529191137/repository"/>
+		<unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
+		<unit id="ca.odell.glazedlists.source" version="1.9.0.v201303080712"/>
+		<unit id="ch.qos.logback.classic" version="1.2.3.v20200428-2012"/>
+		<unit id="ch.qos.logback.core" version="1.2.3.v20200428-2012"/>
+		<unit id="org.apache.commons.cli" version="1.4.0.v20200417-1444"/>
+		<unit id="org.apache.commons.codec" version="1.13.0.v20200108-0001"/>
+		<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
+		<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
+		<unit id="org.apache.poi" version="3.9.0.v201405241750"/>
+		<unit id="org.apache.poi.ooxml" version="3.9.0.v201405241905"/>
+		<unit id="org.apache.poi.ooxml.schemas" version="3.9.0.v201405241750"/>
+		<unit id="org.apache.xerces" version="2.9.0.v201101211617"/>
+		<unit id="org.apache.xmlbeans" version="2.3.0.v201605172150"/>
+		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
+		<unit id="org.junit" version="4.13.0.v20200204-1500"/>
+		<unit id="org.mockito" version="2.23.0.v20200310-1642"/>
+		<unit id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
+		<unit id="org.slf4j.apis.log4j" version="1.7.30.v20200204-2150"/>
+		<unit id="org.slf4j.ext" version="1.7.30.v20200204-2150"/>
+		<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
+		<unit id="org.yaml.snakeyaml" version="1.14.0.v201604211500"/>
+		<unit id="ch.qos.logback.slf4j" version="1.2.3.v20200428-2012"/>
 	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
