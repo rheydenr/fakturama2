@@ -55,8 +55,7 @@
         <setEntry value="org.apache.commons.cli@default:default"/>
         <setEntry value="org.apache.commons.codec*1.10.0.v20180409-1845@default:default"/>
         <setEntry value="org.apache.commons.collections@default:default"/>
-        <setEntry value="org.apache.commons.io*2.6.0.v20190123-2029@default:default"/>
-        <setEntry value="org.apache.commons.io*2.6.0@default:default"/>
+        <setEntry value="org.apache.commons.io@default:default"/>
         <setEntry value="org.apache.commons.jxpath@default:default"/>
         <setEntry value="org.apache.commons.lang3@default:default"/>
         <setEntry value="org.apache.commons.lang@default:default"/>
@@ -185,9 +184,11 @@
         <setEntry value="org.eclipse.jface.databinding@default:default"/>
         <setEntry value="org.eclipse.jface.nl_de@default:false"/>
         <setEntry value="org.eclipse.jface@default:default"/>
-        <setEntry value="org.eclipse.nebula.cwt@default:default"/>
+        <setEntry value="org.eclipse.nebula.cwt*1.1.0.201907151344@default:default"/>
+        <setEntry value="org.eclipse.nebula.cwt*1.1.0.202006092019@default:default"/>
         <setEntry value="org.eclipse.nebula.jface.cdatetime@default:default"/>
-        <setEntry value="org.eclipse.nebula.widgets.cdatetime@default:default"/>
+        <setEntry value="org.eclipse.nebula.widgets.cdatetime*1.4.0.201907151344@default:default"/>
+        <setEntry value="org.eclipse.nebula.widgets.cdatetime*1.4.0.202006092019@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.formattedtext@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.nattable.core@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.nattable.extension.e4@default:default"/>
