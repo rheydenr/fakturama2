@@ -1523,15 +1523,26 @@ public class DocumentEditor extends Editor<Document> {
 		// sometimes the shipping value has many fraction digits so that we have to round it
 		// to a reasonable value
 		// but at first we have to decide which value is the correct shipping value (net or gross)
+		
+		/*
+		 * The following cases can occur:
+		 * 1. change an existing Shipping value which was selected from a predefined Shipping
+		 *    (select other Shipping from Combo box)
+		 * 2. change an existing Shipping value which was selected from a predefined Shipping
+		 *    (enter a new Shipping value in entry field)
+		 * 3. change a previously set manually added Shipping value to another one
+		 */
 		MonetaryAmount currentShippingValue = useGross ? documentSummary.getShippingGross() : documentSummary.getShippingNet();
-		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, 
-				currentShippingValue.getNumber().doubleValue())) {
-		    document.getAdditionalInfo().setShippingDescription(shipping.getDescription());
-		    document.getAdditionalInfo().setShippingName(shipping.getName());
-		    document.getAdditionalInfo().setShippingVatValue(shipping.getShippingVat().getTaxValue());
-		    
+		if(!DataUtils.getInstance().DoublesAreEqual(newShippingValue, 
+                currentShippingValue.getNumber().doubleValue())) {
 		    document.setShippingValue(newShippingValue);
-			document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
+		    document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
+    		if (shipping != null) {
+    		    // copy some information from previously selected Shipping record into additional info block
+    		    document.getAdditionalInfo().setShippingDescription(shipping.getDescription());
+    		    document.getAdditionalInfo().setShippingName(shipping.getName());
+    		    document.getAdditionalInfo().setShippingVatValue(shipping.getShippingVat().getTaxValue());
+    		}
 		} else {
 			// no change occurred, we can return and leave the values unchanged
 			return;
