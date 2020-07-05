@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.eclipse.equinox.log.ExtendedLogService;
+import org.osgi.service.log.LogLevel;
 //import org.eclipse.e4.core.services.statusreporter.StatusReporter;
 import org.osgi.service.log.LogService;
 
@@ -43,13 +44,31 @@ public class FakturamaLogger implements ILogger {
 	 */
 	@Override
 	public void debug(String message) {
-		log(LogService.LOG_DEBUG, message);
+		log(LogLevel.DEBUG, message);
 	}
 	
-	private void log(int level, String message) {
+	private void log(LogLevel level, String message) {
 		if(delegate != null) {
 			message = extractMessageWithCaller(message);
-			this.delegate.log(level, message);
+			switch (level) {
+            case DEBUG:
+                this.delegate.debug(message);
+                break;
+            case INFO:
+                this.delegate.info(message);
+                break;
+            case WARN:
+                this.delegate.warn(message);
+                break;
+            case ERROR:
+                this.delegate.error(message);
+                break;
+
+            default:
+    			// fallback
+    			System.out.println(message);
+                break;
+            }
 		} else {
 			// fallback
 			System.out.println(message);
@@ -70,7 +89,7 @@ public class FakturamaLogger implements ILogger {
 	 */
 	@Override
 	public void info(String message) {
-		log(LogService.LOG_INFO, message);
+		log(LogLevel.INFO, message);
 	}
 
 	/* (non-Javadoc)
@@ -78,7 +97,7 @@ public class FakturamaLogger implements ILogger {
 	 */
 	@Override
 	public void warn(String message) {
-		log(LogService.LOG_WARNING, message);
+		log(LogLevel.WARN, message);
 	}
 
 	/* (non-Javadoc)
@@ -86,17 +105,17 @@ public class FakturamaLogger implements ILogger {
 	 */
 	@Override
 	public void error(Throwable exception, String message) {
-		this.delegate.log(LogService.LOG_ERROR, message, exception);
+		this.delegate.error(message, exception);
 	}
 
 	@Override
 	public void error(Throwable exception) {
-		delegate.log(LogService.LOG_ERROR, "Exception occured: ", exception);
+		delegate.error("Exception occured: ", exception);
 	}
 
 	@Override
 	public void error(String message) {
-		log(LogService.LOG_ERROR, message);
+		log(LogLevel.ERROR, message);
 	}
 	
 	/**
@@ -121,6 +140,6 @@ public class FakturamaLogger implements ILogger {
 
 	@Override
 	public boolean isDebugEnabled() {
-		return this.delegate.isLoggable(LogService.LOG_DEBUG);
+		return this.delegate.isDebugEnabled();
 	}
 }
