@@ -2,7 +2,7 @@
 <feature
       id="org.apache.commons.feature"
       label="Several Apache Commons Libs"
-      version="3.4.0"
+      version="3.4.1"
       provider-name="apache.org">
 
    <description url="http://www.example.com/description">
