@@ -14,16 +14,15 @@
 
 package org.fakturama.imp.wizard.csv.kontist;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
-import java.util.function.Predicate;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -198,8 +197,7 @@ public class KontistCsvImporter {
 		// Open the existing file
 		// TODO use NIO
 		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
-			 BufferedReader in = new BufferedReader(isr);
-			 CSVReader csvr = new CSVReader(in, ';');	) {
+			 CSVReader csvr = new CSVReader(isr);	) {
 
 			// Read next CSV line
 			columns = csvr.readNext();

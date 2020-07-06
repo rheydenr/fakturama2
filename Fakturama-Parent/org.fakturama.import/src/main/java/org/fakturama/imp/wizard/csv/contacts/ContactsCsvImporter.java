@@ -40,6 +40,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.ICSVParser;
+import com.opencsv.exceptions.CsvValidationException;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -351,7 +352,10 @@ public class ContactsCsvImporter {
 		}
 		catch (FakturamaStoringException e) {
 			log.error("can't save or update imported contact");
-		}
+		} catch (CsvValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 		evtBroker.post(classifier == FakturamaModelPackage.DEBITOR_CLASSIFIER_ID ? "Debtor" : "Creditor", "update");
 	}
 
