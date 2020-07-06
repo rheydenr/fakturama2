@@ -34,12 +34,10 @@ import org.fakturama.imp.ImportMessages;
 
 import com.opencsv.CSVReader;
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
-import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.CreditorsDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
-import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ReceiptVouchersDAO;
 import com.sebulli.fakturama.dao.VatCategoriesDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
@@ -94,9 +92,6 @@ public class KontistCsvImporter {
     private ReceiptVouchersDAO receiptVouchersDAO;
     
     @Inject
-    private PaymentsDAO paymentsDAO;
-    
-    @Inject
     private VatCategoriesDAO vatCategoriesDAO;
     
     @Inject
@@ -104,9 +99,6 @@ public class KontistCsvImporter {
     
     @Inject
     private VatsDAO vatsDAO;
-    
-    @Inject
-    private ContactsDAO contactsDAO;
     
     @Inject
     private IDateFormatterService dateFormatterService;
@@ -249,8 +241,6 @@ public class KontistCsvImporter {
 						List<Voucher> allItems = expendituresDAO.findAll();
 						allItems.addAll(receiptVouchersDAO.findAll());
 
-						List<Debitor> allCustomers = debitorsDAO.findAll();
-						
 						Predicate<Voucher> voucherFilter;
 						// if end2end ID is not set ignore it for compare and use details
 						if (end2endId.equalsIgnoreCase(END2END_ID_NOT_SET)) {
