@@ -33,9 +33,10 @@
     <booleanAttribute key="restart" value="true"/>
     <setAttribute key="selected_target_bundles">
         <setEntry value="ca.odell.glazedlists@default:default"/>
-        <setEntry value="ch.qos.logback.classic@2:default"/>
-        <setEntry value="ch.qos.logback.core@2:default"/>
-        <setEntry value="ch.qos.logback.slf4j@default:false"/>
+        <setEntry value="ch.qos.logback.classic*1.2.3.v20200428-2012@2:default"/>
+        <setEntry value="ch.qos.logback.core*1.0.7.v20121108-1250@2:default"/>
+        <setEntry value="ch.qos.logback.core*1.2.3.v20200428-2012@2:default"/>
+        <setEntry value="ch.qos.logback.slf4j*1.2.3.v20200428-2012@default:false"/>
         <setEntry value="com.ibm.icu@default:default"/>
         <setEntry value="com.mysql.jdbc@default:default"/>
         <setEntry value="com.opcoach.e4.preferences@default:default"/>
@@ -56,7 +57,7 @@
         <setEntry value="org.apache.commons.codec*1.13.0.v20200108-0001@default:default"/>
         <setEntry value="org.apache.commons.collections4@default:default"/>
         <setEntry value="org.apache.commons.collections@default:default"/>
-        <setEntry value="org.apache.commons.io*2.6.0@default:default"/>
+        <setEntry value="org.apache.commons.io@default:default"/>
         <setEntry value="org.apache.commons.jxpath@default:default"/>
         <setEntry value="org.apache.commons.lang3@default:default"/>
         <setEntry value="org.apache.commons.lang@default:default"/>
@@ -225,7 +226,7 @@
         <setEntry value="org.sat4j.core@default:default"/>
         <setEntry value="org.sat4j.pb@default:default"/>
         <setEntry value="org.slf4j.api*1.7.30.v20200204-2150@default:default"/>
-        <setEntry value="org.slf4j.ext@default:default"/>
+        <setEntry value="org.slf4j.ext*1.7.30.v20200204-2150@default:default"/>
         <setEntry value="org.slf4j.jul@default:default"/>
         <setEntry value="org.tukaani.xz@default:default"/>
         <setEntry value="org.w3c.css.sac@default:default"/>
