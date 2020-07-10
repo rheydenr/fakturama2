@@ -18,45 +18,45 @@
 
    <plugin
          id="org.slf4j.api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         download-size="33"
+         install-size="60"
+         version="1.7.2.v20121108-1250"
          unpack="false"/>
 
    <plugin
          id="org.slf4j.ext"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         download-size="48"
+         install-size="91"
+         version="1.7.2.v20121108-1250"
          unpack="false"/>
 
    <plugin
          id="ch.qos.logback.slf4j"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         download-size="10"
+         install-size="15"
+         version="1.0.7.v201505121915"
          fragment="true"
          unpack="false"/>
 
    <plugin
          id="ch.qos.logback.classic"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         download-size="255"
+         install-size="518"
+         version="1.0.7.v20121108-1250"
          unpack="false"/>
 
    <plugin
          id="ch.qos.logback.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         download-size="380"
+         install-size="722"
+         version="1.0.7.v20121108-1250"
          unpack="false"/>
 
    <plugin
          id="org.slf4j.jul"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
+         download-size="10"
+         install-size="17"
+         version="1.7.2.v20121108-1250"
          unpack="false"/>
 
 </feature>

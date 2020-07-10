@@ -15,7 +15,7 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
  com.opcoach.e4.preferences,
  org.eclipse.nebula.widgets.formattedtext,
  org.eclipse.nebula.widgets.cdatetime,
- com.opencsv
+ com.opencsv;bundle-version="5.2.0"
 Bundle-ActivationPolicy: lazy
 Import-Package: com.sebulli.fakturama.i18n,
  com.sebulli.fakturama.log,
