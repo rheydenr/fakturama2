@@ -294,16 +294,18 @@ public class ContactUtil {
      * @return
      *          The number
      */
-	public int getSalutationID(String s) {
-		// Test all strings
-		for (int i = 0; i <= MAX_SALUTATION_COUNT; i++) {
-			if (getSalutationString(i, false).equalsIgnoreCase(s))
-				return i;
-			// if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
-		}
-		// Default = "---"
-		return 0;
-	}
+    public int getSalutationID(String s) {
+        if (StringUtils.isNotBlank(s)) {
+            // Test all strings
+            for (int i = 0; i <= MAX_SALUTATION_COUNT; i++) {
+                if (getSalutationString(i, false).equalsIgnoreCase(s))
+                    return i;
+                // if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
+            }
+        }
+        // Default = "---"
+        return 0;
+    }
     
     /**
      * Get the address as one String.

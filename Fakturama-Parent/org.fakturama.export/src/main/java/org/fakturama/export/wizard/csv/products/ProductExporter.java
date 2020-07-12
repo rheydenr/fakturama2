@@ -87,10 +87,12 @@ public class ProductExporter {
 					"\"weight\";"+
 					"\"unit\";"+
 					"\"date_added\";"+
-//					"\"picturename\";"+
+					"\"picturename\";"+
 					"\"quantity\";"+
 					"\"webshopid\";"+
-					"\"qunit\""+
+					"\"qunit\";"+
+					"\"note\";"+
+					"\"costprice\""+
 					NEW_LINE);
 		
 			// Get all undeleted products
@@ -132,10 +134,12 @@ public class ProductExporter {
 					.append(numberFormatterService.DoubleToDecimalFormatedValue(product.getWeight(),"0.00")).append(";")
 					.append(product.getSellingUnit() == null ? "" : product.getSellingUnit()).append(";")
 					.append(ExporterHelper.inQuotes(sdf.format(product.getDateAdded()))).append(";")
-					//.append(ExporterHelper.inQuotes(product.getPictureName).append(";")
+					.append(";") // picturename is not available here
 					.append(numberFormatterService.DoubleToDecimalFormatedValue(product.getQuantity(),"0.00")).append(";")
 					.append(product.getWebshopId() == null ? "" : product.getWebshopId()).append(";")
 					.append(ExporterHelper.inQuotes(product.getQuantityUnit())).append(";")
+					.append(ExporterHelper.inQuotes(product.getNote())).append(";")
+					.append(numberFormatterService.DoubleToDecimalFormatedValue(product.getCostPrice(),"0.00")).append(";")
 					.append(NEW_LINE);
 				bos.write(stringBuffer.toString());
 			}bos.flush();bos.close();
