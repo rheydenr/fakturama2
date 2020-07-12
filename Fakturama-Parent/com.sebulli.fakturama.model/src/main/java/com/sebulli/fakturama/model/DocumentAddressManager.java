@@ -102,18 +102,16 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 
 	@Override
 	public Optional<Address> getAddressFromContact(Contact contact, ContactType contactType) {
-		Optional<Address> address;
+		Optional<Address> address = Optional.empty();
 		if (contact != null && contactType != null) {
 			address = contact.getAddresses().stream()
 					.filter(rcv -> rcv.getContactTypes().isEmpty() || rcv.getContactTypes().contains(contactType))
 					.findFirst();
 			
 			// if there's no fitting address use the first one (fallback)
-			if(!address.isPresent()) {
+			if(!address.isPresent() && !contact.getAddresses().isEmpty()) {
 				address = Optional.ofNullable(contact.getAddresses().get(0));
 			}
-		} else {
-			address = Optional.empty();
 		}
 		return address;
 	}
