@@ -63,11 +63,6 @@ public class DbUpdateService implements IDbUpdateService {
 	public boolean updateDatabase() {
 		boolean retval = true;
 		
-		// emergency switch: turn off this feature with NODBUPDATE=true
-		if(BooleanUtils.toBoolean(System.getProperty("NODBUPDATE"))) {
-			return retval;
-		}
-		
 		// get the preferences for this application from common plugin
 		this.eclipsePrefs = Activator.getPreferences();
 		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
@@ -75,6 +70,12 @@ public class DbUpdateService implements IDbUpdateService {
 			if(connection == null) {
 				throw new SQLException("can't create database connection!");
 			}
+		
+    		// emergency switch: turn off this feature with NODBUPDATE=true
+    		if(BooleanUtils.toBoolean(System.getProperty("NODBUPDATE"))) {
+    			return retval;
+    		}
+    		
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
 					new OSGiResourceAccessor(context.getBundle()), database);

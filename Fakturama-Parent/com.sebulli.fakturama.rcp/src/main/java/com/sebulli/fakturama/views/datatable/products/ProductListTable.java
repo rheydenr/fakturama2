@@ -392,10 +392,6 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         
         DataLayer tableDataLayer = gridListLayer.getBodyDataLayer();
         tableDataLayer.setColumnPercentageSizing(true);
-        tableDataLayer.setColumnWidthPercentageByPosition(0, 5);
-        tableDataLayer.setColumnWidthPercentageByPosition(1, 15);
-        tableDataLayer.setColumnWidthPercentageByPosition(2, 75);
-        tableDataLayer.setColumnWidthPercentageByPosition(3, 5);
 
         ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(gridListLayer.getBodyLayerStack());
         columnLabelAccumulator.registerColumnOverrides(prodListDescriptors.getKey(ProductListDescriptor.PRICE), MONEYVALUE_CELL_LABEL);

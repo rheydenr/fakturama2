@@ -743,7 +743,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.ITEMNUMBER);
         }
         
-        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_PICTURE)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.PICTURE);
         }        
 
@@ -756,11 +756,17 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         }        
         
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
-        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
-
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_DESCRIPTION)) {
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
+        }
+        
         if (documentType.hasPrice() 
         		|| document.getBillingType().isDELIVERY() && getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE)) {
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
+
+            if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_VAT)) {
+                propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
+            }
 	        
 	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX) && useSET) {
 	        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.SALESEQUALIZATIONTAX);
