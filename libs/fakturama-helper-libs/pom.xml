@@ -6,8 +6,8 @@
   <name>Fakturama Helper Libs</name>
     <packaging>pom</packaging>
     <properties>
-        <tycho.version>1.5.0</tycho.version>
-        <tycho-extras.version>1.5.0</tycho-extras.version>
+        <tycho.version>1.7.0</tycho.version>
+        <tycho-extras.version>1.7.0</tycho-extras.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
@@ -31,15 +31,15 @@
         <module>com.mysql.jdbc.feature</module>
         <module>org.hsqldb.jdbc</module>
         <module>org.hsql.jdbc.feature</module>
-        <!--  module>org.slf4j.osgi.feature</module -->
+        <module>org.slf4j.osgi.feature</module>
 
         <module>com.opcoach.e4.preference.feature</module>
         
         <!--  For building this project you have to disable the following two modules. -->
         <!--  After successful build (mvn clean install) you can re-enable 
-              these modules and build the project again. -->
+              these modules and build the project again.
         <module>../../javamoney/javamoney-osgi</module>
-        <module>../../javamoney/javamoney.feature</module>
+        <module>../../javamoney/javamoney.feature</module> -->
         
         <module>de.rhe.apps.updatesite</module>
         <module>com.opencsv</module>

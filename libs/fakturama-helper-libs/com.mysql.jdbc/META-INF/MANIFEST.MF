@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: MySQL Connector/J
 Bundle-SymbolicName: com.mysql.jdbc
 Bundle-Version: 5.1.48
-Specification-Version: 5.1.47
+Specification-Version: 5.1.48
 Bundle-ClassPath: lib/mysql-connector-java-5.1.48.jar
 Bundle-Vendor: mysql.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

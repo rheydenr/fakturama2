@@ -6,9 +6,9 @@
 	<version>2.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<tycho.version>1.5.0</tycho.version>
-		<tycho-extras.version>1.5.0</tycho-extras.version>
-		<maven.compiler.release>8</maven.compiler.release>
+		<tycho.version>1.7.0</tycho.version>
+		<tycho-extras.version>1.7.0</tycho-extras.version>
+	<!-- 	<maven.compiler.release>8</maven.compiler.release> -->
 		<maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
 		<buildTimestamp>${maven.build.timestamp}</buildTimestamp>
 		<buildId>${buildTimestamp}</buildId>

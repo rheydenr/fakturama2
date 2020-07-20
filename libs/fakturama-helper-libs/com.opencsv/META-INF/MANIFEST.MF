@@ -4,7 +4,6 @@ Bundle-Name: OpenCSV
 Bundle-SymbolicName: com.opencsv
 Bundle-Version: 5.2.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: lib/opencsv-5.2.jar
 Export-Package: com.opencsv,
  com.opencsv.bean,
  com.opencsv.bean.comparator,
@@ -27,3 +26,4 @@ Require-Bundle: org.apache.commons.collections,
  org.apache.commons.beanutils,
  org.apache.commons.text
 Automatic-Module-Name: com.opencsv
+Bundle-ClassPath: lib/opencsv-5.2.jar
