@@ -56,6 +56,7 @@
 		<unit id="org.apache.commons.compress" version="1.19.0.v20200106-2343"/>
 		<unit id="javax.activation" version="2.0.0.v20200505-1431"/>
 		<unit id="jakarta.xml.bind" version="2.3.3.v20200525-2159"/>
+		<unit id="javax.annotation" version="1.3.5.v20200504-1837"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/nattable/releases/1.6.0/repository/"/>
