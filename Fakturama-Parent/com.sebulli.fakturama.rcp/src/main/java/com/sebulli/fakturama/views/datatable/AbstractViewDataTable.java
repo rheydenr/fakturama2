@@ -469,6 +469,14 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     public T[] getSelectedObjects() { return null; }
     
     /**
+     * Returns the actually marked rows in a table. Can be overwritten.
+     * 
+     * @param selectIfSingleRow returns a selection if only one item is in the list
+     * @return selected rows in a list table
+     */
+    public T[] getSelectedObjects(boolean selectIfSingleRow) { return null; }
+    
+    /**
      * Returns the actually marked document in a table. Can be overwritten. May return <code>null</code>!
      * 
      * @return selected row in a list table

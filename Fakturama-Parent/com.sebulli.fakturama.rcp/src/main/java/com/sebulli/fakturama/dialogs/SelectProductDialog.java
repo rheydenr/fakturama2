@@ -122,7 +122,7 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
      */
     @Override
     protected void okPressed() {
-        if (productListTable.getSelectedObjects() != null) {
+        if (productListTable.getSelectedObjects(true) != null) {
             Map<String, Object> eventParams = new HashMap<>();
             eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
             // it has to be a List!

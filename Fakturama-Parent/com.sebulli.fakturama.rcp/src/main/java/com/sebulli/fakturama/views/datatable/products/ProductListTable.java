@@ -166,12 +166,23 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     
     @Override
     public Product[] getSelectedObjects() {
+        return getSelectedObjects(false);
+    }
+    
+    @Override
+    public Product[] getSelectedObjects(boolean selectIfSingleRow) {
         List<Product> selectedObjects = new ArrayList<>();
         int[] fullySelectedRowPositions = getGridLayer().getSelectionLayer().getFullySelectedRowPositions();
         if(fullySelectedRowPositions.length > 0 && fullySelectedRowPositions[0] > -1) {
             for (int i = 0; i < fullySelectedRowPositions.length; i++) {
                 selectedObjects.add(getGridLayer().getBodyDataProvider().getRowObject(fullySelectedRowPositions[i]));
             }
+        } if(gridListLayer.getGridLayer().getBodyLayer().getRowCount() == 1) {
+            int rowPos = natTable.getRowPositionByY(1);
+            int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, getGridLayer().getBodyDataLayer());
+            // TODO Why is selectedObject set? 
+            selectedObject = getGridLayer().getBodyDataProvider().getRowObject(bodyRowPos);
+            selectedObjects = Arrays.asList(selectedObject);
         } else {
             log.debug("no rows selected!");
         }
@@ -378,7 +389,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         searchColumns[1] = "description";
         searchColumns[2] = "value";
  */
-        final MatcherEditor<Product> textMatcherEditor = new TextWidgetMatcherEditor<Product>(searchText.getTextControl(), 
+        final MatcherEditor<Product> textMatcherEditor = new TextWidgetMatcherEditor<Product>(getSearchControl().getTextControl(), 
                 GlazedLists.textFilterator(Product.class, Product_.itemNumber.getName(), Product_.name.getName(), Product_.description.getName()));
         
         // Filtered list for Search text field filter
