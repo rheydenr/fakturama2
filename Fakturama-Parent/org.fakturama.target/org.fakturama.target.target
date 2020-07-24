@@ -115,7 +115,7 @@
 		<unit id="org.eclipse.persistence.sdk.feature.group" version="2.7.7.v20200504-69f2c2b80d"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="file:/D:/User/GitHome/fakturama-2/libs/fakturama-helper-libs/de.rhe.apps.updatesite/target/repository/"/>
+		<repository location="http://p2.fakturama.info/2.1.0"/>
 		<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.47"/>
 		<unit id="com.opcoach.e4.preference.feature.feature.group" version="1.0.0"/>
 		<unit id="com.opencsv.feature.feature.group" version="4.5.0"/>

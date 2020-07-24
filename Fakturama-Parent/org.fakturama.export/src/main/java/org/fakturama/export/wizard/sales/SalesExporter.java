@@ -306,7 +306,7 @@ public class SalesExporter extends OOCalcExporter {
 				} else {
 					col++;
 				}
-			} else if(addressid.getManualAddress() != null) {
+			} else if(addressid != null && addressid.getManualAddress() != null) {
 				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getManualAddress(), ContactUtil.KEY_FIRSTNAME));
 				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getManualAddress(), ContactUtil.KEY_LASTNAME));
 				col += 3;
