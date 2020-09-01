@@ -24,6 +24,9 @@
    <feature id="org.slf4j.osgi.feature">
       <category name="de.rhe.libs.additional"/>
    </feature>
+   <feature id="org.apache.poi.feature">
+      <category name="de.rhe.libs.apache"/>
+   </feature>
    <category-def name="de.rhe.apps.osgi.drivers" label="JDBC drivers for OSGi plugins">
       <description>
          JDBC driver for various databases as OSGi plugin.

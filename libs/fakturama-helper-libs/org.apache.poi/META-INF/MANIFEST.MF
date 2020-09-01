@@ -13,11 +13,11 @@ Bundle-ClassPath: lib/poi-4.1.2.jar,
  lib/3rdparty/jaxb-api-2.3.1.jar,
  lib/3rdparty/jaxb-core-2.3.0.1.jar,
  lib/3rdparty/jaxb-impl-2.3.2.jar,
- lib/3rdparty/SparseBitSet-1.2.jar
+ lib/3rdparty/SparseBitSet-1.2.jar,
+ lib/3rdparty/commons-compress-1.19.jar
 Require-Bundle: org.apache.commons.collections4;bundle-version="4.4.0",
  org.apache.commons.codec;bundle-version="1.13.0",
- org.apache.commons.logging;bundle-version="1.2.0",
- org.apache.commons.compress;bundle-version="1.19.0"
+ org.apache.commons.logging;bundle-version="1.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.apache.poi,
  org.apache.poi.common,

@@ -39,5 +39,6 @@ Import-Package: org.eclipse.e4.core.contexts,
  org.osgi.framework
 Bundle-Vendor: Fakturama.org
 Bundle-ClassPath: .,
- lib/liquibase.jar
+ lib/liquibase.jar,
+ lib/eclipselink.jar
 Automatic-Module-Name: com.sebulli.fakturama.model

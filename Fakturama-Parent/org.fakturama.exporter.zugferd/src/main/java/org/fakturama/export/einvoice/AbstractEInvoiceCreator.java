@@ -62,6 +62,7 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
+import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
 
 public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
     /**
@@ -138,7 +139,7 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
         try (ByteArrayOutputStream buffo = new ByteArrayOutputStream()) {
             // create XML from structure
             DOMResult res = new DOMResult();
-            JAXBContext context = JAXBContext.newInstance(root.get().getClass());
+            JAXBContext context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {root.get().getClass()}, null);
             context.createMarshaller().marshal(root.get(), res);
             org.w3c.dom.Document zugferdXml = (org.w3c.dom.Document) res.getNode();
             printDocument(zugferdXml, buffo);

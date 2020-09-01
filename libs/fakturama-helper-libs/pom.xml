@@ -26,6 +26,8 @@
         <module>org.apache.commons.feature</module>
         <module>org.apache.odftoolkit</module>
         <module>org.apache.odftoolkit.feature</module>
+        <module>org.apache.poi.feature</module>
+        <module>org.apache.poi</module>
         
         <module>com.mysql.jdbc</module>
         <module>com.mysql.jdbc.feature</module>
