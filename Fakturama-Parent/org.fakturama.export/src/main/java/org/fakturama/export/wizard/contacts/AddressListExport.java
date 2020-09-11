@@ -216,7 +216,7 @@ public class AddressListExport extends OOCalcExporter {
 			
 			setCellText(row, col++, contact.getWebsite());
 			setCellText(row, col++, contact.getVatNumber());
-			if(contact.getVatNumber().isEmpty()) {
+			if(contact.getVatNumber() == null || contact.getVatNumber().isEmpty()) {
 				col++;
 			} else {
 				setCellValueAsBoolean(row, col++, contact.getVatNumberValid());
