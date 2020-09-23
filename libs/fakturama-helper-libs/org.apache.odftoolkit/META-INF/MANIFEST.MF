@@ -93,5 +93,5 @@ Bundle-ClassPath: lib/java-rdfa-0.4.2.jar,
  lib/taglets-0.9.0-RC2-SNAPSHOT.jar,
  lib/taglets-0.9.0-SNAPSHOT.jar
 Automatic-Module-Name: org.apache.odftoolkit
-Require-Bundle: org.apache.xerces;bundle-version="2.9.0",
- org.apache.commons.validator;bundle-version="1.6.0"
+Require-Bundle: org.apache.xerces;bundle-version="[2.9.0,2.9.9)",
+ org.apache.commons.validator
