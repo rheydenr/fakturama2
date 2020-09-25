@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.sebulli.fakturama.rcp;singleton:=true
 Bundle-Version: 2.1.1.qualifier
-Bundle-ClassPath: lib/eclipselink.jar,
- .
+Bundle-ClassPath: .
 Bundle-Activator: com.sebulli.fakturama.Activator
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: OSGI-INF/l10n/bundle
@@ -18,9 +17,9 @@ Export-Package: com.sebulli.fakturama.calculate,
  com.sebulli.fakturama.parts.widget.formatter,
  com.sebulli.fakturama.parts.widget.labelprovider,
  com.sebulli.fakturama.preferences,
- org.eclipse.persistence.jaxb,
  org.fakturama.wizard.export.handler
-Require-Bundle: com.sebulli.fakturama.common,
+Require-Bundle: javax.inject,
+ com.sebulli.fakturama.common,
  com.sebulli.fakturama.resources,
  com.sebulli.fakturama.model,
  org.fakturama.e4.ui.dialogs.ext,
@@ -65,7 +64,6 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.apache.commons.validator,
  org.apache.commons.logging,
  org.apache.commons.text,
- javax.inject,
  org.eclipse.emf.common,
  org.javamoney.osgi,
  org.eclipse.osgi,
@@ -80,10 +78,10 @@ Require-Bundle: com.sebulli.fakturama.common,
  org.eclipse.update.configurator,
  org.apache.commons.collections;bundle-version="4.3.0",
  org.eclipse.persistence.moxy,
- org.apache.poi
-Import-Package: javax.xml.bind;version="2.3.3",
- javax.xml.bind.annotation;version="2.3.3",
- org.apache.commons.io,
+ org.apache.poi,
+ jakarta.xml.bind;bundle-version="2.3.3",
+ jakarta.xml.bind-api;bundle-version="2.3.2"
+Import-Package: org.apache.commons.io,
  org.eclipse.core.commands,
  org.eclipse.core.net.proxy,
  org.eclipse.core.runtime,
