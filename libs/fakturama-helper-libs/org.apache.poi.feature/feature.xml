@@ -2,7 +2,7 @@
 <feature
       id="org.apache.poi.feature"
       label="Apache POI Feature"
-      version="4.1.2.qualifier"
+      version="4.1.2"
       provider-name="Fakturama.org">
 
    <description url="http://www.example.com/description">

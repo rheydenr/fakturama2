@@ -21,9 +21,9 @@ Export-Package: com.opencsv,
  com.opencsv.validators
 Bundle-Vendor: The OpenCSV team
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.apache.commons.collections,
- org.apache.commons.lang3,
+Require-Bundle: org.apache.commons.lang3,
  org.apache.commons.beanutils,
- org.apache.commons.text
+ org.apache.commons.text,
+ org.apache.commons.collections4;bundle-version="4.4.0"
 Automatic-Module-Name: com.opencsv
 Bundle-ClassPath: lib/opencsv-5.2.jar
