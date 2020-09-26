@@ -24,6 +24,6 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: org.apache.commons.lang3,
  org.apache.commons.beanutils,
  org.apache.commons.text,
- org.apache.commons.collections4;bundle-version="4.4.0"
+ org.apache.commons.collections4
 Automatic-Module-Name: com.opencsv
 Bundle-ClassPath: lib/opencsv-5.2.jar
