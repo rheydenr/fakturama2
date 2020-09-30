@@ -8,12 +8,12 @@ Bundle-ClassPath: .,
  lib/pdfbox-2.0.20.jar,
  lib/xmpbox-2.0.20.jar
 Bundle-Vendor: Fakturama.org
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: javax.inject;bundle-version="1.0.0",
+ org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts;bundle-version="[1.5.0,1.9.0)",
  org.eclipse.e4.core.services;bundle-version="2.0.100",
  org.eclipse.jface;bundle-version="3.12.0",
  org.eclipse.e4.core.di;bundle-version="1.6.0",
- javax.inject;bundle-version="1.0.0",
  org.apache.commons.logging;bundle-version="1.1.1",
  com.opcoach.e4.preferences;bundle-version="1.0.0",
  org.eclipse.equinox.preferences;bundle-version="3.6.1",
@@ -22,14 +22,19 @@ Require-Bundle: org.eclipse.core.runtime,
  com.sebulli.fakturama.rcp;bundle-version="2.0.0",
  org.eclipse.e4.core.di.extensions,
  com.ibm.icu;bundle-version="58.2.0",
- org.eclipse.osgi.services;bundle-version="3.8.0"
+ org.eclipse.osgi.services;bundle-version="3.8.0",
+ javax.annotation;bundle-version="1.3.5",
+ org.eclipse.persistence.moxy;bundle-version="2.7.7",
+ jakarta.xml.bind;bundle-version="2.3.3",
+ jakarta.xml.bind-api;bundle-version="2.3.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Localization: OSGI-INF/l10n/zfbundle
 Export-Package: org.fakturama.export.zugferd
 Bundle-ActivationPolicy: lazy
 Import-Package: com.sebulli.fakturama.model,
  com.sebulli.fakturama.preferences,
- com.sebulli.fakturama.util
+ com.sebulli.fakturama.util,
+ org.eclipse.persistence.jaxb;version="2.7.7"
 Bundle-Activator: org.fakturama.export.einvoice.Activator
 Automatic-Module-Name: org.fakturama.exporter.zugferd
 Service-Component: OSGI-INF/org.fakturama.export.einvoice.ZugferdExporter.xml

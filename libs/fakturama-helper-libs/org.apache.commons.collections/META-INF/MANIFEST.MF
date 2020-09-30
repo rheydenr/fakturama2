@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Apache Collections
-Bundle-SymbolicName: org.apache.commons.collections;singleton:=true
-Bundle-Version: 4.3.0
+Bundle-SymbolicName: org.apache.commons.collections4;singleton:=true
+Bundle-Version: 4.4.0
 Bundle-ClassPath: lib/commons-collections4-4.4.jar
 Bundle-Vendor: Apache.org
 Export-Package: org.apache.commons.collections4,

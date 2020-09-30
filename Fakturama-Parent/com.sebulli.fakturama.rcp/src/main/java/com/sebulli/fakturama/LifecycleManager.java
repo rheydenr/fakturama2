@@ -20,7 +20,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -334,7 +334,7 @@ public class LifecycleManager {
     private void initializeCodes(UnCefactCodeDAO unCefactCodeDAO, FakturamaModelFactory modelFactory) {
     	try(InputStream wbStream = FrameworkUtil.getBundle(TemplateResourceManager.class).getResource(CODELISTS_XLSX).openStream();){
     		log.info("importing code lists from " + CODELISTS_XLSX);
-    		Workbook wb = new XSSFWorkbook(wbStream);
+    		Workbook wb = WorkbookFactory.create(wbStream);
     		Sheet sheet = wb.getSheetAt(0);
 			int rows = sheet.getPhysicalNumberOfRows();
 			// skip the first n rows

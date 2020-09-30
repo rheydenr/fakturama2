@@ -2,22 +2,28 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenCSV
 Bundle-SymbolicName: com.opencsv
-Bundle-Version: 4.5.0
+Bundle-Version: 5.2.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: lib/opencsv-4.5.jar,
- lib/commons-collections-3.2.2.jar
-Bundle-Vendor: The OpenCSV team
-Bundle-ActivationPolicy: lazy
-Require-Bundle: org.apache.commons.collections;bundle-version="4.1.0",
- org.apache.commons.lang3;bundle-version="3.4.0",
- org.apache.commons.beanutils;bundle-version="1.9.3",
- org.apache.commons.text;bundle-version="1.6.0"
-Automatic-Module-Name: com.opencsv
 Export-Package: com.opencsv,
  com.opencsv.bean,
  com.opencsv.bean.comparator,
  com.opencsv.bean.concurrent,
  com.opencsv.bean.customconverter,
+ com.opencsv.bean.exceptionhandler,
+ com.opencsv.bean.function,
+ com.opencsv.bean.processor,
+ com.opencsv.bean.util,
+ com.opencsv.bean.validators,
  com.opencsv.enums,
  com.opencsv.exceptions,
- com.opencsv.stream.reader
+ com.opencsv.processor,
+ com.opencsv.stream.reader,
+ com.opencsv.validators
+Bundle-Vendor: The OpenCSV team
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.apache.commons.lang3,
+ org.apache.commons.beanutils,
+ org.apache.commons.text,
+ org.apache.commons.collections4
+Automatic-Module-Name: com.opencsv
+Bundle-ClassPath: lib/opencsv-5.2.jar

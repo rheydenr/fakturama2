@@ -39,6 +39,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.ICSVParser;
+import com.opencsv.exceptions.CsvValidationException;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
@@ -280,7 +281,10 @@ public class ProductsCsvImporter {
 			result += NL + importMessages.wizardImportErrorOpenfile;
 		} catch (FakturamaStoringException e) {
 			log.error(e, "cant't store import data.");
-		}
+		} catch (CsvValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
     // FIXME implement!

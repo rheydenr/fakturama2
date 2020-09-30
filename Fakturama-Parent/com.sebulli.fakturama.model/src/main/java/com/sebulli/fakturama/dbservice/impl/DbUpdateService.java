@@ -107,7 +107,7 @@ public class DbUpdateService implements IDbUpdateService {
 			ServiceReference<?>[] allServiceReferences = context.getAllServiceReferences(
 					org.osgi.service.jdbc.DataSourceFactory.class.getName(), "(osgi.jdbc.driver.class="+eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "")+")");
 			ServiceReference<DataSourceFactory> serviceReference;
-			if(allServiceReferences.length > 0) {
+			if(allServiceReferences != null && allServiceReferences.length > 0) {
 				serviceReference = (ServiceReference<DataSourceFactory>) allServiceReferences[0];
 			} else {
 				serviceReference = null;

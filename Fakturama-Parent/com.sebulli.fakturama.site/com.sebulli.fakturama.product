@@ -238,7 +238,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.fakturama.export.feature" version="2.1.1.qualifier"/>
       <feature id="org.fakturama.import.feature" version="2.1.1.qualifier"/>
       <feature id="org.eclipse.gemini.dbaccess.feature" version="1.1.0.RELEASE"/>
-      <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.0.RELEASE"/>
+      <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.1.RELEASE"/>
       <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" version="1.1.0.RELEASE"/>
       <feature id="org.eclipse.gemini.jpa.feature" version="1.2.0.M1"/>
       <feature id="org.eclipse.gemini.ext.di.feature"/>
@@ -273,6 +273,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.persistence.moxy"/>
       <feature id="com.opencsv.feature" version="4.5.0"/>
       <feature id="org.eclipse.persistence.jpa" installMode="root"/>
+      <feature id="org.apache.commons.feature"/>
       <feature id="org.slf4j.osgi.feature" installMode="root"/>
    </features>
 
@@ -287,12 +288,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <plugin id="org.eclipse.gemini.dbaccess.hsqldb" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.dbaccess.mysql" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="3" />
+      <property name="org.eclipse.swt.browser.IEVersion" value="12001" os="win32" />
+      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
       <property name="eclipse.p2.data.area" value="@config.dir/../p2" />
       <property name="eclipse.p2.profile" value="profile" />
       <property name="osgi.instance.area" value="@user.home/.fakturama2" />
       <property name="org.eclipse.update.reconcile" value="false" />
-      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
-      <property name="org.eclipse.swt.browser.IEVersion" value="12001" os="win32" />
+      <property name="eclipse.p2.profile" value="profile" />
    </configurations>
 
    <repositories>
