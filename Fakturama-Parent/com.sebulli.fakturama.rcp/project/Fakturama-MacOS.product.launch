@@ -30,8 +30,10 @@
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="com.sebulli.fakturama.rcp.product"/>
 <stringAttribute key="productFile" value="\com.sebulli.fakturama.site\com.sebulli.fakturama.product"/>
+<booleanAttribute key="restart" value="true"/>
 <setAttribute key="selected_target_bundles">
-<setEntry value="ca.odell.glazedlists@default:default"/>
+<setEntry value="ca.odell.glazedlists*1.11.0.v20190926-1838@default:default"/>
+<setEntry value="ca.odell.glazedlists*1.9.0.v201303080712@default:default"/>
 <setEntry value="ch.qos.logback.classic@2:default"/>
 <setEntry value="ch.qos.logback.core@2:default"/>
 <setEntry value="ch.qos.logback.slf4j@default:false"/>
@@ -55,7 +57,7 @@
 <setEntry value="org.apache.batik.util@default:default"/>
 <setEntry value="org.apache.commons.beanutils@default:default"/>
 <setEntry value="org.apache.commons.cli@default:default"/>
-<setEntry value="org.apache.commons.codec*1.13.0.v20200108-0001@default:default"/>
+<setEntry value="org.apache.commons.codec*1.14.0.v20200818-1422@default:default"/>
 <setEntry value="org.apache.commons.collections4@default:default"/>
 <setEntry value="org.apache.commons.compress@default:default"/>
 <setEntry value="org.apache.commons.io@default:default"/>
@@ -63,6 +65,7 @@
 <setEntry value="org.apache.commons.lang3@default:default"/>
 <setEntry value="org.apache.commons.lang@default:default"/>
 <setEntry value="org.apache.commons.logging*1.2.0.v20180409-1502@default:default"/>
+<setEntry value="org.apache.commons.math3@default:default"/>
 <setEntry value="org.apache.commons.text@default:default"/>
 <setEntry value="org.apache.commons.validator@default:default"/>
 <setEntry value="org.apache.derby@default:default"/>
