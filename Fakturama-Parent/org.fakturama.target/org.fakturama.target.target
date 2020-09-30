@@ -95,10 +95,9 @@
 		<unit id="com.opencsv.feature.feature.group" version="5.2.0"/>
 		<unit id="org.apache.commons.feature.feature.group" version="3.4.2"/>
 		<unit id="org.apache.odftoolkit.feature.feature.group" version="0.9.0"/>
-		<unit id="org.apache.poi.feature.feature.group" version="4.1.2"/>
+		<unit id="org.apache.poi.feature.feature.group" version="4.1.2.202009301237"/>
 		<unit id="org.hsql.jdbc.feature.feature.group" version="2.5.1"/>
 		<unit id="org.javamoney.feature.feature.group" version="1.0.2"/>
-		<unit id="org.slf4j.osgi.feature.feature.group" version="1.7.30"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200831200620/repository"/>
