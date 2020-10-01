@@ -319,7 +319,7 @@ public class XRechnung extends AbstractEInvoice {
                     .withSpecifiedTaxRegistration(createTaxNumber(invoice, ContactType.BUYER))
                     ;
             Long originContactId = invoice.getReceiver().get(0).getOriginContactId();
-            if(originContactId != 0) {
+            if(originContactId != null && originContactId != 0) {
                 Contact originContact = contactsDAO.findById(originContactId);
                 buyer.getGlobalID().add(createIdWithSchemeFromString(Optional.ofNullable(originContact.getGln()).orElse(Long.valueOf(0)).toString(), "0088"
                         ));

@@ -39,6 +39,7 @@
         <setEntry value="com.ibm.icu@default:default"/>
         <setEntry value="com.mysql.jdbc@2:true"/>
         <setEntry value="com.opcoach.e4.preferences@default:default"/>
+        <setEntry value="com.opencsv@default:default"/>
         <setEntry value="com.sun.activation.jakarta.activation@default:default"/>
         <setEntry value="com.sun.jna.platform@default:default"/>
         <setEntry value="com.sun.jna@default:default"/>
@@ -71,6 +72,7 @@
         <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@1:true"/>
+        <setEntry value="org.apache.odftoolkit@default:default"/>
         <setEntry value="org.apache.poi@default:default"/>
         <setEntry value="org.apache.xerces@default:default"/>
         <setEntry value="org.apache.xml.resolver@default:default"/>
@@ -241,7 +243,6 @@
         <setEntry value="osgi.enterprise@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
-        <setEntry value="com.opencsv@default:default"/>
         <setEntry value="com.sebulli.fakturama.common@default:default"/>
         <setEntry value="com.sebulli.fakturama.hsqlconnector@default:default"/>
         <setEntry value="com.sebulli.fakturama.model@4:true"/>
@@ -249,7 +250,6 @@
         <setEntry value="com.sebulli.fakturama.resources.icons@default:false"/>
         <setEntry value="com.sebulli.fakturama.resources.templates@default:false"/>
         <setEntry value="com.sebulli.fakturama.resources@default:default"/>
-        <setEntry value="org.apache.odftoolkit@default:default"/>
         <setEntry value="org.fakturama.e4.ui.dialogs.ext@default:default"/>
         <setEntry value="org.fakturama.export@default:default"/>
         <setEntry value="org.fakturama.exporter.zugferd@default:default"/>
