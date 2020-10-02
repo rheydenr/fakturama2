@@ -46,7 +46,6 @@
       <dirEntry mountPoint="43" file="../target/products/Fakturama.ID/win32/win32/x86_64" subDirectory="x86_64" />
       <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64" entryMode="subdir" subDirectory="fakturama2" />
       <dirEntry mountPoint="56" file="linux_64bit/fakturama/usr/share" subDirectory="share" />
-      <fileEntry mountPoint="56" file="./linux_64bit/make_executable.sh" fileMode="755" overrideFileMode="true" />
     </entries>
   </files>
   <launchers>
@@ -718,7 +717,7 @@ return console.askYesNo(message, true);
       <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
 sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxRPM>
-    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedLaunchers>
         <launcher id="35" />
         <launcher id="44" />
@@ -729,10 +728,11 @@ sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
         <entry filesetId="41" />
         <entry filesetId="49" />
       </exclude>
-      <postInstallScript>${compiler:file("./linux_32bit/make_executable.sh")}</postInstallScript>
+      <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
+sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxDeb>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="119" />
+    <mediaSet refId="120" />
   </buildIds>
 </install4j>
