@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.8" transformSequenceNumber="8">
-  <directoryPresets config="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" />
+  <directoryPresets config="./linux_64bit/make_executable.sh" />
   <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.1-BETA" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="15" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true">
       <principalLanguage id="de" />
@@ -46,6 +46,7 @@
       <dirEntry mountPoint="43" file="../target/products/Fakturama.ID/win32/win32/x86_64" subDirectory="x86_64" />
       <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64" entryMode="subdir" subDirectory="fakturama2" />
       <dirEntry mountPoint="56" file="linux_64bit/fakturama/usr/share" subDirectory="share" />
+      <fileEntry mountPoint="56" file="./linux_64bit/make_executable.sh" fileMode="755" overrideFileMode="true" />
     </entries>
   </files>
   <launchers>
@@ -714,6 +715,8 @@ return console.askYesNo(message, true);
         <entry filesetId="32" />
         <entry filesetId="41" />
       </exclude>
+      <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
+sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxRPM>
     <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedLaunchers>
