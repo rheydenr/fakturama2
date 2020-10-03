@@ -715,7 +715,7 @@ return console.askYesNo(message, true);
         <entry filesetId="41" />
       </exclude>
     </linuxRPM>
-    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedLaunchers>
         <launcher id="35" />
         <launcher id="44" />
@@ -724,12 +724,10 @@ return console.askYesNo(message, true);
         <entry defaultFileset="true" />
         <entry filesetId="32" />
         <entry filesetId="41" />
-        <entry filesetId="49" />
       </exclude>
-      <postInstallScript>${compiler:file("./linux_32bit/make_executable.sh")}</postInstallScript>
     </linuxDeb>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="119" />
+    <mediaSet refId="120" />
   </buildIds>
 </install4j>
