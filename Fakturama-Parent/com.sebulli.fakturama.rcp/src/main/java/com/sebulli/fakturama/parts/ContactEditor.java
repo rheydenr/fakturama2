@@ -547,18 +547,24 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
         // The title and gender's label
         Label labelTitle = new Label((useSalutation || useTitle) ? top : invisible, SWT.NONE);
+        int span = 4;
         if (useSalutation) {
             labelTitle.setText(msg.commonFieldGender);
-        } else if (useSalutation && useTitle) {
+            span = 3;
+        } 
+        if (useSalutation && useTitle) {
             labelTitle.setText(labelTitle.getText() + ", ");
-        } else if (useTitle) {
-            //T: "Title" ( part of an address)
+            span = 3;
+        } 
+        if (useTitle) {
+            //T: "Title" (part of an address)
+            span = 3;
             labelTitle.setText(labelTitle.getText() + msg.commonFieldTitle);
         }
         GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelTitle);
         
         Composite salutationPanel = new Composite(top, SWT.NONE);
-        GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(salutationPanel);
+        GridDataFactory.fillDefaults().grab(true, false).span(span, 1).applyTo(salutationPanel);
         GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(salutationPanel);
 
         // Salutation
