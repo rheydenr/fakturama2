@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="org.fakturama.export.wizard.contacts.ContactDatasheetWriter">
+   <service>
+      <provide interface="com.sebulli.fakturama.exporter.IContactExporter"/>
+   </service>
+   <reference cardinality="1..1" field="addressManager" interface="com.sebulli.fakturama.model.IDocumentAddressManager" name="addressManager"/>
+   <reference cardinality="1..1" field="localeUtil" interface="com.sebulli.fakturama.i18n.ILocaleService" name="localeUtil"/>
+   <implementation class="org.fakturama.export.wizard.contacts.ContactDatasheetWriter"/>
+</scr:component>

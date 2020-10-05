@@ -17,7 +17,6 @@ import org.fakturama.wizards.IWizardRegistry;
 import org.fakturama.wizards.ImportExportPage;
 
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
 
 /**
  * Wizard page class from which an export wizard is selected.
