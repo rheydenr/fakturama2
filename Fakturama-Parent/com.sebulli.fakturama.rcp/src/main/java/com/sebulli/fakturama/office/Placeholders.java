@@ -56,8 +56,6 @@ import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Dunning;
-import com.sebulli.fakturama.model.FakturamaModelFactory;
-import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 //import com.sebulli.fakturama.model.ModelObject;
 import com.sebulli.fakturama.model.Payment;
@@ -81,11 +79,6 @@ public class Placeholders {
 
 	@Inject
 	private AddressDAO addressDAO;
-;
-	
-//
-//    @Inject
-//    private Logger log;
     
     @Inject
     private IDateFormatterService dateFormatterService;
@@ -297,10 +290,6 @@ public class Placeholders {
 
     private ContactUtil contactUtil;
 
-    private static final FakturamaModelFactory fakturamaModelFactory = new FakturamaModelFactory();
-
-    private static final FakturamaModelPackage fakturamaModelPackage = new FakturamaModelPackage();
-	
 	/**
 	 * Get a part of the telephone number
 	 * 

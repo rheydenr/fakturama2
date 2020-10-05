@@ -1420,6 +1420,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
                 target2PaymentModel, paymentModel2Target);
 	}
 	
+	public C getCurrentContact() {
+	    return editorContact;
+	}
 
 	/**
 	 * Binds additional values. Should be overwritten by subclasses.
