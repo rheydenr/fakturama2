@@ -738,17 +738,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 		}
 		return retval;
 	}
-	
-	@Override
-	public Document save(Document object) throws FakturamaStoringException {
-		Integer version = object.getVersion();
-		if(version == null) {
-			version = Integer.valueOf(0);
-		}
-		object.setVersion(version + 1);
-		return super.save(object);
-	}
-//
+
 //	public Set<Long> saveBatch(List<Document> resultList) throws FakturamaStoringException {
 //		Set<Long> documentIds = new HashSet<>();
 //		Set<Document> docSet = new HashSet<>();

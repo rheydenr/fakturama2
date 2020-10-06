@@ -474,11 +474,21 @@ public class DocumentEditor extends Editor<Document> {
 		if(document.getBillingType().isDUNNING()) {
 		    ((Dunning)document).setDunningLevel(dunningLevel);
 		}
+        
+        if(itemListTable != null) {
+            List<DocumentItem> items = itemListTable.getDocumentItemsListData()
+                .stream()
+                .map(dto -> dto.getDocumentItem())
+                .sorted(Comparator.comparing(DocumentItem::getPosNr))
+                .collect(Collectors.toList());
+            document.setItems(items);
+        }
 
 		// Create a new document ID, if this is a new document
 		if (newDocument) {
 		    try {
                 document = documentsDAO.save(document);
+                reloadItemList();
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }
@@ -498,15 +508,6 @@ public class DocumentEditor extends Editor<Document> {
     		documentsDAO.updateDeliveries(importedDeliveryNotes, (Invoice) document);
 		}
 		importedDeliveryNotes.clear();
-		
-		if(itemListTable != null) {
-			List<DocumentItem> items = itemListTable.getDocumentItemsListData()
-			    .stream()
-			    .map(dto -> dto.getDocumentItem())
-			    .sorted(Comparator.comparing(DocumentItem::getPosNr))
-			    .collect(Collectors.toList());
-			document.setItems(items);
-		}
 
 		// Mark the (modified) document as "not printed"
 		if (wasDirty) {
@@ -518,6 +519,7 @@ public class DocumentEditor extends Editor<Document> {
 		
         try {
             document = documentsDAO.save(document);
+            reloadItemList();
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
@@ -544,6 +546,13 @@ public class DocumentEditor extends Editor<Document> {
         return Boolean.TRUE;
 	}
     
+    private void reloadItemList() {
+        itemListTable.getDocumentItemsListData().clear();
+        
+        List<DocumentItemDTO> documentItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
+        itemListTable.getDocumentItemsListData().addAll(documentItems);
+    }
+
     private void reassignDocumentReceiver() {
 		document.getReceiver().clear();
 		document.getReceiver().addAll(selectedAddresses.values());

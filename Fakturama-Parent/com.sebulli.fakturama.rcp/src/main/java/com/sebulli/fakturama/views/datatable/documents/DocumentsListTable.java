@@ -89,7 +89,6 @@ import com.sebulli.fakturama.model.Document_;
 import com.sebulli.fakturama.model.DummyStringCategory;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
-import com.sebulli.fakturama.model.ObjectDuplicator;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.resources.core.Icon;
@@ -432,9 +431,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     		documentListData = GlazedLists.eventList(documentsDAO.findAll(true));
     	}
     	
-    	
-    	ObjectDuplicator objectDuplicator = new ObjectDuplicator();
-    	objectDuplicator.einTest(documentListData.get(0));
+//    	
+//    	ObjectDuplicator objectDuplicator = new ObjectDuplicator();
+//    	objectDuplicator.einTest(documentListData.get(0));
 
         // get the visible properties to show in list view
         String[] propertyNames = documentsDAO.getVisibleProperties();
