@@ -129,6 +129,10 @@
 		<unit id="org.eclipse.nebula.widgets.opal.commons.feature.feature.group" version="1.0.0.202007241204"/>
 		<unit id="org.eclipse.nebula.widgets.opal.multichoice.feature.feature.group" version="1.0.0.202007241204"/>
 		<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.202007241204"/>
+		<unit id="org.eclipse.nebula.widgets.opal.checkboxgroup.feature.feature.group" version="1.0.0.202007241204"/>
+		<unit id="org.eclipse.nebula.widgets.opal.dialog.feature.feature.group" version="1.0.0.202007241204"/>
+		<unit id="org.eclipse.nebula.widgets.opal.duallist.feature.feature.group" version="1.0.0.202007241204"/>
+		<unit id="org.eclipse.nebula.widgets.passwordrevealer.feature.feature.group" version="1.0.0.202007241204"/>
 	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
