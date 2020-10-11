@@ -48,9 +48,11 @@ hier klingt vor allem das interessant:
 	/** The prices are rounded, that the gross values are full cent values. */
 	public static final int ROUND_GROSS_VALUES = 2;
 	
-	// sum off items
+	// sum of items
 	private MonetaryAmount itemsNet;
+	private MonetaryAmount itemsNetDiscounted;
 	private MonetaryAmount itemsGross;
+	private MonetaryAmount itemsGrossDiscounted;
 
 	// total sum
 	private MonetaryAmount totalNet;
@@ -62,6 +64,7 @@ hier klingt vor allem das interessant:
 	// discount values
 	private MonetaryAmount discountNet;
 	private MonetaryAmount discountGross;
+	private MonetaryAmount totalDiscount;
 
 	// shipping value
 	private MonetaryAmount shippingNet;
@@ -88,12 +91,15 @@ hier klingt vor allem das interessant:
 	private void resetValues() {
 		itemsNet = Money.zero(currencyCode);
 		itemsGross = Money.zero(currencyCode);
+		itemsNetDiscounted = Money.zero(currencyCode);
+		itemsGrossDiscounted = Money.zero(currencyCode);
 		totalNet = Money.zero(currencyCode);
 		totalVat = Money.zero(currencyCode);
 		totalSET = Money.zero(currencyCode);
 		totalGross = Money.zero(currencyCode);
 		discountNet = Money.zero(currencyCode);
 		discountGross = Money.zero(currencyCode);
+		totalDiscount = Money.zero(currencyCode);
 		shippingNet = Money.zero(currencyCode);
 		shippingVat = Money.zero(currencyCode);
 		shippingGross = Money.zero(currencyCode);
@@ -205,7 +211,23 @@ hier klingt vor allem das interessant:
 		return this.discountGross;
 	}
 
-	/**
+	public MonetaryAmount getItemsNetDiscounted() {
+        return itemsNetDiscounted;
+    }
+
+    public void setItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
+        this.itemsNetDiscounted = itemsNetDiscounted;
+    }
+
+    public MonetaryAmount getItemsGrossDiscounted() {
+        return itemsGrossDiscounted;
+    }
+
+    public void setItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
+        this.itemsGrossDiscounted = itemsGrossDiscounted;
+    }
+
+    /**
 	 * Getter for the deposit
 	 * 
 	 * @return Sum as MonetaryAmount
@@ -321,7 +343,15 @@ hier klingt vor allem das interessant:
 		this.totalQuantity = totalQuantity;
 	} 
 	
-	@Override
+	public MonetaryAmount getTotalDiscount() {
+        return totalDiscount;
+    }
+
+    public void setTotalDiscount(MonetaryAmount totalDiscount) {
+        this.totalDiscount = totalDiscount;
+    }
+
+    @Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}

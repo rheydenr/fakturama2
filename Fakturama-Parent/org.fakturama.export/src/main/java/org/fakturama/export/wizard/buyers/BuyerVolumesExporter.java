@@ -1,15 +1,14 @@
-/* 
+/*
  * Fakturama - Free Invoicing Software - http://fakturama.sebulli.com
  * 
  * Copyright (C) 2012 Gerd Bartelt
  * 
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
+ * All rights reserved. This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License v1.0 which
+ * accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- *     Gerd Bartelt - initial API and implementation
+ * Contributors: Gerd Bartelt - initial API and implementation
  */
 
 package org.fakturama.export.wizard.buyers;
@@ -28,6 +27,7 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -40,203 +40,214 @@ import org.fakturama.export.wizard.OOCalcExporter;
 import org.fakturama.export.wizard.TotalSoldAndQuantity;
 import org.odftoolkit.odfdom.type.Color;
 
+import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.DocumentsDAO;
+import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.DocumentItem;
-
 
 /**
- * This class generates a list with all items and
- * all the buyers 
+ * This class generates a list with all items and all the buyers
  * 
  * @author Gerd Bartelt
  */
 public class BuyerVolumesExporter extends OOCalcExporter {
 
-	@Inject
-	@Translation
-	private Messages msg;
-	
-	@Inject
-	@Translation
-	private ExportMessages exportMessages;
-	
-	@Inject
-	private DocumentsDAO documentsDao;
-    
-	@Inject
-	@Preference(nodePath = "/instance/com.sebulli.fakturama.rcp")
-	private IEclipsePreferences eclipsePrefs;
+    @Inject
+    @Translation
+    private Messages msg;
 
-	// List with all buyers
-	private BuyersAndTotal buyersAndTotal = new BuyersAndTotal();
-	
-	/**
-	 * Comparator to sort the List of buyers by volume or by quantity
-	 * 
-	 * @author Gerd Bartelt
-	 */
-	private class BuyersTotalSoldComparer implements Comparator<Object> {
-		
-		// List with all buyers
-		private Map<String, TotalSoldAndQuantity> data = null;
+    @Inject
+    @Translation
+    private ExportMessages exportMessages;
 
-		/**
-		 * Constructor
-		 * 
-		 * @param data 
-		 * 			The data to sort
-		 */
-		public BuyersTotalSoldComparer (Map<String, TotalSoldAndQuantity> data){
-			super();
-			this.data = data;
-		}
+    @Inject
+    private DocumentsDAO documentsDao;
 
-		/**
-		 * Compare two objects by quantity or by volume
-		 *
-		 * @param o1
-		 * 			The first object
-		 * @param o2
-		 * 			The second object
-		 */
-         public int compare(Object o1, Object o2) {
-        	 int result;
-        	 
-           	 MonetaryAmount e1 = this.data.get(o1).getTotalSold();
-           	 MonetaryAmount e2 = this.data.get(o2).getTotalSold();
-           	 result = e2.compareTo(e1);
-        	 
-        	 // Two items must not be equal. If they were, they would be
-        	 // replaces in the map
-        	 if (result == 0)
-        		 result = 1;
+    @Inject
+    private IEclipseContext ctx;
 
-        	 return result;
-         }
-	}
-	
-	
-	/**
-	 * Constructor Sets the begin and end date
-	 * 
-	 * @param startDate
-	 *            Begin date
-	 * @param endDate
-	 *            Begin date
-	 */
-	@PostConstruct
-	public void initialize(IEclipseContext ctx) {
-		doNotUseTimePeriod = (boolean) ctx.get(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD);
-		startDate = null;
-		endDate = null;
-		
-		if(!doNotUseTimePeriod) {
-			if(ctx.get(Constants.PARAM_START_DATE) != null) {
-				startDate = (GregorianCalendar) ctx.get(Constants.PARAM_START_DATE);
-			}
-			
-			if(ctx.get(Constants.PARAM_END_DATE) != null) {
-				endDate = (GregorianCalendar) ctx.get(Constants.PARAM_END_DATE);
-			}
-		}
-	}
+    @Inject
+    @Preference(nodePath = "/instance/com.sebulli.fakturama.rcp")
+    private IEclipsePreferences eclipsePrefs;
 
+    // List with all buyers
+    private BuyersAndTotal buyersAndTotal = new BuyersAndTotal();
 
-	/**
-	 * 	Do the export job.
-	 * 
-	 * @return
-	 * 			True, if the export was successful
-	 */
-	public boolean export() {
+    /**
+     * Comparator to sort the List of buyers by volume or by quantity
+     * 
+     * @author Gerd Bartelt
+     */
+    private class BuyersTotalSoldComparer implements Comparator<Object> {
 
-		// Try to generate a spreadsheet
-		if (!createSpreadSheet()) {
-			return false;
-		}
-		
-		usePaidDate = eclipsePrefs.getBoolean(Constants.PREFERENCES_EXPORTSALES_PAIDDATE, true);
-		
-		// Get all undeleted documents
-		List<Document> documents = documentsDao.findPaidDocumentsInRange(usePaidDate, 
-				(startDate != null ? startDate.getTime() : null), 
-				(endDate != null ? endDate.getTime() : null));
-		
-		// if no data, return immediately
-		if(documents.isEmpty()) {
-			MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardCommonNodata);
-			return true;
-		}
+        // List with all buyers
+        private Map<String, TotalSoldAndQuantity> data = null;
 
-		setCellTextInBold(0, 0, exportMessages.wizardExportBuyersTabletitle);
+        /**
+         * Constructor
+         * 
+         * @param data
+         *            The data to sort
+         */
+        public BuyersTotalSoldComparer(Map<String, TotalSoldAndQuantity> data) {
+            super();
+            this.data = data;
+        }
 
-		// Fill the first 4 rows with the company information
-		fillCompanyInformation(2);
-		fillTimeIntervall(7);
+        /**
+         * Compare two objects by quantity or by volume
+         *
+         * @param o1
+         *            The first object
+         * @param o2
+         *            The second object
+         */
+        public int compare(Object o1, Object o2) {
+            int result;
 
-		// Counter for the current row and columns in the Calc document
-		int row = 11;
-		int col = 0;
+            MonetaryAmount e1 = this.data.get(o1).getTotalSoldNet();
+            MonetaryAmount e2 = this.data.get(o2).getTotalSoldNet();
+            result = e2.compareTo(e1);
 
-		//T: Used as heading of a table. Keep the word short.
-		setCellTextInBold(row, col++, msg.exporterDataBuyers);
-		//T: Used as heading of a table. Keep the word short.
-		setCellTextInBold(row, col++, msg.exporterDataVolume);
+            // Two items must not be equal. If they were, they would be
+            // replaces in the map
+            if (result == 0)
+                result = 1;
 
-		// Draw a horizontal line
-		for (col = 0; col < 2; col++) {
-			setBorder(row, col, Color.BLACK, false, false, true, false);
-		}
-		row++;
-		
-		// Export the document data
-		// (the documents are already in correct order since we 
-		// retrieved them from database with a filter)
-		for (Document document : documents) {
+            return result;
+        }
+    }
 
-			// Get all items by ID from the item string
-			List<DocumentItem> itemsStringParts = document.getItems();
+    /**
+     * Constructor Sets the begin and end date
+     * 
+     * @param startDate
+     *            Begin date
+     * @param endDate
+     *            Begin date
+     */
+    @PostConstruct
+    public void initialize(IEclipseContext ctx) {
+        doNotUseTimePeriod = (boolean) ctx.get(ExportWizardPageStartEndDate.WIZARD_DATESELECT_DONTUSETIMEPERIOD);
+        startDate = null;
+        endDate = null;
 
-			// Get the name of the buyer
-			itemsStringParts.forEach(item -> buyersAndTotal.add(document.getAddressFirstLine(), item));
-		}
-		
-		SortedMap<String, TotalSoldAndQuantity> sortedBuyers = new TreeMap<String, TotalSoldAndQuantity>(new BuyersTotalSoldComparer(buyersAndTotal.getBuyers()));
-		sortedBuyers.putAll(buyersAndTotal.getBuyers());
+        if (!doNotUseTimePeriod) {
+            if (ctx.get(Constants.PARAM_START_DATE) != null) {
+                startDate = (GregorianCalendar) ctx.get(Constants.PARAM_START_DATE);
+            }
 
-		// Get through the list of all buyers
-		for (Iterator<?> iteratorBuyer = sortedBuyers.entrySet().iterator(); iteratorBuyer.hasNext(); ) {
+            if (ctx.get(Constants.PARAM_END_DATE) != null) {
+                endDate = (GregorianCalendar) ctx.get(Constants.PARAM_END_DATE);
+            }
+        }
+    }
 
-			// Get the next buyer
-			@SuppressWarnings("unchecked")
-			Entry<String, TotalSoldAndQuantity> buyer = (Entry<String, TotalSoldAndQuantity>)iteratorBuyer.next();
-			col = 0;
-			
-			// Place the buyer's name, the quantity and the volume into
-			// the next columns
-			setCellText(row, col++, buyer.getKey());
-			setCellValueAsLocalCurrency(row, col++, buyer.getValue().getTotalSold());
-			
-			// Alternate the background color
-			if ((row % 2) == 0) {
-				setBackgroundColor( 0, row, col-1, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
-			}
+    /**
+     * Do the export job.
+     * 
+     * @return True, if the export was successful
+     */
+    public boolean export() {
 
-			row++;
-		}
+        // Try to generate a spreadsheet
+        if (!createSpreadSheet()) {
+            return false;
+        }
 
-		save();
-		
-		// True = Export was successful
-		return true;
-	}
-	
-	@Override
-	protected String getOutputFileName() {
-		return exportMessages.wizardExportBuyersDefaultfilename;
-	}
+        usePaidDate = eclipsePrefs.getBoolean(Constants.PREFERENCES_EXPORTSALES_PAIDDATE, true);
+
+        // Get all undeleted documents
+        List<Document> documents = documentsDao.findPaidDocumentsInRange(usePaidDate, (startDate != null ? startDate.getTime() : null),
+                (endDate != null ? endDate.getTime() : null));
+
+        // if no data, return immediately
+        if (documents.isEmpty()) {
+            MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, exportMessages.wizardCommonNodata);
+            return true;
+        }
+
+        setCellTextInBold(0, 0, exportMessages.wizardExportBuyersTabletitle);
+
+        // Fill the first 4 rows with the company information
+        fillCompanyInformation(2);
+        fillTimeIntervall(7);
+
+        // Counter for the current row and columns in the Calc document
+        int row = 11;
+        int col = 0;
+
+        //T: Used as heading of a table. Keep the word short.
+        setCellTextInBold(row, col++, msg.exporterDataBuyers);
+        //T: Used as heading of a table. Keep the word short.
+        setCellTextInBold(row, col++, String.format("%s (%s)", msg.exporterDataVolume, msg.productDataNet));
+        setCellTextInBold(row, col++, msg.exporterDataRebate);
+        setCellTextInBold(row, col++, msg.editorShippingTitle);
+        setCellTextInBold(row, col++, msg.dataVatSalestax);
+        setCellTextInBold(row, col++, String.format("%s (%s)", msg.exporterDataVolume, msg.productDataGross));
+
+        // Draw a horizontal line
+        for (col = 0; col < 6; col++) {
+            setBorder(row, col, Color.BLACK, false, false, true, false);
+        }
+        row++;
+
+        // Export the document data
+        // (the documents are already in correct order since we 
+        // retrieved them from database with a filter)
+        DocumentSummaryCalculator dsc = ContextInjectionFactory.make(DocumentSummaryCalculator.class, ctx);
+        for (Document document : documents) {
+
+            // Get all items by ID from the item string
+//            List<DocumentItem> itemsStringParts = document.getItems();
+
+            // Get the name of the buyer
+//            itemsStringParts.forEach(item -> buyersAndTotal.add(document.getAddressFirstLine(), item));
+
+            DocumentSummary summary = dsc.calculate(document);
+            buyersAndTotal.addDocumentSummary(document.getAddressFirstLine(), summary);
+        }
+
+        SortedMap<String, TotalSoldAndQuantity> sortedBuyers = new TreeMap<String, TotalSoldAndQuantity>(
+                new BuyersTotalSoldComparer(buyersAndTotal.getBuyers()));
+        sortedBuyers.putAll(buyersAndTotal.getBuyers());
+
+        // Get through the list of all buyers
+        for (Iterator<?> iteratorBuyer = sortedBuyers.entrySet().iterator(); iteratorBuyer.hasNext();) {
+
+            // Get the next buyer
+            @SuppressWarnings("unchecked")
+            Entry<String, TotalSoldAndQuantity> buyer = (Entry<String, TotalSoldAndQuantity>) iteratorBuyer.next();
+            col = 0;
+
+            // Place the buyer's name, the quantity and the volume into
+            // the next columns
+            setCellText(row, col++, buyer.getKey());
+            setCellValueAsLocalCurrency(row, col++, buyer.getValue().getTotalSoldNet());
+            setCellValueAsLocalCurrency(row, col++, buyer.getValue().getTotalRebate());
+            setCellValueAsLocalCurrency(row, col++, buyer.getValue().getTotalShipping());
+            setCellValueAsLocalCurrency(row, col++, buyer.getValue().getTotalVat());
+            setCellValueAsLocalCurrency(row, col++, buyer.getValue().getTotalSoldGross());
+
+            // Alternate the background color
+            if (row % 2 == 0) {
+                setBackgroundColor(0, row, col - 1, row, CellFormatter.ALTERNATE_BACKGROUND_COLOR);
+            }
+
+            row++;
+        }
+
+        save();
+
+        // True = Export was successful
+        return true;
+    }
+
+    @Override
+    protected String getOutputFileName() {
+        return exportMessages.wizardExportBuyersDefaultfilename;
+    }
 
 }

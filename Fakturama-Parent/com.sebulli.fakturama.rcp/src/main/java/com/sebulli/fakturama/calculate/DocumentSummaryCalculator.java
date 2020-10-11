@@ -154,6 +154,8 @@ public class DocumentSummaryCalculator {
 
 			// Add the total net value of this item to the sum of net items
 			retval.setItemsNet(retval.getItemsNet().add(price.getTotalNet()));
+			retval.setItemsNetDiscounted(retval.getItemsNetDiscounted().add(price.getTotalNetRounded()));
+			retval.setTotalDiscount(retval.getTotalDiscount().add(price.getTotalAllowance()));
 
 			// Sums the total amount of item quantities. 
 			retval.setTotalQuantity(retval.getTotalQuantity() + item.getQuantity()); 
@@ -190,7 +192,7 @@ public class DocumentSummaryCalculator {
 		// Gross value is the sum of net and VAT and sales equalization tax value 
 		retval.setTotalNet(retval.getItemsNet());
 		retval.setItemsGross(retval.getItemsNet().add(retval.getTotalVat()).add(retval.getTotalSET()));
-		
+
 		// round to full gross cents
 		if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {
 //			retval.getItemsGross().round();
@@ -209,6 +211,7 @@ public class DocumentSummaryCalculator {
 		MonetaryAmount discountNet = itemsNet.multiply(itemsDiscount);
 		retval.setDiscountNet(discountNet);
 		retval.setDiscountGross(itemsGross.multiply(itemsDiscount));
+		retval.setTotalDiscount(retval.getTotalDiscount().add(discountNet));
 
 		final MonetaryAmount zero = Money.zero(getCurrencyCode());
 
@@ -445,7 +448,7 @@ public class DocumentSummaryCalculator {
 		} else {
 		    retval.setShippingNet(retval.getShippingNet().with(rounding));
 		    retval.setShippingGross(retval.getShippingGross().with(rounding));
-		    retval.setShippingVat(retval.getShippingGross().subtract(retval.getShippingVat()));
+		    retval.setShippingVat(retval.getShippingGross().subtract(retval.getShippingNet()));
 		}
 
 		//calculate the final payment

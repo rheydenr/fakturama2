@@ -318,10 +318,15 @@ public class XRechnung extends AbstractEInvoice {
 //                    .withURIUniversalCommunication(email)
                     .withSpecifiedTaxRegistration(createTaxNumber(invoice, ContactType.BUYER))
                     ;
-            Long originContactId = invoice.getReceiver().get(0).getOriginContactId();
-            if(originContactId != null && originContactId != 0) {
+            Long originContactId = invoice.getReceiver() != null && !invoice.getReceiver().isEmpty() 
+                    ? invoice.getReceiver().get(0).getOriginContactId() 
+                    : Long.valueOf(0);
+            if(originContactId != 0) {
                 Contact originContact = contactsDAO.findById(originContactId);
-                buyer.getGlobalID().add(createIdWithSchemeFromString(Optional.ofNullable(originContact.getGln()).orElse(Long.valueOf(0)).toString(), "0088"
+                buyer.getGlobalID()
+                    .add(createIdWithSchemeFromString(
+                            Optional.ofNullable(originContact.getGln())
+                            .orElse(Long.valueOf(0)).toString(), "0088"
                         ));
             } else {
                 buyer.getID().add(createIdFromString(documentReceiver.getCustomerNumber()));

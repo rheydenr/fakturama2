@@ -172,8 +172,8 @@ public class ProductBuyersExporter extends OOCalcExporter {
         		 result =  e2.compareTo(e1);
         	 }
         	 else {
-            	 MonetaryAmount e1 = this.data.get(o1).getTotalSold();
-            	 MonetaryAmount e2 = this.data.get(o2).getTotalSold();
+            	 MonetaryAmount e1 = this.data.get(o1).getTotalSoldNet();
+            	 MonetaryAmount e2 = this.data.get(o2).getTotalSoldNet();
             	 result = e2.compareTo(e1);
         	 }
         	 
@@ -312,7 +312,7 @@ public class ProductBuyersExporter extends OOCalcExporter {
 				// the next columns
 				setCellText(row, col++, buyer.getKey());
 				setCellValueAsDouble(row, col++, buyer.getValue().getTotalQuantity());
-				setCellValueAsLocalCurrency(row, col++, buyer.getValue().getTotalSold());
+				setCellValueAsLocalCurrency(row, col++, buyer.getValue().getTotalSoldNet());
 				
 				// Alternate the background color
 				if ((altrow % 2) == 0)
