@@ -22,6 +22,8 @@ public class ImportOptions {
 	// initialize with some predefined values
 	private Boolean updateExisting = false;
 	private Boolean updateWithEmptyValues = false;
+	private boolean analyzeCompleted = false;
+	private boolean mappingAvailable = false;
 	private String quoteChar = "\"";
 	private String separator = ";";
 	private String basePath = "", csvFile = "";
@@ -158,5 +160,21 @@ public class ImportOptions {
      */
     public void setCsvFile(String csvfile) {
         this.csvFile = csvfile;
+    }
+
+    public boolean isAnalyzeCompleted() {
+        return analyzeCompleted;
+    }
+
+    public void setAnalyzeCompleted(boolean analyzeCompleted) {
+        this.analyzeCompleted = analyzeCompleted;
+    }
+
+    public boolean isMappingAvailable() {
+        return mappingAvailable;
+    }
+
+    public void setMappingAvailable(boolean mappingAvailable) {
+        this.mappingAvailable = mappingAvailable;
     }
 }

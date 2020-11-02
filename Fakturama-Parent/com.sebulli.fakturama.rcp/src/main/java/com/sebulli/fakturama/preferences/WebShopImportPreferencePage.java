@@ -50,13 +50,6 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
     
     @Inject
     private IEclipseContext context;   
-    
-//    @Inject @Optional
-//    private EModelService modelService;
-//    
-//    @Inject @Optional
-//    private MApplication application;
-//
 
 	/**
 	 * Constructor

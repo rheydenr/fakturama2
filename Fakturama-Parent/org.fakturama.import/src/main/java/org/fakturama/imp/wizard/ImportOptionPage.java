@@ -80,7 +80,7 @@ public class ImportOptionPage extends WizardPage {
 		super("ImportOptionPage");
 		//T: Title of the Import Wizard Page 1
 		setTitle(title);
-		setMessage(label );
+		setMessage(label);
 	}
 	
 	/**
@@ -96,6 +96,7 @@ public class ImportOptionPage extends WizardPage {
 	public void initialize(IEclipseContext ctx) {
 		setTitle((String) ctx.get(WIZARD_TITLE));
 		this.previewImage = (Image) ctx.get(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE);
+		this.options = ctx.get(ImportOptions.class);
 	}
 
 	/**
@@ -106,8 +107,10 @@ public class ImportOptionPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
-		options = new ImportOptions(getDialogSettings());
-
+        if (options == null) {
+            options = new ImportOptions(getDialogSettings());
+        }
+	    
 		// Create the top composite
 		Composite top = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(top);
@@ -162,11 +165,8 @@ public class ImportOptionPage extends WizardPage {
 		
 		quoteChar = new Text(top, SWT.BORDER);
 		quoteChar.setText(options.getQuoteChar());
-		quoteChar.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		quoteChar.addModifyListener(e -> {
 				options.setQuoteChar(((Text)e.getSource()).getText());
-			}
 		});
 		GridDataFactory.swtDefaults().span(2, 1).hint(10, SWT.DEFAULT).grab(false, false).applyTo(quoteChar);
 		
@@ -174,11 +174,8 @@ public class ImportOptionPage extends WizardPage {
 		separatorLbl.setText(importMessages.wizardImportOptionsSeparator);
 		separator = new Text(top, SWT.BORDER);
 		separator.setText(options.getSeparator());
-		separator.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		separator.addModifyListener(e -> {
 				options.setSeparator(((Text)e.getSource()).getText());
-			}
 		});
 		GridDataFactory.swtDefaults().span(2, 1).hint(10, SWT.DEFAULT).grab(false, false).applyTo(separator);
 		

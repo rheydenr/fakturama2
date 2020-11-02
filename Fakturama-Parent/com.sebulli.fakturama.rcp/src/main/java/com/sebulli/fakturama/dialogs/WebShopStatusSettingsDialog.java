@@ -92,7 +92,6 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 
 	private TreeMapper<WebshopOrderStateMapping, WebshopOrderState, OrderState> treeMapper;
 	private List<WebshopOrderStateMapping> mappings;
-//	private boolean isMappingChanged = false;
 
 	@Inject
 	public WebShopStatusSettingsDialog(Shell shell, @Translation Messages msg) {
@@ -108,7 +107,6 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		// super.createContents(parent);
 		// Set the title
 		// parent.getShell().setSize(500, 500);
 		parent.getShell().setText(msg.preferencesWebshopSettings);
@@ -121,12 +119,6 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		setMessage(msg.preferencesWebshopSettingsDescription, IMessageProvider.INFORMATION);
-		// final Text text1 = new Text(parent, SWT.MULTI | SWT.WRAP |
-		// SWT.READ_ONLY);
-		// text1.setText(msg.preferencesWebshopSettingsDescription);
-		// // With this in addition, it will wrap
-		// text1.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ));
-		// text1.setBounds(0, 0, 350, 150);
 
 		Button stateBtn = new Button(container, SWT.PUSH);
 		stateBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 2, 1));
@@ -177,7 +169,6 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 
 		// WebshopStateTreeMapper -> disabled if no web shop states are available! 
 		createTreeMapperWidget(container);
-//		GridDataFactory.fillDefaults().grab(true, true).applyTo(treeMapper.getControl());
 
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
 		
