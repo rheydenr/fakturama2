@@ -1,8 +1,5 @@
 package org.fakturama.imp.wizard.csv.products;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -17,9 +14,9 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
+import org.fakturama.imp.wizard.ImportOptions;
 import org.fakturama.imp.wizard.ImportProgressDialog;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IImportWizard;
@@ -94,47 +91,25 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
     @Override
     public boolean performFinish() {
         // The selected file to import
-        String selectedFile = "";
-        FileDialog fileDialog = new FileDialog(this.getShell());
-        //fileDialog.setFilterPath("/");
-        fileDialog.setFilterExtensions(new String[] { "*.csv" });
+        String selectedFile = optionPage.getImportOptions().getCsvFile();
+        if (selectedFile != null && !selectedFile.isEmpty()) {
+            ImportOptions importOptions = optionPage.getImportOptions();
+            optionPage.saveSettings();
+            importOptions.setMappings(csvConfigPage.getCompleteMappings());
 
-        // Start at the user's home or use the previously set filename
-        Path path;
-        if(optionPage.getImportOptions().getCsvFile() != null) {
-            path = Paths.get(optionPage.getImportOptions().getCsvFile());
-        } else {
-            path = Paths.get(System.getProperty("user.home"));
-        }
-        fileDialog.setFilterPath(path.toString());
-        
-        //T: CSV Import File Dialog Title
-        fileDialog.setText(importMessages.wizardImportDialogSelectfile);
+            GenericProductsCsvImporter csvImporter = ContextInjectionFactory.make(GenericProductsCsvImporter.class, ctx);
+            csvImporter.importCSV(importOptions, false);
 
-        //T: CSV Import File Filter
-        fileDialog.setFilterNames(new String[] { importMessages.wizardImportCsvInfo+ " (*.csv)" });
-        selectedFile = fileDialog.open();
-        if (selectedFile != null) {
+            ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
+            dialog.setStatusText(csvImporter.getResult());
 
-            // Import the selected file
-            if (!selectedFile.isEmpty()) {
-                optionPage.getImportOptions().setCsvFile(selectedFile);
-                optionPage.saveSettings();
+            // Refresh the table view of all products
+            evtBroker.post("ProductEditor", "update");
 
-                ProductsCsvImporter csvImporter = ContextInjectionFactory.make(ProductsCsvImporter.class, ctx);
-                csvImporter.importCSV(selectedFile, false, optionPage.getImportOptions());
-
-                ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
-                dialog.setStatusText(csvImporter.getResult());
-
-                // Refresh the table view of all products
-                evtBroker.post("ProductEditor", "update");
-
-                // Find the VAT table view
-                evtBroker.post("VatEditor", "update");
-                
-                return (dialog.open() == ImportProgressDialog.OK);
-            }
+            // Find the VAT table view
+            evtBroker.post("VatEditor", "update");
+            
+            return (dialog.open() == ImportProgressDialog.OK);
         }
 
         return false;

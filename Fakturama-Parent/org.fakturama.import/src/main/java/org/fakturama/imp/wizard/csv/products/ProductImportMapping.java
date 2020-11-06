@@ -27,4 +27,10 @@ public class ProductImportMapping {
         this.rightItem = rightItem;
     }
 
+    @Override
+    public String toString() {
+        return new StringBuffer("ProductImportMapping {").append(leftItem)
+                .append(" -> ").append(rightItem != null ? rightItem.getName() : "<null>").append("}").toString();
+    }
+
 }

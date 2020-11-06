@@ -19,9 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -78,6 +79,9 @@ public class ImportCSVProductConfigPage extends WizardPage {
     private IEclipseContext ctx;
     private List<ProductImportMapping> mappings;
     private TreeMapper<ProductImportMapping, String, EStructuralFeature> treeMapper;
+    
+    // Defines all columns that are used and imported
+    private Map<String, Boolean> requiredHeaders = new HashMap<>();
 
     public ImportCSVProductConfigPage(String title, String label, ProgramImages image) {
         super("ImportOptionConfigPage");
@@ -98,6 +102,11 @@ public class ImportCSVProductConfigPage extends WizardPage {
     public void initialize(IEclipseContext ctx) {
         setTitle((String) ctx.get(ImportOptionPage.WIZARD_TITLE));
         this.ctx = ctx;
+        
+        String[] reqHdr = new String[] {"itemnumber", "name", "price1"};
+        for (String string : reqHdr) {
+            requiredHeaders.put(string, Boolean.FALSE);
+        }
     }
 
     @Override
@@ -187,7 +196,27 @@ public class ImportCSVProductConfigPage extends WizardPage {
             
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                boolean canFinish = !mappings.isEmpty();
+//                boolean canFinish = !mappings.isEmpty();
+//                boolean canFinish = Arrays.stream(requiredHeaders).anyMatch(p -> mappings.stream()
+//                        .anyMatch(pm -> pm.getRightItem().getName().equals(p)));
+                boolean canFinish = false;
+                for (String headerName : requiredHeaders.keySet()) {
+                   if( mappings.stream()
+                            .anyMatch(pm -> pm.getRightItem().getName().equalsIgnoreCase(headerName))) {
+                       requiredHeaders.put(headerName, Boolean.TRUE);
+                   }
+                }
+                
+                // can finish only if all required headers are set
+                canFinish = !requiredHeaders.values().contains(Boolean.FALSE);
+                
+                if(canFinish) {
+                    setErrorMessage(null);
+                } else {
+                    setErrorMessage(String.format("Es fehlen noch Zuordnungen (%s). Nicht alle notwendigen Felder wurden zugeordnet.", 
+                            StringUtils.join(requiredHeaders.entrySet().stream().filter(e -> !e.getValue()).map(e -> e.getKey()).collect(Collectors.toList()))));
+                }
+
                 options.setMappingAvailable(canFinish);
                 setPageComplete(canFinish);
             }
@@ -212,8 +241,16 @@ public class ImportCSVProductConfigPage extends WizardPage {
                 CSVReader csvr = new CSVReaderBuilder(in).withCSVParser(csvParser).build();
                 String[] headerLine = csvr.readNextSilently();
                 if(headerLine != null && headerLine.length > 0) {
-                    List<String> sortedHeaderList = Arrays.stream(headerLine).map(e -> StringUtils.trim(e)).filter(e -> StringUtils.isNotBlank(e)).sorted().collect(Collectors.toList());
-                    treeMapper.setInput(sortedHeaderList, "irrelevant", mappings);
+                    
+                    Map<String, Integer> headerToPositions = new HashMap<>();
+                    for (int i = 0; i < headerLine.length; i++) {
+                        String entry = headerLine[i];
+                        if(StringUtils.isNotBlank(entry)) {
+                            headerToPositions.put(entry, i);
+                        }
+                    }
+
+                    treeMapper.setInput(headerToPositions, "irrelevant", mappings);
                     options.setAnalyzeCompleted(true);
                 }
             } catch (IOException e) {
@@ -224,6 +261,23 @@ public class ImportCSVProductConfigPage extends WizardPage {
     }
 
     /**
+     * List of {@link ProductImportMapping}s where <b>any<b> member of CSV file
+     * is contained, but can be <code>null</code> if not assigned to a bean attribute.
+     * This is necessary for later import, where the mapping have to be complete.
+     * 
+     * @return
+     */
+    public List<ProductImportMapping> getCompleteMappings() {
+        // complete for missing assignments
+        for (String availableColumn : ((HashMap<String, Integer>)treeMapper.getLeftTreeViewer().getInput()).keySet()) {
+            if(!mappings.parallelStream().anyMatch(pm -> pm.getLeftItem().equalsIgnoreCase(availableColumn))) {
+                mappings.add(new ProductImportMapping(availableColumn, null));
+            }
+        }
+        return mappings;
+    }
+    
+    /**
      * Provides all available fields from CSV file.
      *
      */
@@ -231,7 +285,8 @@ public class ImportCSVProductConfigPage extends WizardPage {
         @SuppressWarnings("unchecked")
         @Override
         public Object[] getElements(Object inputElement) {
-            return ((List<String>) inputElement).toArray(new String[] {});
+            return ((Map<String, Integer>) inputElement).keySet().toArray(new String[] {});
+//            return ((List<String>) inputElement).toArray(new String[] {});
         }
     }
 
@@ -246,9 +301,10 @@ public class ImportCSVProductConfigPage extends WizardPage {
         public Object[] getElements(Object inputElement) {
             if (productAttributes == null) {
                 productAttributes = ((EClass) FakturamaModelPackage.INSTANCE.getEPackage().getEClassifiers().get(FakturamaModelPackage.PRODUCT_CLASSIFIER_ID)) //
-                        .getEStructuralFeatures().stream() //
+                        .getEAllAttributes().stream() //
                         .filter(f -> !f.isMany()) //
-                        .sorted(Comparator.comparing(EStructuralFeature::getName)).collect(Collectors.toList());
+                        .sorted(Comparator.comparing(EStructuralFeature::getName))
+                        .collect(Collectors.toList());
             }
             return productAttributes.toArray();
         }

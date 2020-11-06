@@ -3,9 +3,12 @@
  */
 package org.fakturama.imp.wizard;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.fakturama.imp.wizard.csv.products.ProductImportMapping;
 
 /**
  *
@@ -27,6 +30,7 @@ public class ImportOptions {
 	private String quoteChar = "\"";
 	private String separator = ";";
 	private String basePath = "", csvFile = "";
+    private List<ProductImportMapping> mappings;
 
 	public ImportOptions() {
 		
@@ -176,5 +180,13 @@ public class ImportOptions {
 
     public void setMappingAvailable(boolean mappingAvailable) {
         this.mappingAvailable = mappingAvailable;
+    }
+
+    public List<ProductImportMapping> getMappings() {
+        return mappings;
+    }
+
+    public void setMappings(List<ProductImportMapping> mappings) {
+        this.mappings = mappings;
     }
 }

@@ -158,11 +158,25 @@ public class CSVProductImportFilePage extends WizardPage {
      * @return File The File the user selected or null if they do not.
      */
     private String getFile(Path startingDirectory) {
-        FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
+        
+        FileDialog fileDialog = new FileDialog(this.getShell());
+        fileDialog.setFilterExtensions(new String[] { "*.csv" });
+
+        // Start at the user's home or use the previously set filename
         if (startingDirectory != null) {
-            dialog.setFileName(startingDirectory.toString());
-        }
-        String file = dialog.open();
+            fileDialog.setFileName(startingDirectory.toString());
+         } else {
+            startingDirectory = Paths.get(System.getProperty("user.home"));
+       }
+        fileDialog.setFilterPath(startingDirectory.toString());
+        
+        //T: CSV Import File Dialog Title
+        fileDialog.setText(importMessages.wizardImportDialogSelectfile);
+
+        //T: CSV Import File Filter
+        fileDialog.setFilterNames(new String[] { importMessages.wizardImportCsvInfo+ " (*.csv)" });
+        String file = fileDialog.open();
+        
         if (file != null) {
             file = file.trim();
             if (!file.isEmpty()) {

@@ -22,6 +22,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -196,7 +197,7 @@ public class ImportOptionPage extends WizardPage {
         GridDataFactory.fillDefaults().grab(true, false).applyTo(pictureBasePath);
 		
 		Button buttonSelectDir = new Button(top, SWT.PUSH);
-	    buttonSelectDir.setText("...");
+	    buttonSelectDir.setText(JFaceResources.getString("openBrowse"));
 	    buttonSelectDir.addSelectionListener(new SelectionAdapter() {
 	    	public void widgetSelected(SelectionEvent e) {
 	        DirectoryDialog directoryDialog = new DirectoryDialog(top.getShell());
