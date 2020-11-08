@@ -109,7 +109,8 @@ public class ImportOptionPage extends WizardPage {
 	@Override
 	public void createControl(Composite parent) {
         if (options == null) {
-            options = new ImportOptions(getDialogSettings());
+        // initialize from stored settings
+            options = new ImportOptions(getCurrentDialogSettings());
         }
 	    
 		// Create the top composite

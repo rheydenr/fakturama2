@@ -26,6 +26,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
@@ -76,9 +77,12 @@ public class ProductsCsvImportWizard extends Wizard implements IImportWizard {
 		ctx.set(IFakturamaWizardService.WIZARD_TITLE, importMessages.wizardImportCsvProducts);
 		ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, importMessages.wizardImportOptionsSet);
 		ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, previewImage);
+		
+        setDialogSettings(ctx.get(IDialogSettings.class));
 		optionPage = ContextInjectionFactory.make(ImportOptionPage.class, ctx);
 		optionPage.setPageComplete(true);
 		addPage(optionPage);
+		
 		setNeedsProgressMonitor(true);
 	}
 

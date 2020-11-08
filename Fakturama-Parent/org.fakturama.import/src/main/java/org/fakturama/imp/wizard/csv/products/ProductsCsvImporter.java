@@ -54,6 +54,7 @@ import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.ProductOptions;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.util.ProductUtil;
 
 /**
  * CSV importer for products
@@ -240,7 +241,7 @@ public class ProductsCsvImporter {
 					}
 
 					if(prop.getProperty("picturename") != null && !basePath.toString().isEmpty() && (!prop.getProperty("picturename").isEmpty() || importEmptyValues)) {
-					    byte[] picture = readPicture(prop.getProperty("picturename"), basePath);
+					    byte[] picture = ProductUtil.readPicture(prop.getProperty("picturename"), basePath);
 					    product.setPicture(picture);
 					}
 					product.setQuantity(DataUtils.getInstance().StringToDouble(prop.getProperty("quantity")));
@@ -296,19 +297,6 @@ public class ProductsCsvImporter {
         // TODO set attribute value, name, sequence
          productOptions.add(productOption);
          product.setAttributes(productOptions);
-    }
-
-    private byte[] readPicture(String fileName, Path basePath) {
-        Path productPictureFile = basePath.resolve(fileName);
-        byte[] retval = null;
-        if (StringUtils.isNotBlank(fileName)) {
-            try {
-                retval = Files.readAllBytes(productPictureFile);
-            } catch (IOException ioex) {
-                log.error(String.format("Can't read product picture from file '%s'. Reason: ", productPictureFile.toString(), ioex.getMessage()));
-            }
-        }
-        return retval;
     }
 
     public String getResult() {

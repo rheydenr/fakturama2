@@ -44,24 +44,18 @@ public class CSVProductImportFilePage extends WizardPage {
     @Translation
     protected ImportMessages importMessages;
 
+    @Inject
     private ImportOptions options;
 
     private Text fileNameField;
-//
-//    public CSVProductImportFilePage(String pageName, String title, ImageDescriptor titleImage) {
-//        super(pageName, title, titleImage);
-//        // TODO Auto-generated constructor stub
-//    }
 
     public CSVProductImportFilePage() {
-        super("TEST");
+        super("CSVProductImportFilePage");
     }
 
     @PostConstruct
     public void initialize(IEclipseContext ctx) {
         setTitle((String) ctx.get(ImportOptionPage.WIZARD_TITLE));
-        options = new ImportOptions(getDialogSettings());
-        ctx.set(ImportOptions.class, options);
     }
 
     @Override

@@ -196,9 +196,6 @@ public class ImportCSVProductConfigPage extends WizardPage {
             
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-//                boolean canFinish = !mappings.isEmpty();
-//                boolean canFinish = Arrays.stream(requiredHeaders).anyMatch(p -> mappings.stream()
-//                        .anyMatch(pm -> pm.getRightItem().getName().equals(p)));
                 boolean canFinish = false;
                 for (String headerName : requiredHeaders.keySet()) {
                    if( mappings.stream()
@@ -267,6 +264,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
      * 
      * @return
      */
+    @SuppressWarnings("unchecked")
     public List<ProductImportMapping> getCompleteMappings() {
         // complete for missing assignments
         for (String availableColumn : ((HashMap<String, Integer>)treeMapper.getLeftTreeViewer().getInput()).keySet()) {

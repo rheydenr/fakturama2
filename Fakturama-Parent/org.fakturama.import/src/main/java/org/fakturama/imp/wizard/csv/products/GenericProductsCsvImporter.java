@@ -16,7 +16,9 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.ProgressIndicator;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.widgets.Display;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptions;
 
@@ -37,6 +39,7 @@ import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.util.ProductUtil;
 
 public class GenericProductsCsvImporter {
 
@@ -93,7 +96,7 @@ public class GenericProductsCsvImporter {
         // if true, also empty values will be updated
         boolean importEmptyValues = importOptions.getUpdateWithEmptyValues();
         String fileName = importOptions.getCsvFile();
-        Path basePath = Paths.get(importOptions.getBasePath());
+        Path basePath = Paths.get(StringUtils.defaultString(importOptions.getBasePath()));
         char separator = StringUtils.defaultIfBlank(importOptions.getSeparator(), ";").charAt(0);
         char quoteChar = StringUtils.isNotBlank(importOptions.getQuoteChar()) ? importOptions.getQuoteChar().charAt(0) : '"';
         modelFactory = FakturamaModelPackage.MODELFACTORY;
@@ -158,20 +161,23 @@ public class GenericProductsCsvImporter {
                     product = productsDAO.findOrCreate(product);
                 }
                 
+                // update/copy values from CSV bean
+                product = copyValues(product, productBean);
+                
                 if (productBean.getCategory() != null) {
                     ProductCategory category = productCategoriesDAO.getCategory(productBean.getCategory(), false);
-                    if (category != null) {
+                    if (category != null || importEmptyValues) {
                         product.setCategories(category);
                     }
                 }
                 //                setProductOptions(product, prop.getProperty("options"));
 
-                if (productBean.getDateAdded() == null) {
-                    product.setDateAdded(today);
-                } else {
-                    product.setModified(today);
+                if(productBean.getPictureName() != null && !basePath.toString().isEmpty() 
+                        && (!productBean.getPictureName().isEmpty() || importEmptyValues)) {
+                    byte[] picture = ProductUtil.readPicture(productBean.getPictureName(), basePath);
+                    product.setPicture(picture);
                 }
-                
+
                 // Only if both VAT name and value are given they are used.
                 String vatName = productBean.getVatName();
                 Double vatValue = productBean.getVat();
@@ -212,11 +218,58 @@ public class GenericProductsCsvImporter {
             result += NL + importMessages.wizardImportErrorOpenfile;
         } catch (FakturamaStoringException e) {
             log.error(e, "cant't store import data.");
-//        } catch (CsvValidationException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Update values from CSV bean into Product bean.
+     * 
+     * @param product target
+     * @param productBean source
+     */
+    private Product copyValues(Product product, ProductBeanCSV productBean) {
+        Date today = Calendar.getInstance().getTime();
+        product.setBlock1(productBean.getBlock1());
+        product.setBlock2(productBean.getBlock2());
+        product.setBlock3(productBean.getBlock3());
+        product.setBlock4(productBean.getBlock4());
+        product.setBlock5(productBean.getBlock5());
+
+        if (productBean.getDateAdded() == null) {
+            product.setDateAdded(today);
+        } else {
+            product.setDateAdded(productBean.getDateAdded());
+            product.setModified(today);
+        }
+        
+        // itemNumber an name were already set in caller method to check if product exists
+        
+        product.setSupplierItemNumber(productBean.getSupplierItemNumber());
+        product.setPrice1(productBean.getPrice1());
+        product.setPrice2(productBean.getPrice2());
+        product.setPrice3(productBean.getPrice3());
+        product.setPrice4(productBean.getPrice4());
+        product.setPrice5(productBean.getPrice5());
+        
+        product.setQuantity(productBean.getQuantity());
+        product.setQuantityUnit(productBean.getQuantityUnit());
+        product.setSellingUnit(productBean.getSellingUnit());
+        
+        // VAT and category are set in caller method
+        
+        product.setWebshopId(productBean.getWebshopId());
+        product.setWeight(productBean.getWeight());
+        product.setGtin(productBean.getGtin());
+        product.setCostPrice(productBean.getCostPrice());
+        product.setAllowance(productBean.getAllowance());
+        product.setCdf01(productBean.getCdf01());
+        product.setCdf02(productBean.getCdf02());
+        product.setCdf03(productBean.getCdf03());
+        product.setNote(productBean.getNote());
+        product.setDescription(productBean.getDescription());
+        
+        return product;
     }
 
     public String getResult() {

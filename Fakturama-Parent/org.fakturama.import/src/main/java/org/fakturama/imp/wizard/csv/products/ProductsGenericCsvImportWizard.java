@@ -9,6 +9,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
@@ -59,15 +60,21 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
         ctx.set(IFakturamaWizardService.WIZARD_TITLE, importMessages.wizardImportCsvProducts);
         ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, importMessages.wizardImportOptionsSet);
         ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, previewImage);
+        setDialogSettings(ctx.get(IDialogSettings.class));
         
+        ctx.set(ImportOptions.class, new ImportOptions(getDialogSettings()));
+
         csvProductImportFilePage = ContextInjectionFactory.make(CSVProductImportFilePage.class, ctx);
+        csvProductImportFilePage.setWizard(this);
         addPage(csvProductImportFilePage);
         
         optionPage = ContextInjectionFactory.make(ImportOptionPage.class, ctx);
+        optionPage.setWizard(this);
         addPage(optionPage);
         
         csvConfigPage = ContextInjectionFactory.make(ImportCSVProductConfigPage.class, ctx);
         csvConfigPage.setPageComplete(true);
+        csvConfigPage.setWizard(this);
         addPage(csvConfigPage);
         
         setNeedsProgressMonitor(true);
@@ -94,7 +101,6 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
         String selectedFile = optionPage.getImportOptions().getCsvFile();
         if (selectedFile != null && !selectedFile.isEmpty()) {
             ImportOptions importOptions = optionPage.getImportOptions();
-            optionPage.saveSettings();
             importOptions.setMappings(csvConfigPage.getCompleteMappings());
 
             GenericProductsCsvImporter csvImporter = ContextInjectionFactory.make(GenericProductsCsvImporter.class, ctx);
@@ -109,6 +115,7 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
             // Find the VAT table view
             evtBroker.post("VatEditor", "update");
             
+            optionPage.saveSettings();
             return (dialog.open() == ImportProgressDialog.OK);
         }
 

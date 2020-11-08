@@ -14,6 +14,8 @@ import org.fakturama.imp.wizard.csv.products.ProductImportMapping;
  *
  */
 public class ImportOptions {
+    private static final String DEFAULT_CSV_SEPARATOR = ";";
+    public static final String DEFAULT_CSV_QUOTECHAR = "\"";
     public static final String IMPORT_SETTING_OPTIONS = "org.fakturama.import.options";
     public static final String PICTURE_BASE_PATH = "import.picture.base.path";
     public static final String IMPORT_CSV_UPDATEEXISTING = "import.csv.updateexisting";
@@ -27,8 +29,8 @@ public class ImportOptions {
 	private Boolean updateWithEmptyValues = false;
 	private boolean analyzeCompleted = false;
 	private boolean mappingAvailable = false;
-	private String quoteChar = "\"";
-	private String separator = ";";
+	private String quoteChar = DEFAULT_CSV_QUOTECHAR;
+	private String separator = DEFAULT_CSV_SEPARATOR;
 	private String basePath = "", csvFile = "";
     private List<ProductImportMapping> mappings;
 
@@ -46,10 +48,11 @@ public class ImportOptions {
 	@Inject
     public ImportOptions(IDialogSettings settings) {
 		if(settings != null) {
-		    IDialogSettings importSettings = settings.getSection(IMPORT_SETTING_OPTIONS);
-		    if(importSettings == null) {
+		    IDialogSettings importSettings ;
+		    if(settings.getSection(IMPORT_SETTING_OPTIONS) == null) {
 		        settings.addNewSection(IMPORT_SETTING_OPTIONS);
 		    }
+		    importSettings = settings.getSection(IMPORT_SETTING_OPTIONS);
 	        if (importSettings.get(PICTURE_BASE_PATH) != null) {
 	            basePath = importSettings.get(PICTURE_BASE_PATH);
 	        }
@@ -75,6 +78,8 @@ public class ImportOptions {
 	        }
 		}
     }
+
+	
 	/**
 	 * @return the updateExisting
 	 */
