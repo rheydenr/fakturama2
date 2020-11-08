@@ -1,12 +1,21 @@
 package org.fakturama.imp.wizard.csv.products;
 
-import org.eclipse.emf.ecore.EStructuralFeature;
+import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 public class ProductImportMapping {
+    /**
+     * The name from CSV header
+     */
     private String leftItem;
-    private EStructuralFeature rightItem;
+    
+    /**
+     * A {@link Map} which consists of field name and its corresponding I18N'ed qualifier.
+     */
+    private Pair<String, String> rightItem;
 
-    public ProductImportMapping(String leftItem, EStructuralFeature rightItem) {
+    public ProductImportMapping(String leftItem, Pair<String, String> rightItem) {
         this.leftItem = leftItem;
         this.rightItem = rightItem;
     }
@@ -19,18 +28,18 @@ public class ProductImportMapping {
         this.leftItem = leftItem;
     }
 
-    public EStructuralFeature getRightItem() {
+    public Pair<String, String> getRightItem() {
         return rightItem;
     }
 
-    public void setRightItem(EStructuralFeature rightItem) {
+    public void setRightItem(Pair<String, String> rightItem) {
         this.rightItem = rightItem;
     }
 
     @Override
     public String toString() {
         return new StringBuffer("ProductImportMapping {").append(leftItem)
-                .append(" -> ").append(rightItem != null ? rightItem.getName() : "<null>").append("}").toString();
+                .append(" -> ").append(rightItem != null ? rightItem.getKey() + " (" + rightItem.getValue() + ") " : "<null>").append("}").toString();
     }
 
 }

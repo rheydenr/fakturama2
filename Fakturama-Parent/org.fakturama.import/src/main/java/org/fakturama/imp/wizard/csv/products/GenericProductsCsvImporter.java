@@ -131,7 +131,7 @@ public class GenericProductsCsvImporter {
             
             for (ProductImportMapping pm : importOptions.getMappings()) {
                 // null values aren't allowed in streams, therefore we use the classical way
-                columnMapping.put(pm.getLeftItem(), pm.getRightItem() != null ? pm.getRightItem().getName() : null);
+                columnMapping.put(pm.getLeftItem(), pm.getRightItem() != null ? pm.getRightItem().getKey() : null);
             }
 //            String[] columns = new String[] {"name", "orderNumber", "id"}; // the fields to bind to in your bean
             strat.setColumnMapping(columnMapping);
