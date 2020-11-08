@@ -16,9 +16,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.jface.dialogs.ProgressIndicator;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.widgets.Display;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptions;
 

@@ -19,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,15 +30,10 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
-import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.nebula.widgets.treemapper.ISemanticTreeMapperSupport;
@@ -62,7 +56,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.ICSVParser;
-import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.parts.widget.contentprovider.SimpleTreeContentProvider;
 import com.sebulli.fakturama.resources.core.ProgramImages;
 
@@ -74,6 +68,10 @@ public class ImportCSVProductConfigPage extends WizardPage {
     @Inject
     @Translation
     protected ImportMessages importMessages;
+
+    @Inject
+    @Translation
+    protected Messages msg;
 
     private ImportOptions options;
     private IEclipseContext ctx;
@@ -161,7 +159,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
         treeMapper = new TreeMapper<>(parent, semanticSupport, uiConfig);
 
         treeMapper.setContentProviders(new ProductImportContentProvider(), new ProductsFieldContentProvider());
-        treeMapper.setLabelProviders(new ViewLabelProvider(), new ViewLabelProvider());
+//        treeMapper.setLabelProviders(new ViewLabelProvider(), new ViewLabelProvider());
 
         Canvas cv;
         Control[] controls = treeMapper.getControl().getChildren();
@@ -241,7 +239,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
                     
                     Map<String, Integer> headerToPositions = new HashMap<>();
                     for (int i = 0; i < headerLine.length; i++) {
-                        String entry = headerLine[i];
+                        String entry = StringUtils.trim(headerLine[i]);
                         if(StringUtils.isNotBlank(entry)) {
                             headerToPositions.put(entry, i);
                         }
@@ -258,7 +256,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
     }
 
     /**
-     * List of {@link ProductImportMapping}s where <b>any<b> member of CSV file
+     * List of {@link ProductImportMapping}s where <b>any</b> member of CSV file
      * is contained, but can be <code>null</code> if not assigned to a bean attribute.
      * This is necessary for later import, where the mapping have to be complete.
      * 
@@ -284,7 +282,6 @@ public class ImportCSVProductConfigPage extends WizardPage {
         @Override
         public Object[] getElements(Object inputElement) {
             return ((Map<String, Integer>) inputElement).keySet().toArray(new String[] {});
-//            return ((List<String>) inputElement).toArray(new String[] {});
         }
     }
 
@@ -293,50 +290,18 @@ public class ImportCSVProductConfigPage extends WizardPage {
      *
      */
     public class ProductsFieldContentProvider extends SimpleTreeContentProvider {
-        private List<EStructuralFeature> productAttributes;
+        private Object[] productAttributes;
 
         @Override
         public Object[] getElements(Object inputElement) {
             if (productAttributes == null) {
-                productAttributes = ((EClass) FakturamaModelPackage.INSTANCE.getEPackage().getEClassifiers().get(FakturamaModelPackage.PRODUCT_CLASSIFIER_ID)) //
-                        .getEAllAttributes().stream() //
-                        .filter(f -> !f.isMany()) //
-                        .sorted(Comparator.comparing(EStructuralFeature::getName))
-                        .collect(Collectors.toList());
+                List<String> retList = ProductBeanCSV.createProductsAttributeMap(msg)
+                        .values().stream().sorted().collect(Collectors.toList());
+                productAttributes = retList.toArray();
             }
-            return productAttributes.toArray();
+            return productAttributes;
         }
     }
 
-    class ViewLabelProvider extends LabelProvider {
-        private ResourceManager resourceManager;
-
-        @Override
-        public String getText(Object element) {
-            String retval = "";
-            if (element instanceof EStructuralFeature) {
-                retval = ((EStructuralFeature)element).getName();
-            } else {
-                retval = super.getText(element);
-            }
-            return retval;
-        }
-
-        @Override
-        public void dispose() {
-            // garbage collect system resources
-            if (resourceManager != null) {
-                resourceManager.dispose();
-                resourceManager = null;
-            }
-        }
-
-        protected ResourceManager getResourceManager() {
-            if (resourceManager == null) {
-                resourceManager = new LocalResourceManager(JFaceResources.getResources());
-            }
-            return resourceManager;
-        }
-    }
 
 }
