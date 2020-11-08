@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
 import org.fakturama.imp.wizard.ImportOptions;
@@ -64,6 +63,8 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
  *
  */
 public class ImportCSVProductConfigPage extends WizardPage {
+
+    private static final String PAGE_NAME = "ImportOptionConfigPage";
 
     @Inject
     @Translation
@@ -82,7 +83,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
     private Map<String, Boolean> requiredHeaders = new HashMap<>();
 
     public ImportCSVProductConfigPage(String title, String label, ProgramImages image) {
-        super("ImportOptionConfigPage");
+        super(PAGE_NAME);
         setTitle(title);
         setMessage(label);
     }
@@ -93,7 +94,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
      * in initialize method.
      */
     public ImportCSVProductConfigPage() {
-        super("ImportOptionConfigPage");
+        super(PAGE_NAME);
     }
 
     @PostConstruct
@@ -115,15 +116,9 @@ public class ImportCSVProductConfigPage extends WizardPage {
         GridLayoutFactory.swtDefaults().numColumns(3).applyTo(top);
         GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(top);
         setControl(top);
-
-        // Create the label with the help text
-        Label labelDescription = new Label(top, SWT.NONE);
-
-        labelDescription.setText("Please map the fields from CSV file to product attributes.");
-        GridDataFactory.swtDefaults().span(3, 1).align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
+        setMessage(importMessages.wizardImportCsvProductsCreatemapping);
 
         createTreeMapperWidget(top);
-
     }
 
     private void createTreeMapperWidget(Composite parent) {
@@ -208,7 +203,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
                 if(canFinish) {
                     setErrorMessage(null);
                 } else {
-                    setErrorMessage(String.format("Es fehlen noch Zuordnungen (%s). Nicht alle notwendigen Felder wurden zugeordnet.", 
+                    setErrorMessage(String.format(importMessages.wizardImportErrorMissingmappings, 
                             StringUtils.join(requiredHeaders.entrySet().stream().filter(e -> !e.getValue()).map(e -> e.getKey()).collect(Collectors.toList()))));
                 }
 
@@ -302,6 +297,4 @@ public class ImportCSVProductConfigPage extends WizardPage {
             return productAttributes;
         }
     }
-
-
 }

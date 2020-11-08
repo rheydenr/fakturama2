@@ -32,7 +32,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
@@ -68,11 +67,7 @@ public class CSVProductImportFilePage extends WizardPage {
         setControl(top);
 
         // Create the label with the help text
-        Label labelDescription = new Label(top, SWT.NONE);
-
-        //T: Import Wizard Page 1 - Long description.
-        labelDescription.setText("First, select import file with products CSV data.");
-        GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
+        setMessage(importMessages.wizardImportCsvSelectfile);
 
         fileNameField = new Text(top, SWT.BORDER);
         UpdateValueStrategy<String, String> strat = new UpdateValueStrategy<String, String>();
@@ -84,7 +79,7 @@ public class CSVProductImportFilePage extends WizardPage {
                 } else {
                     options.setCsvFile(null);
                     setPageComplete(false);
-                    return ValidationStatus.error("please enter a valid file name");
+                    return ValidationStatus.error(importMessages.wizardImportErrorWrongfilename);
                 }
             };
         });

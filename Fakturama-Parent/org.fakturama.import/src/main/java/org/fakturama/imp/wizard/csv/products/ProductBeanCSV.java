@@ -1,15 +1,20 @@
 package org.fakturama.imp.wizard.csv.products;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.eclipse.emf.ecore.EStructuralFeature;
+
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Product;
 
 /**
  * Helper class for importing / exporting {@link Product} data.
  * 
- * TODO refactor to record data type (with Java 14+)
  */
 public class ProductBeanCSV {
+
     private Integer block1 = Integer.valueOf(1);
     private Integer block2 = Integer.valueOf(10);
     private Integer block3 = Integer.valueOf(100);
@@ -44,6 +49,58 @@ public class ProductBeanCSV {
     private String description = null;
     private String name = null;
     private long id = 0;
+    
+    private static Map<String, String> attributeToNameMap;
+    
+    
+    /**
+     * Creates a map of product attributes which maps to name keys (for I18N'ed list entries).
+     * Only classifiers for attributes and 1:1 references are used. The map consists of the
+     * <i>name</i> attribute of a {@link EStructuralFeature} and the corresponding label entry.
+     * <br/>
+     * <p>This method is <code>static</code> because the list of product attributes doesn't change.</p>
+     * <p><b>IMPORTANT</b> This method has to be updated if new attributes are added to {@link Product} entity.</p>
+     */
+    public static Map<String, String> createProductsAttributeMap(Messages msg) {
+        if(attributeToNameMap == null) {
+            attributeToNameMap = new HashMap<>();
+            attributeToNameMap.put("block1", "block1"); 
+            attributeToNameMap.put("block2", "block2"); 
+            attributeToNameMap.put("block3", "block3"); 
+            attributeToNameMap.put("block4", "block4"); 
+            attributeToNameMap.put("block5", "block5"); 
+            attributeToNameMap.put("dateAdded", "dateAdded"); 
+//            attributeToNameMap.put("modifiedBy", "modifiedBy"); 
+//            attributeToNameMap.put("modified", "modified"); 
+            attributeToNameMap.put("pictureName", msg.exporterDataPicture); 
+            attributeToNameMap.put("itemNumber", msg.exporterDataItemnumber); 
+            attributeToNameMap.put("supplierItemNumber", msg.editorProductFieldSupplierItemnumber); 
+            attributeToNameMap.put("price1", "price1"); 
+            attributeToNameMap.put("price2", "price2"); 
+            attributeToNameMap.put("price3", "price3"); 
+            attributeToNameMap.put("price4", "price4"); 
+            attributeToNameMap.put("price5", "price5"); 
+            attributeToNameMap.put("quantity", msg.commonFieldQuantity); 
+            attributeToNameMap.put("quantityUnit", msg.editorProductFieldQuantityunitName); 
+//            attributeToNameMap.put("sellingUnit", "sellingUnit"); 
+            attributeToNameMap.put("vat", msg.commonFieldVat); 
+            attributeToNameMap.put("vatName", "vatName"); 
+            attributeToNameMap.put("category", msg.commonFieldCategory); 
+            attributeToNameMap.put("webshopId", "webshopId"); 
+            attributeToNameMap.put("weight", msg.exporterDataWeight); 
+            attributeToNameMap.put("gtin", msg.editorProductFieldGtin); 
+            attributeToNameMap.put("costPrice", msg.editorProductFieldCostprice); 
+            attributeToNameMap.put("allowance", msg.editorProductFieldAllowance); 
+            attributeToNameMap.put("cdf01", msg.editorProductFieldUdf01); 
+            attributeToNameMap.put("cdf02", msg.editorProductFieldUdf02); 
+            attributeToNameMap.put("cdf03", msg.editorProductFieldUdf03); 
+            attributeToNameMap.put("note", msg.editorContactLabelNotice); 
+            attributeToNameMap.put("description", msg.commonFieldDescription); 
+            attributeToNameMap.put("name", msg.commonFieldName); 
+            attributeToNameMap.put("id", "id"); 
+        }
+        return attributeToNameMap;
+    }
 
     public Integer getBlock1() {
         return block1;

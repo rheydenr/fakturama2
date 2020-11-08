@@ -51,4 +51,9 @@ public class ImportMessages {
 	public String wizardImportOptionsSeparator;
 	public String wizardImportOptionsPicturebasepath;
 	public String wizardImportProgressinfo;
+	public String wizardImportCsvSelectfile;
+	public String wizardImportErrorWrongfilename;
+	public String wizardImportCsvProductsCreatemapping;
+	public String wizardImportErrorMissingmappings;
+	
 }
