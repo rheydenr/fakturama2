@@ -1293,6 +1293,10 @@
         <eAttribute href="Fakturama.ecore#//UserProperty/global"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Set this to TRUE if this setting is a global one. Global settings can't be overwritten by users."/>
       </annotatedEStructuralFeatures>
+      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
+        <eAttribute href="Fakturama.ecore#//UserProperty/qualifier"/>
+        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" documentation="Indicator for which type of setting this property stands (e.g. Product, Contact etc)"/>
+      </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//VAT"/>
