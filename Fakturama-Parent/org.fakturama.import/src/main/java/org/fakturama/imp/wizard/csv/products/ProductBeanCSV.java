@@ -52,6 +52,9 @@ public class ProductBeanCSV {
     
     private static Map<String, String> attributeToNameMap;
     
+    public static String getI18NIdentifier(String csvField) {
+        return attributeToNameMap.get(csvField);
+    }
     
     /**
      * Creates a map of product attributes which maps to name keys (for I18N'ed list entries).

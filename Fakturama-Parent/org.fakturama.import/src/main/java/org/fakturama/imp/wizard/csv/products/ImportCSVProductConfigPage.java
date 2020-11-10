@@ -23,6 +23,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -36,9 +38,12 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.IElementComparer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.nebula.widgets.treemapper.ISemanticTreeMapperSupport;
 import org.eclipse.nebula.widgets.treemapper.TreeMapper;
@@ -47,6 +52,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
@@ -62,16 +69,26 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.ICSVParser;
-import com.sebulli.fakturama.converter.CommonConverter;
+import com.sebulli.fakturama.dao.PropertiesDAO;
+import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.model.ProductCategory;
+import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.UserProperty;
 import com.sebulli.fakturama.parts.widget.contentprovider.SimpleTreeContentProvider;
+import com.sebulli.fakturama.resources.core.Icon;
+import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.resources.core.ProgramImages;
 
 /**
  *
  */
 public class ImportCSVProductConfigPage extends WizardPage {
+
+    private static final String MAPPING_FIELD_DELIMITER = ":";
+
+    private static final String PRODUCT_SPEC_QUALIFIER = "PRODUCT_MAPPING";
+
+    private static final String MAPPING_DELIMITER = "|";
 
     private static final String PAGE_NAME = "ImportOptionConfigPage";
 
@@ -82,6 +99,9 @@ public class ImportCSVProductConfigPage extends WizardPage {
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject
+    private PropertiesDAO propertiesDAO;
 
     private ImportOptions options;
     private IEclipseContext ctx;
@@ -92,7 +112,10 @@ public class ImportCSVProductConfigPage extends WizardPage {
     private Map<String, Boolean> requiredHeaders = new HashMap<>();
 
     private CCombo comboSpecifications;
-
+    private ComboViewer specComboViewer;
+    private Button saveSpecButton;
+    private Button deleteSpecButton;
+    
     public ImportCSVProductConfigPage(String title, String label, ProgramImages image) {
         super(PAGE_NAME);
         setTitle(title);
@@ -134,48 +157,174 @@ public class ImportCSVProductConfigPage extends WizardPage {
         
         comboSpecifications = new CCombo(top, SWT.BORDER);
         fillSpecificationCombo();
+        final ISelectionChangedListener listener = event -> {
+            if(!event.getStructuredSelection().isEmpty()) {
+                applyMapping(event.getStructuredSelection());
+            }
+            deleteSpecButton.setEnabled(!event.getStructuredSelection().isEmpty());
+            saveSpecButton.setEnabled(false);
+        };
+        specComboViewer.addSelectionChangedListener(listener);
+        specComboViewer.getCCombo().addModifyListener(e -> {
+            saveSpecButton.setEnabled(true);
+        });
         GridDataFactory.fillDefaults().hint(200, SWT.DEFAULT).grab(true, false).applyTo(comboSpecifications);
         
-        Button saveSpec = new Button(top, SWT.PUSH);
-        saveSpec.setText("save");
+        saveSpecButton = new Button(top, SWT.PUSH);
+        saveSpecButton.setEnabled(false); // enable only if valid mapping is available
+        saveSpecButton.setImage(Icon.COMMAND_SAVE.getImage(IconSize.DefaultIconSize));
+        saveSpecButton.setToolTipText("save specification");
+        saveSpecButton.addSelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String newText = comboSpecifications.getText();
+                UserProperty prop = createSpecFromMapping(newText);
+                try {
+                    prop = propertiesDAO.save(prop);
+                } catch (FakturamaStoringException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                specComboViewer.removeSelectionChangedListener(listener);
+                specComboViewer.add(prop);
+                specComboViewer.setSelection(new StructuredSelection(prop));
+                specComboViewer.addSelectionChangedListener(listener);
+                deleteSpecButton.setEnabled(!specComboViewer.getStructuredSelection().isEmpty());
+            }
+        });
         
-        Button deleteSpec = new Button(top, SWT.PUSH);
-        deleteSpec.setText("delete");
+        deleteSpecButton = new Button(top, SWT.PUSH);
+        deleteSpecButton.setImage(Icon.COMMAND_DELETE.getImage(IconSize.DefaultIconSize));
+        deleteSpecButton.setToolTipText("delete specification");
+        deleteSpecButton.setEnabled(!specComboViewer.getStructuredSelection().isEmpty());
+        deleteSpecButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                IStructuredSelection structuredSelection = specComboViewer.getStructuredSelection();
+                specComboViewer.removeSelectionChangedListener(listener);
+                specComboViewer.remove(structuredSelection);
+                propertiesDAO.delete((UserProperty) structuredSelection.getFirstElement());
+                specComboViewer.addSelectionChangedListener(listener);
+                specComboViewer.refresh();
+                deleteSpecButton.setEnabled(!specComboViewer.getStructuredSelection().isEmpty());
+                saveSpecButton.setEnabled(false);
+            }
+        });
 
         createTreeMapperWidget(top);
     }
 
     /**
+     * Read the selected mapping and apply it to the current view.
+     * 
+     * @param mappingSelection current selection
+     */
+    private void applyMapping(IStructuredSelection mappingSelection) {
+        if (!mappingSelection.isEmpty()) {
+            try {
+
+                List<ProductImportMapping> mappingsTemp = new ArrayList<>();
+                UserProperty userProp = (UserProperty) mappingSelection.getFirstElement();
+                String mapping = userProp.getValue();
+                String[] splittedMapping = mapping.split(Pattern.quote(MAPPING_DELIMITER));
+
+                for (int i = 0; i < splittedMapping.length; i++) {
+                    String joinedString = splittedMapping[i];
+                    String[] splittedString = joinedString.split(Pattern.quote(MAPPING_FIELD_DELIMITER));
+                    if (splittedString.length == 2) {
+                        String i18nIdentifier = ProductBeanCSV.getI18NIdentifier(splittedString[1]);
+                        mappingsTemp.add(new ProductImportMapping(splittedString[0], Pair.of(splittedString[1], i18nIdentifier)));
+                    }
+                }
+
+                mappings.clear();
+                mappings.addAll(mappingsTemp);
+                treeMapper.refresh();
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.err.println("is nich");
+            }
+        }
+    }
+
+    /**
+     * Create a new specification (mapping) with the given name.
+     * @param specName the name for the spec mapping
+     */
+    private UserProperty createSpecFromMapping(String specName) {
+        UserProperty specMapping = null;
+        if (validateMapping()) {
+            // check if a mapping with same name exists
+            UserProperty existingMapping = propertiesDAO.findByName(specName);
+            if (existingMapping != null) {
+                // warning dialog???
+                specMapping = existingMapping;
+            } else {
+                specMapping = FakturamaModelPackage.MODELFACTORY.createUserProperty();
+                specMapping.setName(specName);
+                specMapping.setQualifier(PRODUCT_SPEC_QUALIFIER);
+            }
+            // mapping is stored in the form csv_field:product_attribute|csv_field:product_attribute
+            List<String> collectedMappings = mappings.stream().map(m -> m.getLeftItem() + MAPPING_FIELD_DELIMITER + m.getRightItem().getKey())
+                    .collect(Collectors.toList());
+            specMapping.setValue(String.join(MAPPING_DELIMITER, collectedMappings));
+        }
+        return specMapping;
+    }
+
+    /**
      * creates the combo box for the stored specifications
-     * @param parent 
+     * 
+     * @param parent
      */
     private void fillSpecificationCombo() {
         // Collect all specification strings as a sorted Set
-        final List<String> categories = new ArrayList<>();
-//        categories.addAll(productCategoriesDAO.findAll());
+        final List<UserProperty> categories = propertiesDAO.findMappingSpecs(PRODUCT_SPEC_QUALIFIER);
 
-        ComboViewer viewer = new ComboViewer(comboSpecifications);
-        viewer.setContentProvider(new ArrayContentProvider() {
+        specComboViewer = new ComboViewer(comboSpecifications);
+        specComboViewer.setComparer(new IElementComparer() {
+            
+            @Override
+            public int hashCode(Object element) {
+                if(element instanceof UserProperty) return ((UserProperty)element).hashCode();
+                return 0;
+            }
+            
+            @Override
+            public boolean equals(Object a, Object b) {
+                // null checks are already done by caller
+                //                if(a == null && b == null) return true;
+                //                if(a == null && b != null || a != null && b == null) return false;
+                if (a instanceof StructuredSelection && b instanceof Vector) {
+                    UserProperty up1 = (UserProperty) ((StructuredSelection) a).getFirstElement();
+                    @SuppressWarnings("unchecked")
+                //  boolean result = ((Vector<UserProperty>) b).stream().anyMatch(p -> p.getId() == up1.getId());
+                    UserProperty up2 = ((Vector<UserProperty>) b).firstElement();
+                    return up1.getId() == up2.getId();
+                } else if (a instanceof StructuredSelection && b instanceof UserProperty) {
+                    UserProperty up1 = (UserProperty) ((StructuredSelection) a).getFirstElement();
+                    return up1.getId() == ((UserProperty) b).getId();
+                }
+                return false;
+            }
+        });
+        specComboViewer.setContentProvider(new ArrayContentProvider() {
             @Override
             public Object[] getElements(Object inputElement) {
                 return categories.toArray();
             }
         });
-        
-        // Add all categories to the combo
-        viewer.setInput(categories);
-        viewer.setLabelProvider(new LabelProvider() {
+        specComboViewer.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                return element instanceof ProductCategory ? CommonConverter.getCategoryName((ProductCategory)element, "") : null;
+                return element instanceof UserProperty ? ((UserProperty) element).getName() : element.toString();
             }
         });
 
-//        UpdateValueStrategy<ProductCategory, String> productCatModel2Target = UpdateValueStrategy.create(new CategoryConverter<ProductCategory>(ProductCategory.class));
-//        UpdateValueStrategy<String, ProductCategory> target2productCatModel = UpdateValueStrategy.create(new StringToCategoryConverter<ProductCategory>(categories, ProductCategory.class));
-//        bindModelValue(editorProduct, comboCategory, Product_.categories.getName(), target2productCatModel, productCatModel2Target);
-    }
+        // Add all categories to the combo
+        specComboViewer.setInput(categories);
 
+    }
 
     private void createTreeMapperWidget(Composite parent) {
         Display display = parent.getDisplay();
@@ -245,16 +394,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
             
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                boolean canFinish = false;
-                for (String headerName : requiredHeaders.keySet()) {
-                   if( mappings.stream()
-                            .anyMatch(pm -> pm.getRightItem().getKey().equalsIgnoreCase(headerName))) {
-                       requiredHeaders.put(headerName, Boolean.TRUE);
-                   }
-                }
-                
-                // can finish only if all required headers are set
-                canFinish = !requiredHeaders.values().contains(Boolean.FALSE);
+                boolean canFinish = validateMapping();
                 
                 if(canFinish) {
                     setErrorMessage(null);
@@ -262,7 +402,9 @@ public class ImportCSVProductConfigPage extends WizardPage {
                     setErrorMessage(String.format(importMessages.wizardImportErrorMissingmappings, 
                             StringUtils.join(requiredHeaders.entrySet().stream().filter(e -> !e.getValue()).map(e -> e.getKey()).collect(Collectors.toList()))));
                 }
-
+                
+                saveSpecButton.setEnabled(canFinish);
+                deleteSpecButton.setEnabled(!specComboViewer.getStructuredSelection().isEmpty());
                 options.setMappingAvailable(canFinish);
                 setPageComplete(canFinish);
             }
@@ -318,12 +460,31 @@ public class ImportCSVProductConfigPage extends WizardPage {
         // complete for missing assignments
         for (String availableColumn : ((HashMap<String, Integer>)treeMapper.getLeftTreeViewer().getInput()).keySet()) {
             if(!mappings.parallelStream().anyMatch(pm -> pm.getLeftItem().equalsIgnoreCase(availableColumn))) {
-                mappings.add(new ProductImportMapping(availableColumn, null));
+                mappings.add(ProductImportMapping.ofNullValue(availableColumn));
             }
         }
         return mappings;
     }
     
+    /**
+     * Validates if the current mapping has at least all required headers mapped.
+     * 
+     * @return <code>true</code> if all required headers are mapped, <code>false</code> otherwise
+     */
+    private boolean validateMapping() {
+        boolean canFinish;
+        for (String headerName : requiredHeaders.keySet()) {
+           if( mappings.stream()
+                    .anyMatch(pm -> pm.getRightItem().getKey().equalsIgnoreCase(headerName))) {
+               requiredHeaders.put(headerName, Boolean.TRUE);
+           }
+        }
+        
+        // can finish only if all required headers are set
+        canFinish = !requiredHeaders.values().contains(Boolean.FALSE);
+        return canFinish;
+    }
+
     /**
      * Provides all available fields from CSV file.
      *
@@ -341,7 +502,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
         @SuppressWarnings("unchecked")
         @Override
         public String getText(Object element) {
-            String retval = "";
+            String retval;
             if (element instanceof Pair) {
                 retval = ((Pair<String, String>)element).getValue();
             } else {

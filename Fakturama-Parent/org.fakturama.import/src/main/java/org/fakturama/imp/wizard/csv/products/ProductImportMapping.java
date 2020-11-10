@@ -42,4 +42,14 @@ public class ProductImportMapping {
                 .append(" -> ").append(rightItem != null ? rightItem.getKey() + " (" + rightItem.getValue() + ") " : "<null>").append("}").toString();
     }
 
+    /**
+     * Create a {@link ProductImportMapping} where only the key is set (value is <code>null</code>).
+     * 
+     * @param column the key to set
+     * @return {@link ProductImportMapping}
+     */
+    public static ProductImportMapping ofNullValue(String column) {
+        return new ProductImportMapping(column, null);
+    }
+
 }

@@ -114,9 +114,7 @@ public class GenericProductsCsvImporter {
         int updatedProducts = 0;
 
         // Count the line of the import file
-        int lineNr = 0;
-
-//        String[] columns;
+//        int lineNr = 0;
 
         Path inputFile = Paths.get(fileName);
 
@@ -133,8 +131,7 @@ public class GenericProductsCsvImporter {
                 // null values aren't allowed in streams, therefore we use the classical way
                 columnMapping.put(pm.getLeftItem(), pm.getRightItem() != null ? pm.getRightItem().getKey() : null);
             }
-//            String[] columns = new String[] {"name", "orderNumber", "id"}; // the fields to bind to in your bean
-            strat.setColumnMapping(columnMapping);
+            strat.setColumnMapping(columnMapping); // the fields to bind to in your bean
 
             CsvToBean<ProductBeanCSV> csv = new CsvToBean<>();
             csv.setCsvReader(csvr);
@@ -147,7 +144,7 @@ public class GenericProductsCsvImporter {
 
             // Read line by line
             while (productCsvIterator.hasNext()) {
-                lineNr++;
+//                lineNr++;
 
                 //  Product product = modelFactory.createProduct();
                 ProductBeanCSV productBean = productCsvIterator.next();
