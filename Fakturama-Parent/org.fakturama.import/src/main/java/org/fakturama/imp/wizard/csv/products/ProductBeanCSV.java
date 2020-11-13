@@ -78,11 +78,11 @@ public class ProductBeanCSV {
             attributeToNameMap.put("pictureName", msg.exporterDataPicture); 
             attributeToNameMap.put("itemNumber", msg.exporterDataItemnumber); 
             attributeToNameMap.put("supplierItemNumber", msg.editorProductFieldSupplierItemnumber); 
-            attributeToNameMap.put("price1", "price1"); 
-            attributeToNameMap.put("price2", "price2"); 
-            attributeToNameMap.put("price3", "price3"); 
-            attributeToNameMap.put("price4", "price4"); 
-            attributeToNameMap.put("price5", "price5"); 
+            attributeToNameMap.put("price1", msg.commonFieldPrice + " 1"); 
+            attributeToNameMap.put("price2", msg.commonFieldPrice + " 2"); 
+            attributeToNameMap.put("price3", msg.commonFieldPrice + " 3"); 
+            attributeToNameMap.put("price4", msg.commonFieldPrice + " 4"); 
+            attributeToNameMap.put("price5", msg.commonFieldPrice + " 5"); 
             attributeToNameMap.put("quantity", msg.commonFieldQuantity); 
             attributeToNameMap.put("quantityUnit", msg.editorProductFieldQuantityunitName); 
 //            attributeToNameMap.put("sellingUnit", "sellingUnit"); 

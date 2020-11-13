@@ -49,7 +49,7 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
 
     // The wizard pages
     private ImportOptionPage optionPage;
-    private ImportCSVProductConfigPage csvConfigPage;
+    private ImportCSVProductConfigTablePage csvConfigPage;
     private CSVProductImportFilePage csvProductImportFilePage;
 
     @PostConstruct
@@ -72,7 +72,8 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
         optionPage.setWizard(this);
         addPage(optionPage);
         
-        csvConfigPage = ContextInjectionFactory.make(ImportCSVProductConfigPage.class, ctx);
+//        csvConfigPage = ContextInjectionFactory.make(ImportCSVProductConfigPage.class, ctx);
+        csvConfigPage =  ContextInjectionFactory.make(ImportCSVProductConfigTablePage.class, ctx);
         csvConfigPage.setPageComplete(true);
         csvConfigPage.setWizard(this);
         addPage(csvConfigPage);
@@ -82,6 +83,7 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
     
     @Override
     public IWizardPage getNextPage(IWizardPage page) {
+    // only if ImportCSVProductConfigPage is used!!!
         if(page == csvConfigPage) {
             // options are stored in ImportOptions (located in context)
             csvConfigPage.analyzeCsvFile();

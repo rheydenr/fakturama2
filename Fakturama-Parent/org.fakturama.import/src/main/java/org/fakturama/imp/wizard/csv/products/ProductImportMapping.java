@@ -9,15 +9,24 @@ public class ProductImportMapping {
      * The name from CSV header
      */
     private String leftItem;
-    
+    int id;
     /**
-     * A {@link Map} which consists of field name and its corresponding I18N'ed qualifier.
+     * A {@link Map} which consists of field name and its corresponding I18N'ed
+     * qualifier.
      */
     private Pair<String, String> rightItem;
 
     public ProductImportMapping(String leftItem, Pair<String, String> rightItem) {
         this.leftItem = leftItem;
         this.rightItem = rightItem;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getLeftItem() {
@@ -38,14 +47,16 @@ public class ProductImportMapping {
 
     @Override
     public String toString() {
-        return new StringBuffer("ProductImportMapping {").append(leftItem)
-                .append(" -> ").append(rightItem != null ? rightItem.getKey() + " (" + rightItem.getValue() + ") " : "<null>").append("}").toString();
+        return new StringBuffer("ProductImportMapping {").append(leftItem).append(" -> ")
+                .append(rightItem != null ? rightItem.getKey() + " (" + rightItem.getValue() + ") " : "<null>").append("}").toString();
     }
 
     /**
-     * Create a {@link ProductImportMapping} where only the key is set (value is <code>null</code>).
+     * Create a {@link ProductImportMapping} where only the key is set (value is
+     * <code>null</code>).
      * 
-     * @param column the key to set
+     * @param column
+     *            the key to set
      * @return {@link ProductImportMapping}
      */
     public static ProductImportMapping ofNullValue(String column) {
