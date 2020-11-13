@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -115,12 +116,11 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
 
     private ImportOptions options;
     private IEclipseContext ctx;
-    private List<ProductImportMapping> mappings;
+    private EventList<ProductImportMapping> mappings;
     
     // Defines all columns that are used and imported
     private Map<String, Boolean> requiredHeaders = new HashMap<>();
     private EventList<String> csvHeaders = GlazedLists.eventList(new ArrayList<String>());
-    private EventList<ProductImportMapping> sortedList;
     
     //create a new ConfigRegistry which will be needed for GlazedLists handling
     private ConfigRegistry configRegistry = new ConfigRegistry();
@@ -232,8 +232,6 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
 
     
     private NatTable createListTable(Composite searchAndTableComposite) {
-        mappings = new ArrayList<>();
-
         // get the visible properties to show in list view
         String[] propertyNames = new String[] {"leftItem", "rightItem"};
         final IColumnAccessor<ProductImportMapping> accessor = new ProductCsvColumnAccessor();
@@ -250,12 +248,12 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
         propertyToLabelMap.put("leftItem", "import field");
         propertyToLabelMap.put("rightItem", "product attribute");
 
-        sortedList = GlazedLists.eventList(csvHeaders.stream().map(c -> new ProductImportMapping(c, null)).collect(Collectors.toList()));
+        mappings = GlazedLists.eventList(csvHeaders.stream().map(c -> new ProductImportMapping(c, null)).collect(Collectors.toList()));
 
-        IDataProvider bodyDataProvider = new ListDataProvider<>(sortedList, accessor);
+        IDataProvider bodyDataProvider = new ListDataProvider<>(mappings, accessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 
-        GlazedListsEventLayer<ProductImportMapping> eventLayer = new GlazedListsEventLayer<>(bodyDataLayer, sortedList);
+        GlazedListsEventLayer<ProductImportMapping> eventLayer = new GlazedListsEventLayer<>(bodyDataLayer, mappings);
 
         SelectionLayer selectionLayer = new SelectionLayer(eventLayer);
         ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
@@ -341,8 +339,9 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
     private void applyMapping(IStructuredSelection mappingSelection) {
         if (!mappingSelection.isEmpty()) {
             try {
+                // at first clear old mappings
+                mappings.forEach(p -> p.setRightItem(null));
 
-                List<ProductImportMapping> mappingsTemp = new ArrayList<>();
                 UserProperty userProp = (UserProperty) mappingSelection.getFirstElement();
                 String mapping = userProp.getValue();
                 String[] splittedMapping = mapping.split(Pattern.quote(MAPPING_DELIMITER));
@@ -352,12 +351,12 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
                     String[] splittedString = joinedString.split(Pattern.quote(MAPPING_FIELD_DELIMITER));
                     if (splittedString.length == 2) {
                         String i18nIdentifier = ProductBeanCSV.getI18NIdentifier(splittedString[1]);
-                        mappingsTemp.add(new ProductImportMapping(splittedString[0], Pair.of(splittedString[1], i18nIdentifier)));
+                        Optional<ProductImportMapping> existingProductMappingEntry = mappings.stream().filter(p -> p.getLeftItem().contentEquals(splittedString[0])).findAny();
+                        existingProductMappingEntry.ifPresent(p -> p.setRightItem(Pair.of(splittedString[1], i18nIdentifier)));
                     }
                 }
 
-                mappings.clear();
-                mappings.addAll(mappingsTemp);
+                natTable.refresh();
             } catch (ArrayIndexOutOfBoundsException e) {
                 System.err.println("is nich");
             }
@@ -466,8 +465,8 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
                     }
 
                     csvHeaders = GlazedLists.eventList(headerToPositions.keySet());
-                    sortedList.clear();
-                    sortedList.addAll(
+                    mappings.clear();
+                    mappings.addAll(
                             GlazedLists.eventList(csvHeaders.stream().map(c -> new ProductImportMapping(c, null)).collect(Collectors.toList())));
 //                    natTable.refresh();
                     options.setAnalyzeCompleted(true);
@@ -505,7 +504,7 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
         boolean canFinish;
         for (String headerName : requiredHeaders.keySet()) {
            if(mappings.stream()
-                    .anyMatch(pm -> pm.getRightItem().getKey().equalsIgnoreCase(headerName))) {
+                    .anyMatch(pm -> pm.getRightItem() != null && pm.getRightItem().getKey().equalsIgnoreCase(headerName))) {
                requiredHeaders.put(headerName, Boolean.TRUE);
            }
         }
@@ -532,14 +531,18 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
         @Override
         public void setDataValue(ProductImportMapping rowObject, int columnIndex, Object newValue) {
             switch (columnIndex) {
-                case 0:
-                    // unsettable! 
-                    break;
-                case 1:
-                    rowObject.setRightItem((ImmutablePair<String, String>) newValue);
-                    createMappingEntry(rowObject);
-                    checkCompleteness();
-                    break;
+            case 0:
+                // unsettable! 
+                break;
+            case 1:
+                // create only one mapping (per left item); delete old mapping if it was created before!
+                Optional<ProductImportMapping> oldMappingEntry = mappings.stream()
+                        .filter(p -> p.getRightItem() != null && p.getRightItem().getKey().equals(((ImmutablePair) newValue).getLeft())).findAny();
+                oldMappingEntry.ifPresent(p -> p.setRightItem(null));
+                rowObject.setRightItem((ImmutablePair<String, String>) newValue);
+                //                    createMappingEntry(rowObject);
+                checkCompleteness();
+                break;
             }
         }
 
@@ -547,18 +550,6 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
         public int getColumnCount() {
             return 2;
         }
-    }
-
-    private void createMappingEntry(ProductImportMapping rowObject) {
-        // create only one mapping (for the left item); delete old mapping if it was created before!
-        for (ProductImportMapping csvMapping : mappings) {
-            if (csvMapping.getLeftItem().equals(rowObject.getLeftItem())) {
-                mappings.remove(csvMapping);
-                break;
-            }
-        }
-        mappings.add(rowObject);
-
     }
 
     /**
