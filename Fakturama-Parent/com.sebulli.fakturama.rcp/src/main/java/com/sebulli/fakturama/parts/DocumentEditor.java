@@ -3305,17 +3305,15 @@ public class DocumentEditor extends Editor<Document> {
      */
     @Inject
     @Optional
-    public void handleForceClose(@UIEventTopic(DocumentEditor.EDITOR_ID + "/forceClose") Event event) {
-        //      sync.syncExec(() -> top.setRedraw(false));
+    public void handleForceClose(@UIEventTopic(DocumentEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "forceClose") Event event) {
         // the event has already all given params in it since we created them as Map
-        String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
+        String targetDocumentName = (String) event.getProperty(Editor.OBJECT_ID);
         // at first we have to check if the message is for us
         if (!StringUtils.equals(targetDocumentName, document.getName())) {
             // if not, silently ignore this event
             return;
         }
         partService.hidePart(part, true);
-        //  sync.syncExec(() -> top.setRedraw(true));
     }
 
 //    

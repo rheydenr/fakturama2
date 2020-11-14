@@ -35,6 +35,7 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
@@ -66,6 +67,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -98,6 +100,7 @@ public abstract class Editor<T extends IEntity> {
 	public static final String UPDATE_EVENT = "update";
 
 	public static final String BIND_MODE_INDICATOR = "IS_IN_BIND_MODE";
+	public static final String OBJECT_ID = "OBJECT_ID";
 
     @Inject
     protected IPreferenceStore defaultValuePrefs;

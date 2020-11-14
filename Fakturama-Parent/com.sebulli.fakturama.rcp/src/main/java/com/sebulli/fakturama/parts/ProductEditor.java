@@ -42,9 +42,13 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -71,6 +75,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
+import org.osgi.service.event.Event;
 
 import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.converter.CommonConverter;
@@ -118,6 +123,9 @@ public class ProductEditor extends Editor<Product> {
 	
 	@Inject
 	private ITemplateResourceManager resourceManager;
+    
+    @Inject
+    private EPartService partService;
 
     // Editor's ID
     public static final String ID = "com.sebulli.fakturama.editors.productEditor";
@@ -942,10 +950,27 @@ public class ProductEditor extends Editor<Product> {
 
         UpdateValueStrategy<VAT, String> vatModel2Target = UpdateValueStrategy.create(new EntityConverter<VAT>(VAT.class));
         UpdateValueStrategy<String, VAT> target2VatModel = UpdateValueStrategy.create(new StringToEntityConverter<VAT>(allVATs, VAT.class));
-//		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboVat);
-        bindModelValue(editorProduct, comboVat, Product_.vat.getName()/* + "." + VAT_.name.getName()*/,
+        bindModelValue(editorProduct, comboVat, Product_.vat.getName(),
                 target2VatModel, vatModel2Target);
 	}
+    
+    /**
+     * If an entity is deleted via list view we have to close a possibly open
+     * editor window. Since this is triggered by a UIEvent we named this method
+     * "handle*".
+     */
+    @Inject
+    @Optional
+    public void handleForceClose(@UIEventTopic(ProductEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "forceClose") Event event) {
+        // the event has already all given params in it since we created them as Map
+        String targetDocumentName = (String) event.getProperty(Editor.OBJECT_ID);
+        // at first we have to check if the message is for us
+        if (!StringUtils.equals(targetDocumentName, editorProduct.getName())) {
+            // if not, silently ignore this event
+            return;
+        }
+        partService.hidePart(part, true);
+    }
 
 	/**
      * creates the combo box for the Product category
