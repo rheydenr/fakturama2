@@ -1,4 +1,4 @@
-package org.fakturama.imp.wizard.csv.products;
+package org.fakturama.imp.wizard.csv.common;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +37,7 @@ import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
 import org.fakturama.imp.wizard.ImportOptions;
 
-public class CSVProductImportFilePage extends WizardPage {
+public class CSVImportFilePage extends WizardPage {
 
     @Inject
     @Translation
@@ -48,7 +48,7 @@ public class CSVProductImportFilePage extends WizardPage {
 
     private Text fileNameField;
 
-    public CSVProductImportFilePage() {
+    public CSVImportFilePage() {
         super("CSVProductImportFilePage");
     }
 

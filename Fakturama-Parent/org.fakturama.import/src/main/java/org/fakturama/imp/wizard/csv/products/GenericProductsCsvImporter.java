@@ -19,6 +19,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptions;
+import org.fakturama.imp.wizard.csv.common.CustomHeaderColumnNameTranslateMappingStrategy;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;

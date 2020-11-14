@@ -19,6 +19,7 @@ import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
 import org.fakturama.imp.wizard.ImportOptions;
 import org.fakturama.imp.wizard.ImportProgressDialog;
+import org.fakturama.imp.wizard.csv.common.CSVImportFilePage;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IImportWizard;
 
@@ -50,7 +51,7 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
     // The wizard pages
     private ImportOptionPage optionPage;
     private ImportCSVProductConfigTablePage csvConfigPage;
-    private CSVProductImportFilePage csvProductImportFilePage;
+    private CSVImportFilePage csvProductImportFilePage;
 
     @PostConstruct
     @Override
@@ -64,7 +65,7 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
         
         ctx.set(ImportOptions.class, new ImportOptions(getDialogSettings()));
 
-        csvProductImportFilePage = ContextInjectionFactory.make(CSVProductImportFilePage.class, ctx);
+        csvProductImportFilePage = ContextInjectionFactory.make(CSVImportFilePage.class, ctx);
         csvProductImportFilePage.setWizard(this);
         addPage(csvProductImportFilePage);
         
@@ -72,6 +73,8 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
         optionPage.setWizard(this);
         addPage(optionPage);
         
+        // this was the first try with TreeMapper widget, but it's too obfuscating and 
+        // you can't get the real mapping with one view
 //        csvConfigPage = ContextInjectionFactory.make(ImportCSVProductConfigPage.class, ctx);
         csvConfigPage =  ContextInjectionFactory.make(ImportCSVProductConfigTablePage.class, ctx);
         csvConfigPage.setPageComplete(true);

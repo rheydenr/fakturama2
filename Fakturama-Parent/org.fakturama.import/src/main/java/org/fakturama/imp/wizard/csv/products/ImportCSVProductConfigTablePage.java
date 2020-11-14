@@ -323,7 +323,7 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
                     new ComboBoxPainter(), 
                     DisplayMode.NORMAL, PRODUCTFIELD_CELL_LABEL);
             
-            CsvFieldComboProvider dataProvider = new CsvFieldComboProvider(msg);
+            ProductBeanCsvFieldComboProvider dataProvider = new ProductBeanCsvFieldComboProvider(msg);
             
             ComboBoxCellEditor productFieldValueCombobox = new ComboBoxCellEditor(dataProvider);
             productFieldValueCombobox.setFreeEdit(false);
@@ -546,7 +546,7 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
                 break;
             case 1:
                 // create only one mapping (per left item); delete old mapping if it was created before!
-                Optional<ProductImportMapping> oldMappingEntry = mappings.stream()
+                @SuppressWarnings("rawtypes") Optional<ProductImportMapping> oldMappingEntry = mappings.stream()
                         .filter(p -> p.getRightItem() != null && p.getRightItem().getKey().equals(((ImmutablePair) newValue).getLeft())).findAny();
                 oldMappingEntry.ifPresent(p -> p.setRightItem(null));
                 rowObject.setRightItem((ImmutablePair<String, String>) newValue);
