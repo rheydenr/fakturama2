@@ -149,8 +149,8 @@ public class GenericProductsCsvImporter {
                 //  Product product = modelFactory.createProduct();
                 ProductBeanCSV productBean = productCsvIterator.next();
                 Product product = modelFactory.createProduct();
-                product.setItemNumber(productBean.getItemNumber());
-                product.setName(productBean.getName());
+                product.setItemNumber(StringUtils.trim(productBean.getItemNumber()));
+                product.setName(StringUtils.trim(productBean.getName()));
                 
                 if (updateExisting) {
                     product = productsDAO.findOrCreate(product);
@@ -160,7 +160,7 @@ public class GenericProductsCsvImporter {
                 product = copyValues(product, productBean);
                 
                 if (productBean.getCategory() != null) {
-                    ProductCategory category = productCategoriesDAO.getCategory(productBean.getCategory(), false);
+                    ProductCategory category = productCategoriesDAO.getCategory(StringUtils.trim(productBean.getCategory()), false);
                     if (category != null || importEmptyValues) {
                         product.setCategories(category);
                     }
@@ -231,11 +231,11 @@ public class GenericProductsCsvImporter {
         product.setBlock4(productBean.getBlock4());
         product.setBlock5(productBean.getBlock5());
 
-        if (productBean.getDateAdded() == null) {
-            product.setDateAdded(today);
-        } else {
-            product.setDateAdded(productBean.getDateAdded());
+        // check if product is an existing entry, set date_modified accordingly
+        if (product.getDateAdded() != null) {
             product.setModified(today);
+        } else {
+            product.setDateAdded(today);
         }
         
         // itemNumber an name were already set in caller method to check if product exists

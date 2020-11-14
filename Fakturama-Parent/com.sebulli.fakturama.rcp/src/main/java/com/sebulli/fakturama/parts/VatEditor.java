@@ -191,13 +191,11 @@ public class VatEditor extends Editor<VAT> {
      * @return <code>true</code>, if <code>testParent</code> is parent of <code>category</code>
      */
     private boolean isParent(VATCategory testParent, VATCategory category) {
-        if(testParent != null && category != null) {
-            if(category.getParent() != null) {
-                if(category.getParent() == testParent) {
-                    return true;
-                } else {
-                    return isParent(testParent, (VATCategory) category.getParent());
-                }
+        if (testParent != null && category != null && category.getParent() != null) {
+            if(category.getParent() == testParent) {
+                return true;
+            } else {
+                return isParent(testParent, (VATCategory) category.getParent());
             }
         }
         return false;

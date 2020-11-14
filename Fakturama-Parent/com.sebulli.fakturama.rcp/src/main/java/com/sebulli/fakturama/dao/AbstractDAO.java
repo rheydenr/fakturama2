@@ -303,7 +303,7 @@ em.joinTransaction();
     }
     
     /**
-     * <P>Find or create an Entity based on given Entity. This method is used e.g.
+     * <P>Find or create an entity based on given entity. This method is used e.g.
      * for web shop import where a new contact is only created if it doesn't exist. 
      * </P><P>
      * This method is analog to the old <code>isTheSameAs()</code> method of the <code>DataSet*</code> class.
@@ -320,7 +320,10 @@ em.joinTransaction();
 		CriteriaQuery<T> query = criteriaBuilder.createQuery(getEntityClass());
 		Root<T> root = query.from(getEntityClass());
 		Set<Predicate> restrictions = getRestrictions(object, criteriaBuilder, root);
-		CriteriaQuery<T> select = query.select(root).where(restrictions.toArray(new Predicate[] {}));
+		CriteriaQuery<T> select = query.select(root).where(
+		        criteriaBuilder.and(restrictions.toArray(new Predicate[] {})),
+		        criteriaBuilder.isFalse(root.<Boolean>get("deleted"))
+		        );
 
 		List<T> resultList = getEntityManager().createQuery(select).getResultList();
 		if (checkOnly) {

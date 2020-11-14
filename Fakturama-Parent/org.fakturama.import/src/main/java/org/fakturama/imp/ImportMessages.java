@@ -57,5 +57,8 @@ public class ImportMessages {
 	public String wizardImportErrorMissingmappings;
     public String wizardImportCsvProductsTarget;
     public String wizardImportCsvProductsSource;
+    public String wizardImportCsvSpecSelect;
+    public String wizardImportCsvSpecSaveTooltip;
+    public String wizardImportCsvSpecDeleteTooltip;
 	
 }

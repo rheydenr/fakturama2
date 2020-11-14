@@ -22,6 +22,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -94,10 +95,12 @@ import ca.odell.glazedlists.GlazedLists;
 
 public class ImportCSVProductConfigTablePage extends WizardPage {
 
+    private static final char DEFAULT_QUOTE_CHAR = '"';
+    private static final String DEFAULT_SEPARATOR = ";";
     private static final String MAPPING_FIELD_DELIMITER = ":";
     private static final String PRODUCT_SPEC_QUALIFIER = "PRODUCT_MAPPING";
     private static final String MAPPING_DELIMITER = "|";
-    private static final String PAGE_NAME = "ImportCSVProductConfigPage";
+    private static final String PAGE_NAME = "ImportCSVProductConfigTablePage";
     
     private static final String TEXT_CELL_LABEL = "Text_Cell_LABEL";
     private static final String PRODUCTFIELD_CELL_LABEL = "ProductField_Cell_LABEL";
@@ -150,8 +153,12 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
     public void initialize(IEclipseContext ctx) {
         setTitle((String) ctx.get(ImportOptionPage.WIZARD_TITLE));
         this.ctx = ctx;
-        
-        String[] reqHdr = new String[] {"itemnumber", "name", "price1"};
+
+        EClass productModel = (EClass) FakturamaModelPackage.INSTANCE.getEPackage().getEClassifiers().get(FakturamaModelPackage.PRODUCT_CLASSIFIER_ID);
+        String[] reqHdr = new String[] { productModel.getEStructuralFeature(FakturamaModelPackage.PRODUCT_ITEMNUMBER_FEATURE_ID).getName(),
+                productModel.getEStructuralFeature(FakturamaModelPackage.PRODUCT_NAME_FEATURE_ID).getName(),
+                productModel.getEStructuralFeature(FakturamaModelPackage.PRODUCT_PRICE1_FEATURE_ID).getName() };
+
         for (String string : reqHdr) {
             requiredHeaders.put(string, Boolean.FALSE);
         }
@@ -168,7 +175,7 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
         setMessage(importMessages.wizardImportCsvProductsCreatemapping);
         
         Label importConfigName = new Label(top, SWT.NONE);
-        importConfigName.setText("select specification");
+        importConfigName.setText(importMessages.wizardImportCsvSpecSelect);
         
         comboSpecifications = new CCombo(top, SWT.BORDER);
         fillSpecificationCombo();
@@ -181,14 +188,14 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
         };
         specComboViewer.addSelectionChangedListener(listener);
         specComboViewer.getCCombo().addModifyListener(e -> {
-            saveSpecButton.setEnabled(true);
+            saveSpecButton.setEnabled(StringUtils.isNotBlank(comboSpecifications.getText()));
         });
         GridDataFactory.fillDefaults().hint(200, SWT.DEFAULT).grab(true, false).applyTo(comboSpecifications);
         
         saveSpecButton = new Button(top, SWT.PUSH);
         saveSpecButton.setEnabled(false); // enable only if valid mapping is available
         saveSpecButton.setImage(Icon.COMMAND_SAVE.getImage(IconSize.DefaultIconSize));
-        saveSpecButton.setToolTipText("save specification");
+        saveSpecButton.setToolTipText(importMessages.wizardImportCsvSpecSaveTooltip);
         saveSpecButton.addSelectionListener(new SelectionAdapter() {
             
             @Override
@@ -211,7 +218,7 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
         
         deleteSpecButton = new Button(top, SWT.PUSH);
         deleteSpecButton.setImage(Icon.COMMAND_DELETE.getImage(IconSize.DefaultIconSize));
-        deleteSpecButton.setToolTipText("delete specification");
+        deleteSpecButton.setToolTipText(importMessages.wizardImportCsvSpecDeleteTooltip);
         deleteSpecButton.setEnabled(!specComboViewer.getStructuredSelection().isEmpty());
         deleteSpecButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -230,7 +237,6 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
         createListTable(top);
     }
 
-    
     private NatTable createListTable(Composite searchAndTableComposite) {
         // get the visible properties to show in list view
         String[] propertyNames = new String[] {"leftItem", "rightItem"};
@@ -245,8 +251,8 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<>();
-        propertyToLabelMap.put("leftItem", "import field");
-        propertyToLabelMap.put("rightItem", "product attribute");
+        propertyToLabelMap.put(propertyNames[0], importMessages.wizardImportCsvProductsSource);
+        propertyToLabelMap.put(propertyNames[1], importMessages.wizardImportCsvProductsTarget);
 
         mappings = GlazedLists.eventList(csvHeaders.stream().map(c -> new ProductImportMapping(c, null)).collect(Collectors.toList()));
 
@@ -321,6 +327,7 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
             
             ComboBoxCellEditor productFieldValueCombobox = new ComboBoxCellEditor(dataProvider);
             productFieldValueCombobox.setFreeEdit(false);
+            productFieldValueCombobox.setShowDropdownFilter(true);
             configRegistry.registerConfigAttribute( 
                     EditConfigAttributes.CELL_EDITOR, 
                     productFieldValueCombobox, 
@@ -355,6 +362,8 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
                         existingProductMappingEntry.ifPresent(p -> p.setRightItem(Pair.of(splittedString[1], i18nIdentifier)));
                     }
                 }
+                
+                checkCompleteness();
 
                 natTable.refresh();
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -381,7 +390,9 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
                 specMapping.setQualifier(PRODUCT_SPEC_QUALIFIER);
             }
             // mapping is stored in the form csv_field:product_attribute|csv_field:product_attribute
-            List<String> collectedMappings = mappings.stream().map(m -> m.getLeftItem() + MAPPING_FIELD_DELIMITER + m.getRightItem().getKey())
+            List<String> collectedMappings = mappings.stream()
+                    .filter(m -> m.getRightItem() != null)
+                    .map(m -> m.getLeftItem() + MAPPING_FIELD_DELIMITER + m.getRightItem().getKey())
                     .collect(Collectors.toList());
             specMapping.setValue(String.join(MAPPING_DELIMITER, collectedMappings));
         }
@@ -447,8 +458,8 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
         options = ctx.get(ImportOptions.class);
         if (options.getCsvFile() != null && !options.isAnalyzeCompleted()) {
             Path inputFile = Paths.get(options.getCsvFile());
-            char separator = StringUtils.defaultIfBlank(options.getSeparator(), ";").charAt(0);
-            char quoteChar = StringUtils.isNotBlank(options.getQuoteChar()) ? options.getQuoteChar().charAt(0) : '"';
+            char separator = StringUtils.defaultIfBlank(options.getSeparator(), DEFAULT_SEPARATOR).charAt(0);
+            char quoteChar = StringUtils.isNotBlank(options.getQuoteChar()) ? options.getQuoteChar().charAt(0) : DEFAULT_QUOTE_CHAR;
             try (BufferedReader in = Files.newBufferedReader(inputFile)) {
 
                 ICSVParser csvParser = new CSVParserBuilder().withIgnoreLeadingWhiteSpace(true).withSeparator(separator).withQuoteChar(quoteChar).build();
@@ -468,7 +479,6 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
                     mappings.clear();
                     mappings.addAll(
                             GlazedLists.eventList(csvHeaders.stream().map(c -> new ProductImportMapping(c, null)).collect(Collectors.toList())));
-//                    natTable.refresh();
                     options.setAnalyzeCompleted(true);
                 }
             } catch (IOException e) {
@@ -540,7 +550,6 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
                         .filter(p -> p.getRightItem() != null && p.getRightItem().getKey().equals(((ImmutablePair) newValue).getLeft())).findAny();
                 oldMappingEntry.ifPresent(p -> p.setRightItem(null));
                 rowObject.setRightItem((ImmutablePair<String, String>) newValue);
-                //                    createMappingEntry(rowObject);
                 checkCompleteness();
                 break;
             }
@@ -565,7 +574,7 @@ public class ImportCSVProductConfigTablePage extends WizardPage {
                     StringUtils.join(requiredHeaders.entrySet().stream().filter(e -> !e.getValue()).map(e -> e.getKey()).collect(Collectors.toList()))));
         }
         
-        saveSpecButton.setEnabled(canFinish);
+        saveSpecButton.setEnabled(canFinish && StringUtils.isNotBlank(comboSpecifications.getText()));
         deleteSpecButton.setEnabled(!specComboViewer.getStructuredSelection().isEmpty());
         options.setMappingAvailable(canFinish);
         setPageComplete(canFinish);

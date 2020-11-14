@@ -285,9 +285,10 @@ public class ProductEditor extends Editor<Product> {
 			editorProduct = productsDAO.save(editorProduct);
 			
 	        // check if we can delete the old category (if it's empty)
-	        if(oldCat != null && oldCat != editorProduct.getCategories()) {
+	        if(oldCat != null && oldCat != editorProduct.getCategories()
+	                && !isParent(oldCat, editorProduct.getCategories())) {
 	        	long countOfEntriesInCategory = productsDAO.countByCategory(oldCat);
-	        	if(countOfEntriesInCategory == 0 && !productCategoriesDAO.hasChildren(oldCat)) {
+	        	if(countOfEntriesInCategory == 0) {
 	        		productCategoriesDAO.deleteEmptyCategory(oldCat);
 	        	}
 	        }
@@ -315,7 +316,18 @@ public class ProductEditor extends Editor<Product> {
 		return Boolean.TRUE;
 	}
 
-	/**
+	private boolean isParent(ProductCategory testParent, ProductCategory category) {
+        if (testParent != null && category != null && category.getParent() != null) {
+            if(category.getParent() == testParent) {
+                return true;
+            } else {
+                return isParent(testParent, (ProductCategory) category.getParent());
+            }
+        }
+        return false;
+    }
+
+    /**
 	 * Initializes the editor. If an existing data set is opened, the local
 	 * variable "product" is set to This data set. If the editor is opened to
 	 * create a new one, a new data set is created and the local variable
