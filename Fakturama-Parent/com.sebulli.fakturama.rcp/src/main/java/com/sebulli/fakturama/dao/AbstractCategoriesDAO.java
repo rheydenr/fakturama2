@@ -87,10 +87,13 @@ public abstract class AbstractCategoriesDAO<T extends AbstractCategory> extends 
      * @param oldCat the category to delete
      * @throws FakturamaStoringException 
      */
-	public void deleteEmptyCategory(T oldCat) throws FakturamaStoringException {
+	@SuppressWarnings("unchecked")
+    public void deleteEmptyCategory(T oldCat) throws FakturamaStoringException {
 		try {
 			if(hasChildren(oldCat)) {
-				throw new FakturamaStoringException("category has one or more children and can't be deleted.", new SQLException());
+			    // return silently since we could come from child category which 
+			    // doesn't know about other children
+			    return;
 			}
 			checkConnection();
 			EntityTransaction trx = getEntityManager().getTransaction();
@@ -100,6 +103,10 @@ public abstract class AbstractCategoriesDAO<T extends AbstractCategory> extends 
 //			oldCat.setDeleted(true);
 			getEntityManager().remove(oldCat);
 			trx.commit();
+			
+			if(oldCat.getParent() != null) {
+			    deleteEmptyCategory((T) oldCat.getParent());
+			}
 		} catch (SQLException e) {
 			throw new FakturamaStoringException("Error removing category from database.", e, oldCat);
 		}

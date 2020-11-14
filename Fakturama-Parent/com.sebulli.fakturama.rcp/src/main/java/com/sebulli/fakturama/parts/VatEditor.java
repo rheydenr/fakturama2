@@ -141,8 +141,9 @@ public class VatEditor extends Editor<VAT> {
              */
             editorVat = vatDao.update(editorVat);
 
-            // check if we can delete the old category (if it's empty)
-            if(oldCat != null && oldCat != editorVat.getCategory()) {
+            // check if we can delete the old category (if it's empty and is not a parent category of the current one)
+            if(oldCat != null && oldCat != editorVat.getCategory()
+                    && !isParent(oldCat, editorVat.getCategory())) {
             	long countOfEntriesInCategory = vatDao.countByCategory(oldCat);
             	if(countOfEntriesInCategory == 0) {
             		vatCategoriesDAO.deleteEmptyCategory(oldCat);
@@ -180,6 +181,26 @@ public class VatEditor extends Editor<VAT> {
         // reset dirty flag
 		getMDirtyablePart().setDirty(false);
 		return Boolean.TRUE;
+    }
+
+    /**
+     * Checks if the given {@link VATCategory} is parent of the other one.
+     * 
+     * @param testParent the parent {@link VATCategory} to test
+     * @param category a valid category
+     * @return <code>true</code>, if <code>testParent</code> is parent of <code>category</code>
+     */
+    private boolean isParent(VATCategory testParent, VATCategory category) {
+        if(testParent != null && category != null) {
+            if(category.getParent() != null) {
+                if(category.getParent() == testParent) {
+                    return true;
+                } else {
+                    return isParent(testParent, (VATCategory) category.getParent());
+                }
+            }
+        }
+        return false;
     }
 
     /**

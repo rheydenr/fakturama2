@@ -102,11 +102,10 @@ public class VatsDAO extends AbstractDAO<VAT> {
 		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
 		Root<VAT> root = criteria.from(getEntityClass());
 		criteria.select(cb.count(root)).where(
-				cb.and(
-						cb.equal(root.get(VAT_.category), cat),
-						cb.isFalse(root.get(VAT_.deleted))
-						)
-				);
+			cb.and(cb.equal(root.get(VAT_.category), cat),
+				   cb.isFalse(root.get(VAT_.deleted))
+			      )
+			);
 		return getEntityManager().createQuery(criteria).getSingleResult();
 	}
 
