@@ -55,5 +55,7 @@ public class ImportMessages {
 	public String wizardImportErrorWrongfilename;
 	public String wizardImportCsvProductsCreatemapping;
 	public String wizardImportErrorMissingmappings;
+    public String wizardImportCsvProductsTarget;
+    public String wizardImportCsvProductsSource;
 	
 }
