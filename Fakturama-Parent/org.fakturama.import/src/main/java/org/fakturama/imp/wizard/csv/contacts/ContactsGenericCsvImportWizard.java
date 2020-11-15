@@ -110,12 +110,6 @@ public class ContactsGenericCsvImportWizard extends Wizard implements IImportWiz
         }
         return super.getNextPage(page);
     }
-    
-    @Override
-    public IWizardPage getPreviousPage(IWizardPage page) {
-//        optionPage.getImportOptions().setAnalyzeCompleted(false);
-        return super.getPreviousPage(page);
-    }
 
     /**
      * Performs any actions appropriate in response to the user having pressed

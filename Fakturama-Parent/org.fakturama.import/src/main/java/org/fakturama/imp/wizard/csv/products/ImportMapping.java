@@ -47,7 +47,7 @@ public class ImportMapping {
 
     @Override
     public String toString() {
-        return new StringBuffer("ProductImportMapping {").append(leftItem).append(" -> ")
+        return new StringBuffer("ImportMapping {").append(leftItem).append(" -> ")
                 .append(rightItem != null ? rightItem.getKey() + " (" + rightItem.getValue() + ") " : "<null>").append("}").toString();
     }
 

@@ -33,6 +33,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -461,6 +462,17 @@ public class ImportCSVConfigTablePage extends WizardPage {
         // Add all categories to the combo
         specComboViewer.setInput(categories);
 
+    }
+    
+    @Override
+    public IWizardPage getPreviousPage() {
+        // reset analysis result since we could get a new CSV file
+        options = ctx.get(ImportOptions.class);
+        if(options != null) {
+            options.setAnalyzeCompleted(false);
+            analyzeCsvFile();
+        }
+        return super.getPreviousPage();
     }
 
     /**
