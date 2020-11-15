@@ -83,12 +83,13 @@ public class ContactsGenericCsvImportWizard extends Wizard implements IImportWiz
         optionPage.setWizard(this);
         addPage(optionPage);
         
+        // set required fields
         EClass contactModel = (EClass) FakturamaModelPackage.INSTANCE.getEPackage().getEClassifiers().get(FakturamaModelPackage.CONTACT_CLASSIFIER_ID);
         String[] reqHdr = new String[] { 
                 contactModel.getEStructuralFeature(FakturamaModelPackage.CONTACT_CUSTOMERNUMBER_FEATURE_ID).getName(),
                 contactModel.getEStructuralFeature(FakturamaModelPackage.CONTACT_NAME_FEATURE_ID).getName() };
         ctx.set(ImportCSVConfigTablePage.PARAM_REQUIRED_HEADERS, reqHdr);
-        ctx.set(ImportCSVConfigTablePage.PARAM_MAPPING_MESSAGE, importMessages.wizardImportCsvProductsCreatemapping);
+        ctx.set(ImportCSVConfigTablePage.PARAM_MAPPING_MESSAGE, importMessages.wizardImportCsvGenericCreatemapping);
         ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_QUALIFIER, ImportCSVConfigTablePage.CONTACTS_SPEC_QUALIFIER);
         ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_NAME, msg.contactDebtorFieldName);
 

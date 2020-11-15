@@ -94,7 +94,7 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
                 productModel.getEStructuralFeature(FakturamaModelPackage.PRODUCT_NAME_FEATURE_ID).getName(),
                 productModel.getEStructuralFeature(FakturamaModelPackage.PRODUCT_PRICE1_FEATURE_ID).getName() };
         ctx.set(ImportCSVConfigTablePage.PARAM_REQUIRED_HEADERS, reqHdr);
-        ctx.set(ImportCSVConfigTablePage.PARAM_MAPPING_MESSAGE, importMessages.wizardImportCsvProductsCreatemapping);
+        ctx.set(ImportCSVConfigTablePage.PARAM_MAPPING_MESSAGE, importMessages.wizardImportCsvGenericCreatemapping);
         ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_QUALIFIER, ImportCSVConfigTablePage.PRODUCT_SPEC_QUALIFIER);
         ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_NAME, msg.exporterDataProduct);
         

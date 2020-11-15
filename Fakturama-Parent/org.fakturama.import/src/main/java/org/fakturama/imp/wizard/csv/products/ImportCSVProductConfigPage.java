@@ -150,7 +150,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
         GridLayoutFactory.swtDefaults().numColumns(4).applyTo(top);
         GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(top);
         setControl(top);
-        setMessage(importMessages.wizardImportCsvProductsCreatemapping);
+        setMessage(importMessages.wizardImportCsvGenericCreatemapping);
         
         Label importConfigName = new Label(top, SWT.NONE);
         importConfigName.setText("select specification");

@@ -53,10 +53,10 @@ public class ImportMessages {
 	public String wizardImportProgressinfo;
 	public String wizardImportCsvSelectfile;
 	public String wizardImportErrorWrongfilename;
-	public String wizardImportCsvProductsCreatemapping;
+	public String wizardImportCsvGenericCreatemapping;
 	public String wizardImportErrorMissingmappings;
-    public String wizardImportCsvProductsTarget;
-    public String wizardImportCsvProductsSource;
+    public String wizardImportCsvGenericTarget;
+    public String wizardImportCsvGenericSource;
     public String wizardImportCsvSpecSelect;
     public String wizardImportCsvSpecSaveTooltip;
     public String wizardImportCsvSpecDeleteTooltip;

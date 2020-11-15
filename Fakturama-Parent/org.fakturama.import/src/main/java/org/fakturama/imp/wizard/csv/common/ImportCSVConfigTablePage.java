@@ -187,7 +187,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
         GridLayoutFactory.swtDefaults().numColumns(4).applyTo(top);
         GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(top);
         setControl(top);
-        setMessage(MessageFormat.format(importMessages.wizardImportCsvProductsCreatemapping, (String)ctx.get(PARAM_SPEC_NAME)));
+        setMessage(MessageFormat.format(importMessages.wizardImportCsvGenericCreatemapping, (String)ctx.get(PARAM_SPEC_NAME)));
         
         Label importConfigName = new Label(top, SWT.NONE);
         importConfigName.setText(importMessages.wizardImportCsvSpecSelect);
@@ -258,8 +258,8 @@ public class ImportCSVConfigTablePage extends WizardPage {
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<>();
-        propertyToLabelMap.put(propertyNames[0], importMessages.wizardImportCsvProductsSource);
-        propertyToLabelMap.put(propertyNames[1], MessageFormat.format(importMessages.wizardImportCsvProductsTarget, (String)ctx.get(PARAM_SPEC_NAME)));
+        propertyToLabelMap.put(propertyNames[0], importMessages.wizardImportCsvGenericSource);
+        propertyToLabelMap.put(propertyNames[1], MessageFormat.format(importMessages.wizardImportCsvGenericTarget, (String)ctx.get(PARAM_SPEC_NAME)));
 
         mappings = GlazedLists.eventList(csvHeaders.stream().map(getMappingFunction()).collect(Collectors.toList()));
 
