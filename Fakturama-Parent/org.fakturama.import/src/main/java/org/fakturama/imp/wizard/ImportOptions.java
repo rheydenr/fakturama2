@@ -8,7 +8,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.fakturama.imp.wizard.csv.products.ProductImportMapping;
+import org.fakturama.imp.wizard.csv.products.ImportMapping;
 
 /**
  *
@@ -32,7 +32,7 @@ public class ImportOptions {
 	private String quoteChar = DEFAULT_CSV_QUOTECHAR;
 	private String separator = DEFAULT_CSV_SEPARATOR;
 	private String basePath = "", csvFile = "";
-    private List<ProductImportMapping> mappings;
+    private List<ImportMapping> mappings;
 
 	public ImportOptions() {
 		
@@ -187,11 +187,11 @@ public class ImportOptions {
         this.mappingAvailable = mappingAvailable;
     }
 
-    public List<ProductImportMapping> getMappings() {
+    public List<ImportMapping> getMappings() {
         return mappings;
     }
 
-    public void setMappings(List<ProductImportMapping> mappings) {
+    public void setMappings(List<ImportMapping> mappings) {
         this.mappings = mappings;
     }
 }

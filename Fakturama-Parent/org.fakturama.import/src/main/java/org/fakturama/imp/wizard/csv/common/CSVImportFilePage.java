@@ -49,7 +49,7 @@ public class CSVImportFilePage extends WizardPage {
     private Text fileNameField;
 
     public CSVImportFilePage() {
-        super("CSVProductImportFilePage");
+        super("CSVImportFilePage");
     }
 
     @PostConstruct

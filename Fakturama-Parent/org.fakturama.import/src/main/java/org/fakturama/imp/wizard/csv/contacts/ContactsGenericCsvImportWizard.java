@@ -1,6 +1,4 @@
-package org.fakturama.imp.wizard.csv.products;
-
-import java.text.MessageFormat;
+package org.fakturama.imp.wizard.csv.contacts;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -25,6 +23,7 @@ import org.fakturama.imp.wizard.ImportProgressDialog;
 import org.fakturama.imp.wizard.csv.common.BeanCsvFieldComboProvider;
 import org.fakturama.imp.wizard.csv.common.CSVImportFilePage;
 import org.fakturama.imp.wizard.csv.common.ImportCSVConfigTablePage;
+import org.fakturama.imp.wizard.csv.products.ImportMapping;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IImportWizard;
 
@@ -37,7 +36,7 @@ import com.sebulli.fakturama.resources.core.ProgramImages;
  * A generic CSV import wizard for products.
  *
  */
-public class ProductsGenericCsvImportWizard extends Wizard implements IImportWizard {
+public class ContactsGenericCsvImportWizard extends Wizard implements IImportWizard {
     
     @Inject
     @Translation
@@ -62,45 +61,40 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
     // The wizard pages
     private ImportOptionPage optionPage;
     private ImportCSVConfigTablePage csvConfigPage;
-    private CSVImportFilePage csvProductImportFilePage;
+    private CSVImportFilePage csvContactImportFilePage;
 
     @PostConstruct
     @Override
     public void init(IWorkbench workbench, @Optional IStructuredSelection selection) {
         setWindowTitle(importMessages.wizardImportCsv);
-        Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.IMPORT_PRODUCTS2);
-        ctx.set(IFakturamaWizardService.WIZARD_TITLE, importMessages.wizardImportCsvProducts);
+        Image previewImage = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.EXPORT_CONTACTS_CSV);  // CSV example image
+        ctx.set(IFakturamaWizardService.WIZARD_TITLE, importMessages.wizardImportCsvDebtors);
         ctx.set(IFakturamaWizardService.WIZARD_DESCRIPTION, importMessages.wizardImportOptionsSet);
         ctx.set(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE, previewImage);
         setDialogSettings(ctx.get(IDialogSettings.class));
         
         ctx.set(ImportOptions.class, new ImportOptions(getDialogSettings()));
 
-        csvProductImportFilePage = ContextInjectionFactory.make(CSVImportFilePage.class, ctx);
-        csvProductImportFilePage.setWizard(this);
-        addPage(csvProductImportFilePage);
+        csvContactImportFilePage = ContextInjectionFactory.make(CSVImportFilePage.class, ctx);
+        csvContactImportFilePage.setWizard(this);
+        addPage(csvContactImportFilePage);
         
         optionPage = ContextInjectionFactory.make(ImportOptionPage.class, ctx);
         optionPage.setWizard(this);
         addPage(optionPage);
         
-        // this was the first try with TreeMapper widget, but it's too obfuscating and 
-        // you can't get the real mapping with one view
-//        csvConfigPage = ContextInjectionFactory.make(ImportCSVProductConfigPage.class, ctx);
-        
-        EClass productModel = (EClass) FakturamaModelPackage.INSTANCE.getEPackage().getEClassifiers().get(FakturamaModelPackage.PRODUCT_CLASSIFIER_ID);
+        EClass contactModel = (EClass) FakturamaModelPackage.INSTANCE.getEPackage().getEClassifiers().get(FakturamaModelPackage.CONTACT_CLASSIFIER_ID);
         String[] reqHdr = new String[] { 
-                productModel.getEStructuralFeature(FakturamaModelPackage.PRODUCT_ITEMNUMBER_FEATURE_ID).getName(),
-                productModel.getEStructuralFeature(FakturamaModelPackage.PRODUCT_NAME_FEATURE_ID).getName(),
-                productModel.getEStructuralFeature(FakturamaModelPackage.PRODUCT_PRICE1_FEATURE_ID).getName() };
+                contactModel.getEStructuralFeature(FakturamaModelPackage.CONTACT_CUSTOMERNUMBER_FEATURE_ID).getName(),
+                contactModel.getEStructuralFeature(FakturamaModelPackage.CONTACT_NAME_FEATURE_ID).getName() };
         ctx.set(ImportCSVConfigTablePage.PARAM_REQUIRED_HEADERS, reqHdr);
         ctx.set(ImportCSVConfigTablePage.PARAM_MAPPING_MESSAGE, importMessages.wizardImportCsvProductsCreatemapping);
-        ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_QUALIFIER, ImportCSVConfigTablePage.PRODUCT_SPEC_QUALIFIER);
-        ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_NAME, msg.exporterDataProduct);
-        
-        csvConfigPage = ContextInjectionFactory.make(ImportCSVConfigTablePage.class, ctx);
+        ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_QUALIFIER, ImportCSVConfigTablePage.CONTACTS_SPEC_QUALIFIER);
+        ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_NAME, msg.contactDebtorFieldName);
+
+        csvConfigPage =  ContextInjectionFactory.make(ImportCSVConfigTablePage.class, ctx);
         csvConfigPage.setMappingFunction(c -> new ImportMapping(c, null));
-        csvConfigPage.setDataProvider(new BeanCsvFieldComboProvider(ProductBeanCSV.createProductsAttributeMap(msg)));
+        csvConfigPage.setDataProvider(new BeanCsvFieldComboProvider(ContactBeanCSV.createContactsAttributeMap(msg)));
         csvConfigPage.setPageComplete(true);
         csvConfigPage.setWizard(this);
         addPage(csvConfigPage);
@@ -117,6 +111,12 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
         return super.getNextPage(page);
     }
     
+    @Override
+    public IWizardPage getPreviousPage(IWizardPage page) {
+//        optionPage.getImportOptions().setAnalyzeCompleted(false);
+        return super.getPreviousPage(page);
+    }
+
     /**
      * Performs any actions appropriate in response to the user having pressed
      * the Finish button
@@ -131,14 +131,14 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
             ImportOptions importOptions = optionPage.getImportOptions();
             importOptions.setMappings(csvConfigPage.getCompleteMappings());
 
-            GenericProductsCsvImporter csvImporter = ContextInjectionFactory.make(GenericProductsCsvImporter.class, ctx);
+            GenericContactsCsvImporter csvImporter = ContextInjectionFactory.make(GenericContactsCsvImporter.class, ctx);
             csvImporter.importCSV(importOptions, false);
 
             ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
             dialog.setStatusText(csvImporter.getResult());
 
             // Refresh the table view of all products
-            evtBroker.post("ProductEditor", "update");
+            evtBroker.post("DebtorEditor", "update");
 
             // Find the VAT table view
             evtBroker.post("VatEditor", "update");

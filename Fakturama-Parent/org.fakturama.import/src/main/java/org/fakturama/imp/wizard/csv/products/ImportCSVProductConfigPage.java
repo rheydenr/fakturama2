@@ -80,7 +80,10 @@ import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.resources.core.ProgramImages;
 
 /**
- *
+ * <p>This class is the displays a TreeMapper for mapping product attributes to CSV fields.</p>
+ * 
+ * <i>NOTE:</i> This class is not used, since the table config variant seems to be a better approach.
+ * I've only left this class for educational reasons :-)
  */
 public class ImportCSVProductConfigPage extends WizardPage {
 
@@ -102,8 +105,8 @@ public class ImportCSVProductConfigPage extends WizardPage {
 
     private ImportOptions options;
     private IEclipseContext ctx;
-    private List<ProductImportMapping> mappings;
-    private TreeMapper<ProductImportMapping, String, Pair<String, String>> treeMapper;
+    private List<ImportMapping> mappings;
+    private TreeMapper<ImportMapping, String, Pair<String, String>> treeMapper;
     
     // Defines all columns that are used and imported
     private Map<String, Boolean> requiredHeaders = new HashMap<>();
@@ -221,7 +224,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
         if (!mappingSelection.isEmpty()) {
             try {
 
-                List<ProductImportMapping> mappingsTemp = new ArrayList<>();
+                List<ImportMapping> mappingsTemp = new ArrayList<>();
                 UserProperty userProp = (UserProperty) mappingSelection.getFirstElement();
                 String mapping = userProp.getValue();
                 String[] splittedMapping = mapping.split(Pattern.quote(MAPPING_DELIMITER));
@@ -231,7 +234,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
                     String[] splittedString = joinedString.split(Pattern.quote(MAPPING_FIELD_DELIMITER));
                     if (splittedString.length == 2) {
                         String i18nIdentifier = ProductBeanCSV.getI18NIdentifier(splittedString[1]);
-                        mappingsTemp.add(new ProductImportMapping(splittedString[0], Pair.of(splittedString[1], i18nIdentifier)));
+                        mappingsTemp.add(new ImportMapping(splittedString[0], Pair.of(splittedString[1], i18nIdentifier)));
                     }
                 }
 
@@ -330,26 +333,26 @@ public class ImportCSVProductConfigPage extends WizardPage {
         Color blue = display.getSystemColor(SWT.COLOR_BLUE);
         TreeMapperUIConfigProvider uiConfig = new TreeMapperUIConfigProvider(gray, 1, blue, 3);
         mappings = new ArrayList<>();
-        ISemanticTreeMapperSupport<ProductImportMapping, String, Pair<String, String>> semanticSupport = new ISemanticTreeMapperSupport<ProductImportMapping, String, Pair<String, String>>() {
+        ISemanticTreeMapperSupport<ImportMapping, String, Pair<String, String>> semanticSupport = new ISemanticTreeMapperSupport<ImportMapping, String, Pair<String, String>>() {
             @Override
-            public ProductImportMapping createSemanticMappingObject(String leftItem, Pair<String, String> rightItem) {
+            public ImportMapping createSemanticMappingObject(String leftItem, Pair<String, String> rightItem) {
                 // create only one mapping (for the left item); delete old mapping if it was created before!
-                for (ProductImportMapping csvMappings : mappings) {
+                for (ImportMapping csvMappings : mappings) {
                     if (csvMappings.getLeftItem().equals(leftItem)) {
                         mappings.remove(csvMappings);
                         break;
                     }
                 }
-                return new ProductImportMapping(leftItem, rightItem);
+                return new ImportMapping(leftItem, rightItem);
             }
 
             @Override
-            public String resolveLeftItem(ProductImportMapping semanticMappingObject) {
+            public String resolveLeftItem(ImportMapping semanticMappingObject) {
                 return semanticMappingObject.getLeftItem();
             }
 
             @Override
-            public Pair<String, String> resolveRightItem(ProductImportMapping semanticMappingObject) {
+            public Pair<String, String> resolveRightItem(ImportMapping semanticMappingObject) {
                 return semanticMappingObject.getRightItem();
             }
         };
@@ -369,7 +372,7 @@ public class ImportCSVProductConfigPage extends WizardPage {
                     public void keyPressed(KeyEvent e) {
                         switch (e.keyCode) {
                         case SWT.DEL:
-                            ProductImportMapping selectedMapping = (ProductImportMapping) treeMapper.getSelection().getFirstElement();
+                            ImportMapping selectedMapping = (ImportMapping) treeMapper.getSelection().getFirstElement();
                             if (selectedMapping != null) {
                                 mappings.remove(selectedMapping);
                                 treeMapper.refresh();
@@ -446,18 +449,18 @@ public class ImportCSVProductConfigPage extends WizardPage {
     }
 
     /**
-     * List of {@link ProductImportMapping}s where <b>any</b> member of CSV file
+     * List of {@link ImportMapping}s where <b>any</b> member of CSV file
      * is contained, but can be <code>null</code> if not assigned to a bean attribute.
      * This is necessary for later import, where the mapping have to be complete.
      * 
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<ProductImportMapping> getCompleteMappings() {
+    public List<ImportMapping> getCompleteMappings() {
         // complete for missing assignments
         for (String availableColumn : ((HashMap<String, Integer>)treeMapper.getLeftTreeViewer().getInput()).keySet()) {
             if(!mappings.parallelStream().anyMatch(pm -> pm.getLeftItem().equalsIgnoreCase(availableColumn))) {
-                mappings.add(ProductImportMapping.ofNullValue(availableColumn));
+                mappings.add(ImportMapping.ofNullValue(availableColumn));
             }
         }
         return mappings;

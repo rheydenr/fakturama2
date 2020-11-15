@@ -1,9 +1,9 @@
-package org.fakturama.imp.wizard.csv.products;
+package org.fakturama.imp.wizard.csv.common;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
-public class ProductMappingDisplayConverter extends DisplayConverter {
+public class MappingDisplayConverter extends DisplayConverter {
 
     @SuppressWarnings("unchecked")
     @Override

@@ -128,7 +128,7 @@ public class GenericProductsCsvImporter {
             strat.setType(ProductBeanCSV.class);
             Map<String, String> columnMapping = new HashMap<String, String>(); 
             
-            for (ProductImportMapping pm : importOptions.getMappings()) {
+            for (ImportMapping pm : importOptions.getMappings()) {
                 // null values aren't allowed in streams, therefore we use the classical way
                 columnMapping.put(pm.getLeftItem(), pm.getRightItem() != null ? pm.getRightItem().getKey() : null);
             }
@@ -239,7 +239,7 @@ public class GenericProductsCsvImporter {
             product.setDateAdded(today);
         }
         
-        // itemNumber an name were already set in caller method to check if product exists
+        // itemNumber and name were already set in caller method to check if product exists
         
         product.setSupplierItemNumber(productBean.getSupplierItemNumber());
         product.setPrice1(productBean.getPrice1());

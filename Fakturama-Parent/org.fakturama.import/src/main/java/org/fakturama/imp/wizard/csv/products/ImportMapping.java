@@ -4,19 +4,19 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-public class ProductImportMapping {
+public class ImportMapping {
     /**
      * The name from CSV header
      */
     private String leftItem;
-    int id;
+    private int id;
     /**
      * A {@link Map} which consists of field name and its corresponding I18N'ed
      * qualifier.
      */
     private Pair<String, String> rightItem;
 
-    public ProductImportMapping(String leftItem, Pair<String, String> rightItem) {
+    public ImportMapping(String leftItem, Pair<String, String> rightItem) {
         this.leftItem = leftItem;
         this.rightItem = rightItem;
     }
@@ -52,15 +52,15 @@ public class ProductImportMapping {
     }
 
     /**
-     * Create a {@link ProductImportMapping} where only the key is set (value is
+     * Create a {@link ImportMapping} where only the key is set (value is
      * <code>null</code>).
      * 
      * @param column
      *            the key to set
-     * @return {@link ProductImportMapping}
+     * @return {@link ImportMapping}
      */
-    public static ProductImportMapping ofNullValue(String column) {
-        return new ProductImportMapping(column, null);
+    public static ImportMapping ofNullValue(String column) {
+        return new ImportMapping(column, null);
     }
 
 }

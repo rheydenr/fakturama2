@@ -1,20 +1,19 @@
-package org.fakturama.imp.wizard.csv.products;
+package org.fakturama.imp.wizard.csv.common;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 
-import com.sebulli.fakturama.i18n.Messages;
-
-public class ProductBeanCsvFieldComboProvider implements IComboBoxDataProvider {
+public class BeanCsvFieldComboProvider implements IComboBoxDataProvider {
 
     private  List<Pair<String, String>> allEntries = null;
     
-    public ProductBeanCsvFieldComboProvider(Messages msg) {
-            List<Pair<String, String>> retList = ProductBeanCSV.createProductsAttributeMap(msg)
+    public BeanCsvFieldComboProvider(Map<String, String> beanAttribs) {
+            List<Pair<String, String>> retList = beanAttribs
                     .entrySet()
                     .stream()
                     .map(Pair::of)
