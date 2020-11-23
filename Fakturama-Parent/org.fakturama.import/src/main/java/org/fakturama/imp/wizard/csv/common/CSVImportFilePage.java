@@ -23,6 +23,7 @@ import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
@@ -96,9 +97,16 @@ public class CSVImportFilePage extends WizardPage {
             public void focusLost(FocusEvent e) {
                 getContainer().updateButtons();
             }
-
         });
-
+        
+        fileNameField.addModifyListener(l -> {
+             // reset analysis result since we could get a new CSV file
+            if(options != null) {
+                options.setAnalyzeCompleted(false);
+            }
+           
+        });
+        
         GridDataFactory.fillDefaults().grab(true, false).hint(300, SWT.DEFAULT).applyTo(fileNameField);
         Button ellipsis = new Button(top, SWT.PUSH);
         ellipsis.setText(JFaceResources.getString("openBrowse"));

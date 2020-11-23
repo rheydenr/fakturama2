@@ -169,15 +169,17 @@ public class ImportOptionPage extends WizardPage {
 		quoteChar.setText(options.getQuoteChar());
 		quoteChar.addModifyListener(e -> {
 				options.setQuoteChar(((Text)e.getSource()).getText());
+                options.setAnalyzeCompleted(false);
 		});
 		GridDataFactory.swtDefaults().span(2, 1).hint(10, SWT.DEFAULT).grab(false, false).applyTo(quoteChar);
-		
+	
 		Label separatorLbl = new Label(top, SWT.NONE);
 		separatorLbl.setText(importMessages.wizardImportOptionsSeparator);
 		separator = new Text(top, SWT.BORDER);
 		separator.setText(options.getSeparator());
 		separator.addModifyListener(e -> {
 				options.setSeparator(((Text)e.getSource()).getText());
+                options.setAnalyzeCompleted(false);
 		});
 		GridDataFactory.swtDefaults().span(2, 1).hint(10, SWT.DEFAULT).grab(false, false).applyTo(separator);
 		

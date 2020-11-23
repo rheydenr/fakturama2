@@ -24,6 +24,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -33,7 +34,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -114,6 +114,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
     private static final String MAPPING_FIELD_DELIMITER = ":";
     private static final String MAPPING_DELIMITER = "|";
     private static final String PAGE_NAME = "ImportCSVConfigTablePage";
+    private static final int MAX_PROPERTY_VALUE_LENGTH = 254;
     
     private static final String TEXT_CELL_LABEL = "Text_Cell_LABEL";
     private static final String ENTITYFIELD_CELL_LABEL = "EntityField_Cell_LABEL";
@@ -217,16 +218,28 @@ public class ImportCSVConfigTablePage extends WizardPage {
             public void widgetSelected(SelectionEvent e) {
                 String newText = comboSpecifications.getText();
                 UserProperty prop = createSpecFromMapping(newText);
+                boolean isUpdated = true;
                 try {
-                    prop = propertiesDAO.save(prop);
+                    // later on we can increase the database field
+                    if(prop.getValue().length() >= MAX_PROPERTY_VALUE_LENGTH) {
+                        MessageDialog.openError(getShell(), msg.dialogMessageboxTitleError, 
+                                "Mapping can't be stored because there are too many mappings "
+                                + "(database field is too small for it). Please reduce the count "
+                                + "of your mappings and try again. Sorry for the inconveniences.");
+                        isUpdated = false;
+                    } else {
+                        prop = propertiesDAO.save(prop);
+                    }
                 } catch (FakturamaStoringException e1) {
                     log.error(e1);
                 }
-                specComboViewer.removeSelectionChangedListener(listener);
-                specComboViewer.add(prop);
-                specComboViewer.setSelection(new StructuredSelection(prop));
-                specComboViewer.addSelectionChangedListener(listener);
-                deleteSpecButton.setEnabled(!specComboViewer.getStructuredSelection().isEmpty());
+                if(isUpdated) {
+                    specComboViewer.removeSelectionChangedListener(listener);
+                    specComboViewer.add(prop);
+                    specComboViewer.setSelection(new StructuredSelection(prop));
+                    specComboViewer.addSelectionChangedListener(listener);
+                    deleteSpecButton.setEnabled(!specComboViewer.getStructuredSelection().isEmpty());
+                }
             }
         });
         
@@ -320,6 +333,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
             try {
                 // at first clear old mappings
                 mappings.forEach(p -> p.setRightItem(null));
+                requiredHeaders = requiredHeaders.keySet().stream().collect(Collectors.toMap(Function.identity(), k -> Boolean.FALSE));
 
                 UserProperty userProp = (UserProperty) mappingSelection.getFirstElement();
                 String mapping = userProp.getValue();
@@ -330,11 +344,12 @@ public class ImportCSVConfigTablePage extends WizardPage {
                     String[] splittedString = joinedString.split(Pattern.quote(MAPPING_FIELD_DELIMITER));
                     if (splittedString.length == 2) {
                         String i18nIdentifier = ProductBeanCSV.getI18NIdentifier(splittedString[1]);
-                        Optional<ImportMapping> existingProductMappingEntry = mappings.stream().filter(p -> p.getLeftItem().contentEquals(splittedString[0])).findAny();
+                        Optional<ImportMapping> existingProductMappingEntry = mappings.stream().filter(p -> p.getLeftItem().contentEquals(splittedString[0]))
+                                .findAny();
                         existingProductMappingEntry.ifPresent(p -> p.setRightItem(Pair.of(splittedString[1], i18nIdentifier)));
                     }
                 }
-                
+
                 checkCompleteness();
 
                 natTable.refresh();
@@ -463,17 +478,6 @@ public class ImportCSVConfigTablePage extends WizardPage {
         specComboViewer.setInput(categories);
 
     }
-    
-    @Override
-    public IWizardPage getPreviousPage() {
-        // reset analysis result since we could get a new CSV file
-        options = ctx.get(ImportOptions.class);
-        if(options != null) {
-            options.setAnalyzeCompleted(false);
-            analyzeCsvFile();
-        }
-        return super.getPreviousPage();
-    }
 
     /**
      * This method is called by wizard to read in the CSV structure and fill the
@@ -504,7 +508,10 @@ public class ImportCSVConfigTablePage extends WizardPage {
                     mappings.clear();
                     mappings.addAll(
                             GlazedLists.eventList(csvHeaders.stream().map(getMappingFunction()).collect(Collectors.toList())));
+
                     options.setAnalyzeCompleted(true);
+                    comboSpecifications.clearSelection();
+                    comboSpecifications.setText("");
                 }
             } catch (IOException e) {
                 // T: Error message

@@ -86,7 +86,7 @@ public class ProductBeanCSV {
             attributeToNameMap.put("quantity", msg.commonFieldQuantity); 
             attributeToNameMap.put("quantityUnit", msg.editorProductFieldQuantityunitName); 
 //            attributeToNameMap.put("sellingUnit", "sellingUnit"); 
-            attributeToNameMap.put("vat", msg.commonFieldVat); 
+            attributeToNameMap.put("vatValue", msg.commonFieldVat); 
             attributeToNameMap.put("vatName", "vatName"); 
             attributeToNameMap.put("category", msg.commonFieldCategory); 
             attributeToNameMap.put("webshopId", "webshopId"); 
