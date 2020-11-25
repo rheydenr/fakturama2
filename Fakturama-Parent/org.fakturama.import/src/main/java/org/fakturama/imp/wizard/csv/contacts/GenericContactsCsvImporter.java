@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,7 +15,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.fakturama.imp.ImportMessages;
@@ -29,13 +31,22 @@ import com.opencsv.ICSVParser;
 import com.opencsv.bean.CsvToBean;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
+import com.sebulli.fakturama.misc.IDateFormatterService;
+import com.sebulli.fakturama.model.Address;
+import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
+import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
+import com.sebulli.fakturama.model.Payment;
+import com.sebulli.fakturama.util.ContactUtil;
 
 public class GenericContactsCsvImporter {
 
@@ -49,6 +60,23 @@ public class GenericContactsCsvImporter {
 
     @Inject
     private ContactsDAO contactsDao;
+    
+    @Inject
+    private PaymentsDAO paymentsDAO;
+    
+    @Inject
+    private IDateFormatterService dateFormatterService;
+
+    @Inject
+    private IDocumentAddressManager addressManager;
+    
+    @Inject
+    private IEclipseContext ctx;
+
+    private ContactUtil contactUtil;
+    
+    @Inject
+    private ILocaleService localeUtil;
 
     @Inject
     private ContactCategoriesDAO contactCategoriesDao;
@@ -92,7 +120,6 @@ public class GenericContactsCsvImporter {
         char separator = StringUtils.defaultIfBlank(importOptions.getSeparator(), ";").charAt(0);
         char quoteChar = StringUtils.isNotBlank(importOptions.getQuoteChar()) ? importOptions.getQuoteChar().charAt(0) : '"';
         modelFactory = FakturamaModelPackage.MODELFACTORY;
-        Date today = Calendar.getInstance().getTime();
 
         if (fileName == null) {
             log.error("No filename for import file given.");
@@ -104,8 +131,9 @@ public class GenericContactsCsvImporter {
         result = String.format("%s %s", importMessages.wizardImportProgressinfo, fileName);
 
         // Count the imported contacts
-        int importedProducts = 0;
-        int updatedProducts = 0;
+        int importedContacts = 0;
+        int updatedContacts = 0;
+        int skippedContacts = 0;
 
         // Count the line of the import file
 //        int lineNr = 0;
@@ -134,49 +162,68 @@ public class GenericContactsCsvImporter {
             Iterator<ContactBeanCSV> productCsvIterator = csv.iterator();            
             
             // Read the existing file and store it in a buffer
-            // with a fixed size. Only the newest lines are kept.
+            // with a fixed size. Only the latest lines are kept.
 
             // Read line by line
             while (productCsvIterator.hasNext()) {
 //                lineNr++;
 
-                //  contact contact = modelFactory.createProduct();
                 ContactBeanCSV contactBean = productCsvIterator.next();
-                 
+                
+                Address address = modelFactory.createAddress();
+                address.setZip(contactBean.getZip());
+                address.getContactTypes().add(ContactType.BILLING);
+
                 Contact contact = modelFactory.createDebitor();
                 contact.setCustomerNumber(StringUtils.trim(contactBean.getCustomerNumber()));
                 contact.setName(StringUtils.trim(contactBean.getName()));
+//   ???           contact.getAddresses().add(address);
+     
+                /*
+                 * Customer number, first name, name and ZIP are compared
+                 */
+                Contact testContact = contactsDao.findOrCreate(contact, true);
                 
-                if (updateExisting) {
-                    contact = contactsDao.findOrCreate(contact);
+                // if found and no update is required skip to the next record
+                if(testContact != null && !updateExisting) {
+                    skippedContacts++;
+                    continue;
                 }
                 
-                // update/copy values from CSV bean
-                contact = copyValues(contact, contactBean);
+                if(testContact == null) {
+                    // work further with testcontact
+                    testContact = contact;
+                }
                 
                 if (contactBean.getCategory() != null) {
                     ContactCategory category = contactCategoriesDao.getCategory(StringUtils.trim(contactBean.getCategory()), false);
                     if (category != null || importEmptyValues) {
-                        contact.setCategories(category);
-                    }
+                        testContact.setCategories(category);
+                                            }
                 }
                 
+                // update/copy values from CSV bean
+                testContact = copyValues(testContact, address, contactBean);
+                
                 // Add the contact to the data base
-                if (DateUtils.isSameDay(contact.getDateAdded(), today)) {
-                    importedProducts++;
-                } else if (updateExisting || DateUtils.isSameDay(contact.getModified(), today)) {
-                    // Update data
-                    updatedProducts++;
-                }
                 // Update the modified contact data
-                contactsDao.update(contact);
+                long currentId = testContact.getId();
+                contactsDao.update(testContact);
+                if (currentId == 0) {
+                    importedContacts++;
+                } else if (updateExisting) {
+                    // Update data
+                    updatedContacts++;
+                }
             }            
 
             // The result string
-            // T: Message: xx contacts HAVE BEEN IMPORTED
-            result += NL + Integer.toString(importedProducts) + " " + importMessages.wizardImportInfoContactsimported;
-            if (updatedProducts > 0)
-                result += NL + Integer.toString(updatedProducts) + " " + importMessages.wizardImportInfoContactsupdated;
+            //T: Message: xx Contacts have been imported 
+            result += NL + importedContacts + " " + importMessages.wizardImportInfoContactsimported;
+            if (updatedContacts > 0)
+                result += NL + updatedContacts + " " + importMessages.wizardImportInfoContactsupdated;
+            if (skippedContacts > 0)
+                result += NL + skippedContacts + " " + importMessages.wizardImportInfoContactsskipped;
             
         } catch (IOException e) {
             // T: Error message
@@ -193,26 +240,121 @@ public class GenericContactsCsvImporter {
      * @param contact target
      * @param contactBean source
      */
-    private Contact copyValues(Contact contact, ContactBeanCSV contactBean) {
+    private Contact copyValues(Contact contact, Address address, ContactBeanCSV contactBean) {
         Date today = Calendar.getInstance().getTime();
 
         // check if contact is an existing entry, set date_modified accordingly
-        if (contact.getDateAdded() != null) {
+        if (contactBean.getDateAdded() != null) {
             contact.setModified(today);
         } else {
             contact.setDateAdded(today);
         }
         
-        // itemNumber and name were already set in caller method to check if contact exists
+        // customerNumber and name were already set in caller method to check if contact exists
+        contact.setAlias(contactBean.getAlias());
+        contact.setCompany(contactBean.getCompany());
+        contact.setTitle(contactBean.getTitle());
+        contact.setFirstName(contactBean.getFirstName());
+        contact.setGender(getContactUtil().getGenderIdFromString(contactBean.getGender()));
+        if(contactBean.getReliability() != null) {
+            contact.setReliability(getContactUtil().getReliabilityID(contactBean.getReliability().toUpperCase()));
+        }
         
-        contact.setSupplierNumber(contactBean.getSupplierNumber());
+        // if previous address is given use it
+        Address tmpAddress = addressManager.getAddressFromContact(contact, ContactType.BILLING).orElse(null);
+        if(tmpAddress != null) {
+            address = createOrUpdateAddressFromContactBean(contactBean, tmpAddress, ContactType.BILLING);
+        } else { // if it's a completely new address
+            address = createOrUpdateAddressFromContactBean(contactBean, address, ContactType.BILLING);
+            contact.getAddresses().add(address);
+            address.setContact(contact);
+        }
+        
+        if(contactBean.hasDeliveryAddress()) {
+            Address deliveryAddress = addressManager.getAddressFromContact(contact, ContactType.DELIVERY).orElse(null);
+            if(deliveryAddress.getId() == address.getId()) {
+                // recreation of delivery address, if any
+                deliveryAddress = modelFactory.createAddress();
+            }
+            deliveryAddress = createOrUpdateAddressFromContactBean(contactBean, deliveryAddress, ContactType.DELIVERY);
+            deliveryAddress.getContactTypes().add(ContactType.DELIVERY);
+            
+            // only if it's a new address
+            if(deliveryAddress.getId() == 0) {
+                contact.getAddresses().add(deliveryAddress);
+                deliveryAddress.setContact(contact);
+            }
+        }
+        
+        if(StringUtils.isNotBlank(contactBean.getIban())) {
+            BankAccount account = contact.getBankAccount() != null ? contact.getBankAccount() : modelFactory.createBankAccount();
+            account.setValidFrom(Calendar.getInstance().getTime());
+            account.setAccountHolder(contactBean.getAccount_holder());
+            account.setName(contactBean.getName());
+            account.setBankName(contactBean.getBank_name());
+            account.setIban(contactBean.getIban());
+            account.setBic(contactBean.getBic());
+            contact.setBankAccount(account);
+        }
+        
         contact.setNote(contactBean.getNote());
         
+        Payment payment = paymentsDAO.findByName(contactBean.getPaymentType());
+        if(payment != null) {
+            contact.setPayment(payment);
+        }
+
+        contact.setGln(contactBean.getGln());
+        contact.setWebsite(contactBean.getWebsite());
+        contact.setSupplierNumber(contactBean.getSupplierNumber());
+        contact.setWebshopName(contactBean.getWebshopName());
+        contact.setVatNumber(contactBean.getVatNumber());
+        contact.setVatNumberValid(contactBean.getVatNumberValid());
+        contact.setDiscount(contactBean.getDiscount());
+        String birthday = contactBean.getBirthday();
+        if(StringUtils.isNotBlank(birthday)) {
+            GregorianCalendar dateFromString = dateFormatterService.getCalendarFromDateString(birthday);
+            contact.setBirthday(dateFromString.getTime());
+        }
+
         return contact;
+    }
+
+    /**
+     * Creates an {@link Address} from CSV properties.
+     * 
+     * @param prop
+     * @param address
+     * @param prefix necessary e.g. for delivery addresses
+     * @return 
+     */
+    private Address createOrUpdateAddressFromContactBean(ContactBeanCSV contactBean, Address address, ContactType type) {
+        address.setValidFrom(Calendar.getInstance().getTime());
+        address.setStreet(contactBean.getStreet(type));
+        address.setZip(contactBean.getZip(type));
+        address.setCity(contactBean.getCity(type));
+        address.setCityAddon(contactBean.getCityAddon(type));
+        address.setPhone(contactBean.getPhone(type));
+        address.setFax(contactBean.getFax(type));
+        address.setMobile(contactBean.getMobile(type));
+        address.setEmail(contactBean.getEmail(type));
+        if (contactBean.getCountryCode(type) != null) {
+            String countryCode = localeUtil.findCodeByDisplayCountry(contactBean.getCountryCode(type),
+                    localeUtil.getDefaultLocale().getLanguage());
+            address.setCountryCode(countryCode);
+        }
+        return address;
     }
 
     public String getResult() {
         return result;
+    }
+
+    private ContactUtil getContactUtil() {
+        if(contactUtil == null) {
+            contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
+        }
+        return contactUtil;
     }
 
 }

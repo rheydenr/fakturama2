@@ -23,20 +23,24 @@ import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
 import org.fakturama.imp.wizard.ImportOptions;
+import org.fakturama.wizards.IFakturamaWizardService;
+
+import com.sebulli.fakturama.log.ILogger;
 
 public class CSVImportFilePage extends WizardPage {
 
@@ -46,8 +50,12 @@ public class CSVImportFilePage extends WizardPage {
 
     @Inject
     private ImportOptions options;
+    
+    @Inject
+    private ILogger log;
 
     private Text fileNameField;
+    private Image previewImage = null;
 
     public CSVImportFilePage() {
         super("CSVImportFilePage");
@@ -56,6 +64,7 @@ public class CSVImportFilePage extends WizardPage {
     @PostConstruct
     public void initialize(IEclipseContext ctx) {
         setTitle((String) ctx.get(ImportOptionPage.WIZARD_TITLE));
+        this.previewImage = (Image) ctx.get(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE);
     }
 
     @Override
@@ -66,6 +75,19 @@ public class CSVImportFilePage extends WizardPage {
         GridLayoutFactory.swtDefaults().numColumns(2).applyTo(top);
         GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(top);
         setControl(top);
+
+        // Preview image
+        if (previewImage != null) {
+            Label preview = new Label(top, SWT.BORDER);
+            preview.setText(importMessages.wizardCommonPreviewLabel);
+            GridDataFactory.swtDefaults().span(3, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(preview);
+            try {
+                preview.setImage(previewImage);
+            }
+            catch (Exception e) {
+                log.error(e, "Icon not found");
+            }
+        }
 
         // Create the label with the help text
         setMessage(importMessages.wizardImportCsvSelectfile);
@@ -114,16 +136,15 @@ public class CSVImportFilePage extends WizardPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String startingDirectory = "";
                 if (!fileNameField.getText().isEmpty()) {
-                    startingDirectory = fileNameField.getText();
-                }
+                    String startingDirectory = fileNameField.getText();
 
-                Path startDir = Paths.get(startingDirectory);
-                options.setCsvFile(getFile(startDir));
-                fileNameField.setText(options.getCsvFile());
-                bindValue.validateModelToTarget();
-                getContainer().updateButtons();
+                    Path startDir = Paths.get(startingDirectory);
+                    options.setCsvFile(getFile(startDir));
+                    fileNameField.setText(options.getCsvFile());
+                    bindValue.validateModelToTarget();
+                    getContainer().updateButtons();
+                }
             }
         });
     }

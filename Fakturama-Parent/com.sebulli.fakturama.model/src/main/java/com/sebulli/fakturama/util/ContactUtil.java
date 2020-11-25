@@ -238,14 +238,15 @@ public class ContactUtil {
      * @return a (virtual) ID for the gender
      */
     public Integer getGenderIdFromString(String genderString) {
-    	Integer retval = Integer.valueOf(0);
-		if (genderString.equals("m"))
-			retval = Integer.valueOf(1);
-		if (genderString.equals("f"))
-			retval = Integer.valueOf(2);
-		return retval;
+        Integer retval = Integer.valueOf(0);
+        if (genderString != null) {
+            if (genderString.equals("m") || genderString.contentEquals(msg.contactFieldMrName))
+                retval = Integer.valueOf(1);
+            if (genderString.equals("f") || genderString.contentEquals(msg.contactFieldMsName))
+                retval = Integer.valueOf(2);
+        }
+        return retval;
     }
-    
     
     /**
      * Get the gender String by the gender number
@@ -744,9 +745,9 @@ public class ContactUtil {
 	/**
 	 * Get the reliability String by the number
 	 * 
-	 * @param i
-	 *            Gender number
-	 * @return Gender as string
+	 * @param type
+	 *            reliability type
+	 * @return Reliability as string
 	 */
 	public String getReliabilityString(ReliabilityType type) {
 		return getReliabilityString(type, true);
@@ -756,10 +757,10 @@ public class ContactUtil {
 	 * Get the reliability String by the number
 	 * 
 	 * @param type
-	 *            Gender number
+	 *            reliability type
 	 * @param translate
 	 *            TRUE, if the string should be translated
-	 * @return Gender as string
+	 * @return Reliability as string
 	 */
 	public String getReliabilityString(ReliabilityType type, boolean translate) {
 		switch (type) {
@@ -778,23 +779,21 @@ public class ContactUtil {
 		return "";
 	}
 	
-	///**
-	// * Get the reliability number by the string
-	// * 
-	// * @param s
-	// *          Reliability string
-	// * @return
-	// * 			The number
-	// */
-	//public int getReliabilityID(String s) {
-	//	// Test all strings
-	//	for (int i = 0;i < 4 ; i++) {
-	//		if (getReliabilityString(i,false).equalsIgnoreCase(s)) return i;
-	//		if (getReliabilityString(i,true).equalsIgnoreCase(s)) return i;
-	//	}
-	//	// Default = "---"
-	//	return 0;
-	//}
+	/**
+	 * Get the reliability number by the string
+	 * 
+	 * @param s
+	 *          Reliability string
+	 * @return
+	 * 			The ReliabilityType
+	 */
+	public ReliabilityType getReliabilityID(String s) {
+		// Test all strings
+	    Optional<ReliabilityType> result = ReliabilityType.VALUES.stream().filter(r -> getReliabilityString(r,false).equalsIgnoreCase(s)
+	            || getReliabilityString(r,true).equalsIgnoreCase(s)).findAny();
+		// Default = "---"
+		return result.orElse(ReliabilityType.NONE);
+	}
 
     /**
      * Returns <code>true</code> if billing and delivery addresses are equal

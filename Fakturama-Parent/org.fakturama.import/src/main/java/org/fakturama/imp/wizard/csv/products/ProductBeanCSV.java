@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EStructuralFeature;
 
+import com.opencsv.bean.CsvIgnore;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Product;
 
@@ -50,6 +51,7 @@ public class ProductBeanCSV {
     private String name = null;
     private long id = 0;
     
+    @CsvIgnore
     private static Map<String, String> attributeToNameMap;
     
     public static String getI18NIdentifier(String csvField) {

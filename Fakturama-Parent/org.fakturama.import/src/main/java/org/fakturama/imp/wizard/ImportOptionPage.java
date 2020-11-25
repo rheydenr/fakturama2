@@ -132,12 +132,8 @@ public class ImportOptionPage extends WizardPage {
 			}
 		}
 		
-		// Create the label with the help text
-		Label labelDescription = new Label(top, SWT.NONE);
-		
 		//T: Import Wizard Page 1 - Long description.
-		labelDescription.setText(importMessages.wizardImportOptionsSet);
-		GridDataFactory.swtDefaults().span(3, 1).align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
+		setMessage(importMessages.wizardImportOptionsSet);
 
 		buttonUpdateExisting = new Button (top, SWT.CHECK);
 		buttonUpdateExisting.setText(importMessages.wizardImportOptionsUpdate);

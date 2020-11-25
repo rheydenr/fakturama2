@@ -21,6 +21,7 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
 Bundle-ActivationPolicy: lazy
 Import-Package: ca.odell.glazedlists;version="1.11.0",
  ca.odell.glazedlists.event;version="1.11.0",
+ com.ibm.icu.util;version="67.1.0",
  com.sebulli.fakturama.i18n,
  com.sebulli.fakturama.log,
  com.sebulli.fakturama.misc,
