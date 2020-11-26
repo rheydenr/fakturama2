@@ -34,6 +34,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.gemini.ext.di.GeminiPersistenceContext;
 import org.eclipse.gemini.ext.di.GeminiPersistenceProperty;
 import org.eclipse.persistence.config.BatchWriting;
@@ -47,6 +50,7 @@ import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
+import com.sebulli.fakturama.model.IDescribableEntity;
 import com.sebulli.fakturama.model.IEntity;
 
 
@@ -224,10 +228,28 @@ em.joinTransaction();
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<T> criteria = cb.createQuery(getEntityClass());
         Root<T> root = criteria.from(getEntityClass());
-        CriteriaQuery<T> cq = criteria.where(
-        		cb.and(
-        				cb.equal(root.<String> get("name"), entityName),
-        				cb.isFalse(root.<Boolean>get("deleted"))));
+        CriteriaQuery<T> cq;boolean hasDescription = false;
+        
+        // if the concrete class has a description attribute we can use it, too
+        if(getEClass() != null) {
+            EList<EAttribute> eAllAttributes = getEClass().getEAllAttributes();
+            hasDescription = eAllAttributes.stream().anyMatch(p -> p.getName().contentEquals(FakturamaModelPackage.INSTANCE.getIDescribableEntity_Description().getName()));
+        }
+        if(hasDescription) {
+            cq = criteria.where(
+            		cb.and(
+            		        cb.or(
+            		                cb.equal(root.<String> get("description"), entityName),
+            		                cb.equal(root.<String> get("name"), entityName)
+            		             ),
+            				cb.isFalse(root.<Boolean>get("deleted"))));
+        } else {
+            cq = criteria.where(
+            		cb.and(
+            		        cb.equal(root.<String> get("name"), entityName),
+            				cb.isFalse(root.<Boolean>get("deleted"))));
+            
+        }
         T result = null;
         try {
             result = getEntityManager().createQuery(cq).getSingleResult();
@@ -237,6 +259,20 @@ em.joinTransaction();
         return result;
     }
     
+    /**
+     * <p>Returns the eClass of the concrete objects for which this DAO is responsible. Per default this
+     * method returns <code>null</code>, but in case of an {@link IDescribableEntity} one can
+     * overwrite this method in the concrete DAO class and return the proper eClass, e.g., return
+     * <pre>
+     * FakturamaModelPackage.INSTANCE.getPaymentEClass()
+     * </pre>
+     * 
+     * @return
+     */
+    protected EClass getEClass() {
+        return null;
+    }
+
     /**
      * Finds a {@link T} by id. 
      * @param id the primary key to search

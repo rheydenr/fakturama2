@@ -141,9 +141,11 @@ public class CSVImportFilePage extends WizardPage {
 
                     Path startDir = Paths.get(startingDirectory);
                     options.setCsvFile(getFile(startDir));
-                    fileNameField.setText(options.getCsvFile());
-                    bindValue.validateModelToTarget();
-                    getContainer().updateButtons();
+                    if (options.getCsvFile() != null) {
+                        fileNameField.setText(options.getCsvFile());
+                        bindValue.validateModelToTarget();
+                        getContainer().updateButtons();
+                    }
                 }
             }
         });

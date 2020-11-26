@@ -1,7 +1,5 @@
 package org.fakturama.imp.wizard.csv.products;
 
-import java.text.MessageFormat;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 

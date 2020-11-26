@@ -199,7 +199,7 @@ public class GenericContactsCsvImporter {
                     ContactCategory category = contactCategoriesDao.getCategory(StringUtils.trim(contactBean.getCategory()), false);
                     if (category != null || importEmptyValues) {
                         testContact.setCategories(category);
-                                            }
+                    }
                 }
                 
                 // update/copy values from CSV bean
@@ -291,13 +291,14 @@ public class GenericContactsCsvImporter {
             account.setValidFrom(Calendar.getInstance().getTime());
             account.setAccountHolder(contactBean.getAccount_holder());
             account.setName(contactBean.getName());
-            account.setBankName(contactBean.getBank_name());
+            account.setBankName(contactBean.getBankName());
             account.setIban(contactBean.getIban());
             account.setBic(contactBean.getBic());
             contact.setBankAccount(account);
         }
         
         contact.setNote(contactBean.getNote());
+        contact.setDiscount(contactBean.getDiscount());
         
         Payment payment = paymentsDAO.findByName(contactBean.getPaymentType());
         if(payment != null) {
@@ -310,7 +311,9 @@ public class GenericContactsCsvImporter {
         contact.setWebshopName(contactBean.getWebshopName());
         contact.setVatNumber(contactBean.getVatNumber());
         contact.setVatNumberValid(contactBean.getVatNumberValid());
-        contact.setDiscount(contactBean.getDiscount());
+        contact.setMandateReference(contactBean.getMandateReference());
+        contact.setRegisterNumber(contactBean.getRegisterNumber());
+        
         String birthday = contactBean.getBirthday();
         if(StringUtils.isNotBlank(birthday)) {
             GregorianCalendar dateFromString = dateFormatterService.getCalendarFromDateString(birthday);
@@ -331,18 +334,20 @@ public class GenericContactsCsvImporter {
     private Address createOrUpdateAddressFromContactBean(ContactBeanCSV contactBean, Address address, ContactType type) {
         address.setValidFrom(Calendar.getInstance().getTime());
         address.setStreet(contactBean.getStreet(type));
+        address.setCityAddon(contactBean.getCityAddon(type));
         address.setZip(contactBean.getZip(type));
         address.setCity(contactBean.getCity(type));
-        address.setCityAddon(contactBean.getCityAddon(type));
-        address.setPhone(contactBean.getPhone(type));
-        address.setFax(contactBean.getFax(type));
-        address.setMobile(contactBean.getMobile(type));
-        address.setEmail(contactBean.getEmail(type));
         if (contactBean.getCountryCode(type) != null) {
             String countryCode = localeUtil.findCodeByDisplayCountry(contactBean.getCountryCode(type),
                     localeUtil.getDefaultLocale().getLanguage());
             address.setCountryCode(countryCode);
         }
+        address.setLocalConsultant(contactBean.getLocalConsultant(type));
+        address.setEmail(contactBean.getEmail(type));
+        address.setMobile(contactBean.getMobile(type));
+        address.setPhone(contactBean.getPhone(type));
+        address.setFax(contactBean.getFax(type));
+        address.setAdditionalPhone(contactBean.getAdditionalPhone(type));
         return address;
     }
 

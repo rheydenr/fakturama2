@@ -133,7 +133,7 @@ public class ContactsGenericCsvImportWizard extends Wizard implements IImportWiz
             dialog.setStatusText(csvImporter.getResult());
 
             // Refresh the table view of all products
-            evtBroker.post("DebtorEditor", "update");
+            evtBroker.post("Debtor", "update");
 
             // Find the VAT table view
             evtBroker.post("VatEditor", "update");

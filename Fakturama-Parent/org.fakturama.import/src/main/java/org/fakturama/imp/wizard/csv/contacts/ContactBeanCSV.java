@@ -30,15 +30,18 @@ public class ContactBeanCSV {
 
     // can be "m" or "f"
     private String gender = null;
+    private String birthday = null;
 
-    private String street, cityAddon, zip, city, countryCode, localConsultant, email, mobile, phone, fax, additionalPhone, birthday;
-    private String delivery_street, delivery_cityAddon, delivery_zip, delivery_city, delivery_countryCode, delivery_localConsultant, delivery_email,
-            delivery_mobile, delivery_phone, delivery_fax, delivery_additionalPhone, delivery_birthday;
+    // billing address
+    private String street, cityAddon, zip, city, countryCode, localConsultant, email, mobile, phone, fax, additionalPhone;
+    
+    // delivery address
+    private String deliveryStreet, deliveryCityAddon, deliveryZip, deliveryCity, deliveryCountryCode, deliveryLocalConsultant, deliveryEmail,
+            deliveryMobile, deliveryPhone, deliveryFax, deliveryAdditionalPhone;
 
     private Double discount = null;
     private String paymentType = null;
     private String reliability = null;
-    private String useNetGross = null;
     private String vatNumber = null;
     private Boolean vatNumberValid = null;
     private String website = null;
@@ -48,8 +51,9 @@ public class ContactBeanCSV {
     private Long gln = null;
     private String mandateReference = null;
 
+    // banking info
     private String account_holder = null;
-    private String bank_name = null;
+    private String bankName = null;
     private String iban = null;
     private String bic = null;
 
@@ -105,23 +109,23 @@ public class ContactBeanCSV {
             attributeToNameMap.put("birthday", msg.editorContactFieldBirthdayName);
 
             // Delivery address
-            attributeToNameMap.put("delivery_street", String.format("%s (%s)", msg.commonFieldStreet, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_cityAddon", String.format("%s (%s)", msg.editorContactFieldAddressAddon, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_zip", String.format("%s (%s)", msg.commonFieldZipcode, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_city", String.format("%s (%s)", msg.commonFieldCity, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_countryCode", String.format("%s (%s)", msg.commonFieldCountry, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_localConsultant", String.format("%s (%s)", msg.editorContactFieldLocalconsultant, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_email", String.format("%s (%s)", msg.exporterDataEmail, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_mobile", String.format("%s (%s)", msg.exporterDataMobile, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_phone", String.format("%s (%s)", msg.exporterDataTelephone, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_fax", String.format("%s (%s)", msg.exporterDataTelefax, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_additionalPhone", String.format("%s (%s)", msg.editorContactFieldAdditionalPhone, msg.commonFieldDeliveryaddress));
-            attributeToNameMap.put("delivery_birthday", String.format("%s (%s)", msg.editorContactFieldBirthdayName, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryStreet", String.format("%s (%s)", msg.commonFieldStreet, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryCityAddon", String.format("%s (%s)", msg.editorContactFieldAddressAddon, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryZip", String.format("%s (%s)", msg.commonFieldZipcode, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryCity", String.format("%s (%s)", msg.commonFieldCity, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryCountryCode", String.format("%s (%s)", msg.commonFieldCountry, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryLocalConsultant", String.format("%s (%s)", msg.editorContactFieldLocalconsultant, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryEmail", String.format("%s (%s)", msg.exporterDataEmail, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryMobile", String.format("%s (%s)", msg.exporterDataMobile, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryPhone", String.format("%s (%s)", msg.exporterDataTelephone, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryFax", String.format("%s (%s)", msg.exporterDataTelefax, msg.commonFieldDeliveryaddress));
+            attributeToNameMap.put("deliveryAdditionalPhone", String.format("%s (%s)", msg.editorContactFieldAdditionalPhone, msg.commonFieldDeliveryaddress));
 
             attributeToNameMap.put("discount", msg.commonFieldDiscount);
             attributeToNameMap.put("paymentType", msg.commandPaymentsName);
             attributeToNameMap.put("reliability", msg.editorContactFieldReliabilityName);
-            attributeToNameMap.put("useNetGross", msg.preferencesDocumentUsenetgross);
+            // omitted
+            // attributeToNameMap.put("useNetGross", msg.preferencesDocumentUsenetgross);
             attributeToNameMap.put("vatNumber", msg.exporterDataVatno);
             attributeToNameMap.put("vatNumberValid", msg.exporterDataVatnoValid);
             attributeToNameMap.put("website", msg.exporterDataWebsite);
@@ -131,12 +135,9 @@ public class ContactBeanCSV {
             attributeToNameMap.put("mandateReference", msg.editorContactFieldMandaterefName);
 
             attributeToNameMap.put("account_holder", msg.commonFieldAccountholder);
-            attributeToNameMap.put("bank_name", msg.editorContactFieldBankName);
+            attributeToNameMap.put("bankName", msg.editorContactFieldBankName);
             attributeToNameMap.put("iban", msg.exporterDataIban);
             attributeToNameMap.put("bic", msg.exporterDataBic);
-
-            //            attributeToNameMap.put("account_holder", msg.commonFieldAccountholder); 
-            //            attributeToNameMap.put("account_holder", msg.commonFieldAccountholder); 
 
             attributeToNameMap.put("registerNumber", msg.contactFieldRegisterNumber);
             attributeToNameMap.put("dateAdded", "dateAdded");
@@ -243,7 +244,7 @@ public class ContactBeanCSV {
     public String getStreet(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_street;
+            return deliveryStreet;
         default:
             return street;
         }
@@ -260,7 +261,7 @@ public class ContactBeanCSV {
     public String getCityAddon(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_cityAddon;
+            return deliveryCityAddon;
         default:
             return cityAddon;
         }
@@ -273,7 +274,7 @@ public class ContactBeanCSV {
     public String getZip(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_zip;
+            return deliveryZip;
         default:
             return zip;
         }
@@ -294,7 +295,7 @@ public class ContactBeanCSV {
     public String getCity(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_city;
+            return deliveryCity;
         default:
             return city;
         }
@@ -311,7 +312,7 @@ public class ContactBeanCSV {
     public String getCountryCode(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_countryCode;
+            return deliveryCountryCode;
         default:
             return countryCode;
         }
@@ -328,7 +329,7 @@ public class ContactBeanCSV {
     public String getLocalConsultant(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_localConsultant;
+            return deliveryLocalConsultant;
         default:
             return localConsultant;
         }
@@ -345,7 +346,7 @@ public class ContactBeanCSV {
     public String getEmail(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_email;
+            return deliveryEmail;
         default:
             return email;
         }
@@ -362,7 +363,7 @@ public class ContactBeanCSV {
     public String getMobile(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_mobile;
+            return deliveryMobile;
         default:
             return mobile;
         }
@@ -379,7 +380,7 @@ public class ContactBeanCSV {
     public String getPhone(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_phone;
+            return deliveryPhone;
         default:
             return phone;
         }
@@ -396,7 +397,7 @@ public class ContactBeanCSV {
     public String getFax(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_fax;
+            return deliveryFax;
         default:
             return fax;
         }
@@ -413,7 +414,7 @@ public class ContactBeanCSV {
     public String getAdditionalPhone(ContactType type) {
         switch (type) {
         case DELIVERY:
-            return delivery_additionalPhone;
+            return deliveryAdditionalPhone;
         default:
             return additionalPhone;
         }
@@ -427,113 +428,96 @@ public class ContactBeanCSV {
         return birthday;
     }
 
-    public String getBirthday(ContactType type) {
-        switch (type) {
-        case DELIVERY:
-            return delivery_birthday;
-        default:
-            return birthday;
-        }
-    }
-
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
-    public String getDelivery_street() {
-        return delivery_street;
+    public String getDeliveryStreet() {
+        return deliveryStreet;
     }
 
-    public void setDelivery_street(String delivery_street) {
-        this.delivery_street = delivery_street;
+    public void setDeliveryStreet(String delivery_street) {
+        this.deliveryStreet = delivery_street;
     }
 
-    public String getDelivery_cityAddon() {
-        return delivery_cityAddon;
+    public String getDeliveryCityAddon() {
+        return deliveryCityAddon;
     }
 
-    public void setDelivery_cityAddon(String delivery_cityAddon) {
-        this.delivery_cityAddon = delivery_cityAddon;
+    public void setDeliveryCityAddon(String delivery_cityAddon) {
+        this.deliveryCityAddon = delivery_cityAddon;
     }
 
-    public String getDelivery_zip() {
-        return delivery_zip;
+    public String getDeliveryZip() {
+        return deliveryZip;
     }
 
-    public void setDelivery_zip(String delivery_zip) {
-        this.delivery_zip = delivery_zip;
+    public void setDeliveryZip(String delivery_zip) {
+        this.deliveryZip = delivery_zip;
     }
 
-    public String getDelivery_city() {
-        return delivery_city;
+    public String getDeliveryCity() {
+        return deliveryCity;
     }
 
-    public void setDelivery_city(String delivery_city) {
-        this.delivery_city = delivery_city;
+    public void setDeliveryCity(String delivery_city) {
+        this.deliveryCity = delivery_city;
     }
 
-    public String getDelivery_countryCode() {
-        return delivery_countryCode;
+    public String getDeliveryCountryCode() {
+        return deliveryCountryCode;
     }
 
-    public void setDelivery_countryCode(String delivery_countryCode) {
-        this.delivery_countryCode = delivery_countryCode;
+    public void setDeliveryCountryCode(String delivery_countryCode) {
+        this.deliveryCountryCode = delivery_countryCode;
     }
 
-    public String getDelivery_localConsultant() {
-        return delivery_localConsultant;
+    public String getDeliveryLocalConsultant() {
+        return deliveryLocalConsultant;
     }
 
-    public void setDelivery_localConsultant(String delivery_localConsultant) {
-        this.delivery_localConsultant = delivery_localConsultant;
+    public void setDeliveryLocalConsultant(String delivery_localConsultant) {
+        this.deliveryLocalConsultant = delivery_localConsultant;
     }
 
-    public String getDelivery_email() {
-        return delivery_email;
+    public String getDeliveryEmail() {
+        return deliveryEmail;
     }
 
-    public void setDelivery_email(String delivery_email) {
-        this.delivery_email = delivery_email;
+    public void setDeliveryEmail(String delivery_email) {
+        this.deliveryEmail = delivery_email;
     }
 
-    public String getDelivery_mobile() {
-        return delivery_mobile;
+    public String getDeliveryMobile() {
+        return deliveryMobile;
     }
 
-    public void setDelivery_mobile(String delivery_mobile) {
-        this.delivery_mobile = delivery_mobile;
+    public void setDeliveryMobile(String delivery_mobile) {
+        this.deliveryMobile = delivery_mobile;
     }
 
-    public String getDelivery_phone() {
-        return delivery_phone;
+    public String getDeliveryPhone() {
+        return deliveryPhone;
     }
 
-    public void setDelivery_phone(String delivery_phone) {
-        this.delivery_phone = delivery_phone;
+    public void setDeliveryPhone(String delivery_phone) {
+        this.deliveryPhone = delivery_phone;
     }
 
-    public String getDelivery_fax() {
-        return delivery_fax;
+    public String getDeliveryFax() {
+        return deliveryFax;
     }
 
-    public void setDelivery_fax(String delivery_fax) {
-        this.delivery_fax = delivery_fax;
+    public void setDeliveryFax(String delivery_fax) {
+        this.deliveryFax = delivery_fax;
     }
 
-    public String getDelivery_additionalPhone() {
-        return delivery_additionalPhone;
+    public String getDeliveryAdditionalPhone() {
+        return deliveryAdditionalPhone;
     }
 
-    public void setDelivery_additionalPhone(String delivery_additionalPhone) {
-        this.delivery_additionalPhone = delivery_additionalPhone;
-    }
-
-    public String getDelivery_birthday() {
-        return delivery_birthday;
-    }
-
-    public void setDelivery_birthday(String delivery_birthday) {
-        this.delivery_birthday = delivery_birthday;
+    public void setDeliveryAdditionalPhone(String delivery_additionalPhone) {
+        this.deliveryAdditionalPhone = delivery_additionalPhone;
     }
 
     public Double getDiscount() {
@@ -550,14 +534,6 @@ public class ContactBeanCSV {
 
     public void setReliability(String reliability) {
         this.reliability = reliability;
-    }
-
-    public String getUseNetGross() {
-        return useNetGross;
-    }
-
-    public void setUseNetGross(String useNetGross) {
-        this.useNetGross = useNetGross;
     }
 
     public String getVatNumber() {
@@ -624,12 +600,12 @@ public class ContactBeanCSV {
         this.account_holder = account_holder;
     }
 
-    public String getBank_name() {
-        return bank_name;
+    public String getBankName() {
+        return bankName;
     }
 
-    public void setBank_name(String bank_name) {
-        this.bank_name = bank_name;
+    public void setBankName(String bank_name) {
+        this.bankName = bank_name;
     }
 
     public String getIban() {
@@ -673,9 +649,9 @@ public class ContactBeanCSV {
     }
 
     public boolean hasDeliveryAddress() {
-        return delivery_additionalPhone != null || delivery_birthday != null || delivery_city != null || delivery_cityAddon != null
-                || delivery_countryCode != null || delivery_email != null || delivery_fax != null || delivery_localConsultant != null || delivery_mobile != null
-                || delivery_phone != null || delivery_street != null || delivery_zip != null;
+        return deliveryAdditionalPhone != null || deliveryCity != null || deliveryCityAddon != null
+                || deliveryCountryCode != null || deliveryEmail != null || deliveryFax != null || deliveryLocalConsultant != null || deliveryMobile != null
+                || deliveryPhone != null || deliveryStreet != null || deliveryZip != null;
     }
 
 }
