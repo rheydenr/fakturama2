@@ -6,8 +6,6 @@ package com.sebulli.fakturama.i18n;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-//import java.util.Locale;
-//import java.util.Locale.Builder;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -16,8 +14,6 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -125,8 +121,8 @@ public class LocaleUtil implements ILocaleService {
     	// TODO use lang, but without interfering with other methods!
 //        Optional<ULocale> retval = findLocaleByDisplayCountry(country);
         
-        Optional<ULocale> retval = countryLocaleMap.values().stream().filter(e -> country.contentEquals(e.getDisplayCountry(getDefaultLocale()))
-                || country.contentEquals(e.getDisplayCountry(ULocale.ENGLISH))).findAny();
+        Optional<ULocale> retval = countryLocaleMap.values().stream().filter(e -> country.equalsIgnoreCase(e.getDisplayCountry(getDefaultLocale()))
+                || country.equalsIgnoreCase(e.getDisplayCountry(ULocale.ENGLISH))).findAny();
         // hint: countryLocaleString.getDisplayCountry(defaultLocale) gives
         // the country as localized string
         return retval.isPresent() ? retval.get().getCountry() : null;
