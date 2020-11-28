@@ -9,17 +9,18 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.nebula.widgets.nattable.edit.editor.IComboBoxDataProvider;
 
 public class BeanCsvFieldComboProvider implements IComboBoxDataProvider {
+    public static final String EMPTY_ENTRY = "empty";
 
     private  List<Pair<String, String>> allEntries = null;
     
     public BeanCsvFieldComboProvider(Map<String, String> beanAttribs) {
-            List<Pair<String, String>> retList = beanAttribs
+            this.allEntries = beanAttribs
                     .entrySet()
                     .stream()
                     .map(Pair::of)
                     .sorted(Comparator.comparing(Pair::getValue))
                     .collect(Collectors.toList());
-            this.allEntries = retList;
+            this.allEntries.add(0, Pair.of("empty", "   "));
     }
 
     /* (non-Javadoc)

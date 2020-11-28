@@ -289,7 +289,7 @@ public class GenericContactsCsvImporter {
         if(StringUtils.isNotBlank(contactBean.getIban())) {
             BankAccount account = contact.getBankAccount() != null ? contact.getBankAccount() : modelFactory.createBankAccount();
             account.setValidFrom(Calendar.getInstance().getTime());
-            account.setAccountHolder(contactBean.getAccount_holder());
+            account.setAccountHolder(contactBean.getAccountHolder());
             account.setName(contactBean.getName());
             account.setBankName(contactBean.getBankName());
             account.setIban(contactBean.getIban());
@@ -314,11 +314,11 @@ public class GenericContactsCsvImporter {
         contact.setMandateReference(contactBean.getMandateReference());
         contact.setRegisterNumber(contactBean.getRegisterNumber());
         
-        String birthday = contactBean.getBirthday();
-        if(StringUtils.isNotBlank(birthday)) {
-            GregorianCalendar dateFromString = dateFormatterService.getCalendarFromDateString(birthday);
-            contact.setBirthday(dateFromString.getTime());
-        }
+ //       String birthday = contactBean.getBirthday();
+//        if(StringUtils.isNotBlank(birthday)) {
+//            GregorianCalendar dateFromString = dateFormatterService.getCalendarFromDateString(birthday);
+            contact.setBirthday(contactBean.getBirthday()/*dateFromString.getTime()*/);
+//        }
 
         return contact;
     }

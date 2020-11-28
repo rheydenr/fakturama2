@@ -17,8 +17,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.eclipse.swt.widgets.DateTime;
-
 /**
  * Date formatting service with various possibilities.
  *

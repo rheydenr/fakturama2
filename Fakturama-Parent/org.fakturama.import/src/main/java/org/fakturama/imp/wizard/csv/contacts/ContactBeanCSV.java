@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EStructuralFeature;
 
+import com.opencsv.bean.CsvDate;
 import com.opencsv.bean.CsvIgnore;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Contact;
@@ -30,7 +31,9 @@ public class ContactBeanCSV {
 
     // can be "m" or "f"
     private String gender = null;
-    private String birthday = null;
+    
+    @CsvDate
+    private Date birthday = null;
 
     // billing address
     private String street, cityAddon, zip, city, countryCode, localConsultant, email, mobile, phone, fax, additionalPhone;
@@ -52,13 +55,16 @@ public class ContactBeanCSV {
     private String mandateReference = null;
 
     // banking info
-    private String account_holder = null;
+    private String accountHolder = null;
     private String bankName = null;
     private String iban = null;
     private String bic = null;
 
     private String registerNumber = null;
+    
+    @CsvDate
     private Date dateAdded = null;
+    
     private String note = null;
     private Long id = null;
     //    private String modifiedBy = null;
@@ -134,7 +140,7 @@ public class ContactBeanCSV {
             attributeToNameMap.put("gln", msg.contactFieldGln);
             attributeToNameMap.put("mandateReference", msg.editorContactFieldMandaterefName);
 
-            attributeToNameMap.put("account_holder", msg.commonFieldAccountholder);
+            attributeToNameMap.put("accountHolder", msg.commonFieldAccountholder);
             attributeToNameMap.put("bankName", msg.editorContactFieldBankName);
             attributeToNameMap.put("iban", msg.exporterDataIban);
             attributeToNameMap.put("bic", msg.exporterDataBic);
@@ -424,11 +430,11 @@ public class ContactBeanCSV {
         this.additionalPhone = additionalPhone;
     }
 
-    public String getBirthday() {
+    public Date getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
 
@@ -592,12 +598,12 @@ public class ContactBeanCSV {
         this.mandateReference = mandateReference;
     }
 
-    public String getAccount_holder() {
-        return account_holder;
+    public String getAccountHolder() {
+        return accountHolder;
     }
 
-    public void setAccount_holder(String account_holder) {
-        this.account_holder = account_holder;
+    public void setAccountHolder(String account_holder) {
+        this.accountHolder = account_holder;
     }
 
     public String getBankName() {

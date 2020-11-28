@@ -100,7 +100,8 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 
 public class ImportCSVConfigTablePage extends WizardPage {
-
+    
+    
     public static final String PARAM_REQUIRED_HEADERS = "REQUIRED_HEADERS";
     public static final String PARAM_MAPPING_MESSAGE = "PARAM_MAPPING_MESSAGE";
     public static final String PARAM_SPEC_QUALIFIER = "PARAM_SPEC_QUALIFIER";
@@ -420,8 +421,9 @@ public class ImportCSVConfigTablePage extends WizardPage {
             }
             // mapping is stored in the form csv_field:product_attribute|csv_field:product_attribute
             List<String> collectedMappings = mappings.stream()
-                    .filter(m -> m.getRightItem() != null)
-                    .map(m -> m.getLeftItem() + MAPPING_FIELD_DELIMITER + m.getRightItem().getKey())
+                    // filter out empty entries
+                    .filter(m -> m.getRightItem() != null && !BeanCsvFieldComboProvider.EMPTY_ENTRY.contentEquals(m.getLeftItem()))
+                    .map(m -> String.format("%s%s%s", m.getLeftItem(), MAPPING_FIELD_DELIMITER, m.getRightItem().getKey()))
                     .collect(Collectors.toList());
             specMapping.setValue(String.join(MAPPING_DELIMITER, collectedMappings));
         }
@@ -566,6 +568,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
     
     class ProductCsvColumnAccessor implements IColumnAccessor<ImportMapping> {
 
+
         @Override
         public Object getDataValue(ImportMapping rowObject, int columnIndex) {
             switch (columnIndex) {
@@ -589,7 +592,12 @@ public class ImportCSVConfigTablePage extends WizardPage {
                 @SuppressWarnings("rawtypes") Optional<ImportMapping> oldMappingEntry = mappings.stream()
                         .filter(p -> p.getRightItem() != null && p.getRightItem().getKey().equals(((ImmutablePair) newValue).getLeft())).findAny();
                 oldMappingEntry.ifPresent(p -> p.setRightItem(null));
-                rowObject.setRightItem((ImmutablePair<String, String>) newValue);
+                ImmutablePair<String, String> newMappingEntry = (ImmutablePair<String, String>) newValue;
+                if(newMappingEntry.getLeft().contentEquals(BeanCsvFieldComboProvider.EMPTY_ENTRY)) {
+                    rowObject.setRightItem(null);
+                } else {
+                rowObject.setRightItem(newMappingEntry);
+                }
                 checkCompleteness();
                 break;
             }
