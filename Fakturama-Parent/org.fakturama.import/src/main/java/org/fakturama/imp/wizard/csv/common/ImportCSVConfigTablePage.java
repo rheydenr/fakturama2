@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,8 +80,6 @@ import org.eclipse.swt.widgets.Label;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
 import org.fakturama.imp.wizard.ImportOptions;
-import org.fakturama.imp.wizard.csv.products.ImportMapping;
-import org.fakturama.imp.wizard.csv.products.ProductBeanCSV;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -152,7 +151,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
     private Button deleteSpecButton;
     private NatTable natTable;
     private IComboBoxDataProvider dataProvider;
-    private Function<? super String, ? extends ImportMapping> mappingFunction;
+    private Function<String, String> i18nMappingFunction;
     
     public ImportCSVConfigTablePage(String title, String label, ProgramImages image) {
         super(PAGE_NAME);
@@ -175,10 +174,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
         this.ctx = ctx;
 
         String[] reqHdr = (String[]) ctx.get(PARAM_REQUIRED_HEADERS);
-
-        for (String string : reqHdr) {
-            requiredHeaders.put(string, Boolean.FALSE);
-        }
+        Arrays.stream(reqHdr).forEach(h -> requiredHeaders.put(h, Boolean.FALSE));
     }
 
     @Override
@@ -268,14 +264,14 @@ public class ImportCSVConfigTablePage extends WizardPage {
     private NatTable createListTable(Composite searchAndTableComposite) {
         // get the visible properties to show in list view
         String[] propertyNames = new String[] {"leftItem", "rightItem"};
-        final IColumnAccessor<ImportMapping> accessor = new ProductCsvColumnAccessor();
+        final IColumnAccessor<ImportMapping> accessor = new BeanCsvColumnAccessor();
 
         // mapping from property to label, needed for column header labels
         Map<String, String> propertyToLabelMap = new HashMap<>();
         propertyToLabelMap.put(propertyNames[0], importMessages.wizardImportCsvGenericSource);
         propertyToLabelMap.put(propertyNames[1], MessageFormat.format(importMessages.wizardImportCsvGenericTarget, (String)ctx.get(PARAM_SPEC_NAME)));
 
-        mappings = GlazedLists.eventList(csvHeaders.stream().map(getMappingFunction()).collect(Collectors.toList()));
+        mappings = GlazedLists.eventList(csvHeaders.stream().map(c -> new ImportMapping(c, null)).collect(Collectors.toList()));
 
         IDataProvider bodyDataProvider = new ListDataProvider<>(mappings, accessor);
         DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
@@ -315,7 +311,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
         // as the autoconfiguration of the NatTable is turned off, we have to
         // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-        natTable.addConfiguration(new ProductImportCsvMappingTableConfiguration());
+        natTable.addConfiguration(new BeanImportCsvMappingTableConfiguration());
 //      natTable.setBackground(GUIHelper.COLOR_WHITE);
         
         natTable.configure();
@@ -344,10 +340,10 @@ public class ImportCSVConfigTablePage extends WizardPage {
                     String joinedString = splittedMapping[i];
                     String[] splittedString = joinedString.split(Pattern.quote(MAPPING_FIELD_DELIMITER));
                     if (splittedString.length == 2) {
-                        String i18nIdentifier = ProductBeanCSV.getI18NIdentifier(splittedString[1]);
-                        Optional<ImportMapping> existingProductMappingEntry = mappings.stream().filter(p -> p.getLeftItem().contentEquals(splittedString[0]))
+                        String i18nIdentifier = getI18NMappingFunction().apply(splittedString[1]);
+                        Optional<ImportMapping> existingBeanMappingEntry = mappings.stream().filter(p -> p.getLeftItem().contentEquals(splittedString[0]))
                                 .findAny();
-                        existingProductMappingEntry.ifPresent(p -> p.setRightItem(Pair.of(splittedString[1], i18nIdentifier)));
+                        existingBeanMappingEntry.ifPresent(p -> p.setRightItem(Pair.of(splittedString[1], i18nIdentifier)));
                     }
                 }
 
@@ -359,15 +355,15 @@ public class ImportCSVConfigTablePage extends WizardPage {
             }
         }
     }
-    
+
     /**
-     * Registers the configuration for the product field column.
+     * Registers the configuration for the bean field column.
      * 
      * @param configRegistry the config registry
      * @param styleRightAligned a style attribute
      */
     private void registerEntityFieldColumn(IConfigRegistry configRegistry, Style styleRightAligned) {
-        //register a combobox editor for product field values 
+        //register a combobox editor for bean field values 
             configRegistry.registerConfigAttribute(
                     EditConfigAttributes.CELL_EDITABLE_RULE, 
                     IEditableRule.ALWAYS_EDITABLE, 
@@ -381,12 +377,12 @@ public class ImportCSVConfigTablePage extends WizardPage {
                     new ComboBoxPainter(), 
                     DisplayMode.NORMAL, ENTITYFIELD_CELL_LABEL);
             
-            ComboBoxCellEditor productFieldValueCombobox = new ComboBoxCellEditor(getDataProvider());
-            productFieldValueCombobox.setFreeEdit(false);
-            productFieldValueCombobox.setShowDropdownFilter(true);
+            ComboBoxCellEditor beanFieldValueCombobox = new ComboBoxCellEditor(getDataProvider());
+            beanFieldValueCombobox.setFreeEdit(false);
+            beanFieldValueCombobox.setShowDropdownFilter(true);
             configRegistry.registerConfigAttribute( 
                     EditConfigAttributes.CELL_EDITOR, 
-                    productFieldValueCombobox, 
+                    beanFieldValueCombobox, 
                     DisplayMode.NORMAL, ENTITYFIELD_CELL_LABEL); 
             configRegistry.registerConfigAttribute( 
                     CellConfigAttributes.DISPLAY_CONVERTER, 
@@ -417,9 +413,9 @@ public class ImportCSVConfigTablePage extends WizardPage {
             } else {
                 specMapping = FakturamaModelPackage.MODELFACTORY.createUserProperty();
                 specMapping.setName(specName);
-                specMapping.setQualifier(PRODUCT_SPEC_QUALIFIER);
+                specMapping.setQualifier(CONTACTS_SPEC_QUALIFIER);
             }
-            // mapping is stored in the form csv_field:product_attribute|csv_field:product_attribute
+            // mapping is stored in the form csv_field:bean_attribute|csv_field:bean_attribute
             List<String> collectedMappings = mappings.stream()
                     // filter out empty entries
                     .filter(m -> m.getRightItem() != null && !BeanCsvFieldComboProvider.EMPTY_ENTRY.contentEquals(m.getLeftItem()))
@@ -509,7 +505,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
                     csvHeaders = GlazedLists.eventList(headerToPositions.keySet());
                     mappings.clear();
                     mappings.addAll(
-                            GlazedLists.eventList(csvHeaders.stream().map(getMappingFunction()).collect(Collectors.toList())));
+                            GlazedLists.eventList(csvHeaders.stream().map(c -> new ImportMapping(c, null)).collect(Collectors.toList())));
 
                     options.setAnalyzeCompleted(true);
                     comboSpecifications.clearSelection();
@@ -521,13 +517,18 @@ public class ImportCSVConfigTablePage extends WizardPage {
             }
         }
     }
-
-    public Function<? super String, ? extends ImportMapping> getMappingFunction() {
-        return mappingFunction;
+    
+    private Function<String, String> getI18NMappingFunction() {
+        return i18nMappingFunction;
     }
 
-    public void setMappingFunction(Function<? super String, ? extends ImportMapping> mappingFunction) {
-        this.mappingFunction = mappingFunction;
+    /**
+     * Sets the mapping function which determines the given field name in the current localization.
+     * 
+     * @param i18nMappingFunction
+     */
+    public void setI18nMappingFunction(Function<String, String> i18nMappingFunction) {
+        this.i18nMappingFunction = i18nMappingFunction;
     }
 
     /**
@@ -566,7 +567,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
         return canFinish;
     }
     
-    class ProductCsvColumnAccessor implements IColumnAccessor<ImportMapping> {
+    class BeanCsvColumnAccessor implements IColumnAccessor<ImportMapping> {
 
 
         @Override
@@ -628,7 +629,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
         setPageComplete(canFinish);
     }
 
-    class ProductImportCsvMappingTableConfiguration extends AbstractRegistryConfiguration {
+    class BeanImportCsvMappingTableConfiguration extends AbstractRegistryConfiguration {
 
         @Override
         public void configureRegistry(IConfigRegistry configRegistry) {

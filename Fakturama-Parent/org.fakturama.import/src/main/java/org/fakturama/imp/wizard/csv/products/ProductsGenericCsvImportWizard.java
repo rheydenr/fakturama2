@@ -97,8 +97,8 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
         ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_NAME, msg.exporterDataProduct);
         
         csvConfigPage = ContextInjectionFactory.make(ImportCSVConfigTablePage.class, ctx);
-        csvConfigPage.setMappingFunction(c -> new ImportMapping(c, null));
         csvConfigPage.setDataProvider(new BeanCsvFieldComboProvider(ProductBeanCSV.createProductsAttributeMap(msg)));
+        csvConfigPage.setI18nMappingFunction(s -> ProductBeanCSV.getI18NIdentifier(s));
         csvConfigPage.setPageComplete(true);
         csvConfigPage.setWizard(this);
         addPage(csvConfigPage);

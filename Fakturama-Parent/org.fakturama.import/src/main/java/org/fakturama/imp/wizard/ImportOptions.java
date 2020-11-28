@@ -8,7 +8,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.fakturama.imp.wizard.csv.products.ImportMapping;
+import org.fakturama.imp.wizard.csv.common.ImportMapping;
 
 /**
  *

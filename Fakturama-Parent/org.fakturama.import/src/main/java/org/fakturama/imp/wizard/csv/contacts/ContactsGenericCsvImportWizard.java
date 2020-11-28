@@ -23,7 +23,6 @@ import org.fakturama.imp.wizard.ImportProgressDialog;
 import org.fakturama.imp.wizard.csv.common.BeanCsvFieldComboProvider;
 import org.fakturama.imp.wizard.csv.common.CSVImportFilePage;
 import org.fakturama.imp.wizard.csv.common.ImportCSVConfigTablePage;
-import org.fakturama.imp.wizard.csv.products.ImportMapping;
 import org.fakturama.wizards.IFakturamaWizardService;
 import org.fakturama.wizards.IImportWizard;
 
@@ -94,8 +93,8 @@ public class ContactsGenericCsvImportWizard extends Wizard implements IImportWiz
         ctx.set(ImportCSVConfigTablePage.PARAM_SPEC_NAME, msg.contactDebtorFieldName);
 
         csvConfigPage =  ContextInjectionFactory.make(ImportCSVConfigTablePage.class, ctx);
-        csvConfigPage.setMappingFunction(c -> new ImportMapping(c, null));
         csvConfigPage.setDataProvider(new BeanCsvFieldComboProvider(ContactBeanCSV.createContactsAttributeMap(msg)));
+        csvConfigPage.setI18nMappingFunction(s -> ContactBeanCSV.getI18NIdentifier(s));
         csvConfigPage.setPageComplete(true);
         csvConfigPage.setWizard(this);
         addPage(csvConfigPage);

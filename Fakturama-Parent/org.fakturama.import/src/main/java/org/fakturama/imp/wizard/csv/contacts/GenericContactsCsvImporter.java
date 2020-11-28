@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -22,7 +21,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptions;
 import org.fakturama.imp.wizard.csv.common.CustomHeaderColumnNameTranslateMappingStrategy;
-import org.fakturama.imp.wizard.csv.products.ImportMapping;
+import org.fakturama.imp.wizard.csv.common.ImportMapping;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -36,7 +35,6 @@ import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
-import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.Contact;
@@ -63,9 +61,6 @@ public class GenericContactsCsvImporter {
     
     @Inject
     private PaymentsDAO paymentsDAO;
-    
-    @Inject
-    private IDateFormatterService dateFormatterService;
 
     @Inject
     private IDocumentAddressManager addressManager;

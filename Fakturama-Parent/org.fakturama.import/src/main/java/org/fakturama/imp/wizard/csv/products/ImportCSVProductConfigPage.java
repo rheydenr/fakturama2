@@ -64,6 +64,7 @@ import org.eclipse.swt.widgets.Label;
 import org.fakturama.imp.ImportMessages;
 import org.fakturama.imp.wizard.ImportOptionPage;
 import org.fakturama.imp.wizard.ImportOptions;
+import org.fakturama.imp.wizard.csv.common.ImportMapping;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;

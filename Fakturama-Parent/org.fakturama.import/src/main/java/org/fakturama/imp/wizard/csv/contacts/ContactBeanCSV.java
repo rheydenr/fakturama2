@@ -46,6 +46,8 @@ public class ContactBeanCSV {
     private String paymentType = null;
     private String reliability = null;
     private String vatNumber = null;
+    
+    @CustomCsvBoolean
     private Boolean vatNumberValid = null;
     private String website = null;
     private String webshopName = null;

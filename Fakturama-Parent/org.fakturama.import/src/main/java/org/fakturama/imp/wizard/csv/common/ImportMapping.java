@@ -1,4 +1,4 @@
-package org.fakturama.imp.wizard.csv.products;
+package org.fakturama.imp.wizard.csv.common;
 
 import java.util.Map;
 
