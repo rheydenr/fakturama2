@@ -3,28 +3,13 @@ package com.sebulli.fakturama.model;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-
-import com.sebulli.fakturama.util.ContactUtil;
-
 public class DocumentAddressManager implements IDocumentAddressManager {
-    private ContactUtil contactUtil;
-    
-    @Inject
-    private IEclipseContext ctx;
     
 	/**
 	 * the model factory
 	 */
 	private FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
 
-//	@PostConstruct
-//	public void init(IEclipseContext ctx) {
-//	}
-//
 	/**
 	 * Create a new {@link DocumentReceiver} from a contact address for a given
 	 * {@link BillingType}. Nearly all fields are copied from {@link Contact} except
@@ -150,10 +135,4 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		return document;
 	}
 
-    private ContactUtil getContactUtil() {
-        if(contactUtil == null) {
-            contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
-        }
-        return contactUtil;
-    }
 }

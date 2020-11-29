@@ -276,6 +276,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
         propertyToLabelMap.put(propertyNames[0], importMessages.wizardImportCsvGenericSource);
         propertyToLabelMap.put(propertyNames[1], MessageFormat.format(importMessages.wizardImportCsvGenericTarget, (String)ctx.get(PARAM_SPEC_NAME)));
 
+        // initialize mappings, set each field to "unassigned"
         mappings = GlazedLists.eventList(csvHeaders.stream().map(c -> new ImportMapping(c, null)).collect(Collectors.toList()));
 
         IDataProvider bodyDataProvider = new ListDataProvider<>(mappings, accessor);
@@ -303,9 +304,8 @@ public class ImportCSVConfigTablePage extends WizardPage {
 
         // add default column labels to the label stack
         // need to be done on the column header data layer, otherwise the label
-        // stack does not contain the necessary labels at the time the
-        // comparator is searched
-        bodyDataLayer.setColumnWidthByPosition(0, 150);
+        // stack does not contain the necessary labels at the time the comparator is searched
+        bodyDataLayer.setColumnWidthByPosition(0, 150); // use fixed size for the moment
         bodyDataLayer.setColumnWidthByPosition(1, 150);
         ColumnOverrideLabelAccumulator cellLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
         cellLabelAccumulator.registerColumnOverrides(1, ENTITYFIELD_CELL_LABEL);
@@ -319,7 +319,6 @@ public class ImportCSVConfigTablePage extends WizardPage {
         // add the DefaultNatTableStyleConfiguration manually
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new BeanImportCsvMappingTableConfiguration());
-//      natTable.setBackground(GUIHelper.COLOR_WHITE);
         
         natTable.configure();
         GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(natTable);
@@ -517,7 +516,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
                 }
             } catch (IOException e) {
                 // T: Error message
-                //                result += NL + importMessages.wizardImportErrorOpenfile;
+                log.error(e, importMessages.wizardImportErrorOpenfile);
             }
         }
     }
@@ -558,7 +557,6 @@ public class ImportCSVConfigTablePage extends WizardPage {
      * @return <code>true</code> if all required headers are mapped, <code>false</code> otherwise
      */
     private boolean validateMapping() {
-        boolean canFinish;
         for (String headerName : requiredHeaders.keySet()) {
            if(mappings.stream()
                     .anyMatch(pm -> pm.getRightItem() != null && pm.getRightItem().getKey().equalsIgnoreCase(headerName))) {
@@ -567,8 +565,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
         }
         
         // can finish only if all required headers are set
-        canFinish = !requiredHeaders.values().contains(Boolean.FALSE);
-        return canFinish;
+        return !requiredHeaders.values().contains(Boolean.FALSE);
     }
     
     class BeanCsvColumnAccessor implements IColumnAccessor<ImportMapping> {
@@ -594,14 +591,15 @@ public class ImportCSVConfigTablePage extends WizardPage {
                 break;
             case 1:
                 // create only one mapping (per left item); delete old mapping if it was created before!
-                @SuppressWarnings("rawtypes") Optional<ImportMapping> oldMappingEntry = mappings.stream()
+                @SuppressWarnings("rawtypes")
+                Optional<ImportMapping> oldMappingEntry = mappings.stream()
                         .filter(p -> p.getRightItem() != null && p.getRightItem().getKey().equals(((ImmutablePair) newValue).getLeft())).findAny();
                 oldMappingEntry.ifPresent(p -> p.setRightItem(null));
                 ImmutablePair<String, String> newMappingEntry = (ImmutablePair<String, String>) newValue;
-                if(newMappingEntry.getLeft().contentEquals(BeanCsvFieldComboProvider.EMPTY_ENTRY)) {
+                if (BeanCsvFieldComboProvider.EMPTY_ENTRY.contentEquals(newMappingEntry.getLeft())) {
                     rowObject.setRightItem(null);
                 } else {
-                rowObject.setRightItem(newMappingEntry);
+                    rowObject.setRightItem(newMappingEntry);
                 }
                 checkCompleteness();
                 break;
@@ -624,7 +622,10 @@ public class ImportCSVConfigTablePage extends WizardPage {
             setErrorMessage(null);
         } else {
             setErrorMessage(String.format(importMessages.wizardImportErrorMissingmappings, 
-                    StringUtils.join(requiredHeaders.entrySet().stream().filter(e -> !e.getValue()).map(e -> e.getKey()).collect(Collectors.toList()))));
+                    StringUtils.join(requiredHeaders.entrySet().stream()
+                            .filter(e -> !e.getValue())
+                            .map(e -> getI18NMappingFunction().apply(e.getKey()))
+                            .collect(Collectors.toList()))));
         }
         
         saveSpecButton.setEnabled(canFinish && StringUtils.isNotBlank(comboSpecifications.getText()));

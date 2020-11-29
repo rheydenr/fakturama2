@@ -309,11 +309,7 @@ public class GenericContactsCsvImporter {
         contact.setMandateReference(contactBean.getMandateReference());
         contact.setRegisterNumber(contactBean.getRegisterNumber());
         
- //       String birthday = contactBean.getBirthday();
-//        if(StringUtils.isNotBlank(birthday)) {
-//            GregorianCalendar dateFromString = dateFormatterService.getCalendarFromDateString(birthday);
-            contact.setBirthday(contactBean.getBirthday()/*dateFromString.getTime()*/);
-//        }
+        contact.setBirthday(contactBean.getBirthday());
 
         return contact;
     }

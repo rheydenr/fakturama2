@@ -16,7 +16,9 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
@@ -41,6 +43,7 @@ import org.fakturama.imp.wizard.ImportOptions;
 import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.log.ILogger;
+import com.sebulli.fakturama.misc.Constants;
 
 public class CSVImportFilePage extends WizardPage {
 
@@ -50,7 +53,11 @@ public class CSVImportFilePage extends WizardPage {
 
     @Inject
     private ImportOptions options;
-    
+
+    @Inject
+    @Preference(nodePath="/instance/com.sebulli.fakturama.rcp")
+    private IEclipsePreferences eclipsePrefs;
+
     @Inject
     private ILogger log;
 
@@ -80,9 +87,10 @@ public class CSVImportFilePage extends WizardPage {
         if (previewImage != null) {
             Label preview = new Label(top, SWT.BORDER);
             preview.setText(importMessages.wizardCommonPreviewLabel);
-            GridDataFactory.swtDefaults().span(3, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(preview);
+            GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(preview);
             try {
                 preview.setImage(previewImage);
+                parent.getShell().setSize(previewImage.getImageData().width, previewImage.getImageData().height);
             }
             catch (Exception e) {
                 log.error(e, "Icon not found");
@@ -129,23 +137,25 @@ public class CSVImportFilePage extends WizardPage {
            
         });
         
-        GridDataFactory.fillDefaults().grab(true, false).hint(300, SWT.DEFAULT).applyTo(fileNameField);
+        GridDataFactory.fillDefaults().grab(true, false).hint(100, SWT.DEFAULT).applyTo(fileNameField);
         Button ellipsis = new Button(top, SWT.PUSH);
         ellipsis.setText(JFaceResources.getString("openBrowse"));
         ellipsis.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                String startingDirectory;
                 if (!fileNameField.getText().isEmpty()) {
-                    String startingDirectory = fileNameField.getText();
-
-                    Path startDir = Paths.get(startingDirectory);
-                    options.setCsvFile(getFile(startDir));
-                    if (options.getCsvFile() != null) {
-                        fileNameField.setText(options.getCsvFile());
-                        bindValue.validateModelToTarget();
-                        getContainer().updateButtons();
-                    }
+                    startingDirectory = fileNameField.getText();
+                } else {
+                    startingDirectory = eclipsePrefs.get(Constants.GENERAL_WORKSPACE, null);
+                }
+                Path startDir = Paths.get(startingDirectory);
+                options.setCsvFile(getFile(startDir));
+                if (options.getCsvFile() != null) {
+                    fileNameField.setText(options.getCsvFile());
+                    bindValue.validateModelToTarget();
+                    getContainer().updateButtons();
                 }
             }
         });
@@ -184,7 +194,7 @@ public class CSVImportFilePage extends WizardPage {
 
         // Start at the user's home or use the previously set filename
         if (startingDirectory != null) {
-            fileDialog.setFileName(startingDirectory.toString());
+            fileDialog.setFilterPath(startingDirectory.toString());
          } else {
             startingDirectory = Paths.get(System.getProperty("user.home"));
        }
