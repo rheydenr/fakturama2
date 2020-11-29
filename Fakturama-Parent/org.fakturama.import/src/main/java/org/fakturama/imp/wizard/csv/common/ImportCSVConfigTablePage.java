@@ -114,6 +114,11 @@ public class ImportCSVConfigTablePage extends WizardPage {
     private static final String MAPPING_FIELD_DELIMITER = ":";
     private static final String MAPPING_DELIMITER = "|";
     private static final String PAGE_NAME = "ImportCSVConfigTablePage";
+    
+    /**
+     * Maximal length of the property value field in the database. Since the mapping is stored
+     * in {@link UserProperty} table you can only use a limited length. May be improved later on.
+     */
     private static final int MAX_PROPERTY_VALUE_LENGTH = 254;
     
     private static final String TEXT_CELL_LABEL = "Text_Cell_LABEL";
@@ -351,7 +356,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
 
                 natTable.refresh();
             } catch (ArrayIndexOutOfBoundsException e) {
-                System.err.println("is nich");
+                log.error("mapping can't be applied! " + e.getMessage());
             }
         }
     }
