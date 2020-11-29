@@ -305,6 +305,8 @@ public class ImportCSVConfigTablePage extends WizardPage {
         // need to be done on the column header data layer, otherwise the label
         // stack does not contain the necessary labels at the time the
         // comparator is searched
+        bodyDataLayer.setColumnWidthByPosition(0, 150);
+        bodyDataLayer.setColumnWidthByPosition(1, 150);
         ColumnOverrideLabelAccumulator cellLabelAccumulator = new ColumnOverrideLabelAccumulator(bodyDataLayer);
         cellLabelAccumulator.registerColumnOverrides(1, ENTITYFIELD_CELL_LABEL);
         // Register label accumulator
@@ -382,7 +384,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
                     new ComboBoxPainter(), 
                     DisplayMode.NORMAL, ENTITYFIELD_CELL_LABEL);
             
-            ComboBoxCellEditor beanFieldValueCombobox = new ComboBoxCellEditor(getDataProvider());
+            ComboBoxCellEditor beanFieldValueCombobox = new ComboBoxCellEditor(getDataProvider(), 10);
             beanFieldValueCombobox.setFreeEdit(false);
             beanFieldValueCombobox.setShowDropdownFilter(true);
             configRegistry.registerConfigAttribute( 
@@ -409,25 +411,22 @@ public class ImportCSVConfigTablePage extends WizardPage {
      */
     private UserProperty createSpecFromMapping(String specName) {
         UserProperty specMapping = null;
-        if (validateMapping()) {
-            // check if a mapping with same name exists
-            UserProperty existingMapping = propertiesDAO.findByName(specName);
-            if (existingMapping != null) {
-                // warning dialog???
-                specMapping = existingMapping;
-            } else {
-                specMapping = FakturamaModelPackage.MODELFACTORY.createUserProperty();
-                specMapping.setName(specName);
-                specMapping.setQualifier(CONTACTS_SPEC_QUALIFIER);
-            }
-            // mapping is stored in the form csv_field:bean_attribute|csv_field:bean_attribute
-            List<String> collectedMappings = mappings.stream()
-                    // filter out empty entries
-                    .filter(m -> m.getRightItem() != null && !BeanCsvFieldComboProvider.EMPTY_ENTRY.contentEquals(m.getLeftItem()))
-                    .map(m -> String.format("%s%s%s", m.getLeftItem(), MAPPING_FIELD_DELIMITER, m.getRightItem().getKey()))
-                    .collect(Collectors.toList());
-            specMapping.setValue(String.join(MAPPING_DELIMITER, collectedMappings));
+        // check if a mapping with same name exists
+        UserProperty existingMapping = propertiesDAO.findByName(specName);
+        if (existingMapping != null) {
+            // warning dialog???
+            specMapping = existingMapping;
+        } else {
+            specMapping = FakturamaModelPackage.MODELFACTORY.createUserProperty();
+            specMapping.setName(specName);
+            specMapping.setQualifier(CONTACTS_SPEC_QUALIFIER);
         }
+        // mapping is stored in the form csv_field:bean_attribute|csv_field:bean_attribute
+        List<String> collectedMappings = mappings.stream()
+                // filter out empty entries
+                .filter(m -> m.getRightItem() != null && !BeanCsvFieldComboProvider.EMPTY_ENTRY.contentEquals(m.getLeftItem()))
+                .map(m -> String.format("%s%s%s", m.getLeftItem(), MAPPING_FIELD_DELIMITER, m.getRightItem().getKey())).collect(Collectors.toList());
+        specMapping.setValue(String.join(MAPPING_DELIMITER, collectedMappings));
         return specMapping;
     }
 
