@@ -14,9 +14,8 @@
  
 package org.fakturama.export.einvoice;
 
+import java.io.Serializable;
 import java.util.Optional;
-
-import org.fakturama.export.facturx.modelgen.CrossIndustryInvoice;
 
 import com.sebulli.fakturama.model.Document;
 
@@ -25,6 +24,6 @@ import com.sebulli.fakturama.model.Document;
  */
 public interface IEinvoice {
 
-    public CrossIndustryInvoice getInvoiceXml(Optional<Document> invoiceDoc);
+    public Serializable getInvoiceXml(Optional<Document> invoiceDoc);
 
 }

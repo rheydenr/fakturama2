@@ -74,7 +74,7 @@ public class FileOrganizer {
 	@Inject
 	private IDocumentAddressManager addressManager;
 	
-	enum PathOption {
+	public enum PathOption {
 		WITH_FILENAME,
 		WITH_EXTENSION,
 	}
@@ -104,7 +104,7 @@ public class FileOrganizer {
 		}
 		return StringUtils.defaultString(s);
 	}
-
+	
 	/**
 	 * Generates the document file name from the document and the placeholder
 	 * string in the preference page. Whether the path is absolute or relative depends on
@@ -116,13 +116,14 @@ public class FileOrganizer {
 	 *            The document
 	 * @return The filename
 	 */
-	private String getRelativeDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, Document document) {
+	private String getRelativeDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, String pathTemplate, Document document) {
 		String path, filename;
 		ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 
 		// T: Subdirectory of the OpenOffice documents
 		String savePath = msg.pathsDocumentsName + "/";
-		String fileNamePlaceholder = preferences.getString("OPENOFFICE_" + targetFormat.getPrefId() + "_PATH_FORMAT");
+		String id = "OPENOFFICE_" + targetFormat.getPrefId() + "_PATH_FORMAT";
+        String fileNamePlaceholder = pathTemplate != null ? pathTemplate : preferences.getString(id);
 
 		// Replace all backslashes
 		fileNamePlaceholder = fileNamePlaceholder.replace('\\', '/');
@@ -233,6 +234,18 @@ public class FileOrganizer {
 		return retval;
 	}
 
+    /**
+     * Returns the filename (with path) of the Office document including the
+     * workspace path
+     * 
+     * @param pathOptions {@link PathOption}s to use
+     * @param targetFormat the {@link TargetFormat}
+     * @return the filename
+     */
+    public Path getDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, Document document) {
+       return getDocumentPath(pathOptions, targetFormat, null, document);
+    }
+    
 	/**
 	 * Returns the filename (with path) of the Office document including the
 	 * workspace path
@@ -241,9 +254,9 @@ public class FileOrganizer {
 	 * @param targetFormat the {@link TargetFormat}
 	 * @return the filename
 	 */
-	public Path getDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, Document document) {
+	public Path getDocumentPath(Set<PathOption> pathOptions, TargetFormat targetFormat, String pathTemplate, Document document) {
 		String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
-		String documentPath = getRelativeDocumentPath(pathOptions, targetFormat, document);
+		String documentPath = getRelativeDocumentPath(pathOptions, targetFormat, pathTemplate, document);
 		if(isAbsolutePath(documentPath)) {
 			return Paths.get(documentPath);
 		} else {

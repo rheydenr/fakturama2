@@ -32,6 +32,7 @@ import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -54,7 +55,8 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
     private ComboFieldEditor conformanceLevelCombo;
 
     enum ZugferdVersion {
-        V1("1", "1"), V2_1("2.1 (XRechnung / Factur-X)", "2.1");
+        V1("1", "1"), //
+        V2_1("2.1 (XRechnung / Factur-X)", "2.1");
 
         final String description, version;
 
@@ -105,7 +107,6 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 
 //		addField(new BooleanFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_TEST, msg.zugferdPreferencesTestmode, getFieldEditorParent()));
  
-//        addField(new DirectoryFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, getFieldEditorParent()));
 		RadioGroupFieldEditor zugferdVersionRadioGroup = new RadioGroupFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_VERSION, msg.zugferdPreferencesVersion, 2, new String[][] { 
 			{ ZugferdVersion.V1.getDescription(), ZugferdVersion.V1.getVersion() },
 			{ ZugferdVersion.V2_1.getDescription(), ZugferdVersion.V2_1.getVersion() }},
@@ -125,6 +126,7 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 				featureMap.get(zfVersion.get()), getFieldEditorParent());
 
 		addField(conformanceLevelCombo);
+        addField(new StringFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, getFieldEditorParent()));
 	}
 	
 	@Override
@@ -164,7 +166,7 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
         preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_VERSION, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_TEST, write);
-//        preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_PATH, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_PATH, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, write);
     }
 

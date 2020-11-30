@@ -27,7 +27,10 @@ public enum TargetFormat {
 	ODT(".odt", "ODT", false),
 	
 	/** additional PDF format */
-	ADDITIONAL_PDF(".pdf", "ADDITIONAL_PDF", true);
+	ADDITIONAL_PDF(".pdf", "ADDITIONAL_PDF", true),
+    
+	/** XML file (e.g. for XRechnung) */
+    XML(".xml", "XML", false);
 	
 	private String extension, prefId;
 	boolean absolutePath;

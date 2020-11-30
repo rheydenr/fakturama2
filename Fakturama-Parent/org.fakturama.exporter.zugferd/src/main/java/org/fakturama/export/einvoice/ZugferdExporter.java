@@ -26,7 +26,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.facturx.XRechnungCreator;
-import org.fakturama.export.zugferd.ZUGFeRDCreator;
 import org.osgi.service.component.annotations.Component;
 
 import com.sebulli.fakturama.misc.Constants;
@@ -99,11 +98,11 @@ public class ZugferdExporter implements IPdfPostProcessor {
                 // currently only COMFORT profile is supported
     			String conformanceLevel = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, ConformanceLevel.ZUGFERD_V2_COMFORT.getDescriptor());
     	        zugferdProfile = ConformanceLevel.valueOf(conformanceLevel);
-    	        invoiceCreator = ContextInjectionFactory.make(XRechnungCreator.class, eclipseContext);
     	    } else { // V1
     	        zugferdProfile = ConformanceLevel.ZUGFERD_V1_COMFORT;
-    	        invoiceCreator = ContextInjectionFactory.make(ZUGFeRDCreator.class, eclipseContext);
+//    	        invoiceCreator = ContextInjectionFactory.make(ZUGFeRDCreator.class, eclipseContext);
     	    }
+	        invoiceCreator = ContextInjectionFactory.make(XRechnungCreator.class, eclipseContext);
             result = invoiceCreator.createEInvoice(invoice, zugferdProfile);
             
 			if(!result) {

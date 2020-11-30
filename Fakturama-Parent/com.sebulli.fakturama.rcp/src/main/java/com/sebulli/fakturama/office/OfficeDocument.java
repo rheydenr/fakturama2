@@ -380,7 +380,8 @@ public class OfficeDocument {
             }
             
             if (!messages.isEmpty() && !preferences.getString(Constants.DISPLAY_SUCCESSFUL_PRINTING).contentEquals(MessageDialogWithToggle.ALWAYS)) {
-                MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, String.join("\n", messages));
+                MessageDialogWithToggle.openInformation(shell, msg.dialogMessageboxTitleInfo, String.join("\n", messages), 
+                        null, false, preferences, Constants.DISPLAY_SUCCESSFUL_PRINTING);
             }
         }
     }

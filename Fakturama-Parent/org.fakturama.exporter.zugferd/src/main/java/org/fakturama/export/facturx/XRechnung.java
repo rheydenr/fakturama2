@@ -25,10 +25,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.fakturama.export.einvoice.ConformanceLevel;
 import org.fakturama.export.facturx.modelgen.AmountType;
@@ -95,6 +97,7 @@ import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.CEFACTCode;
 import com.sebulli.fakturama.model.Contact;
@@ -103,12 +106,15 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.office.Placeholders;
+import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
  * Create an XRechnung XML.
  */
 public class XRechnung extends AbstractEInvoice {
+    
+    private ContactUtil contactUtil;
 
     private DocumentAllowances itemAllowances;
 
@@ -117,6 +123,7 @@ public class XRechnung extends AbstractEInvoice {
         if(!invoiceDoc.isPresent()) {
             return null;
         }
+        contactUtil = ContextInjectionFactory.make(ContactUtil.class, eclipseContext);
         factory = new ObjectFactory();
         itemAllowances = new DocumentAllowances();
 
@@ -321,7 +328,7 @@ public class XRechnung extends AbstractEInvoice {
             Long originContactId = invoice.getReceiver() != null && !invoice.getReceiver().isEmpty() 
                     ? invoice.getReceiver().get(0).getOriginContactId() 
                     : Long.valueOf(0);
-            if(originContactId != 0) {
+            if(originContactId != null && originContactId != 0) {
                 Contact originContact = contactsDAO.findById(originContactId);
                 buyer.getGlobalID()
                     .add(createIdWithSchemeFromString(
@@ -1003,16 +1010,31 @@ public class XRechnung extends AbstractEInvoice {
             break;
         case BUYER:
             DocumentReceiver billingAddress = addressManager.getBillingAdress(invoice);
-            countryCode = billingAddress.getCountryCode();
-            retval = factory.createTradeAddressType()
-                .withPostcodeCode(createCode(billingAddress.getZip()))
-                .withLineOne(createText(billingAddress.getStreet()))
-    //      .withLineTwo(is empty at the moment)
-                //      .withLineThree(is empty at the moment);
-                .withCityName(createText(billingAddress.getCity()))
-                .withCountryID(createCountry(countryCode))  // Nur die Alpha-2 Darstellung darf verwendet werden
-//              .withCountrySubDivisionName(null)
-              ;
+            // attention! Mind the manualAddress!
+            if (billingAddress.getManualAddress() == null) {
+                retval = factory.createTradeAddressType()     //
+                        .withPostcodeCode(createCode(billingAddress.getZip()))  //
+                        .withLineOne(createText(billingAddress.getStreet()))    //
+                        //      .withLineTwo(is empty at the moment)
+                        //      .withLineThree(is empty at the moment);
+                        .withCityName(createText(billingAddress.getCity()))     //
+                        .withCountryID(createCountry(billingAddress.getCountryCode())) // Nur die Alpha-2 Darstellung darf verwendet werden
+                //              .withCountrySubDivisionName(null)
+            ;
+
+            } else {
+                Address addressFromString = contactUtil.createAddressFromString(billingAddress.getManualAddress());
+                retval = factory.createTradeAddressType()     //
+                        .withPostcodeCode(createCode(addressFromString.getZip()))  //
+                        .withLineOne(createText(addressFromString.getStreet()))    //
+                        //      .withLineTwo(is empty at the moment)
+                        //      .withLineThree(is empty at the moment);
+                        .withCityName(createText(addressFromString.getCity()))     //
+                        .withCountryID(createCountry(addressFromString.getCountryCode())) // Nur die Alpha-2 Darstellung darf verwendet werden
+                //              .withCountrySubDivisionName(null)
+            ;
+            }
+
             break;
         default:
             break;

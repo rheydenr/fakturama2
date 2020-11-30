@@ -27,7 +27,10 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;
@@ -45,6 +48,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.xmpbox.schema.XmpSchemaException;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -62,7 +66,9 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
-import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
+import com.sebulli.fakturama.office.FileOrganizer;
+import com.sebulli.fakturama.office.FileOrganizer.PathOption;
+import com.sebulli.fakturama.office.TargetFormat;
 
 public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
     /**
@@ -123,7 +129,8 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
 
     /**
      * Erzeugt aus einem bereits gedruckten PDF-Dokument (PDF/A-1) und einem
-     * XML-Eingabestream eine ZUGFeRD-Datei (PDF/A-3).
+     * XML-Eingabestream eine ZUGFeRD-Datei (PDF/A-3). Bei XRechnung wird nur das XML-File
+     * in den vorgegebenen Ordner geschrieben.
      * 
      * @param invoice
      * @param root
@@ -133,36 +140,43 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
         boolean retval = true;
         String pdfFile = invoice.getPdfPath();
         PDDocument pdfa3 = null;
-    
+
         netPricesPerVat.clear();
-    
-        try (ByteArrayOutputStream buffo = new ByteArrayOutputStream()) {
-            // create XML from structure
-            DOMResult res = new DOMResult();
-            JAXBContext context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {root.get().getClass()}, null);
-            context.createMarshaller().marshal(root.get(), res);
-            org.w3c.dom.Document zugferdXml = (org.w3c.dom.Document) res.getNode();
-            printDocument(zugferdXml, buffo);
-    
-            PDDocument retvalPDFA3 = getPdfHelper().makeA3Acompliant(pdfFile, zugferdProfile/*, zugferdXml, invoice.getName()*/);
-    
-            // embed XML
-            pdfa3 = getPdfHelper().attachZugferdFile(retvalPDFA3, buffo);
-            
-            if (pdfFile != null) {
-                pdfa3.save(Paths.get(pdfFile).toFile());
-            } else { // dialog cancelled
+
+        if (zugferdProfile == ConformanceLevel.XRECHNUNG) {
+            FileOrganizer fo = ContextInjectionFactory.make(FileOrganizer.class, eclipseContext);
+            Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
+            Path path = fo.getDocumentPath(pathOptions, TargetFormat.XML, eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, ""), invoice);
+            testOutput(root, path);
+        } else {
+            try (ByteArrayOutputStream buffo = new ByteArrayOutputStream()) {
+                // create XML from structure
+                DOMResult res = new DOMResult();
+                JAXBContext context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] { root.get().getClass() }, null);
+                context.createMarshaller().marshal(root.get(), res);
+                org.w3c.dom.Document zugferdXml = (org.w3c.dom.Document) res.getNode();
+                printDocument(zugferdXml, buffo);
+
+                PDDocument retvalPDFA3 = getPdfHelper().makeA3Acompliant(pdfFile, zugferdProfile/*, zugferdXml, invoice.getName()*/);
+
+                // embed XML
+                pdfa3 = getPdfHelper().attachZugferdFile(retvalPDFA3, buffo);
+
+                if (pdfFile != null) {
+                    pdfa3.save(Paths.get(pdfFile).toFile());
+                } else { // dialog cancelled
+                    retval = false;
+                }
+            } catch (JAXBException | IOException | TransformerException | XmpParsingException | XmpSchemaException exception) {
+                log.error(exception, "error creating ZUGFeRD document: " + exception.getMessage());
                 retval = false;
-            }
-        } catch (JAXBException | IOException | TransformerException | XmpParsingException | XmpSchemaException exception) {
-            log.error(exception, "error creating ZUGFeRD document: " + exception.getMessage());
-            retval = false;
-        } finally {
-            if (pdfa3 != null) {
-                try {
-                    pdfa3.close();
-                } catch (IOException ioex) {
-                    log.error(ioex, "error closing ZUGFeRD PDF document: " + ioex.getMessage());
+            } finally {
+                if (pdfa3 != null) {
+                    try {
+                        pdfa3.close();
+                    } catch (IOException ioex) {
+                        log.error(ioex, "error closing ZUGFeRD PDF document: " + ioex.getMessage());
+                    }
                 }
             }
         }
@@ -193,15 +207,13 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
      * 
      * @param root the document 
      */
-    @SuppressWarnings("unused")
-    protected void testOutput(Serializable root) {
-        /* * * * * * TEST ONLY!!! * * * * * */
-        Path path = Paths.get("d:\\temp\\ZUGTEST.XML");
+    protected void testOutput(Supplier<? extends Serializable> root, Path path) {
+//        Path path = Paths.get("d:\\temp\\ZUGTEST.XML");
         try(BufferedWriter newBufferedWriter = Files.newBufferedWriter(path, Charset.defaultCharset(), StandardOpenOption.CREATE);) {
             
             DOMResult res = new DOMResult();
-            JAXBContext testContext = JAXBContext.newInstance(root.getClass());
-            testContext.createMarshaller().marshal(root, res);
+            JAXBContext testContext = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] { root.get().getClass() }, null);
+            testContext.createMarshaller().marshal(root.get(), res);
             org.w3c.dom.Document doc = (org.w3c.dom.Document) res.getNode();
             printDocument(doc, new StreamResult(newBufferedWriter));
         }
@@ -209,7 +221,6 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        /* * * * * *  END TEST ONLY!!! * * * * * */
     }
 
     /**

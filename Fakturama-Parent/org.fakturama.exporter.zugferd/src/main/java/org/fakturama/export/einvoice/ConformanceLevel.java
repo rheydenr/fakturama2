@@ -20,9 +20,9 @@ package org.fakturama.export.einvoice;
  */
 public enum ConformanceLevel {
     
-	ZUGFERD_V1_BASIC("urn:ferd:invoice:1.0:basic", "BASIC"), 
-	ZUGFERD_V1_COMFORT("urn:ferd:invoice:1.0:comfort", "COMFORT"), 
-	ZUGFERD_V1_EXTENDED("urn:ferd:invoice:1.0:extended", "EXTENDED"),
+	ZUGFERD_V1_BASIC("urn:ferd:CrossIndustryDocument:invoice:1p0:basic", "BASIC"), 
+	ZUGFERD_V1_COMFORT("urn:ferd:CrossIndustryDocument:invoice:1p0:comfort", "COMFORT"), 
+	ZUGFERD_V1_EXTENDED("urn:ferd:CrossIndustryDocument:invoice:1p0:extended", "EXTENDED"),
 	
 	ZUGFERD_V2_MINIMUM("urn:zugferd.de:2p0:minimum", "MINIMUM"),
 	ZUGFERD_V2_BASICWL("urnzugferd.de:2p0:basicwl", "BASIC"), 

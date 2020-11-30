@@ -408,9 +408,18 @@ public class ContactUtil {
 		return addressString;
 	}	
 	
-	
+	/**
+	 * Creates a new {@link Address} object from a string. This is mostly used
+	 * if address field in DocumentReceiver only contains a manual address. 
+	 * The string is analyzed to break into useful tokens for an address.
+	 * <p><i>Note:</i>The name field of the string is put into {@link Address#getLocalConsultant()}.
+	 * 
+	 * @param address
+	 * @return
+	 */
 	public Address createAddressFromString(String address) {
 		Address retval = modelFactory.createAddress();
+		retval.setLocalConsultant(getDataFromAddressField(address, KEY_NAME));
 		retval.setStreet(getDataFromAddressField(address, KEY_STREET));
 		retval.setCity(getDataFromAddressField(address, KEY_CITY));
 		retval.setZip(getDataFromAddressField(address, KEY_ZIP));

@@ -1069,7 +1069,7 @@
 				</imageobject>
 			</mediaobject>
 		</informalfigure>
-		<section><!-- title>Standardpfad für die ZUGFeRD-Datei</title><para>In diesem Feld legen Sie fest, wo die ZUGFeRD-Datei nach der Generierung abgelegt werden soll.</para -->
+		<section>
 			<title>Erzeuge ZUGFeRD-Datei</title><para>Damit wird festgelegt, ob eine ZUGFeRD-Datei erzeugt werden soll.</para>
 			<important>Damit das ZUGFeRD-PDF erzeugt werden kann, ist in den Einstellungen für die Office-Integration die PDF-Erstellung zu aktivieren sowie ein gültiger Pfad anzugeben.</important>
 		<para>Siehe auch <link linkend="preferences_openoffice">OpenOffice.org / LibreOffice-Einstellungen</link>
@@ -1077,7 +1077,8 @@
 		<section>
 			<title>ZUGFeRD-Version</title><para>Über die Radiobuttons kann man die zu erstellende Version auswählen.</para></section> 
 			<section><title>Profil</title><para>Aktuell ist nur das COMFORT-Profil auswählbar. Beim Umschalten zwischen den Versionen wird auch der Inhalt der Dropdown-Box aktualisiert.
-			</para>
+			</para></section>
+			<section><title>Standardpfad für die XRechnung-Datei</title><para>In diesem Feld legt man fest, wo die XRechnung-Datei (XML) nach der Generierung abgelegt werden soll.</para>
 		</section>
 	</section>
 </chapter>

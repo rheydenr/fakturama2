@@ -13,6 +13,7 @@
  */
 package org.fakturama.export.zugferd;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,10 +28,9 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.fakturama.export.einvoice.AbstractEInvoiceCreator;
 import org.fakturama.export.einvoice.ConformanceLevel;
-import org.fakturama.export.einvoice.IPdfHelper;
 import org.fakturama.export.einvoice.ZFConstants;
+import org.fakturama.export.facturx.AbstractEInvoice;
 import org.fakturama.export.facturx.XRechnungCreator;
 import org.fakturama.export.facturx.modelgen.FormattedDateTimeType;
 import org.fakturama.export.zugferd.modelgen.AmountType;
@@ -99,24 +99,17 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
  * Implementation for the (deprecated) ZUGFeRD standard. Use {@link XRechnungCreator} instead.
  *
  */
-public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
+public class ZUGFeRD extends AbstractEInvoice {
     private ObjectFactory factory;
-    private IPdfHelper pdfHelper;
-
-    @Override
-    public boolean createEInvoice(Optional<Document> invoice, ConformanceLevel zugferdProfile) {
-        factory = new ObjectFactory();
-      
-        // 2. create XML file
-        CrossIndustryDocument root = createInvoiceFromDataset(invoice.get(), zugferdProfile);
-
-//      testOutput(root);
-        
-        // 3. merge XML & PDF/A-1 to PDF/A-3
-        return createPdf(invoice.get(), () -> root, zugferdProfile);
-    }
     
-    private CrossIndustryDocument createInvoiceFromDataset(Document invoice, ConformanceLevel zugferdProfile) {
+    @Override
+    public Serializable getInvoiceXml(Optional<Document> invoiceDoc) {
+        if(!invoiceDoc.isPresent()) {
+            return null;
+        }
+        factory = new ObjectFactory();
+
+        Document invoice = invoiceDoc.get();
         // Recalculate the sum of the document before exporting
         DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, eclipseContext);
         DocumentSummary documentSummary = documentSummaryCalculator.calculate(invoice);
@@ -127,8 +120,9 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
         // at first create a reasonable context
         ExchangedDocumentContextType exchangedDocCtx = factory.createExchangedDocumentContextType()
                 .withTestIndicator(factory.createIndicatorType().withIndicator(testMode));
+        
         DocumentContextParameterType ctxParam = factory.createDocumentContextParameterType()
-                .withID(createIdFromString("urn:ferd:CrossIndustryDocument:invoice:1p0:" + zugferdProfile.toString().toLowerCase()));
+                .withID(createIdFromString(ConformanceLevel.ZUGFERD_V1_COMFORT.getUrn()));
         exchangedDocCtx.getGuidelineSpecifiedDocumentContextParameter().add(ctxParam );
         root.setSpecifiedExchangedDocumentContext(exchangedDocCtx);
         
@@ -975,14 +969,6 @@ public class ZUGFeRDCreator extends AbstractEInvoiceCreator {
 
     private IDType createIdWithSchemeFromString(String idString, String scheme) {
         return idString != null ? factory.createIDType().withValue(idString).withSchemeID(scheme) : null;
-    }
-
-    @Override
-    protected IPdfHelper getPdfHelper() {
-        if(pdfHelper == null) {
-            pdfHelper = new ZugferdHelper();
-        }
-        return pdfHelper;
     }
 
 }
