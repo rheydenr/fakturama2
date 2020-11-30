@@ -291,6 +291,7 @@ public abstract class ImportExportPage extends WorkbenchWizardSelectionPage{
      * Create a wizard node given a wizard's descriptor.
      */
 	private IWizardNode createWizardNode(IE4WizardDescriptor element) {
+	    getWizard().getDialogSettings();
         return new AbstractWorkbenchWizardNode(this, element) {
             public IWorkbenchWizard createWizard() throws CoreException {
             	String className = ((WorkbenchWizardElement)wizardElement).getConfigurationElement().getAttribute(IWorkbenchRegistryConstants.ATT_CLASS);

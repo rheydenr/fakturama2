@@ -24,6 +24,11 @@ public class ObjectDuplicator {
 //        modelDescriptor.setModelPackage(fakturamaModelPackage);
 //        EClassifier eClassifier = fakturamaModelPackage.getEPackage().getEClassifiers().get(FakturamaModelPackage.DOCUMENT_CLASSIFIER_ID);
 //        modelDescriptor.setEClassifier(eClassifier);
+//      productAttributes = ((EClass) FakturamaModelPackage.INSTANCE.getEPackage().getEClassifiers().get(FakturamaModelPackage.PRODUCT_CLASSIFIER_ID)) //
+//      .getEAllAttributes().stream() //
+//      .filter(f -> !f.isMany()) //
+//      .sorted(Comparator.comparing(EStructuralFeature::getName))
+//      .collect(Collectors.toList());
         
         ModelObject<?> adapter = modelDescriptor.createAdapter(invoice);
         EStructuralFeature eStructuralFeature = adapter.eClass().getEStructuralFeature(FakturamaModelPackage.INVOICE_CUSTOMERREF_FEATURE_ID);

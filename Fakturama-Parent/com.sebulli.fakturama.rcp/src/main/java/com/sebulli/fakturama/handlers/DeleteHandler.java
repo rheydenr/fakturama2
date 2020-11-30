@@ -47,6 +47,7 @@ public class DeleteHandler {
 //			System.out.println("roles()[1]: " + a.roles()[1]);
 //		}
 		List selection = (List)selectionService.getSelection();
+
 		return (activePart.getObject() instanceof AbstractViewDataTable 
 			|| activePart.getObject() instanceof DocumentsListTable)
 			&& !(selection == null || selection.isEmpty());

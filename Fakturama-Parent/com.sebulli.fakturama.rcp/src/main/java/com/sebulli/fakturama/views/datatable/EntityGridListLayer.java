@@ -50,7 +50,7 @@ public class EntityGridListLayer<T extends IEntity> {
 
         //2. build the column header layer
         IDataProvider columnHeaderDataProvider = new ListViewColumnHeaderDataProvider<T>(propertyNames, columnPropertyAccessor);
-        GlazedListsColumnHeaderLayerStack<T> columnHeaderLayer = new GlazedListsColumnHeaderLayerStack<T>(columnHeaderDataProvider, columnPropertyAccessor, configRegistry, bodyLayerStack);
+        GlazedListsColumnHeaderLayerStack<T> columnHeaderLayer = new GlazedListsColumnHeaderLayerStack<>(columnHeaderDataProvider, columnPropertyAccessor, configRegistry, bodyLayerStack);
         
         // 3. build the row header layer
         IDataProvider rowHeaderDataProvider = new ListViewRowHeaderDataProvider(bodyLayerStack.getBodyDataProvider(), withRowHeader);

@@ -658,7 +658,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
                         
                         // if an editor with this object is open we have to close it forcibly
                         Map<String, Object> params = new HashMap<>();
-                        params.put(DocumentEditor.DOCUMENT_ID, objToDelete.getName());
+                        params.put(Editor.OBJECT_ID, objToDelete.getName());
                         evtBroker.post(getEditorTypeId() + "/forceClose", params);
                     }
                 }

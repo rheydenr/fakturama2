@@ -22,6 +22,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -80,7 +81,7 @@ public class ImportOptionPage extends WizardPage {
 		super("ImportOptionPage");
 		//T: Title of the Import Wizard Page 1
 		setTitle(title);
-		setMessage(label );
+		setMessage(label);
 	}
 	
 	/**
@@ -96,6 +97,7 @@ public class ImportOptionPage extends WizardPage {
 	public void initialize(IEclipseContext ctx) {
 		setTitle((String) ctx.get(WIZARD_TITLE));
 		this.previewImage = (Image) ctx.get(IFakturamaWizardService.WIZARD_PREVIEW_IMAGE);
+		this.options = ctx.get(ImportOptions.class);
 	}
 
 	/**
@@ -106,8 +108,11 @@ public class ImportOptionPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
-		options = new ImportOptions(getDialogSettings());
-
+        if (options == null) {
+        // initialize from stored settings
+            options = new ImportOptions(getCurrentDialogSettings());
+        }
+	    
 		// Create the top composite
 		Composite top = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(top);
@@ -127,12 +132,8 @@ public class ImportOptionPage extends WizardPage {
 			}
 		}
 		
-		// Create the label with the help text
-		Label labelDescription = new Label(top, SWT.NONE);
-		
 		//T: Import Wizard Page 1 - Long description.
-		labelDescription.setText(importMessages.wizardImportOptionsSet);
-		GridDataFactory.swtDefaults().span(3, 1).align(SWT.BEGINNING, SWT.CENTER).indent(0, 10).applyTo(labelDescription);
+		setMessage(importMessages.wizardImportOptionsSet);
 
 		buttonUpdateExisting = new Button (top, SWT.CHECK);
 		buttonUpdateExisting.setText(importMessages.wizardImportOptionsUpdate);
@@ -162,23 +163,19 @@ public class ImportOptionPage extends WizardPage {
 		
 		quoteChar = new Text(top, SWT.BORDER);
 		quoteChar.setText(options.getQuoteChar());
-		quoteChar.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		quoteChar.addModifyListener(e -> {
 				options.setQuoteChar(((Text)e.getSource()).getText());
-			}
+                options.setAnalyzeCompleted(false);
 		});
 		GridDataFactory.swtDefaults().span(2, 1).hint(10, SWT.DEFAULT).grab(false, false).applyTo(quoteChar);
-		
+	
 		Label separatorLbl = new Label(top, SWT.NONE);
 		separatorLbl.setText(importMessages.wizardImportOptionsSeparator);
 		separator = new Text(top, SWT.BORDER);
 		separator.setText(options.getSeparator());
-		separator.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+		separator.addModifyListener(e -> {
 				options.setSeparator(((Text)e.getSource()).getText());
-			}
+                options.setAnalyzeCompleted(false);
 		});
 		GridDataFactory.swtDefaults().span(2, 1).hint(10, SWT.DEFAULT).grab(false, false).applyTo(separator);
 		
@@ -199,7 +196,7 @@ public class ImportOptionPage extends WizardPage {
         GridDataFactory.fillDefaults().grab(true, false).applyTo(pictureBasePath);
 		
 		Button buttonSelectDir = new Button(top, SWT.PUSH);
-	    buttonSelectDir.setText("...");
+	    buttonSelectDir.setText(JFaceResources.getString("openBrowse"));
 	    buttonSelectDir.addSelectionListener(new SelectionAdapter() {
 	    	public void widgetSelected(SelectionEvent e) {
 	        DirectoryDialog directoryDialog = new DirectoryDialog(top.getShell());

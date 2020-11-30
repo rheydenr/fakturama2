@@ -3,14 +3,19 @@
  */
 package org.fakturama.imp.wizard;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.fakturama.imp.wizard.csv.common.ImportMapping;
 
 /**
  *
  */
 public class ImportOptions {
+    private static final String DEFAULT_CSV_SEPARATOR = ";";
+    public static final String DEFAULT_CSV_QUOTECHAR = "\"";
     public static final String IMPORT_SETTING_OPTIONS = "org.fakturama.import.options";
     public static final String PICTURE_BASE_PATH = "import.picture.base.path";
     public static final String IMPORT_CSV_UPDATEEXISTING = "import.csv.updateexisting";
@@ -22,9 +27,12 @@ public class ImportOptions {
 	// initialize with some predefined values
 	private Boolean updateExisting = false;
 	private Boolean updateWithEmptyValues = false;
-	private String quoteChar = "\"";
-	private String separator = ";";
+	private boolean analyzeCompleted = false;
+	private boolean mappingAvailable = false;
+	private String quoteChar = DEFAULT_CSV_QUOTECHAR;
+	private String separator = DEFAULT_CSV_SEPARATOR;
 	private String basePath = "", csvFile = "";
+    private List<ImportMapping> mappings;
 
 	public ImportOptions() {
 		
@@ -40,10 +48,11 @@ public class ImportOptions {
 	@Inject
     public ImportOptions(IDialogSettings settings) {
 		if(settings != null) {
-		    IDialogSettings importSettings = settings.getSection(IMPORT_SETTING_OPTIONS);
-		    if(importSettings == null) {
+		    IDialogSettings importSettings ;
+		    if(settings.getSection(IMPORT_SETTING_OPTIONS) == null) {
 		        settings.addNewSection(IMPORT_SETTING_OPTIONS);
 		    }
+		    importSettings = settings.getSection(IMPORT_SETTING_OPTIONS);
 	        if (importSettings.get(PICTURE_BASE_PATH) != null) {
 	            basePath = importSettings.get(PICTURE_BASE_PATH);
 	        }
@@ -69,6 +78,8 @@ public class ImportOptions {
 	        }
 		}
     }
+
+	
 	/**
 	 * @return the updateExisting
 	 */
@@ -158,5 +169,29 @@ public class ImportOptions {
      */
     public void setCsvFile(String csvfile) {
         this.csvFile = csvfile;
+    }
+
+    public boolean isAnalyzeCompleted() {
+        return analyzeCompleted;
+    }
+
+    public void setAnalyzeCompleted(boolean analyzeCompleted) {
+        this.analyzeCompleted = analyzeCompleted;
+    }
+
+    public boolean isMappingAvailable() {
+        return mappingAvailable;
+    }
+
+    public void setMappingAvailable(boolean mappingAvailable) {
+        this.mappingAvailable = mappingAvailable;
+    }
+
+    public List<ImportMapping> getMappings() {
+        return mappings;
+    }
+
+    public void setMappings(List<ImportMapping> mappings) {
+        this.mappings = mappings;
     }
 }

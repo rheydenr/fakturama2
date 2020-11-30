@@ -3,9 +3,14 @@
  */
 package com.sebulli.fakturama.util;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.extensions.Preference;
 
@@ -56,6 +61,20 @@ public final class ProductUtil {
         pictureName += ".jpg";
 
         return pictureName;
+    }
+    
+
+    public static byte[] readPicture(String fileName, Path basePath) {
+        Path productPictureFile = basePath.resolve(fileName);
+        byte[] retval = null;
+        if (StringUtils.isNotBlank(fileName)) {
+            try {
+                retval = Files.readAllBytes(productPictureFile);
+            } catch (IOException ioex) {
+//                log.error(String.format("Can't read product picture from file '%s'. Reason: ", productPictureFile.toString(), ioex.getMessage()));
+            }
+        }
+        return retval;
     }
 
     /**

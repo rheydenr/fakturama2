@@ -470,7 +470,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
     @Optional
     public void handleForceClose(@UIEventTopic(ContactEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "forceClose") Event event) {
         // the event has already all given params in it since we created them as Map
-        String targetDocumentName = (String) event.getProperty(DocumentEditor.DOCUMENT_ID);
+        String targetDocumentName = (String) event.getProperty(Editor.OBJECT_ID);
         // at first we have to check if the message is for us
         if (!StringUtils.equals(targetDocumentName, editorContact.getName())) {
             // if not, silently ignore this event
