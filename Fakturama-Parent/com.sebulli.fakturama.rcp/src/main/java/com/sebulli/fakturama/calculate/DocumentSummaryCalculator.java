@@ -12,6 +12,7 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
@@ -162,7 +163,7 @@ public class DocumentSummaryCalculator {
 
 			// If noVat is set, the VAT is 0%
 			if (noVatReference != null) {
-				vatDescription = noVatReference.getDescription();
+				vatDescription = StringUtils.defaultString(noVatReference.getDescription(), noVatReference.getName());
 				vatPercent = noVatReference.getTaxValue();
 				itemVatAmount = Money.zero(getCurrencyCode());
 			}
@@ -171,7 +172,7 @@ public class DocumentSummaryCalculator {
 			retval.setTotalVat(retval.getTotalVat().add(itemVatAmount));
 
 			// Add the VAT summary item to the ... 
-			VatSummaryItem vatSummaryItem = new VatSummaryItem(vatDescription, vatPercent, price.getTotalNet(), itemVatAmount);
+			VatSummaryItem vatSummaryItem = new VatSummaryItem(StringUtils.defaultString(vatDescription, itemVat.getName()), vatPercent, price.getTotalNet(), itemVatAmount);
 			if(itemVat != null && this.useSET && itemVat.getSalesEqualizationTax() != null) {
 				vatSummaryItem.setSalesEqTaxPercent(itemVat.getSalesEqualizationTax());
 				retval.setTotalSET(retval.getTotalSET().add(vatSummaryItem.getSalesEqTax()));

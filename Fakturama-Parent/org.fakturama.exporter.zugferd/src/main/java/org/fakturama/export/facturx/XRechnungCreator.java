@@ -24,7 +24,6 @@ import org.fakturama.export.einvoice.AbstractEInvoiceCreator;
 import org.fakturama.export.einvoice.ConformanceLevel;
 import org.fakturama.export.einvoice.IEinvoice;
 import org.fakturama.export.einvoice.IPdfHelper;
-import org.fakturama.export.facturx.modelgen.CrossIndustryInvoice;
 import org.fakturama.export.zugferd.ZUGFeRD;
 import org.fakturama.export.zugferd.ZugferdHelper;
 
@@ -62,7 +61,7 @@ public class XRechnungCreator extends AbstractEInvoiceCreator {
 
     @Override
     public boolean createEInvoice(Optional<Document> invoice, ConformanceLevel zugferdProfile) {
-Serializable invoiceXml;
+        Serializable invoiceXml;
         // 2. create XML file
         IEinvoice eInvoice;
         switch (zugferdProfile) {

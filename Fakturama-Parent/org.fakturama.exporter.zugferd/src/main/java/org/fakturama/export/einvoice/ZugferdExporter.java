@@ -86,7 +86,7 @@ public class ZugferdExporter implements IPdfPostProcessor {
     public boolean processPdf(Optional<Document> invoice) {
 	    
         boolean result = checkSettings();
-        if(result && invoice.isPresent()) {
+        if(result && invoice.isPresent() && invoice.get().getBillingType().isINVOICE()) {
 			ConformanceLevel zugferdProfile;
     	    // create e-invoice according to selected preferences
 			

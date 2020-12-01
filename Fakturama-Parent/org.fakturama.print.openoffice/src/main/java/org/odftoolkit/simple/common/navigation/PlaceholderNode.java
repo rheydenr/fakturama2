@@ -143,11 +143,33 @@ public class PlaceholderNode extends Selection {
         // the simple case: if a placeholder sits in a node with only one child
         // AND the new text has no line breaks then we can simply replace this 
         // placeholder node with some text.
-        if(newText != null && !newText.contains("\r")) {
-        	Span s = Span.getInstanceof(new TextSpanElement((OdfFileDom) parentNode.getOwnerDocument()));
-        	s.setTextContent(newText);
-        	parentNode.replaceChild(s.getOdfElement(), getNode());
-        	return s.getOdfElement();
+        if(newText != null) {
+            if(newText.isEmpty()) {
+                // if parent node contains only the placeholder node but the text value
+                // is empty, we have to remove the complete paragraph node since else 
+                // confusing empty lines are generated
+                boolean canBeRemoved = true;
+                for (int i = 0; i < parentNode.getChildNodes().getLength(); i++) {
+                    Node n = parentNode.getChildNodes().item(i);
+                    if(n == getNode() || n.getTextContent().isEmpty()) continue;
+                    
+                    // check only first level children
+                    if(n.hasChildNodes()) {
+                        canBeRemoved = false;
+                        break;
+                    };
+                }
+                
+                if(canBeRemoved) {
+                    parentNode.getParentNode().removeChild(parentNode);
+                    return null;
+                }
+            } else if (!newText.contains("\r")) {
+            	Span s = Span.getInstanceof(new TextSpanElement((OdfFileDom) parentNode.getOwnerDocument()));
+            	s.setTextContent(newText);
+            	parentNode.replaceChild(s.getOdfElement(), getNode());
+            	return s.getOdfElement();
+            }
         }
         
         // else, we have to tokenize the new text,
@@ -234,12 +256,10 @@ public class PlaceholderNode extends Selection {
         Iterator<Node> it = substitutes.descendingIterator();
         while(it.hasNext()) {
         	Node node = (Node)it.next();
-        	Node lineBreak;
-	        if(insertedNode == null) {
-				lineBreak = parentNode.getParentNode().insertBefore(new TextLineBreakElement((OdfFileDom) parentNode.getOwnerDocument()), parentNode.getNextSibling());
-	        } else {
-	        	lineBreak = parentNode.getParentNode().insertBefore(new TextLineBreakElement((OdfFileDom) parentNode.getOwnerDocument()), insertedNode);
-	        }
+        	TextLineBreakElement lineBreakElement = new TextLineBreakElement((OdfFileDom) parentNode.getOwnerDocument());
+            Node lineBreak = insertedNode == null 
+        	        ? parentNode.getParentNode().insertBefore(lineBreakElement, parentNode.getNextSibling()) 
+        	        : parentNode.getParentNode().insertBefore(lineBreakElement, insertedNode);
 	        insertedNode = parentNode.getParentNode().insertBefore(node, lineBreak);
         }
         // ...then remove the origin "placeholder" node...
