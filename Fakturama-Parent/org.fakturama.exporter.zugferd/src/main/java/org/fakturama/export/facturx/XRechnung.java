@@ -24,13 +24,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.fakturama.export.einvoice.ConformanceLevel;
 import org.fakturama.export.facturx.modelgen.AmountType;
@@ -330,17 +330,35 @@ public class XRechnung extends AbstractEInvoice {
                     : Long.valueOf(0);
             if(originContactId != null && originContactId != 0) {
                 Contact originContact = contactsDAO.findById(originContactId);
+                String schemaId = "0088";
+                String globalId = Optional.ofNullable(originContact.getGln()).orElse(Long.valueOf(0)).toString();
+                String debtorId = documentReceiver.getCustomerNumber();
+                
+                // additional fields from customer note takes precedence over "regular" fields 
+                if(originContact.getNote() != null) {
+                    debtorId = grepFromNoteField(originContact.getNote(), ".*?Debtor ID=(\\p{Alnum}+).*", debtorId);
+                    globalId = grepFromNoteField(originContact.getNote(), ".*?Global ID=(\\p{Alnum}+).*", globalId);
+                    schemaId = grepFromNoteField(originContact.getNote(), ".*?Global schemeID=(\\d+).*", schemaId);
+                }
+                
+                buyer.getID().add(createIdFromString(debtorId));
                 buyer.getGlobalID()
                     .add(createIdWithSchemeFromString(
-                            Optional.ofNullable(originContact.getGln())
-                            .orElse(Long.valueOf(0)).toString(), "0088"
+                            globalId, StringUtils.defaultString(schemaId)
                         ));
             } else {
-                buyer.getID().add(createIdFromString(documentReceiver.getCustomerNumber()));
+                 buyer.getID().add(createIdFromString(documentReceiver.getCustomerNumber()));
             }
             return buyer;
         }
         return null;
+    }
+
+    private String grepFromNoteField(String noteField, String searchPattern, String defaultString) {
+        // try to find a global schema id from note field (workaround)
+        Pattern p = Pattern.compile(searchPattern, Pattern.MULTILINE| Pattern.DOTALL| Pattern.CASE_INSENSITIVE  );
+        Matcher m = p.matcher(noteField);noteField.matches("Global.*");
+        return m.matches() ? m.group(1) : defaultString;
     }
 
     private TradePartyType createSeller(Document invoice) {

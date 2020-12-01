@@ -75,6 +75,8 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
     }
 
     private Map<ZugferdVersion, String[][]> featureMap;
+
+    private StringFieldEditor xrechnungPathField;
     
     /**
      * The Constructor.
@@ -88,10 +90,9 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
             { ConformanceLevel.ZUGFERD_V1_COMFORT.toString(), ConformanceLevel.ZUGFERD_V1_COMFORT.toString()}});
 		
         featureMap.put(ZugferdVersion.V2_1, new String[][] { 
-//            { ConformanceLevel.ZUGFERD_V2_COMFORT.toString(), ConformanceLevel.ZUGFERD_V2_COMFORT.toString()}, 
+            { ConformanceLevel.ZUGFERD_V2_COMFORT.toString(), ConformanceLevel.ZUGFERD_V2_COMFORT.toString()}, 
 //            { ConformanceLevel.ZUGFERD_V2_EN16931.toString(), ConformanceLevel.ZUGFERD_V2_EN16931.toString()}, 
             { ConformanceLevel.XRECHNUNG.toString(), ConformanceLevel.XRECHNUNG.toString()}, 
-//            { ConformanceLevel.FACTURX_COMFORT.toString(), ConformanceLevel.FACTURX_COMFORT.toString()}, 
             { ConformanceLevel.FACTURX_EN16931.toString(), ConformanceLevel.FACTURX_EN16931.toString()}}
         );
 	}
@@ -124,10 +125,17 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
         }
 		conformanceLevelCombo = new ComboFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, msg.zugferdPreferencesProfile, 
 				featureMap.get(zfVersion.get()), getFieldEditorParent());
-
 		addField(conformanceLevelCombo);
-        addField(new StringFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, getFieldEditorParent()));
+		
+        xrechnungPathField = new StringFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, getFieldEditorParent());
+        addField(xrechnungPathField);
+        enableXRechnungPathField(getPreferenceStore().getString(ZFConstants.PREFERENCES_ZUGFERD_PROFILE));
 	}
+
+    private void enableXRechnungPathField(String currentConformanceLevelString) {
+        ConformanceLevel currentConformanceLevel = ConformanceLevel.valueOf(currentConformanceLevelString);
+        xrechnungPathField.setEnabled(ConformanceLevel.XRECHNUNG == currentConformanceLevel, getFieldEditorParent());
+    }
 	
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
@@ -140,6 +148,11 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 		    cfCombo.removeAll();
             Arrays.stream(featureMap.get(selectionValue.get())).forEach(v -> cfCombo.add(v[0]));
             cfCombo.select(0);
+
+            enableXRechnungPathField(getPreferenceStore().getString(ZFConstants.PREFERENCES_ZUGFERD_PROFILE));
+	    } else if(event.getSource() instanceof ComboFieldEditor
+	            && event.getOldValue() != event.getNewValue()) {
+	        enableXRechnungPathField((String) event.getNewValue());
 	    }
 	}
     

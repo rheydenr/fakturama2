@@ -69,6 +69,11 @@ Serializable invoiceXml;
         case FACTURX_BASIC:
             throw new UnsupportedOperationException("not yet implemented");
         case FACTURX_COMFORT:
+        case ZUGFERD_V2_COMFORT:
+        case ZUGFERD_V2_EN16931:
+            eInvoice = ContextInjectionFactory.make(XRechnung.class, context);
+            invoiceXml = eInvoice.getInvoiceXml(invoice);
+            break;
         case XRECHNUNG:
             eInvoice = ContextInjectionFactory.make(XRechnung.class, context);
             invoiceXml = eInvoice.getInvoiceXml(invoice);
