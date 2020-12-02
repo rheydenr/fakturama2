@@ -28,6 +28,8 @@ public interface IActivateDbServer {
 	 */
 	public Properties activateServer(Properties props);
 
-	default void stopServer() {};
+	public void stopServer();
+
+    public boolean isAlive();
 
 }

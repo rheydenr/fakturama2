@@ -81,11 +81,11 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		}
 		props.put("runningfakdb", server.getDatabaseName(0, false));
 		
-//		FrameworkUtil.getBundle(IDbConnection.class).getBundleContext().registerService(IDbConnection.class.getName(), this, null);
 		return props;
 	}
 	
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public Connection getConnection() {
 		BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
 		DataSourceFactory factory;	
@@ -109,8 +109,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		    DataSource source = factory.createDataSource(prop);
 			connection = source.getConnection();
 		} catch (InvalidSyntaxException | SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+            System.err.println("Invalid syntax: " + e1.getMessage());
 		}
 
 		return connection;
@@ -126,5 +125,10 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		
 		BackupManager bm = new BackupManager();
 		bm.createBackup(workspace);
+	}
+	
+	@Override
+	public boolean isAlive() {
+	    return server != null && !server.isNotRunning();
 	}
 }

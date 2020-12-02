@@ -53,9 +53,6 @@ public class DbUpdateService implements IDbUpdateService {
 	private Preferences eclipsePrefs;
 	private IActivateDbServer currentService;
     
-//    @Inject
-//    protected ILogger log;
-
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.dbservice.IDbUpdateService#updateDatabase()
 	 */
@@ -136,22 +133,20 @@ public class DbUpdateService implements IDbUpdateService {
 					prop.put(PROP_HSQLFILEDB, eclipsePrefs.get(PROP_HSQLFILEDB, ""));
 					prop.put("encoding", "UTF-8");
 					prop.put(Constants.GENERAL_WORKSPACE, eclipsePrefs.get(Constants.GENERAL_WORKSPACE, ""));
-					if(currentService != null) {
-						try {
-							currentService.stopServer();
-						} catch (Exception e) {
-							// ignore any exception
-						}
-					}
-					currentService = context.getService(serviceDbRef);
-					Properties activateProps = currentService.activateServer(prop);
-					eclipsePrefs.put(PersistenceUnitProperties.JDBC_URL, String.format("jdbc:hsqldb:hsql://localhost:9002/%s", activateProps.get("runningfakdb")));
-					prop.put(DataSourceFactory.JDBC_URL, eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, ""));
-					eclipsePrefs.put(PROP_HSQLFILEDB, (String) activateProps.get(PROP_HSQLFILEDB));
-
-					ServiceReference<IDbConnection> serviceDbRef2 = (ServiceReference<IDbConnection>) allServiceReferences[0];
-					IDbConnection dbConn = context.getService(serviceDbRef2);
-					conn = dbConn.getConnection();
+					
+                    currentService = context.getService(serviceDbRef);
+                    if (!isDbAlive()) {
+                        Properties activateProps = currentService.activateServer(prop);
+                        eclipsePrefs.put(PersistenceUnitProperties.JDBC_URL,
+                                String.format("jdbc:hsqldb:hsql://localhost:9002/%s", activateProps.get("runningfakdb")));
+                        prop.put(DataSourceFactory.JDBC_URL, eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, ""));
+                        eclipsePrefs.put(PROP_HSQLFILEDB, (String) activateProps.get(PROP_HSQLFILEDB));
+                    } else {
+                        System.err.println("DB wurde schon gestartet");
+                    }
+                    ServiceReference<IDbConnection> serviceDbRef2 = (ServiceReference<IDbConnection>) allServiceReferences[0];
+                    IDbConnection dbConn = context.getService(serviceDbRef2);
+                    conn = dbConn.getConnection();
 				}				
 			}
 			
@@ -164,8 +159,7 @@ public class DbUpdateService implements IDbUpdateService {
 		    System.err.println("SQLState: " + ex.getSQLState());
 		    System.err.println("VendorError: " + ex.getErrorCode());
 		} catch (InvalidSyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            System.err.println("Invalid syntax: " + e.getMessage());
 		}
 		return conn;
 	}
@@ -181,4 +175,11 @@ public class DbUpdateService implements IDbUpdateService {
 			}
 		}
 	}
+
+    @Override
+    public boolean isDbAlive() {
+        boolean alive = currentService != null && currentService.isAlive();
+//        System.err.println("DB is " + (alive ? "" : "NOT ") + "alive!");
+        return alive;
+    }
 }

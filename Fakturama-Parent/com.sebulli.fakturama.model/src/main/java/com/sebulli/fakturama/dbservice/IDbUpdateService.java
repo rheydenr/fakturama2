@@ -29,4 +29,10 @@ public interface IDbUpdateService {
 	public boolean updateDatabase();
 
 	void shutDownDb();
+
+	/**
+	 * Checks if the database is reachable.
+	 * @return <code>true</code>, if database responds
+	 */
+    public boolean isDbAlive();
 }

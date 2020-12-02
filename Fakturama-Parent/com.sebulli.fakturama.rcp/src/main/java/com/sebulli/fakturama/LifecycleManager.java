@@ -14,6 +14,7 @@ import java.util.Date;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.PersistenceException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -124,8 +125,6 @@ public class LifecycleManager {
 
     @PostContextCreate
     public void checksBeforeStartup(final ISplashService splashService, final IEventBroker eventBroker) {
-//        IApplicationContext appContext = context.get(IApplicationContext.class);
-
     	splashService.setSplashPluginId(Activator.PLUGIN_ID);
     	splashService.setTotalWork(40);
     	splashService.open();
@@ -166,21 +165,26 @@ public class LifecycleManager {
         	
         	splashService.setMessage("initialize classes...");
             dbInitJob = new Job("initDb") {
-    
+
                 @Override
                 protected IStatus run(IProgressMonitor monitor) {
-                	
                     log.debug("start DAOs - begin");
-                    context.set(VatsDAO.class, ContextInjectionFactory.make(VatsDAO.class, context));
-                    context.set(ShippingsDAO.class, ContextInjectionFactory.make(ShippingsDAO.class, context));
-                    context.set(PaymentsDAO.class, ContextInjectionFactory.make(PaymentsDAO.class, context));
-                    context.set(UnCefactCodeDAO.class, ContextInjectionFactory.make(UnCefactCodeDAO.class, context));
-                    context.set(ItemListTypeCategoriesDAO.class, ContextInjectionFactory.make(ItemListTypeCategoriesDAO.class, context));
-                    context.set(ItemAccountTypeDAO.class, ContextInjectionFactory.make(ItemAccountTypeDAO.class, context));
-                    log.debug("start DAOs - end");
-                    return Status.OK_STATUS;
+                    try {
+                        context.set(VatsDAO.class, ContextInjectionFactory.make(VatsDAO.class, context));
+                        context.set(ShippingsDAO.class, ContextInjectionFactory.make(ShippingsDAO.class, context));
+                        context.set(PaymentsDAO.class, ContextInjectionFactory.make(PaymentsDAO.class, context));
+                        context.set(UnCefactCodeDAO.class, ContextInjectionFactory.make(UnCefactCodeDAO.class, context));
+                        context.set(ItemListTypeCategoriesDAO.class, ContextInjectionFactory.make(ItemListTypeCategoriesDAO.class, context));
+                        context.set(ItemAccountTypeDAO.class, ContextInjectionFactory.make(ItemAccountTypeDAO.class, context));
+                        log.debug("start DAOs - end");
+                        return Status.OK_STATUS;
+                    } catch (PersistenceException e) {
+                        log.error(e, "Datenbank kann nicht gestartet werden. Anwendung wird beendet.");
+                        return Status.CANCEL_STATUS;
+                    }
                 }
             };
+            
             dbInitJob.schedule(10);  // timeout that the OSGi env can be started before
             
         	splashService.worked(5);
@@ -188,8 +192,8 @@ public class LifecycleManager {
             // register event handler for saving and closing editors before shutdown
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
                 event -> {
-                        	// formerly known as Workbench.busyClose()
-                        	closeAndSaveEditors(context);
+                	// formerly known as Workbench.busyClose()
+                	closeAndSaveEditors(context);
 //                        	eventBroker.unsubscribe(eventHandler)
                 });            
             
@@ -527,8 +531,7 @@ public class LifecycleManager {
 		try {
 			dsURL = instanceLocation.getDataArea(Activator.PLUGIN_ID + "/" + FN_DIALOG_SETTINGS);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.error(e1, "Cannot determine current data area. Reason: ");
 		}
         if (dsURL == null) {
 			return null;
