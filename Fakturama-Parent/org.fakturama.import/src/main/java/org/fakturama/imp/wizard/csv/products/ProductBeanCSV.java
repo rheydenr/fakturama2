@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EStructuralFeature;
 
+import com.opencsv.bean.CsvDate;
 import com.opencsv.bean.CsvIgnore;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.Product;
@@ -21,8 +22,13 @@ public class ProductBeanCSV {
     private Integer block3 = Integer.valueOf(100);
     private Integer block4 = Integer.valueOf(1000);
     private Integer block5 = Integer.valueOf(10000);
+    
+    @CsvDate
     private Date dateAdded = null;
+    
     private String modifiedBy = null;
+    
+    @CsvDate
     private Date modified = null;
     private String pictureName = null;
     private String itemNumber = null;
@@ -35,7 +41,7 @@ public class ProductBeanCSV {
     private Double quantity = null;
     private String quantityUnit = null;
     private Integer sellingUnit = null;
-    private Double vat = null;
+    private Double vatValue = null;
     private String vatName = null;
     private String category = null;
     private Long webshopId = null;
@@ -227,12 +233,12 @@ public class ProductBeanCSV {
         this.sellingUnit = sellingUnit;
     }
 
-    public Double getVat() {
-        return vat;
+    public Double getVatValue() {
+        return vatValue;
     }
 
-    public void setVat(Double vat) {
-        this.vat = vat;
+    public void setVatValue(Double vat) {
+        this.vatValue = vat;
     }
 
     public String getCategory() {

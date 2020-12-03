@@ -80,7 +80,7 @@ public class CSVImportFilePage extends WizardPage {
         // Create the top composite
         Composite top = new Composite(parent, SWT.NONE);
         GridLayoutFactory.swtDefaults().numColumns(2).applyTo(top);
-        GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(top);
+        GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).hint(SWT.DEFAULT, 600).applyTo(top);
         setControl(top);
 
         // Preview image
@@ -90,7 +90,7 @@ public class CSVImportFilePage extends WizardPage {
             GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(preview);
             try {
                 preview.setImage(previewImage);
-                parent.getShell().setSize(previewImage.getImageData().width, previewImage.getImageData().height);
+              //  parent.getShell().setSize(previewImage.getImageData().width, previewImage.getImageData().height);
             }
             catch (Exception e) {
                 log.error(e, "Icon not found");

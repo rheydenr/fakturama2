@@ -83,6 +83,7 @@ public class ProductExporter {
 					"\"block4\";"+
 					"\"block5\";"+
 					"\"vat\";"+
+					"\"vatname\";"+
 					"\"options\";"+
 					"\"weight\";"+
 					"\"unit\";"+
@@ -122,9 +123,11 @@ public class ProductExporter {
 					.append(ExporterHelper.inQuotes(product.getBlock4() != null ? product.getBlock4().toString() : "")).append(";")
 					.append(ExporterHelper.inQuotes(product.getBlock5() != null ? product.getBlock5().toString() : "")).append(";");
 				if(product.getVat() != null) {
-					stringBuffer.append(numberFormatterService.DoubleToDecimalFormatedValue(product.getVat().getTaxValue(),"0.00"));
+					stringBuffer.append(numberFormatterService.DoubleToDecimalFormatedValue(product.getVat().getTaxValue(),"0.000")).append(";")
+					.append(ExporterHelper.inQuotes(product.getVat().getName())).append(";");
+				} else {
+				    stringBuffer.append(";;");
 				}
-				stringBuffer.append(";");
 				if(product.getAttributes() != null && !product.getAttributes().isEmpty()) {
 					for (ProductOptions productOptions : product.getAttributes()) {
 						stringBuffer.append(ExporterHelper.inQuotes(productOptions.getName())).append(";");
@@ -139,10 +142,12 @@ public class ProductExporter {
 					.append(product.getWebshopId() == null ? "" : product.getWebshopId()).append(";")
 					.append(ExporterHelper.inQuotes(product.getQuantityUnit())).append(";")
 					.append(ExporterHelper.inQuotes(product.getNote())).append(";")
-					.append(numberFormatterService.DoubleToDecimalFormatedValue(product.getCostPrice(),"0.00")).append(";")
+					.append(numberFormatterService.DoubleToDecimalFormatedValue(product.getCostPrice(),"0.00"))
 					.append(NEW_LINE);
 				bos.write(stringBuffer.toString());
-			}bos.flush();bos.close();
+			}
+			bos.flush();
+			bos.close();
 		}
 		catch (IOException e) {
 			return e.getMessage();

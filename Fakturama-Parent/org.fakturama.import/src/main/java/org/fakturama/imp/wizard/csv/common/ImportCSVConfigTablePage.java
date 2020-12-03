@@ -418,7 +418,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
         } else {
             specMapping = FakturamaModelPackage.MODELFACTORY.createUserProperty();
             specMapping.setName(specName);
-            specMapping.setQualifier(CONTACTS_SPEC_QUALIFIER);
+            specMapping.setQualifier((String)ctx.get(PARAM_SPEC_QUALIFIER));
         }
         // mapping is stored in the form csv_field:bean_attribute|csv_field:bean_attribute
         List<String> collectedMappings = mappings.stream()

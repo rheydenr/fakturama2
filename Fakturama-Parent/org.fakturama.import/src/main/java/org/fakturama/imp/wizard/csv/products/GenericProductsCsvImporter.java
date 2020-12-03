@@ -177,7 +177,7 @@ public class GenericProductsCsvImporter {
 
                 // Only if both VAT name and value are given they are used.
                 String vatName = productBean.getVatName();
-                Double vatValue = productBean.getVat();
+                Double vatValue = productBean.getVatValue();
                 VAT prodVat;
                 if (vatName != null && vatValue != null) {
                     prodVat = modelFactory.createVAT();
