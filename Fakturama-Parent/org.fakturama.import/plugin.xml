@@ -30,6 +30,7 @@
       <wizard
             category="com.sebulli.fakturama.importWizards.csv"
             class="org.fakturama.imp.wizard.csv.products.ProductsGenericCsvImportWizard"
+            icon="icons/16/product_gear_16.png"
             id="com.sebulli.fakturama.importer.csv.products.generalImport"
             name="%wizard.import.csv.products.generic">
          <description>
@@ -49,6 +50,7 @@
       <wizard
             category="com.sebulli.fakturama.importWizards.csv"
             class="org.fakturama.imp.wizard.csv.contacts.ContactsGenericCsvImportWizard"
+            icon="icons/16/contact_gear_16.png"
             id="com.sebulli.fakturama.importer.csv.debtors.generalImport"
             name="%wizard.import.csv.contacts.generic">
          <description>
