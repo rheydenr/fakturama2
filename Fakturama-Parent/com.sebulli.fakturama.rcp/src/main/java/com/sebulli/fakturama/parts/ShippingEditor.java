@@ -294,7 +294,6 @@ public class ShippingEditor extends Editor<Shipping> {
 
             //T: Shipping Editor: Part Name of a new Shipping Entry
             part.setLabel(msg.mainMenuNewShipping);
-//            getMDirtyablePart().setDirty(true);
         }
         else {
             // Set the Editor's name to the Shipping name.
@@ -307,10 +306,6 @@ public class ShippingEditor extends Editor<Shipping> {
             useGross = true;
         if (autoVat == ShippingVatType.SHIPPINGVATNET)
             useNet = true;
-
-        // Get the VAT ID
-        // Get the VAT by the VAT ID
-//        vat = editorShipping.getShippingVat();
 
         // Create the top Composite
         top = new Composite(parent, SWT.NONE);
