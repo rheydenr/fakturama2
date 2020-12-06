@@ -539,10 +539,10 @@ public abstract class Editor<T extends IEntity> {
 			 * @see org.eclipse.swt.events.KeyAdapter#keyPressed(org.eclipse.swt.events.KeyEvent)
 			 */
 		text.addTraverseListener( e -> {
-				if (e.keyCode == SWT.TAB) {
-					e.doit = false;
-					nextControl.setFocus();
-				}
+			if (e.keyCode == SWT.TAB) {
+				e.doit = false;
+				nextControl.setFocus();
+			}
 		});
 	}
 

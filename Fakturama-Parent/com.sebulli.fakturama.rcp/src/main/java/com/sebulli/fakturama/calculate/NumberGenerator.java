@@ -156,7 +156,7 @@ public class NumberGenerator {
 	 */
 	public int getCurrentNumber(String editorId) {
 		String prefStrNr = "NUMBERRANGE_" + editorId.toUpperCase() + "_NR";
-		Optional<String> propVal = propertiesDao.findPropertyValue(prefStrNr);
+		Optional<String> propVal = propertiesDao.findPropertyValue(prefStrNr, true);
 		String nextNumberString = propVal.orElse("1");
 		return Integer.parseInt(nextNumberString);
 	}
