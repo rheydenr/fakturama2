@@ -35,7 +35,6 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
@@ -67,7 +66,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
-import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.calculate.NumberGenerator;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -534,22 +532,17 @@ public abstract class Editor<T extends IEntity> {
 	 * @param nextControl
 	 *            The next control
 	 */
-	protected void setTabOrder(Text text, final Control nextControl) {
-		text.addKeyListener(new KeyAdapter() {
-
+	protected void setTabOrder(Control text, final Control nextControl) {
 			/**
 			 * Capture the tab key and set the focus to the next control
 			 * 
 			 * @see org.eclipse.swt.events.KeyAdapter#keyPressed(org.eclipse.swt.events.KeyEvent)
 			 */
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == '\t') {
+		text.addTraverseListener( e -> {
+				if (e.keyCode == SWT.TAB) {
 					e.doit = false;
 					nextControl.setFocus();
 				}
-			}
-
 		});
 	}
 
