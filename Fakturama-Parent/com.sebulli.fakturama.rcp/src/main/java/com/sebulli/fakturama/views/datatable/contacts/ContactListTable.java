@@ -42,6 +42,7 @@ import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.action.ViewportSelectRowAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -80,9 +81,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     
     @Inject
     protected IEclipseContext context;
-    
-    @Inject
-    protected ESelectionService selectionService;
 
     // ID of this view
     public static final String ID = "fakturama.views.contactTable";
@@ -113,7 +111,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
-//        log.info("create Contact list part");
+        log.debug("create Contact list part");
         super.createPartControl(parent, Contact.class, true, ID);
         this.listTablePart = listTablePart;
         // if another click handler is set we use it
@@ -135,11 +133,11 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         if (commandId != null) {
             // if we are in "selectaddress" mode we have to register a single click mouse event
             nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction() {
+ 
                 public void run(NatTable natTable, MouseEvent event) {
                     int rowPos = natTable.getRowPositionByY(event.y);
                     int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, gridLayer.getBodyDataLayer());
                     selectedObject = gridLayer.getBodyDataProvider().getRowObject(bodyRowPos);
-//                    selectionService.setSelection(selectionService);
                 }
             });
         }
@@ -183,6 +181,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
                     params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+
                     context.getParent().get(ESelectionService.class).setSelection(null);
                     parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                     handlerService.executeHandler(parameterizedCommand);
@@ -220,6 +219,26 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         // Change the default sort key bindings. Note that 'auto configure' was turned off
         // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
         natTable.addConfiguration(new SingleClickSortConfiguration());
+
+        // register right click as a selection event for the whole row
+        natTable.getUiBindingRegistry().registerMouseDownBinding(
+                new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
+
+                new IMouseAction() {
+
+                    ViewportSelectRowAction selectRowAction = new ViewportSelectRowAction(false, false);
+                                
+                    @Override
+                    public void run(NatTable natTable, MouseEvent event) {
+                        int rowPosition = natTable.getRowPositionByY(event.y);
+                        System.out.println("contacts clicked!");
+                        if(!gridLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
+                            System.err.println("set!");
+                            selectRowAction.run(natTable, event);
+                            System.err.println("done!");
+             }                   
+                    }
+                });
         natTable.configure();
     }
 

@@ -26,14 +26,13 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
-import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
@@ -117,9 +116,6 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     @Inject
     private ProductCategoriesDAO productCategoriesDAO;
 	
-    @Inject @Optional
-    protected IPreferenceStore defaultValuePrefs;
-
     private EventList<Product> productListData;
     private EventList<ProductCategory> categories;
 
@@ -135,24 +131,20 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 	private ProductMatcher currentFilter;
 
 	private BidiMap<Integer, ProductListDescriptor> prodListDescriptors;
-    private MApplication application;
 
     @PostConstruct
-    public Control createPartControl(Composite parent, MPart listTablePart, MApplication application) {
-    	log.info("create Product list part");
-        this.listTablePart = listTablePart;
-        this.application = application;
+    public Control createPartControl(Composite parent, MPart listTablePart) {
+    	log.debug("create Product list part");
         super.createPartControl(parent, Product.class, true, ID);
+        this.listTablePart = listTablePart;
+//        this.application = application;
         // Listen to double clicks
         Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_PRODUCTS_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
-        	getGridLayer().getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
-            
-//            E4SelectionListener<Product> esl = new E4SelectionListener<>(selectionService, getGridLayer().getSelectionLayer(), getGridLayer().getBodyDataProvider());
-//            getGridLayer().getSelectionLayer().addLayerListener(esl);
             hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
+        } else {
+            hookDoubleClickCommand2(natTable, getGridLayer());
         }
-        hookDoubleClickCommand2(natTable, gridListLayer);
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
@@ -188,7 +180,6 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         }
         Product[] retArr = selectedObjects.toArray(new Product[selectedObjects.size()]);
         selectionService.setSelection(selectedObjects);
-        application.getContext().get(ESelectionService.class).setSelection(selectedObjects);
         return retArr;
     }
     
@@ -226,9 +217,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                 // when calling the editor command.
                 // in E4 we create a new Part (or use an existing one with the same ID)
                 // from PartDescriptor
-                Map<String, Object> params = new HashMap<>();
                 
-                ParameterizedCommand parameterizedCommand;
                 if(commandId != null) {
                     // If we don't give a target document number the event will  be caught by *all*
                     // open editors which listens to this event. This is (obviously :-) ) not
@@ -249,13 +238,14 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     evtBroker.post("DialogSelection/Product", eventParams);
                     evtBroker.post("DialogAction/CloseProduct", eventParams);
                 } else {
+                    Map<String, Object> params = new HashMap<>();
                     // if we come from the list view then we should open a new editor 
                     params.put(CallEditor.PARAM_OBJ_ID, Long.toString(selectedObject.getId()));
-                    
-                    application.getContext().get(ESelectionService.class).setSelection(selectedObject.getId());
                     params.put(CallEditor.PARAM_EDITOR_TYPE, getEditorId());
+                    
+                    context.getParent().get(ESelectionService.class).setSelection(null);
                     params.put(CallEditor.PARAM_FOLLOW_UP, null);  // could be set from a previous call
-                    parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
+                    ParameterizedCommand parameterizedCommand = commandService.createCommand(CommandIds.CMD_CALL_EDITOR, params);
                     handlerService.executeHandler(parameterizedCommand);
                 }
             }
@@ -273,16 +263,15 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //		natTable.addConfiguration(new HeaderMenuConfiguration(n6));
-
-        // Change the default sort key bindings. Note that 'auto configure' was turned off
-        // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
-        natTable.addConfiguration(new SingleClickSortConfiguration());
-
         gridListLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
 
         E4SelectionListener<Product> esl = new E4SelectionListener<>(selectionService, gridListLayer.getSelectionLayer(), gridListLayer.getBodyDataProvider());
         gridListLayer.getSelectionLayer().addLayerListener(esl);
         
+        // Change the default sort key bindings. Note that 'auto configure' was turned off
+        // for the SortHeaderLayer (setup in the GlazedListsGridLayer)
+        natTable.addConfiguration(new SingleClickSortConfiguration());
+
         // register right click as a selection event for the whole row
         natTable.getUiBindingRegistry().registerMouseDownBinding(
                 new MouseEventMatcher(SWT.NONE, GridRegion.BODY, MouseEventMatcher.RIGHT_BUTTON),
@@ -294,17 +283,13 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     @Override
                     public void run(NatTable natTable, MouseEvent event) {
                         int rowPosition = natTable.getRowPositionByY(event.y);
+                        System.err.println("products clicked!");
                         if(!gridListLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
                             selectRowAction.run(natTable, event);
                         }                   
                     }
                 });
         natTable.configure();
-    }
-
-    @Override
-    protected Class<Product> getEntityClass() {
-    	return Product.class;
     }
     
     /**
@@ -380,6 +365,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
 
         // get the visible properties to show in list view
         String[] propertyNames = productsDAO.getVisibleProperties();
+        
         final IColumnPropertyAccessor<Product> derivedColumnPropertyAccessor = createColumnPropertyAccessor(propertyNames);
 
         /*
@@ -393,11 +379,9 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                 GlazedLists.textFilterator(Product.class, Product_.itemNumber.getName(), Product_.name.getName(), Product_.description.getName()));
         
         // Filtered list for Search text field filter
-        final FilterList<Product> textFilteredIssues = new FilterList<Product>(productListData, textMatcherEditor);
-
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
-        treeFilteredIssues = new FilterList<Product>(textFilteredIssues);
+        treeFilteredIssues = new FilterList<Product>(productListData, textMatcherEditor);
        
         gridListLayer = new EntityGridListLayer<>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         
@@ -581,7 +565,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     DisplayMode.NORMAL,             
                     NUMBER_CELL_LABEL); 
             DefaultDoubleDisplayConverter doubleDisplayConverter = new DefaultDoubleDisplayConverter(true);
-            doubleDisplayConverter.setMaximumFractionDigits(defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES));
+            doubleDisplayConverter.setMaximumFractionDigits(eclipsePrefs.getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES));
 			configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
                     doubleDisplayConverter,
@@ -597,5 +581,17 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     @Override
     protected AbstractDAO<Product> getEntityDAO() {
         return productsDAO;
+    }
+    
+    @Focus
+    public void focus() {
+        if(natTable != null) {
+            natTable.setFocus();
+        }
+    }
+
+    @Override
+    protected Class<Product> getEntityClass() {
+        return Product.class;
     }
 }
