@@ -208,7 +208,7 @@ public class PaymentEditor extends Editor<Payment> {
 			// Create a new data set
 			payment = FakturamaModelPackage.MODELFACTORY.createPayment();
 //			payment.setCode(Constants.TAX_DEFAULT_CODE);
-            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            String category = (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 VoucherCategory newCat = accountDAO.findCategoryByName(category);
                 payment.setCategory(newCat);

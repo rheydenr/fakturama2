@@ -407,11 +407,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// If new ... 
 		if (newContact) {
-//            String category = (String) part.getProperties().get(CallEditor.PARAM_EDITOR_TYPE);
-
 			// Create a new data set and set some defaults
             editorContact = createNewContact(modelFactory);
             
+            String category = (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
+            if(StringUtils.isNotEmpty(category)) {
+                ContactCategory newCat = contactCategoriesDAO.findCategoryByName(category);
+                editorContact.setCategories(newCat);
+            }
+
 			//T: Contact Editor Title of the editor if the data set is a new one.
 			setPartLabelForNewContact(part);
 
@@ -1136,7 +1140,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		Text txtlocalConsultant = new Text(addressGroup, SWT.BORDER);
 		addressTabWidget.setLocalConsultant(txtlocalConsultant);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtlocalConsultant);
-		
+
 		// Street
 		Label labelStreet = new Label(addressGroup, SWT.NONE);
 		//T: Label in the contact editor
@@ -1154,7 +1158,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		});
 		addressTabWidget.setStreet(txtStreet);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtStreet);
-	      
+      
         final Cursor cursorHand = top.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
         final Cursor cursorIBeam = top.getDisplay().getSystemCursor(SWT.CURSOR_IBEAM);
         
@@ -1201,7 +1205,6 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		Text txtCityAddon = new Text(addressGroup, SWT.BORDER);
 		addressTabWidget.setCityAddon(txtCityAddon);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtCityAddon);
-//		setTabOrder(txtStreet, txtCityAddon);
 
         // additional Phone
         Label labelAdditionalPhone = new Label(addressGroup, SWT.NONE);
@@ -1264,6 +1267,18 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		Text txtMobile = new Text(addressGroup, SWT.BORDER);
 		addressTabWidget.setMobile(txtMobile);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtMobile);
+
+        setTabOrder(txtNameAddon, txtStreet);
+        setTabOrder(txtStreet, txtAddressAddon);
+        setTabOrder(txtAddressAddon, txtCityAddon);
+        setTabOrder(txtCityAddon, txtZip);
+        setTabOrder(txtCity, comboCountry.getCombo());
+        setTabOrder(comboCountry.getCombo(), txtlocalConsultant);
+        setTabOrder(txtlocalConsultant, txtEmail);
+        setTabOrder(txtEmail, txtPhone);
+        setTabOrder(txtPhone, txtAdditionalPhone);
+        setTabOrder(txtAdditionalPhone, txtFax);
+        setTabOrder(txtFax, txtMobile);
 		
 		Label labelAddressType = new Label(addressGroup, SWT.NONE);
 		labelAddressType.setText(msg.editorContactFieldContacttype);
@@ -1482,7 +1497,8 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	 */
 	private void checkDuplicateContact(String street) {
 		// check only if name, firstname and street aren't empty
-		if(isDuplicateWarningShown  
+		if(isDuplicateWarningShown 
+		    || !getMDirtyablePart().isDirty()
 			|| "".equals(txtName.getText())
 			|| "".equals(txtFirstname.getText())
 			|| "".equals(street)) return;

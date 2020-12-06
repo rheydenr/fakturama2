@@ -233,7 +233,7 @@ public class VatEditor extends Editor<VAT> {
         if (newVat) {
             // Create a new data set
             editorVat = modelFactory.createVAT();
-            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            String category = (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 VATCategory newCat = vatCategoriesDAO.findCategoryByName(category);
                 editorVat.setCategory(newCat);

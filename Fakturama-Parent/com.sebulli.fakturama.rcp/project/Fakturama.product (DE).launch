@@ -321,6 +321,7 @@
         <mapEntry key="org.eclipse.debug.core/debug/events" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug/breadcrumb" value="false"/>
+        <mapEntry key="org.eclipse.debug.ui/debug/commandservice" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug/contextlaunching" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug/launchhistory" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug/memory/dynamicLoading" value="false"/>
@@ -339,23 +340,23 @@
         <mapEntry key="org.eclipse.e4.core.services/debug" value="true"/>
         <mapEntry key="org.eclipse.e4.core.services/debug/injector" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/debug" value="false"/>
-        <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace" value="false"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/commands" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/eclipse.context" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/eclipse.context.verbose" value="false"/>
-        <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/focus" value="false"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/focus" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/menus" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/renderer" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/workbench" value="false"/>
-        <mapEntry key="org.eclipse.e4.ui.workbench/debug" value="true"/>
-        <mapEntry key="org.eclipse.e4.ui.workbench/trace" value="false"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench/debug" value="false"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench/trace" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/commands" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/eclipse.context" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/eclipse.context.verbose" value="false"/>
-        <mapEntry key="org.eclipse.e4.ui.workbench/trace/focus" value="false"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench/trace/focus" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/menus" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/renderer" value="false"/>
-        <mapEntry key="org.eclipse.e4.ui.workbench/trace/workbench" value="true"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench/trace/workbench" value="false"/>
         <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient4/debug" value="false"/>
         <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient4/debug/exceptions/catching" value="false"/>
         <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient4/debug/exceptions/throwing" value="false"/>

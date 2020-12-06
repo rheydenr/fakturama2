@@ -11,6 +11,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.CreditorsDAO;
+import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Creditor;
@@ -64,6 +65,11 @@ public class CreditorListTable extends ContactListTable<Creditor> {
 	protected String getEditorTypeId() {
 		return CreditorEditor.EDITOR_ID;
 	}
+	
+    @Override
+    protected String getToolbarAddItemCommandId() {
+        return CommandIds.LISTTOOLBAR_ADD_CREDITOR;
+    }
 
 	@Inject
 	@Optional

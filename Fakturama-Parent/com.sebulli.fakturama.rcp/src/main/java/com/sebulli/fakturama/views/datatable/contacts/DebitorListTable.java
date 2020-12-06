@@ -11,6 +11,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.DebitorsDAO;
+import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.Debitor;
@@ -58,6 +59,11 @@ public class DebitorListTable extends ContactListTable<Debitor> {
 
     protected String getPopupId() {
         return POPUP_ID;
+    }
+    
+    @Override
+    protected String getToolbarAddItemCommandId() {
+        return CommandIds.LISTTOOLBAR_ADD_DEBTOR;
     }
 
     @Override
