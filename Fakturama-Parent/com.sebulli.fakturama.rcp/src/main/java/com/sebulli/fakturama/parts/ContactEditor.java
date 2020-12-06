@@ -407,11 +407,15 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 
 		// If new ... 
 		if (newContact) {
-//            String category = (String) part.getProperties().get(CallEditor.PARAM_EDITOR_TYPE);
-
 			// Create a new data set and set some defaults
             editorContact = createNewContact(modelFactory);
             
+            String category = (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
+            if(StringUtils.isNotEmpty(category)) {
+                ContactCategory newCat = contactCategoriesDAO.findCategoryByName(category);
+                editorContact.setCategories(newCat);
+            }
+
 			//T: Contact Editor Title of the editor if the data set is a new one.
 			setPartLabelForNewContact(part);
 

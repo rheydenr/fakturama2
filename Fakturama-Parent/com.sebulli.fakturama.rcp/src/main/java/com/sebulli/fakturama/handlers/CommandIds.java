@@ -84,6 +84,8 @@ public final class CommandIds {
      */
     public static final String LISTTOOLBAR_ADD_VAT      = "com.sebulli.fakturama.listview.vat.add";
     public static final String LISTTOOLBAR_ADD_TEXT     = "com.sebulli.fakturama.listview.text.add";
+    public static final String LISTTOOLBAR_ADD_CREDITOR = "com.sebulli.fakturama.listview.creditor.add";
+    public static final String LISTTOOLBAR_ADD_DEBTOR = "com.sebulli.fakturama.listview.debtor.add";
     public static final String LISTTOOLBAR_ADD_CONTACT  = "com.sebulli.fakturama.listview.contact.add";
     public static final String LISTTOOLBAR_ADD_SHIPPING = "com.sebulli.fakturama.listview.shipping.add";
     public static final String LISTTOOLBAR_ADD_PAYMENT  = "com.sebulli.fakturama.listview.payment.add";

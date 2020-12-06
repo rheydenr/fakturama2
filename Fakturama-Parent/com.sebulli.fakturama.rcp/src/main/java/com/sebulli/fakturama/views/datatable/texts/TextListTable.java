@@ -312,7 +312,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
 
     @Override
     protected String getToolbarAddItemCommandId() {
-        return CommandIds.LISTTOOLBAR_ADD_DOCUMENT;
+        return CommandIds.LISTTOOLBAR_ADD_TEXT;
     }
 
     @Override

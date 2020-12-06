@@ -372,7 +372,7 @@ public class ProductEditor extends Editor<Product> {
 
 			// Create a new data set
 			editorProduct = modelFactory.createProduct();
-            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            String category = (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 ProductCategory newCat = productCategoriesDAO.getCategory(category, false);
                 editorProduct.setCategories(newCat);

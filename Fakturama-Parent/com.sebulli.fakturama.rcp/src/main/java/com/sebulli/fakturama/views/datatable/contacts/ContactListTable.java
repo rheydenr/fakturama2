@@ -449,11 +449,6 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     }
 
     @Override
-    protected String getToolbarAddItemCommandId() {
-        return CommandIds.LISTTOOLBAR_ADD_CONTACT;
-    }
-
-    @Override
     protected MToolBar getMToolBar() {
         return listTablePart.getToolbar();
     }

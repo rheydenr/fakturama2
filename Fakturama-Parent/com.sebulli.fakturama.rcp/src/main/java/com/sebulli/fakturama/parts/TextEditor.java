@@ -183,7 +183,7 @@ public class TextEditor extends Editor<TextModule> {
 
             // Create a new data set
             editorText = modelFactory.createTextModule();
-            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            String category = (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 TextCategory newCat = textCategoriesDAO.findCategoryByName(category);
                 editorText.setCategories(newCat);
