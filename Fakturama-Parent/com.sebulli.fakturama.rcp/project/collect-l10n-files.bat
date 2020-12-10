@@ -8,7 +8,7 @@
 SET FAKTURAMA_INSTALLDIR=d:\User\GitHome\fakturama-2\Fakturama-Parent\
 
 @REM create a folder with name as current date
-SET COLLECTIONS_FOLDER=%date:~-4,4%%date:~-7,2%%date:~-10,2%_Fakturama_l10nfiles
+SET COLLECTIONS_FOLDER=%date:~-4,4%%date:~-7,2%%date:~-10,2%_l10n-fakturama
 mkdir %COLLECTIONS_FOLDER%
 cd %COLLECTIONS_FOLDER%
 
