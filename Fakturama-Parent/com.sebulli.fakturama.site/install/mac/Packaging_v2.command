@@ -9,7 +9,7 @@ if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-VERSION=2.1.1
+VERSION=2.1.1-BETA
 # prepare the correct directory structure
 tar -xzf ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-macosx.cocoa.x86_64.tar.gz
 
@@ -150,3 +150,4 @@ mv ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products
 mv "${DMG_FINAL}" ../install
 zip -m -o -v -j ../install/Installer_Fakturama_windows_x64_${VERSION}.zip ../install/Installer_Fakturama_windows-x64_${VERSION}.exe
 exit
+

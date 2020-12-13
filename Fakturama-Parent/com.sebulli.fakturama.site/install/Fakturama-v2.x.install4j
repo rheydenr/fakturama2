@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="8.0.8" transformSequenceNumber="8">
-  <directoryPresets config="./linux_64bit/make_executable.sh" />
+<install4j version="8.0.9" transformSequenceNumber="8">
+  <directoryPresets config="../target/products/Fakturama.ID/macosx/cocoa" />
   <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.1-BETA" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="15" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true">
       <principalLanguage id="de" />
@@ -23,7 +23,7 @@
       <variable name="sys.ext.rpmDescription" value="Fakturama enables you to write your invoices in an easy way. You can create orders, delivery papers and many more documents. If you hava a web shop you can connect it to Fakturama. Furthermore, you can create e-invoices (XRechnung and Factur-X)." />
       <variable name="sys.ext.rpmSummary" value="A tool for creating invoices and manage your products and customers." />
     </variables>
-    <codeSigning macPkcs12File="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" />
+    <codeSigning macPkcs12File="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../OneDrive/Dokumente/Fakturama/Zertifikat/Fakturama.org.p12" />
   </application>
   <files keepModificationTimes="true" globalExcludeSuffixes=".svn,.git">
     <filesets>
@@ -43,13 +43,21 @@
     </mountPoints>
     <entries>
       <dirEntry mountPoint="34" file="../target/products/Fakturama.ID/macosx/cocoa/x86_64" subDirectory="x86_64" />
-      <dirEntry mountPoint="43" file="../target/products/Fakturama.ID/win32/win32/x86_64" subDirectory="x86_64" />
-      <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64" entryMode="subdir" subDirectory="fakturama2" />
+      <dirEntry mountPoint="43" file="../target/products/Fakturama.ID/win32/win32/x86_64" subDirectory="x86_64">
+        <exclude>
+          <entry location="plugins/javax.persistence_2.2.1.v201807122140.jar" />
+        </exclude>
+      </dirEntry>
+      <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64" entryMode="subdir" subDirectory="fakturama2">
+        <exclude>
+          <entry location="plugins/javax.persistence_2.2.1.v201807122140.jar" />
+        </exclude>
+      </dirEntry>
       <dirEntry mountPoint="56" file="linux_64bit/fakturama/usr/share" subDirectory="share" />
     </entries>
   </files>
   <launchers>
-    <launcher name="Fakturama (Mac)" id="35" external="true" externalFile="Fakturama.app/Contents/MacOS/Fakturama" />
+    <launcher name="Fakturama (Mac)" id="35" external="true" externalFile="Fakturama2.app/Contents/MacOS/Fakturama" />
     <launcher name="Fakturama.exe (win64)" id="44" external="true" externalFile="Fakturama.exe" />
     <launcher name="Fakturama (Linux 64bit)" id="58" external="true" externalFile="Fakturama" />
   </launchers>
@@ -667,19 +675,6 @@ return console.askYesNo(message, true);
     </styles>
   </installerGui>
   <mediaSets>
-    <macosFolder name="Mac OS X Folder" id="36" installDir="Fakturama">
-      <excludedLaunchers>
-        <launcher id="35" />
-        <launcher id="44" />
-        <launcher id="58" />
-      </excludedLaunchers>
-      <exclude>
-        <entry defaultFileset="true" />
-        <entry filesetId="41" />
-        <entry filesetId="49" />
-        <entry filesetId="54" />
-      </exclude>
-    </macosFolder>
     <windows name="Windows 64bit" id="45" mediaFileName="Installer_Fakturama_windows-x64_${compiler:sys.version}" installDir="Fakturama2">
       <excludedLaunchers>
         <launcher id="35" />
@@ -730,8 +725,26 @@ sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
       <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
 sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxDeb>
+    <macosFolder name="macOS Folder" id="631">
+      <exclude>
+        <entry defaultFileset="true" />
+        <entry filesetId="41" />
+        <entry filesetId="54" />
+      </exclude>
+    </macosFolder>
+    <macosFolderArchive name="macOS Folder Archive (2)" id="633" installDir="${compiler:sys.mediaName}">
+      <excludedLaunchers>
+        <launcher id="44" />
+        <launcher id="58" />
+      </excludedLaunchers>
+      <exclude>
+        <entry defaultFileset="true" />
+        <entry filesetId="41" />
+        <entry filesetId="54" />
+      </exclude>
+    </macosFolderArchive>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="120" />
+    <mediaSet refId="633" />
   </buildIds>
 </install4j>
