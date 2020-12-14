@@ -61,7 +61,7 @@ public class OSDependent {
 			return getProgramFolder() + "libreoffice";
 
 		if (Util.isWindows())
-			return getProgramFolder() + "LibreOffice 6";
+			return getProgramFolder() + "LibreOffice 7";
 
 		return "";
 

@@ -76,10 +76,10 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		try {
 			server.setProperties(hsqlProps);
 			server.start();
+			props.put("runningfakdb", server.getDatabaseName(0, false));
 		} catch (IOException | AclFormatException e) {
 			e.printStackTrace();
 		}
-		props.put("runningfakdb", server.getDatabaseName(0, false));
 		
 		return props;
 	}

@@ -65,7 +65,7 @@
 			<anchor xreflabel="" xml:id="install_install_linux"/>
 		<title>Installation unter einem <trademark>Linux</trademark>-Betriebssystem</title>
 		<sect2>
-			<title>Für Debian- und Ubuntu-Betriebssysteme:</title>
+			<subtitle>Für Debian- und Ubuntu-Betriebssysteme:</subtitle>
 			<para>Laden Sie den 
 				<inlinemediaobject>
 					<imageobject role="html">
@@ -78,7 +78,7 @@
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
 		</sect2>
 		<sect2>
-			<title>Für <trademark class="registered">RedHat</trademark>, SUSE Linux- und <trademark class="registered">Fedora</trademark>-Betriebssysteme:</title>
+			<subtitle>Für <trademark class="registered">RedHat</trademark>, SUSE Linux- und <trademark class="registered">Fedora</trademark>-Betriebssysteme:</subtitle>
 			<para>Laden Sie den <inlinemediaobject>
 					<imageobject role="html">
 						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
@@ -91,7 +91,7 @@
 			<para>Starten Sie den Fakturama Installer. Sie werden durch den Installationsprozess geführt.</para>
 		</sect2>
 		<sect2>
-			<title>Für sonstige Linux-Systeme</title>
+			<subtitle>Für sonstige Linux-Systeme</subtitle>
 			<para>Laden Sie den für Linux gebauten <inlinemediaobject>
 					<imageobject role="html">
 						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
@@ -199,10 +199,10 @@
 	</section>
 	<section>
 			<anchor xreflabel="" xml:id="install_startparameter"/>
-		<title>Zusätzliche Programmparameter beim Programmaufruf</title>
+		<subtitle>Zusätzliche Programmparameter beim Programmaufruf</subtitle>
 		<para>Sie können Fakturama mit zusätzlichen Parametern starten, um bestimmte Einstellungen zu überschreiben bzw. neu zu setzen (z. B. Sprache oder Arbeitsverzeichnis). </para>
 		<sect2>
-			<title>Arbeitsverzeichnis / Mandant - Variante A</title>
+			<subtitle>Arbeitsverzeichnis / Mandant - Variante A</subtitle>
 			<para>Startet Fakturama mit einem bestimmten Arbeitsverzeichnis. Aufruf:
 				<programlisting>--workspace <emphasis role="italic">Verzeichnispfad</emphasis>
 				</programlisting>
@@ -211,7 +211,7 @@
 			<para>Statt <computeroutput>--workspace</computeroutput> kann auch der Schalter <computeroutput>-w</computeroutput> verwendet werden.</para>
 		</sect2>
 		<sect2>
-			<title>Arbeitsverzeichnis / Mandant - Variante B</title>
+			<subtitle>Arbeitsverzeichnis / Mandant - Variante B</subtitle>
 			<para>Startet Fakturama komplett mit neuen Einstellungen. Aufruf:
 				<programlisting>-data <emphasis role="italic">Verzeichnispfad</emphasis>
 				</programlisting>
@@ -226,7 +226,7 @@
 		<note>Beim ersten Start des Programmes kann es etwas länger dauern, bis alle Initialisierungen vorgenommen wurden und die initialen Daten in die Datenbank geschrieben wurden. Dasselbe gilt auch für das erste Beenden des Programmes, da bestimmte Einstellungen gesichert werden müssen. Die nachfolgenden Programmaufrufe werden dann schneller ausgeführt. Die Zeit ist auch abhängig von der gewählten Datenbank.</note>
 		
 		<sect2>
-			<title>Sprache / Land</title>
+			<subtitle>Sprache / Land</subtitle>
 			<para>Fakturama kann mit einer bestimmten Sprach- oder Ländereinstellung gestartet werden. Aufruf:
 				<programlisting>-nl <emphasis role="italic">Sprach_LÄNDERCODE</emphasis>
 				</programlisting>

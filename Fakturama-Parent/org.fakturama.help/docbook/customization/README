@@ -1,1 +1,26 @@
 This is the directory for the customization layer for DocBook.
+
+IMPORTANT:
+Because of empty bookmarks for subtitles I've fixed the docbook.xsl in my local stylesheets
+(didn't know how to do this via customization).
+Here's the patch:
+
+<!-- fix empty bookmark entries if using subtitles -->
+<xsl:template match="d:section" mode="object.title.markup">
+  <xsl:choose>
+    <xsl:when test="./d:subtitle != ''">
+		<xsl:value-of select="./d:subtitle"/>
+	</xsl:when>
+    <xsl:otherwise>
+		<xsl:value-of select="./d:title"/>
+	</xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+Additionally, I fixed the subtitle formatting in titlepage.templates.xml:
+
+<xsl:template match="d:subtitle" mode="section.titlepage.recto.auto.mode">
+<fo:block xsl:use-attribute-sets="section.subtitle.style" font-family="{$title.fontset}">
+<xsl:apply-templates select="." mode="section.titlepage.recto.mode"/>
+</fo:block>
+</xsl:template>

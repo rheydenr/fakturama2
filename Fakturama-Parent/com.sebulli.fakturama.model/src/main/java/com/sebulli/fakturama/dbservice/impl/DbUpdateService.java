@@ -87,7 +87,7 @@ public class DbUpdateService implements IDbUpdateService {
     		System.err.println("Database has not the correct version! " + exc.getMessage());
 			retval = false;
 		} catch (LiquibaseException | SQLException | NullPointerException ex) {
-			System.err.println(ex);
+			System.err.println("Failed to create the database connection: " + ex);
 			retval = false;
 		}
 		return retval;

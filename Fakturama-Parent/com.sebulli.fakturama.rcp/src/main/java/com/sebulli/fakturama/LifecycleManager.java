@@ -49,6 +49,7 @@ import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -158,6 +159,7 @@ public class LifecycleManager {
         	boolean dbupdate = dbUpdateService.updateDatabase();
         	if(!dbupdate) {
         		log.error("couldn't create or update database!");
+                MessageDialog.openError(splashService.getSplashShell(), msg.dialogMessageboxTitleError, msg.startErrorNodatabase);
         		System.exit(1);
         	}
         	
@@ -180,6 +182,7 @@ public class LifecycleManager {
                         return Status.OK_STATUS;
                     } catch (PersistenceException e) {
                         log.error(e, "Datenbank kann nicht gestartet werden. Anwendung wird beendet.");
+                        MessageDialog.openError(splashService.getSplashShell(), msg.dialogMessageboxTitleError, msg.startErrorNodatabase);
                         return Status.CANCEL_STATUS;
                     }
                 }
@@ -231,7 +234,18 @@ public class LifecycleManager {
     	splashService.worked(1);
 
         FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
-        VatsDAO vatsDAO = context.get(VatsDAO.class);
+        
+        // the following is a workaround for the error if the database isn't available.
+        // there was only a strange error message which doesn't helped the user.
+        // If no database is available, a NPE is thrown.
+        VatsDAO vatsDAO = null;
+        try {
+            vatsDAO = context.get(VatsDAO.class);
+        } catch (NullPointerException npe) {
+            MessageDialog.openError(splashService.getSplashShell(), msg.dialogMessageboxTitleError, msg.startErrorNodatabase);
+            System.exit(1);
+        }
+        
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
         UnCefactCodeDAO unCefactCodeDAO = context.get(UnCefactCodeDAO.class);

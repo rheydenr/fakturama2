@@ -188,7 +188,7 @@ public class Messages {
 	public String editorContactQuestionRemoveaddress;
 	public String editorContactHintAddaddresstooltip;
 
-	public String Data653;
+	public String startErrorNodatabase;
 	public String dataDefaultContactFormatExcludedcountries;
 	public String dataDefaultContactFormatSalutation;
 	public String dataDefaultContactFormatSalutationMen;

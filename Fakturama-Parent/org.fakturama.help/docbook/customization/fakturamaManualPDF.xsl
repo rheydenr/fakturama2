@@ -3,10 +3,11 @@
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version="1.0">
   <!-- import of the origin XSL and a custom title page -->
-  <xsl:import href="/Projekte/herold-doclet/docbook-xsl-1.79.1/fo/docbook.xsl"/> 
+  <xsl:import href="/Projekte/herold-doclet/docbook-xsl-1.79.2/fo/docbook.xsl"/> 
   <xsl:import href="fakturamaManualTitlepage.xsl"/>
   
   <xsl:param name="draft.mode" select="'no'"/>
+  <xsl:param name="verbose" select="1"/>
 
   <!-- setting some params -->
   <xsl:param name="html.stylesheet" select="'corpstyle.css'"/>
@@ -38,6 +39,7 @@
 
   <!-- suppress URL inside external links -->
   <xsl:param name="ulink.show">0</xsl:param>
+
   
   <!-- adapted from origin DocBook XSL fo/pagesetup.xsl -->
 <xsl:template name="footer.content">
@@ -168,6 +170,48 @@
   <xsl:attribute name="margin-top">
     <xsl:text>10pt</xsl:text>
   </xsl:attribute>
+</xsl:attribute-set>
+
+<xsl:attribute-set name="section.subtitle.style">
+  <xsl:attribute name="font-size">
+    <xsl:value-of select="$body.font.master"/>
+    <xsl:text>pt</xsl:text>
+  </xsl:attribute>
+  <xsl:attribute name="color">
+    <xsl:text>#445588</xsl:text>
+  </xsl:attribute>
+  <xsl:attribute name="border-bottom-width">
+    <xsl:text>0.1pt</xsl:text>
+  </xsl:attribute>
+  <xsl:attribute name="border-bottom-style">
+    <xsl:text>solid</xsl:text>
+  </xsl:attribute>
+  <xsl:attribute name="border-bottom-color">
+    <xsl:text>gray</xsl:text>
+  </xsl:attribute>
+  <xsl:attribute name="margin-top">
+    <xsl:text>15pt</xsl:text>
+  </xsl:attribute>
+</xsl:attribute-set>
+
+<xsl:attribute-set name="section.level2.properties">
+  <xsl:attribute name="margin-top">
+    <xsl:text>15pt</xsl:text>
+  </xsl:attribute>
+  <xsl:attribute name="space-before.minimum">0.8em</xsl:attribute>
+</xsl:attribute-set>
+
+<xsl:attribute-set name="section.level3.properties" use-attribute-sets="section.level2.properties">
+</xsl:attribute-set>
+
+<xsl:attribute-set name="formal.object.properties">
+  <xsl:attribute name="space-before.minimum">0.5em</xsl:attribute>
+  <xsl:attribute name="space-before.optimum">1em</xsl:attribute>
+  <xsl:attribute name="space-before.maximum">2em</xsl:attribute>
+  <xsl:attribute name="space-after.minimum">0.5em</xsl:attribute>
+  <xsl:attribute name="space-after.optimum">1em</xsl:attribute>
+  <xsl:attribute name="space-after.maximum">2em</xsl:attribute>
+  <xsl:attribute name="keep-together.within-column">always</xsl:attribute>
 </xsl:attribute-set>
 
 <xsl:template match="*" mode="simple.xlink.properties">
