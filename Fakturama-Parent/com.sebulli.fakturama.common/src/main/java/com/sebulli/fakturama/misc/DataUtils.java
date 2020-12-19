@@ -98,13 +98,13 @@ public class DataUtils {
         return Monetary.getRounding(RoundingQueryBuilder.of()
                 .setCurrency(currencyUnit)
                 .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
-                .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
+                .setScale(Activator.getPreferenceStore().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES))
                 .set("cashRounding", cashRounding)
                 .build());
     }
     
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit) {
-        return getRounding(currencyUnit, Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false));
+        return getRounding(currencyUnit, Activator.getPreferenceStore().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING));
     }
     
 /* * * * * * * * * * * * [Price and Number calculations] * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

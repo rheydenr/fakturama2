@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.e4.core.services,
  org.apache.xerces;bundle-version="2.9.0";visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: org.apache.commons.collections4,
+Import-Package: com.opcoach.e4.preferences,
+ org.apache.commons.collections4,
  org.apache.commons.collections4.bidimap,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di,

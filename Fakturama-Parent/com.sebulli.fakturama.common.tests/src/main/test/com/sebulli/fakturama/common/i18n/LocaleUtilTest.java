@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -15,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.osgi.service.prefs.Preferences;
 
 import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.common.Activator;
@@ -31,7 +31,7 @@ public class LocaleUtilTest {
 	private ILocaleService localeService;
 	
 	@Mock
-	private Preferences mockPrefs;
+	private IPreferenceStore mockPrefs;
 	
 	@Before
 	public void setUp() {
@@ -62,8 +62,8 @@ public class LocaleUtilTest {
 	@Test
 	@Ignore("can't be executed because of OSGi class loading quirks")
 	public void testFindByCode() {
-		Mockito.when(Activator.getPreferences()).thenReturn(mockPrefs);
-		Mockito.when(mockPrefs.get(Constants.PREFERENCE_CURRENCY_LOCALE, Locale.US.getDisplayCountry())).thenReturn("de_DE");
+		Mockito.when(Activator.getPreferenceStore()).thenReturn(mockPrefs);
+		Mockito.when(mockPrefs.getString(Constants.PREFERENCE_CURRENCY_LOCALE)).thenReturn("de_DE");
 		Optional<ULocale> localeByCode = localeService.findByCode("de");
 		Assert.assertTrue(localeByCode.isPresent());
 		Assert.assertEquals(Locale.GERMANY, localeByCode.get());

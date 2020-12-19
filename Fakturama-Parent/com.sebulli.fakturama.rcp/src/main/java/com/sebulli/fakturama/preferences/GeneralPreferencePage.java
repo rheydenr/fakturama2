@@ -413,6 +413,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     public boolean performOk() {
         boolean preferencesSuccessfulStored = super.performOk();
         if (preferencesSuccessfulStored) {
+            localeUtil.refresh();
             DataUtils.getInstance().refresh();
             numberFormatterService.update();
 

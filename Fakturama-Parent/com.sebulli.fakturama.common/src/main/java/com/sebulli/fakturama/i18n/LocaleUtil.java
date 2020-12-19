@@ -34,7 +34,8 @@ public class LocaleUtil implements ILocaleService {
     private ULocale defaultLocale = ULocale.getDefault();
     private SortedMap<String, String> localeCountryMap;
     private final Map<String, ULocale> localeLookUp = new HashMap<>();
-    
+    private ULocale currencyLocale = null;
+
     /**
      * Returns a reference to the {@link LocaleUtil}. Used for initialization with a language code.
      * @param lang the language code to be used. If <code>null</code>, then "en_US" is used.
@@ -181,11 +182,12 @@ public class LocaleUtil implements ILocaleService {
 	 * @see com.sebulli.fakturama.i18n.ILocaleService#getCurrencyLocale()
 	 */
     @Override
-	public ULocale getCurrencyLocale() {
-        
-         ULocale currencyLocale = null;
-//        if(currencyLocale == null) {
-            String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, ULocale.US.getDisplayCountry());
+    public ULocale getCurrencyLocale() {
+        if (currencyLocale == null) {
+            String localeString = Activator.getPreferenceStore().getString(Constants.PREFERENCE_CURRENCY_LOCALE);
+            if (localeString.isEmpty()) {
+                localeString = ULocale.US.getDisplayCountry();
+            }
             Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
             Matcher matcher = pattern.matcher(localeString);
             if (matcher.matches() && matcher.groupCount() > 1) {
@@ -195,10 +197,15 @@ public class LocaleUtil implements ILocaleService {
             } else {
                 currencyLocale = getDefaultLocale();
             }
-//        }
+        }
         return currencyLocale;
     }
-    
+
+    @Override
+    public void refresh() {
+        currencyLocale = null;
+    }
+
     /**
      * Main method. For tests only.
      * 

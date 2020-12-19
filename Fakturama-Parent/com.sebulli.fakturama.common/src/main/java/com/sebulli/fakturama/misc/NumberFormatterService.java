@@ -29,8 +29,9 @@ import javax.money.format.MonetaryFormats;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.javamoney.moneta.RoundedMoney;
-import org.osgi.service.prefs.Preferences;
 
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
@@ -54,9 +55,8 @@ public class NumberFormatterService implements INumberFormatterService {
     
     @Inject 
     private ILogger log;
-
-    @Inject
-    protected Preferences defaultValuePrefs;
+    
+    private IPreferenceStore preferenceStore;
 
     private NumberFormat currencyFormat;
     private MonetaryRounding mro = null;
@@ -65,14 +65,25 @@ public class NumberFormatterService implements INumberFormatterService {
    
     @PostConstruct
     protected void initialize() {
-    	if(Activator.getPreferences() == null) {
-    		// without preferences this nothing makes sense...
-    		return;
+		// without preferences nothing makes sense...
+    	if(preferenceStore == null) {
+    	    preferenceStore = EclipseContextFactory.getServiceContext(Activator.getContext()).get(IPreferenceStore.class);
+    	    if(preferenceStore == null) {
+    	        log.error("no preference store available, NumberFormatterService can't be initialized!");
+    	        return;
+    	    }
     	}
     	
-        useThousandsSeparator = Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false);
-        CurrencySettingEnum currencyCheckboxEnabled = CurrencySettingEnum.valueOf(Activator.getPreferences().get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, 
-        		CurrencySettingEnum.SYMBOL.name()));
+    	useThousandsSeparator = preferenceStore.getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR);
+        String useCurrencySymbol = preferenceStore.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL);
+        CurrencySettingEnum currencyCheckboxEnabled;
+        if(useCurrencySymbol.isEmpty()) {
+            // is no value is found we use symbol as default value
+            // (this happens in initialization phase of preferences page)
+            currencyCheckboxEnabled = CurrencySettingEnum.SYMBOL;
+        } else {
+            currencyCheckboxEnabled = CurrencySettingEnum.valueOf(useCurrencySymbol);
+        }
         
         currencyLocale = localeUtil.getCurrencyLocale();
 
@@ -81,9 +92,9 @@ public class NumberFormatterService implements INumberFormatterService {
             mro = Monetary.getRounding(RoundingQueryBuilder.of()
                     .setCurrency(Monetary.getCurrency(currencyLocale.toLocale()))
                     .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
-                    .setScale(Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
+                    .setScale(preferenceStore.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES))
                     // das ist für die Schweizer Rundungsmethode auf 0.05 SFr.!
-                    .set("cashRounding", Activator.getPreferences().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false))
+                    .set("cashRounding", preferenceStore.getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING))
                     .build());
         }
     }
@@ -123,7 +134,7 @@ public class NumberFormatterService implements INumberFormatterService {
 		String retval = "";
 		if (d != null) {
 			NumberFormat percentageFormat = NumberFormat.getPercentInstance();
-	        final int scale = Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 1);
+	        final int scale = preferenceStore.getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES);
 			percentageFormat.setMaximumFractionDigits(scale);
 			retval = percentageFormat.format(d);
 		}
@@ -135,7 +146,7 @@ public class NumberFormatterService implements INumberFormatterService {
 	 */
     @Override
 	public String doubleToFormattedQuantity(Double d) {
-        final int scale = Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, 2);
+        final int scale = preferenceStore.getInt(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES);
         return doubleToFormattedValue(d, scale);
     }
     
@@ -191,7 +202,7 @@ public class NumberFormatterService implements INumberFormatterService {
     			.set(useCurrencySymbol)
     			.setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)
     			.set(FakturamaMonetaryAmountFormat.KEY_SCALE, 
-    					Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))
+    			        preferenceStore.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES))
     			.set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, useSeparator)
     			.build());
     	return format.format(amount.with(mro));
@@ -233,7 +244,11 @@ public class NumberFormatterService implements INumberFormatterService {
 	
     private String getCurrencySymbol(CurrencyUnit currency) {
     	String retval = "";
-    	CurrencySettingEnum currencySymbol = CurrencySettingEnum.valueOf(Activator.getPreferences().get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, "CODE"));
+    	String useCurrencySymbol = preferenceStore.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL);
+    	if(useCurrencySymbol.isEmpty()) {
+    	    useCurrencySymbol = CurrencySettingEnum.CODE.name();
+    	}
+        CurrencySettingEnum currencySymbol = CurrencySettingEnum.valueOf(useCurrencySymbol);
     	switch (currencySymbol) {
 		case SYMBOL:
 	        Currency jdkCurrency = getCurrency(currency.getCurrencyCode());
@@ -313,15 +328,18 @@ public class NumberFormatterService implements INumberFormatterService {
      */
     @Override
 	public MonetaryAmountFormat getMonetaryAmountFormat() {
-        CurrencySettingEnum currencyCheckboxEnabled = CurrencySettingEnum.valueOf(Activator.getPreferences().get(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, 
-        		CurrencySettingEnum.SYMBOL.name()));
+        String useCurrencySymbol = preferenceStore.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL);
+        if(useCurrencySymbol.isEmpty()) {
+            useCurrencySymbol = CurrencySettingEnum.SYMBOL.name();
+        }
+        CurrencySettingEnum currencyCheckboxEnabled = CurrencySettingEnum.valueOf(useCurrencySymbol);
         return MonetaryFormats.getAmountFormat(
                 AmountFormatQueryBuilder.of(currencyLocale.toLocale())
 	                // scale wird nur verwendet, wenn kein Pattern angegeben ist
-                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, Activator.getPreferences().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, 2))                    
+                        .set(FakturamaMonetaryAmountFormat.KEY_SCALE, preferenceStore.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES))                    
                         .set(currencyCheckboxEnabled)
                         .set(FakturamaMonetaryAmountFormat.KEY_USE_GROUPING, 
-                    Activator.getPreferences().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, false))
+                                preferenceStore.getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR))
                         .setFormatName(FakturamaFormatProviderSpi.DEFAULT_STYLE)          // wichtig, damit das eigene Format gefunden wird und nicht das DEFAULT-Format
                         .build());
     }

@@ -19,15 +19,15 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
-import org.osgi.service.prefs.Preferences;
 
-import com.sebulli.fakturama.common.Activator;
+import com.opcoach.e4.preferences.IPreferenceStoreProvider;
 import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbconnector.IDbConnection;
 import com.sebulli.fakturama.dbservice.IDbUpdateService;
@@ -50,7 +50,7 @@ import liquibase.osgi.OSGiResourceAccessor;
 public class DbUpdateService implements IDbUpdateService {
 
     private static final String PROP_HSQLFILEDB = "hsqlfiledb";
-	private Preferences eclipsePrefs;
+	private IPreferenceStore preferenceStore;
 	private IActivateDbServer currentService;
     
 	/* (non-Javadoc)
@@ -60,9 +60,12 @@ public class DbUpdateService implements IDbUpdateService {
 	public boolean updateDatabase() {
 		boolean retval = true;
 		
-		// get the preferences for this application from common plugin
-		this.eclipsePrefs = Activator.getPreferences();
+		// get the preferences for this application
+//        EclipseContextFactory.getServiceContext(context).set(IPreferenceStore.class, preferenceStore);
+        
 		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        ServiceReference<IPreferenceStoreProvider> serviceReference = context.getServiceReference(IPreferenceStoreProvider.class);
+        preferenceStore = context.getService(serviceReference).getPreferenceStore();
 		try (java.sql.Connection connection = openConnection(context);) {
 			if(connection == null) {
 				throw new SQLException("can't create database connection!");
@@ -102,7 +105,7 @@ public class DbUpdateService implements IDbUpdateService {
 		Connection conn = null;
 		try {
 			ServiceReference<?>[] allServiceReferences = context.getAllServiceReferences(
-					org.osgi.service.jdbc.DataSourceFactory.class.getName(), "(osgi.jdbc.driver.class="+eclipsePrefs.get(PersistenceUnitProperties.JDBC_DRIVER, "")+")");
+					org.osgi.service.jdbc.DataSourceFactory.class.getName(), "(osgi.jdbc.driver.class="+preferenceStore.getString(PersistenceUnitProperties.JDBC_DRIVER)+")");
 			ServiceReference<DataSourceFactory> serviceReference;
 			if(allServiceReferences != null && allServiceReferences.length > 0) {
 				serviceReference = (ServiceReference<DataSourceFactory>) allServiceReferences[0];
@@ -111,9 +114,9 @@ public class DbUpdateService implements IDbUpdateService {
 				System.err.println("No service reference found for database connection!");
 			}
 		    Properties prop = new Properties();
-		    prop.put(DataSourceFactory.JDBC_URL, eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, ""));
-		    prop.put(DataSourceFactory.JDBC_USER, eclipsePrefs.get(PersistenceUnitProperties.JDBC_USER, "fakturama"));
-		    prop.put(DataSourceFactory.JDBC_PASSWORD, eclipsePrefs.get(PersistenceUnitProperties.JDBC_PASSWORD, "fakturama"));
+		    prop.put(DataSourceFactory.JDBC_URL, preferenceStore.getString(PersistenceUnitProperties.JDBC_URL));
+		    prop.put(DataSourceFactory.JDBC_USER, preferenceStore.getString(PersistenceUnitProperties.JDBC_USER));//, "fakturama"
+		    prop.put(DataSourceFactory.JDBC_PASSWORD, preferenceStore.getString(PersistenceUnitProperties.JDBC_PASSWORD)); //, "fakturama"
 	    	
 			String dataSource = (String)prop.get(DataSourceFactory.JDBC_URL);
 			/*
@@ -130,17 +133,17 @@ public class DbUpdateService implements IDbUpdateService {
 				allServiceReferences = context.getAllServiceReferences(IActivateDbServer.class.getName(), null);
 				if(allServiceReferences != null && allServiceReferences.length > 0) {
 					ServiceReference<IActivateDbServer> serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
-					prop.put(PROP_HSQLFILEDB, eclipsePrefs.get(PROP_HSQLFILEDB, ""));
+					prop.put(PROP_HSQLFILEDB, preferenceStore.getString(PROP_HSQLFILEDB));
 					prop.put("encoding", "UTF-8");
-					prop.put(Constants.GENERAL_WORKSPACE, eclipsePrefs.get(Constants.GENERAL_WORKSPACE, ""));
+					prop.put(Constants.GENERAL_WORKSPACE, preferenceStore.getString(Constants.GENERAL_WORKSPACE));
 					
                     currentService = context.getService(serviceDbRef);
                     if (!isDbAlive()) {
                         Properties activateProps = currentService.activateServer(prop);
-                        eclipsePrefs.put(PersistenceUnitProperties.JDBC_URL,
+                        preferenceStore.putValue(PersistenceUnitProperties.JDBC_URL,
                                 String.format("jdbc:hsqldb:hsql://localhost:9002/%s", activateProps.get("runningfakdb")));
-                        prop.put(DataSourceFactory.JDBC_URL, eclipsePrefs.get(PersistenceUnitProperties.JDBC_URL, ""));
-                        eclipsePrefs.put(PROP_HSQLFILEDB, (String) activateProps.get(PROP_HSQLFILEDB));
+                        prop.put(DataSourceFactory.JDBC_URL, preferenceStore.getString(PersistenceUnitProperties.JDBC_URL));
+                        preferenceStore.putValue(PROP_HSQLFILEDB, (String) activateProps.get(PROP_HSQLFILEDB));
                     } else {
                         System.err.println("DB wurde schon gestartet");
                     }
