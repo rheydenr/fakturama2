@@ -91,6 +91,7 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.office.Placeholders;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
@@ -103,7 +104,7 @@ public class ZUGFeRD extends AbstractEInvoice {
     private ObjectFactory factory;
     
     @Override
-    public Serializable getInvoiceXml(Optional<Document> invoiceDoc) {
+    public Serializable getInvoiceXml(Optional<Invoice> invoiceDoc) {
         if(!invoiceDoc.isPresent()) {
             return null;
         }
@@ -149,7 +150,7 @@ public class ZUGFeRD extends AbstractEInvoice {
                 preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY),
                 preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR));
         if(StringUtils.isBlank(owner)) {
-            MessageDialog.openWarning(shell, "Warning", "Your company information is empty. Please specify it in preferences. The generated file could be not valid.");
+            MessageDialog.openWarning(shell, messages.dialogMessageboxTitleWarning, zfMsg.zugferdExportErrorEmptycompanypref);
             owner = "(unknown)";
         }
 
@@ -659,7 +660,7 @@ public class ZUGFeRD extends AbstractEInvoice {
             .withChargeIndicator(factory.createIndicatorType().withIndicator(isAllowance))
             .withActualAmount(createAmount(Money.of(u/*amount*/, DataUtils.getInstance().getDefaultCurrencyUnit()), DEFAULT_AMOUNT_SCALE, true))
 //          .withBasisAmount(createAmount(item.getDoubleValueByKey("price")))
-            .withReason(createText(msg.zugferdExportLabelRebate));
+            .withReason(createText(zfMsg.zugferdExportLabelRebate));
 //          .withCategoryTradeTax(createTradeTax(item.getDoubleValueByKey("vatvalue")));
     }
 
@@ -673,7 +674,7 @@ public class ZUGFeRD extends AbstractEInvoice {
             .withChargeIndicator(factory.createIndicatorType().withIndicator(isAllowance))
             .withActualAmount(createAmount(amount, 2 /*DEFAULT_AMOUNT_SCALE*/))
 //          .withBasisAmount(createAmount(summary.getItemsNet().asRoundedDouble(), true))
-            .withReason(createText(msg.zugferdExportLabelRebate))
+            .withReason(createText(zfMsg.zugferdExportLabelRebate))
 // TODO which VAT?          .withCategoryTradeTax(createTradeTax(item.getDoubleValueByKey("vatvalue")));
             ;
     }

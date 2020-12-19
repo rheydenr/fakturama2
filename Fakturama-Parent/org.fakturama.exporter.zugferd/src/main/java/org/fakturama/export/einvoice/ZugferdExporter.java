@@ -29,7 +29,7 @@ import org.fakturama.export.facturx.XRechnungCreator;
 import org.osgi.service.component.annotations.Component;
 
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.office.IPdfPostProcessor;
 import com.sebulli.fakturama.office.TargetFormat;
 
@@ -83,7 +83,7 @@ public class ZugferdExporter implements IPdfPostProcessor {
 	}
 
 	@Override
-    public boolean processPdf(Optional<Document> invoice) {
+    public boolean processPdf(Optional<Invoice> invoice) {
 	    
         boolean result = checkSettings();
         if(result && invoice.isPresent() && invoice.get().getBillingType().isINVOICE()) {

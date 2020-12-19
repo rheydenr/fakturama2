@@ -725,9 +725,11 @@ public class Messages {
 	public String preferencesGeneralCurrencyUsesymbol;
 	public String preferencesGeneralCurrencyUseisocode;
 	public String preferencesGeneralCurrencyUsenothing;
+	public String preferencesGeneralCurrencyGroup;
 	public String preferencesGeneralThousandseparator;
 	public String preferencesGeneralCurrencyDecimalplaces;
 	public String preferencesGeneralQuantityDecimalplaces;
+	public String preferencesGeneralResetdialogsettings;
 	public String preferencesGeneralDatabase;
 	public String preferencesNumberrangeFormatConfirmationoLabel;
 	public String preferencesNumberrangeFormatConfirmationoValue;

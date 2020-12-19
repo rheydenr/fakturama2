@@ -63,9 +63,9 @@ import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
+import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.office.FileOrganizer;
 import com.sebulli.fakturama.office.FileOrganizer.PathOption;
 import com.sebulli.fakturama.office.TargetFormat;
@@ -136,7 +136,7 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
      * @param root
      * @param zugferdProfile
      */
-    protected boolean createPdf(Document invoice, Supplier<? extends Serializable> root, ConformanceLevel zugferdProfile) {
+    protected boolean createPdf(Invoice invoice, Supplier<? extends Serializable> root, ConformanceLevel zugferdProfile) {
         boolean retval = true;
         String pdfFile = invoice.getPdfPath();
         PDDocument pdfa3 = null;
@@ -147,7 +147,7 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
             FileOrganizer fo = ContextInjectionFactory.make(FileOrganizer.class, eclipseContext);
             Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
             Path path = fo.getDocumentPath(pathOptions, TargetFormat.XML, eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, ""), invoice);
-            testOutput(root, path);
+            createXmlFile(root, path);
         } else {
             try (ByteArrayOutputStream buffo = new ByteArrayOutputStream()) {
                 // create XML from structure
@@ -191,25 +191,26 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty(OutputKeys.ENCODING, ZFConstants.CHARSET_UTF8_KEY);
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
         transformer.transform(new DOMSource(doc), streamResult);
     }
     
     protected void printDocument(org.w3c.dom.Document doc, OutputStream out) throws IOException, TransformerException {
-        StreamResult streamResult = new StreamResult(new OutputStreamWriter(out, "UTF-8"));
+        StreamResult streamResult = new StreamResult(new OutputStreamWriter(out, ZFConstants.CHARSET_UTF8_KEY));
         printDocument(doc, streamResult);
     }
     
     /**
-     * tests the generated export file (only for debugging purposes)  
+     * create the generated export file (only for debugging purposes)  
      * 
      * @param root the document 
      */
-    protected void testOutput(Supplier<? extends Serializable> root, Path path) {
-//        Path path = Paths.get("d:\\temp\\ZUGTEST.XML");
-        try(BufferedWriter newBufferedWriter = Files.newBufferedWriter(path, Charset.defaultCharset(), StandardOpenOption.CREATE);) {
+    protected void createXmlFile(Supplier<? extends Serializable> root, Path path) {
+        // create directory if it doesn't exist
+        createOutputDirectory(path.getParent()); 
+        try(BufferedWriter newBufferedWriter = Files.newBufferedWriter(path, Charset.forName(ZFConstants.CHARSET_UTF8_KEY), StandardOpenOption.CREATE);) {
             
             DOMResult res = new DOMResult();
             JAXBContext testContext = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] { root.get().getClass() }, null);
@@ -218,8 +219,17 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
             printDocument(doc, new StreamResult(newBufferedWriter));
         }
         catch (JAXBException | IOException | TransformerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e);
+        }
+    }
+    
+    private void createOutputDirectory(Path directory) {
+        if (Files.notExists(directory)) {
+            try {
+                Files.createDirectories(directory);
+            } catch (IOException e) {
+                log.error(e, "can't create output directory: " + directory.toString());
+            }
         }
     }
 

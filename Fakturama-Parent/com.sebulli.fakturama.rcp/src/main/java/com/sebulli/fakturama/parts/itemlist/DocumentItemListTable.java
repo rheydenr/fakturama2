@@ -447,11 +447,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                	retval = tmpVat != null ? DataUtils.getInstance().round(tmpVat, 3) : Double.valueOf(0.0);
 	                	break;
 	                case UNITPRICE:
-	                	MonetaryAmount amount;
-	                	amount = container.getUseGross() 
+	                    retval = container.getUseGross() 
 	                			? new Price(rowObject.getDocumentItem(), useSET).getUnitGrossRounded() 
 	                			: new Price(rowObject.getDocumentItem(), useSET).getUnitNetRounded();
-	                	retval = amount.getNumber().doubleValue();
 	                    break;
 	                case TOTALPRICE:
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"

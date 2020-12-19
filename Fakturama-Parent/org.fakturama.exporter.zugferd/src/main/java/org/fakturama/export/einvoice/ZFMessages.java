@@ -33,6 +33,7 @@ public class ZFMessages {
 	public String zugferdExportLabelRebate;
 	public String zugferdExportErrorNopdfset;
 	public String zugferdExportErrorNopdfpath;
+	public String zugferdExportErrorEmptycompanypref;
 
     public String zugferdPreferencesFilelocation;
 	public String zugferdPreferencesProfile;
