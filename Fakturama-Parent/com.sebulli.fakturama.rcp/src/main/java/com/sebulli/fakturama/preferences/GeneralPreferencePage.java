@@ -37,6 +37,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -46,8 +47,11 @@ import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -99,6 +103,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     private RadioGroupFieldEditor useCurrencySymbolCheckbox;
     private IntegerFieldEditor decimalCurrencyPlaces, generalDecimalPlaces;
 
+    private Group currencySettings;
+
 	/**
 	 * Constructor
 	 */
@@ -119,6 +125,9 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, msg.preferencesGeneralCollapsenavbar, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, msg.preferencesGeneralCloseeditors, getFieldEditorParent()));
 
+		currencySettings = new Group(getFieldEditorParent(), SWT.SHADOW_IN | SWT.BORDER_SOLID);
+        GridLayoutFactory.swtDefaults().margins(10, 20).numColumns(2).applyTo(currencySettings);
+		currencySettings.setText(msg.preferencesGeneralCurrencyGroup);
         Locale[] locales = NumberFormat.getAvailableLocales();
         final Collator collator = Collator.getInstance(ULocale.getDefault());
         collator.setStrength(Collator.SECONDARY);
@@ -136,12 +145,12 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
             index++;
         }
         
-        currencyLocaleCombo = new ComboFieldEditor(Constants.PREFERENCE_CURRENCY_LOCALE, msg.preferencesGeneralCurrencyLocale, currencyLocales, getFieldEditorParent());
+        currencyLocaleCombo = new ComboFieldEditor(Constants.PREFERENCE_CURRENCY_LOCALE, msg.preferencesGeneralCurrencyLocale, currencyLocales, currencySettings);
         addField(currencyLocaleCombo);
         
-        Label exampleLabel = new Label(getFieldEditorParent(), SWT.NONE);
+        Label exampleLabel = new Label(currencySettings, SWT.NONE);
         exampleLabel.setText(msg.preferencesGeneralCurrencyExample);
-        example = new Text(getFieldEditorParent(), SWT.BORDER);
+        example = new Text(currencySettings, SWT.BORDER);
         example.setEditable(false);
         example.setText(calculateExampleCurrencyFormatString(
         		super.getPreferenceStore().getString(Constants.PREFERENCE_CURRENCY_LOCALE), 
@@ -150,28 +159,31 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         		CurrencySettingEnum.valueOf(super.getPreferenceStore().getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL))));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(example);
                 
-        cashCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, msg.preferencesGeneralCurrencyCashrounding, getFieldEditorParent());
-        cashCheckbox.getDescriptionControl(getFieldEditorParent()).setToolTipText(msg.preferencesGeneralCurrencyCashroundingTooltip);
+        cashCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, msg.preferencesGeneralCurrencyCashrounding, currencySettings);
+        cashCheckbox.getDescriptionControl(currencySettings).setToolTipText(msg.preferencesGeneralCurrencyCashroundingTooltip);
         String localeString = getPreferenceStore().getString(Constants.PREFERENCE_CURRENCY_LOCALE);
         if(!localeString.endsWith("CH")) {
-            cashCheckbox.setEnabled(false, getFieldEditorParent());
+            cashCheckbox.setEnabled(false, currencySettings);
         }
         addField(cashCheckbox);
 
-        useCurrencySymbolCheckbox = new RadioGroupFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, msg.preferencesGeneralCurrencyUsesymbol, 3, new String[][] { 
+        useCurrencySymbolCheckbox = new RadioGroupFieldEditor(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, "", 3, new String[][] { 
 			{ msg.preferencesGeneralCurrencyUsesymbol, CurrencySettingEnum.SYMBOL.name() },
 			{ msg.preferencesGeneralCurrencyUseisocode, CurrencySettingEnum.CODE.name() },
 			{ msg.preferencesGeneralCurrencyUsenothing, CurrencySettingEnum.NONE.name() } },
-			getFieldEditorParent());
+                currencySettings);
         addField(useCurrencySymbolCheckbox);
         
-        thousandsSeparatorCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousandseparator, getFieldEditorParent());
+        thousandsSeparatorCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, msg.preferencesGeneralThousandseparator, currencySettings);
         addField(thousandsSeparatorCheckbox);
         
-        decimalCurrencyPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, msg.preferencesGeneralCurrencyDecimalplaces, getFieldEditorParent());
+        decimalCurrencyPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, msg.preferencesGeneralCurrencyDecimalplaces, currencySettings);
         decimalCurrencyPlaces.setValidRange(0, 5);
         addField(decimalCurrencyPlaces);
-        
+        GridDataFactory.fillDefaults().indent(SWT.DEFAULT, 10).span(2, 1).applyTo(currencySettings);
+        Label spaceLabel = new Label(getFieldEditorParent(), SWT.NONE); // SPACE LABEL
+        GridDataFactory.swtDefaults().span(2, SWT.DEFAULT).applyTo(spaceLabel);
+
         generalDecimalPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, msg.preferencesGeneralQuantityDecimalplaces, getFieldEditorParent());
         generalDecimalPlaces.setValidRange(0, 5);     
         addField(generalDecimalPlaces);
@@ -183,6 +195,16 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         dbConnectionInfo.setEditable(false);
         dbConnectionInfo.setText(getPreferenceStore().getString(PersistenceUnitProperties.JDBC_URL));
         GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(dbConnectionInfo);
+        
+        Button resetMemorizedSetting = new Button(getFieldEditorParent(), SWT.PUSH);
+        resetMemorizedSetting.setText(msg.preferencesGeneralResetdialogsettings);
+        resetMemorizedSetting.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                getPreferenceStore().setToDefault(Constants.DISPLAY_SUCCESSFUL_PRINTING);
+            };
+        });
+        GridDataFactory.swtDefaults().indent(SWT.DEFAULT, 5).span(2, SWT.DEFAULT).applyTo(resetMemorizedSetting);
+        
 	}
 	
 	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {
@@ -252,7 +274,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
                         getDeclaredMethod("getComboBoxControl", Composite.class);
                 privateStringMethod.setAccessible(true);
                 Combo returnValue = (Combo)
-                        privateStringMethod.invoke(currencyLocaleCombo, getFieldEditorParent());
+                        privateStringMethod.invoke(currencyLocaleCombo, currencySettings);
                 privateValueMethod = ComboFieldEditor.class.
                         getDeclaredMethod("getValueForName", String.class);
                 privateValueMethod.setAccessible(true);
@@ -301,7 +323,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
             
             if (locale.getCountry().equals("CH")) {
                 if(cashCheckbox != null) {
-                    cashCheckbox.setEnabled(true, getFieldEditorParent());
+                    cashCheckbox.setEnabled(true, currencySettings);
                 }
              //   if(useCashRounding) {
                     /* 
@@ -319,7 +341,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
                 				currencySetting,
                                 cashCheckbox != null ? cashCheckbox.getBooleanValue() : true, useThousandsSeparator);
                 if(cashCheckbox != null) {
-                    cashCheckbox.setEnabled(false, getFieldEditorParent());
+                    cashCheckbox.setEnabled(false, currencySettings);
                 }
             }
         }
@@ -364,12 +386,12 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	 *            The preference node
 	 */
 	public void setInitValues(IPreferenceStore node) {
-		node.setDefault(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, false);
-		node.setDefault(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, false);
-        node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, true);
+		node.setDefault(Constants.PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR, IPreferenceStore.FALSE);
+		node.setDefault(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, IPreferenceStore.FALSE);
+        node.setDefault(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, IPreferenceStore.TRUE);
         node.setDefault(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, Integer.valueOf(2));
         node.setDefault(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, Integer.valueOf(2));
-        node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, false);
+        node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, IPreferenceStore.FALSE);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, CurrencySettingEnum.SYMBOL.name());
 
 		//Set the default currency locale from current locale
