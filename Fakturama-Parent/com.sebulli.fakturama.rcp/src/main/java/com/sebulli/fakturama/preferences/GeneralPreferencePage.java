@@ -409,18 +409,22 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	 * 
 	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performOk()
 	 */
-	@Override
-	public boolean performOk() {
-		DataUtils.getInstance().refresh();
-        
-        // Refresh the table view of all documents
-		evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-		evtBroker.post(ProductEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-        evtBroker.post(ReceiptVoucherEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-        evtBroker.post(ExpenditureVoucherEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-        evtBroker.post(ShippingEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-		return super.performOk();
-	}
+    @Override
+    public boolean performOk() {
+        boolean preferencesSuccessfulStored = super.performOk();
+        if (preferencesSuccessfulStored) {
+            DataUtils.getInstance().refresh();
+            numberFormatterService.update();
+
+            // Refresh the table view of all documents
+            evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+            evtBroker.post(ProductEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+            evtBroker.post(ReceiptVoucherEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+            evtBroker.post(ExpenditureVoucherEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+            evtBroker.post(ShippingEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        }
+        return preferencesSuccessfulStored;
+    }
 
 	/**
 	 * Update the currency Symbol for the whole application
