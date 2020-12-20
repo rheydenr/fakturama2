@@ -8,4 +8,11 @@ Fragment-Host: com.sebulli.fakturama.rcp;bundle-version="2.1.0"
 Automatic-Module-Name: com.sebulli.fakturama.rcp.test
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.sebulli.fakturama.office
-Require-Bundle: org.junit;bundle-version="4.12.0"
+Bundle-ClassPath: lib/byte-buddy-1.10.18.jar,
+ lib/byte-buddy-agent-1.10.18.jar,
+ lib/mockito-core-3.6.28.jar,
+ lib/mockito-junit-jupiter-3.6.28.jar,
+ lib/objenesis-3.1.jar,
+ .
+Require-Bundle: org.junit.jupiter.api;bundle-version="5.7.0",
+ org.junit.jupiter.engine;bundle-version="5.7.0"
