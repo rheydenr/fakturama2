@@ -70,6 +70,7 @@ import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.TextEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
+import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
@@ -148,7 +149,8 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new TextModuleTableConfiguration());
-        natTable.setBackground(GUIHelper.COLOR_WHITE);
+        natTable.addConfiguration(new ListSelectionStyleConfiguration());
+       natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));
         gridListLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);

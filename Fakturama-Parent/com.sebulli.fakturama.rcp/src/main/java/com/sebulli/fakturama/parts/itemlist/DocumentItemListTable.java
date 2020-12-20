@@ -145,6 +145,7 @@ import com.sebulli.fakturama.views.datatable.CellImagePainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 //import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -839,6 +840,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         natTable.addConfiguration(new SingleClickSortConfiguration());
         natTable.addConfiguration(new DefaultRowReorderLayerConfiguration());
         natTable.addConfiguration(new DocumentItemTableConfiguration());
+        natTable.addConfiguration(new ListSelectionStyleConfiguration());
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));

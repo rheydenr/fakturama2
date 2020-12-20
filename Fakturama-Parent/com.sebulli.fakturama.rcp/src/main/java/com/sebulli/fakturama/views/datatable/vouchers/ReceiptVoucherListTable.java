@@ -58,6 +58,7 @@ import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ReceiptVoucherEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
+import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
@@ -132,6 +133,7 @@ public class ReceiptVoucherListTable extends AbstractViewDataTable<Voucher, Vouc
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new ListSelectionStyleConfiguration());
         VoucherTableConfiguration voucherTableConfiguration = ContextInjectionFactory.make(VoucherTableConfiguration.class, context);
         natTable.addConfiguration(voucherTableConfiguration);
         natTable.setBackground(GUIHelper.COLOR_WHITE);

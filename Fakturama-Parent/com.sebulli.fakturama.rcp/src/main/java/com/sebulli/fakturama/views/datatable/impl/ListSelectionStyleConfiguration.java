@@ -40,7 +40,7 @@ public class ListSelectionStyleConfiguration extends AbstractRegistryConfigurati
 	// Anchor style
 	public Color anchorBorderColor = GUIHelper.COLOR_DARK_GRAY;
 	public BorderStyle anchorBorderStyle = new BorderStyle(1, anchorBorderColor, LineStyleEnum.SOLID);
-	public Color anchorBgColor = GUIHelper.COLOR_GRAY;
+	public Color anchorBgColor = GUIHelper.COLOR_LIST_SELECTION;
 	public Color anchorFgColor = GUIHelper.COLOR_WHITE;
 
 	// Selected headers style
