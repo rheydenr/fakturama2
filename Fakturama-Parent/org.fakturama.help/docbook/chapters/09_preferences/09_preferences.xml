@@ -1085,10 +1085,14 @@
 		<para>Siehe auch <link linkend="preferences_openoffice">OpenOffice.org / LibreOffice-Einstellungen</link>
 		</para></section>
 		<section>
-			<subtitle>ZUGFeRD-Version</subtitle><para>Über die Radiobuttons kann man die zu erstellende Version auswählen.</para></section> 
+			<subtitle>ZUGFeRD-Version</subtitle><para>Über die Radiobuttons kann man die zu erstellende Version auswählen. Derzeit sind noch nicht alle Formate auswählbar. Das wird ggf. in künftigen Versionen 
+			noch vervollständigt.</para></section> 
 			<section><subtitle>Profil</subtitle><para>Aktuell ist nur das COMFORT-Profil auswählbar. Beim Umschalten zwischen den Versionen wird auch der Inhalt der Dropdown-Box aktualisiert.
 			</para></section>
-			<section><subtitle>Standardpfad für die XRechnung-Datei</subtitle><para>In diesem Feld legt man fest, wo die XRechnung-Datei (XML) nach der Generierung abgelegt werden soll.</para>
+			<section><subtitle>Standardpfad für die XRechnung-Datei</subtitle><para>In diesem Feld legt man fest, wo die XRechnung-Datei (XML) nach der Generierung abgelegt werden soll. 
+			Das Feld ist nur aktiv, wenn man das XRechnung-Profil angewählt hat.
+			Hier ist die gleiche Syntax wie für die restlichen Dokumente zu verwenden (die Platzhalter können hier ebenfalls verwendet werden). Die Pfadangabe ist relativ zum aktuellen 
+			Arbeitsverzeichnis anzugeben.</para>
 		</section>
 	</section>
 </chapter>

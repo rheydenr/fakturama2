@@ -1943,7 +1943,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1100, 500);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setMinSize(1100, 550);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
@@ -2234,7 +2234,7 @@ public class DocumentEditor extends Editor<Document> {
 		    comboViewerNoVat.getCombo().select(0);
 		}
 
-		copyGroup = new Group(top, SWT.SHADOW_ETCHED_OUT);
+		copyGroup = new Group(top, SWT.SHADOW_OUT);
 		
 		//T: Document Editor
 		//T: Label Group box to create a new document based on this one.

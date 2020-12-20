@@ -24,4 +24,5 @@ public class ZFConstants {
 	public static final String PREFERENCES_ZUGFERD_VERSION = "ZUGFERD_VERSION";
 	public static final String PREFERENCES_ZUGFERD_PROFILE = "ZUGFERD_PROFILE";
 	public static final String PREFERENCES_ZUGFERD_TEST = "ZUGFERD_TEST";
+    public static final String CHARSET_UTF8_KEY = "UTF-8";
 }

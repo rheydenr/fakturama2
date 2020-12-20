@@ -34,6 +34,7 @@ import org.fakturama.export.facturx.modelgen.ObjectFactory;
 import com.sebulli.fakturama.dao.CEFACTCodeDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
+import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
@@ -60,7 +61,11 @@ public abstract class AbstractEInvoice implements IEinvoice {
     
     @Inject
     @Translation
-    protected ZFMessages msg;
+    protected ZFMessages zfMsg;
+    
+    @Inject
+    @Translation
+    protected Messages messages;
     
     @Inject // node: org.fakturama.export.zugferd
     protected IPreferenceStore preferences;

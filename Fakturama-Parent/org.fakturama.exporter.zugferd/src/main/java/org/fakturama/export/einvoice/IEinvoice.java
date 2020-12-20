@@ -17,13 +17,13 @@ package org.fakturama.export.einvoice;
 import java.io.Serializable;
 import java.util.Optional;
 
-import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Invoice;
 
 /**
  *
  */
 public interface IEinvoice {
 
-    public Serializable getInvoiceXml(Optional<Document> invoiceDoc);
+    public Serializable getInvoiceXml(Optional<Invoice> invoiceDoc);
 
 }

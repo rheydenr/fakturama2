@@ -17,6 +17,7 @@ package com.sebulli.fakturama.office;
 import java.util.Optional;
 
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Invoice;
 
 /**
  * Defines an interface for post processing of the generated PDFs. This is useful e.g. for
@@ -38,5 +39,5 @@ public interface IPdfPostProcessor {
      * @param inputDocument {@link Document} which is the base for the PDF
      * @return <code>true</code>, if the operation was successful
      */
-    public boolean processPdf(Optional<Document> inputDocument);
+    public boolean processPdf(Optional<Invoice> inputDocument);
 }

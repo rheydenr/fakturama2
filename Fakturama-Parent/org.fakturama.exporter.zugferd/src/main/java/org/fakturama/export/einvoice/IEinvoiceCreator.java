@@ -15,7 +15,7 @@ package org.fakturama.export.einvoice;
 
 import java.util.Optional;
 
-import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Invoice;
 
 public interface IEinvoiceCreator {
 
@@ -27,6 +27,6 @@ public interface IEinvoiceCreator {
      * @param zugferdProfile the {@link ConformanceLevel} of the resulting file
      * @return <code>true</code>, if the conversion was successful
      */
-    boolean createEInvoice(Optional<Document> invoice, ConformanceLevel zugferdProfile);
+    boolean createEInvoice(Optional<Invoice> invoice, ConformanceLevel zugferdProfile);
 
 }

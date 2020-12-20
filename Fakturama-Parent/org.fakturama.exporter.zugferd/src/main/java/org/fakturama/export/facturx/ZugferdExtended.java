@@ -103,6 +103,7 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.office.Placeholders;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
@@ -113,7 +114,7 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
 public class ZugferdExtended extends AbstractEInvoice {
 
     @Override
-    public CrossIndustryInvoice getInvoiceXml(Optional<Document> invoiceDoc) {
+    public CrossIndustryInvoice getInvoiceXml(Optional<Invoice> invoiceDoc) {
         if(!invoiceDoc.isPresent()) {
             return null;
         }

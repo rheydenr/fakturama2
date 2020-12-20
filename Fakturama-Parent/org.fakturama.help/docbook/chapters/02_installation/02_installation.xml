@@ -284,10 +284,10 @@
                         <emphasis role="bold">-nl tr_TR</emphasis> Türkisch
                 </listitem>
                 <listitem>
-                        <emphasis role="bold">-nl sv</emphasis> Schwedisch
+                        <emphasis role="bold">-nl sv_SE</emphasis> Schwedisch
                 </listitem>
                 <listitem>
-                        <emphasis role="bold">-nl ar -Dforce.rtl=true</emphasis> Arabisch
+                        <emphasis role="bold">-nl ar_LY -Dforce.rtl=true</emphasis> Arabisch
                 </listitem>
 			</itemizedlist>
 		</sect2>

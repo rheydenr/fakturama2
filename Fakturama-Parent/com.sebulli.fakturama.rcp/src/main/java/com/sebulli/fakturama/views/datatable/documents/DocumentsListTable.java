@@ -98,6 +98,7 @@ import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -293,6 +294,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new ListSelectionStyleConfiguration());
         natTable.addConfiguration(new DocumentTableConfiguration());
 
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte

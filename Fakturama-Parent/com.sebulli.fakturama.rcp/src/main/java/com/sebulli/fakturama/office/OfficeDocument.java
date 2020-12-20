@@ -96,6 +96,7 @@ import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.office.FileOrganizer.PathOption;
 import com.sebulli.fakturama.parts.DocumentEditor;
@@ -503,8 +504,8 @@ public class OfficeDocument {
                     // enrich post processor service with available Eclipse services
                     IPdfPostProcessor currentProcessor = Activator.getContext().getService(serviceReference);
                     ContextInjectionFactory.inject(currentProcessor, context);
-                    if (currentProcessor.canProcess()) {
-                        result = result && currentProcessor.processPdf(Optional.ofNullable(document));
+                    if (currentProcessor.canProcess() && document instanceof Invoice) {
+                        result = result && currentProcessor.processPdf(Optional.ofNullable((Invoice)document));
                     }
                 }
                 

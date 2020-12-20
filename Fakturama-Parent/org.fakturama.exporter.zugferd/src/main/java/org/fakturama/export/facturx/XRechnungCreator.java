@@ -27,7 +27,7 @@ import org.fakturama.export.einvoice.IPdfHelper;
 import org.fakturama.export.zugferd.ZUGFeRD;
 import org.fakturama.export.zugferd.ZugferdHelper;
 
-import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Invoice;
 
 /**
  * Generator class for XRechnung /Factur-x files.
@@ -60,7 +60,7 @@ public class XRechnungCreator extends AbstractEInvoiceCreator {
     private IPdfHelper pdfHelper;
 
     @Override
-    public boolean createEInvoice(Optional<Document> invoice, ConformanceLevel zugferdProfile) {
+    public boolean createEInvoice(Optional<Invoice> invoice, ConformanceLevel zugferdProfile) {
         Serializable invoiceXml;
         // 2. create XML file
         IEinvoice eInvoice;

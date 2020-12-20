@@ -19,7 +19,6 @@
         <setEntry value="com.sebulli.fakturama.model"/>
         <setEntry value="com.sebulli.fakturama.model.test"/>
         <setEntry value="com.sebulli.fakturama.rcp"/>
-        <setEntry value="com.sebulli.fakturama.rcp.test"/>
         <setEntry value="com.sebulli.fakturama.resources"/>
         <setEntry value="com.sebulli.fakturama.resources.icons"/>
         <setEntry value="com.sebulli.fakturama.resources.templates"/>

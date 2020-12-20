@@ -32,7 +32,9 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
+import com.opcoach.e4.preferences.IPreferenceStoreProvider;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.preferences.FakturamaPreferenceStoreProvider;
 
 // import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -82,6 +84,9 @@ public class Activator implements BundleActivator, IBundleGroupProvider {
         // background for Browser
 		JFaceResources.getColorRegistry().put(Constants.COLOR_WHITE, new RGB(0xff, 0xff, 0xff));
 		registerBundleGroupProvider();
+		
+		// register preference store provider
+		bundleContext.registerService(IPreferenceStoreProvider.class, FakturamaPreferenceStoreProvider.getInstance(), null);
 	}
 	
 	private void registerBundleGroupProvider() {

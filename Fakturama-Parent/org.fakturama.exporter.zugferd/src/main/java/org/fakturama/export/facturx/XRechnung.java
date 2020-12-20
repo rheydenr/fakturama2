@@ -104,6 +104,7 @@ import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.office.Placeholders;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -119,7 +120,7 @@ public class XRechnung extends AbstractEInvoice {
     private DocumentAllowances itemAllowances;
 
     @Override
-    public CrossIndustryInvoice getInvoiceXml(Optional<Document> invoiceDoc) {
+    public CrossIndustryInvoice getInvoiceXml(Optional<Invoice> invoiceDoc) {
         if(!invoiceDoc.isPresent()) {
             return null;
         }
@@ -172,8 +173,7 @@ public class XRechnung extends AbstractEInvoice {
                 preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY),
                 preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR));
         if(StringUtils.isBlank(owner)) {
-            MessageDialog.openWarning(shell, "Warning", "Your company information is empty. Please specify it "
-                    + "in preferences. The generated file could be not valid.");
+            MessageDialog.openWarning(shell, messages.dialogMessageboxTitleWarning, zfMsg.zugferdExportErrorEmptycompanypref);
             owner = "(unknown)";
         }
 
@@ -805,7 +805,7 @@ public class XRechnung extends AbstractEInvoice {
             // see UNTDID 5189 and UNTDID 7161
             ;
         if(withReason) {
-            tradeAllowanceCharge.setReason(createText(msg.zugferdExportLabelRebate));
+            tradeAllowanceCharge.setReason(createText(zfMsg.zugferdExportLabelRebate));
 //            tradeAllowanceCharge.setReasonCode(factory.createAllowanceChargeReasonCodeType().withValue("95"))  // "Discount" [CII-SR-127]
         }
         return tradeAllowanceCharge
@@ -825,7 +825,7 @@ public class XRechnung extends AbstractEInvoice {
             .withChargeIndicator(factory.createIndicatorType().withIndicator(isAllowance))
             .withActualAmount(createAmount(amount, 2, false))
             .withBasisAmount(createAmount(summary.getItemsNet().add(amount), 2))
-            .withReason(createText(msg.zugferdExportLabelRebate))
+            .withReason(createText(zfMsg.zugferdExportLabelRebate))
             .withCategoryTradeTax(createTradeTax(invoice.getItems().get(0).getItemVat()))
             ;
     }

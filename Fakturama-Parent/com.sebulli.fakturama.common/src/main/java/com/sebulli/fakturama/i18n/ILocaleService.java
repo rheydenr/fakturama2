@@ -58,4 +58,9 @@ public interface ILocaleService {
 	 */
 	ULocale getCurrencyLocale();
 
+	/**
+	 * Reset all internal values and read them from preference store
+	 */
+    void refresh();
+
 }
