@@ -6,7 +6,7 @@
       provider-name="Fakturama.org"
       plugin="com.sebulli.fakturama.rcp">
 
-   <description url="http://www.fakturama.info">
+   <description url="https://www.fakturama.info">
       Fakturama - Free Invoicing Software
 Create invoices, deliveries, letters and other business papers
 in an easy way. You can create your business template with LibreOffice
@@ -14,12 +14,12 @@ or OpenOffice.
 Connect your web shop with Fakturama and get all
 your orders, products and customers in sync. Futher, you can
 fill out online forms from various parcel services automatically.
-Last - but not least - you can create ZUGFeRD invoices without additional
-effort.
+Last - but not least - you can create ZUGFeRD invoices without
+additional effort.
    </description>
 
-   <copyright url="http://www.fakturama.info">
-      Copyright (C) 2017 Fakturama Team
+   <copyright url="https://www.fakturama.info">
+      Copyright (C) 2020 Fakturama Team
    </copyright>
 
    <license url="http://www.eclipse.org/legal/epl-v10.html">
@@ -113,8 +113,8 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </license>
 
    <url>
-      <update label="Fakturama Update Site 2.0+" url="http://www.fakturama.info/release/update2/"/>
-      <discovery label="Fakturama Project Web Site" url="http://www.fakturama.info"/>
+      <update label="Fakturama Update Site 2.0+" url="https://www.fakturama.info/release/update2/"/>
+      <discovery label="Fakturama Project Web Site" url="https://www.fakturama.info"/>
    </url>
 
    <plugin
@@ -263,5 +263,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="javax.transaction"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
 
 </feature>
