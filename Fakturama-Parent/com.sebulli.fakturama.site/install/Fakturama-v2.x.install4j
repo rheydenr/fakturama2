@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.9" transformSequenceNumber="8">
   <directoryPresets config="../target/products/Fakturama.ID/macosx/cocoa" />
-  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.1-BETA" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="15" jdkMode="jdk" jdkName="JDK 1.8 x64">
+  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.1-BETA" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" jdkMode="jdk" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true">
       <principalLanguage id="de" />
       <additionalLanguages>
@@ -24,6 +24,7 @@
       <variable name="sys.ext.rpmSummary" value="A tool for creating invoices and manage your products and customers." />
     </variables>
     <codeSigning macPkcs12File="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../OneDrive/Dokumente/Fakturama/Zertifikat/Fakturama.org.p12" />
+    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk11/jdk-11.0.9.1+1" />
   </application>
   <files keepModificationTimes="true" globalExcludeSuffixes=".svn,.git">
     <filesets>
@@ -60,6 +61,14 @@
     <launcher name="Fakturama (Mac)" id="35" external="true" externalFile="Fakturama2.app/Contents/MacOS/Fakturama" />
     <launcher name="Fakturama.exe (win64)" id="44" external="true" externalFile="Fakturama.exe" />
     <launcher name="Fakturama (Linux 64bit)" id="58" external="true" externalFile="Fakturama" />
+    <launcher name="foo" id="636" swtApp="true" fileset="32">
+      <executable name="foo" executableMode="gui" />
+      <java mainClass="foo">
+        <classPath>
+          <directory location="." failOnError="false" />
+        </classPath>
+      </java>
+    </launcher>
   </launchers>
   <installerGui>
     <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="2.0" />
@@ -725,26 +734,11 @@ sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
       <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
 sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxDeb>
-    <macosFolder name="macOS Folder" id="631">
-      <exclude>
-        <entry defaultFileset="true" />
-        <entry filesetId="41" />
-        <entry filesetId="54" />
-      </exclude>
-    </macosFolder>
-    <macosFolderArchive name="macOS Folder Archive (2)" id="633" installDir="${compiler:sys.mediaName}">
-      <excludedLaunchers>
-        <launcher id="44" />
-        <launcher id="58" />
-      </excludedLaunchers>
-      <exclude>
-        <entry defaultFileset="true" />
-        <entry filesetId="41" />
-        <entry filesetId="54" />
-      </exclude>
-    </macosFolderArchive>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="633" />
+    <mediaSet refId="45" />
+    <mediaSet refId="59" />
+    <mediaSet refId="119" />
+    <mediaSet refId="120" />
   </buildIds>
 </install4j>
