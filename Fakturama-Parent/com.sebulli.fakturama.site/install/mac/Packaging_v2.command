@@ -9,7 +9,7 @@ if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-VERSION=2.1.1-BETA
+VERSION=2.1.1
 # prepare the correct directory structure
 tar -xzf ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-macosx.cocoa.x86_64.tar.gz
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.9" transformSequenceNumber="8">
-  <directoryPresets config="../target/products/Fakturama.ID/macosx/cocoa" />
-  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.1-BETA" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" jdkMode="jdk" jdkName="JDK 1.8 x64">
+  <directoryPresets config="../app" />
+  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.1" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="8" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true">
       <principalLanguage id="de" />
       <additionalLanguages>
@@ -23,8 +23,6 @@
       <variable name="sys.ext.rpmDescription" value="Fakturama enables you to write your invoices in an easy way. You can create orders, delivery papers and many more documents. If you hava a web shop you can connect it to Fakturama. Furthermore, you can create e-invoices (XRechnung and Factur-X)." />
       <variable name="sys.ext.rpmSummary" value="A tool for creating invoices and manage your products and customers." />
     </variables>
-    <codeSigning macPkcs12File="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../OneDrive/Dokumente/Fakturama/Zertifikat/Fakturama.org.p12" />
-    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk11/jdk-11.0.9.1+1" />
   </application>
   <files keepModificationTimes="true" globalExcludeSuffixes=".svn,.git">
     <filesets>
@@ -58,17 +56,8 @@
     </entries>
   </files>
   <launchers>
-    <launcher name="Fakturama (Mac)" id="35" external="true" externalFile="Fakturama2.app/Contents/MacOS/Fakturama" />
     <launcher name="Fakturama.exe (win64)" id="44" external="true" externalFile="Fakturama.exe" />
     <launcher name="Fakturama (Linux 64bit)" id="58" external="true" externalFile="Fakturama" />
-    <launcher name="foo" id="636" swtApp="true" fileset="32">
-      <executable name="foo" executableMode="gui" />
-      <java mainClass="foo">
-        <classPath>
-          <directory location="." failOnError="false" />
-        </classPath>
-      </java>
-    </launcher>
   </launchers>
   <installerGui>
     <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="2.0" />
@@ -686,7 +675,6 @@ return console.askYesNo(message, true);
   <mediaSets>
     <windows name="Windows 64bit" id="45" mediaFileName="Installer_Fakturama_windows-x64_${compiler:sys.version}" installDir="Fakturama2">
       <excludedLaunchers>
-        <launcher id="35" />
         <launcher id="58" />
       </excludedLaunchers>
       <exclude>
@@ -698,7 +686,6 @@ return console.askYesNo(message, true);
     </windows>
     <unixInstaller name="Unix Installer (Linux 64bit)" id="59" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2">
       <excludedLaunchers>
-        <launcher id="35" />
         <launcher id="44" />
       </excludedLaunchers>
       <exclude>
@@ -710,7 +697,6 @@ return console.askYesNo(message, true);
     </unixInstaller>
     <linuxRPM name="Linux RPM" id="119" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" arch="x86_64">
       <excludedLaunchers>
-        <launcher id="35" />
         <launcher id="44" />
       </excludedLaunchers>
       <exclude>
@@ -723,7 +709,6 @@ sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxRPM>
     <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedLaunchers>
-        <launcher id="35" />
         <launcher id="44" />
       </excludedLaunchers>
       <exclude>
@@ -735,10 +720,11 @@ sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
 sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxDeb>
   </mediaSets>
-  <buildIds buildAll="false">
+  <buildIds>
     <mediaSet refId="45" />
     <mediaSet refId="59" />
     <mediaSet refId="119" />
     <mediaSet refId="120" />
   </buildIds>
+  <buildOptions disableJreBundling="true" />
 </install4j>
