@@ -2131,7 +2131,7 @@
 			<para>Der Reiter unterteilt sich in allgemeine Angaben wie Firmenname und/oder Name des Kontaktes. Daneben
 			gibt es einen weiteren Bereich, in dem verschiedene Adressen zu diesem Kontakt erfasst werden können. Diese Adressen
 			können über das [+]-Symbol hinzugefügt werden. Mit dem Schließen eines Tabs wird die entsprechende Zusatzadresse
-			gelöscht (auf Nachfrage). Die Hauptdresse kann nicht gelöscht werden.</para>
+			gelöscht (auf Nachfrage). Die Hauptadresse kann nicht gelöscht werden.</para>
 			<para>Zu jeder Adresse kann angegeben werden, wofür sie verwendet werden soll (z. B. für Rechnungen oder Lieferscheine, 
 			diese Auswahl wird in den kommenden Versionen von Fakturama vervollständigt). Lässt man
 			die Auswahl leer, kann die Adresse für beliebige Arten von Dokumenten verwendet werden. Ansonsten werden die Adressen
@@ -2485,9 +2485,8 @@
 			<subtitle>Kategorie</subtitle>
 			<para>Kategorie, in die der Steuersatz einsortiert wird. Die Verwendung von Unterkategorien ist möglich. Die Bezeichnungen sind dann durch einen Schrägstrich zu trennen. Beispiel:</para>
 			<programlisting>Hauptkategorie/Unterkategorie/WeitereUnterkategorie</programlisting>
-			<para>
-				<emphasis role="italic">Wichtig:</emphasis>Trägt man hier die Kategorie "Umsatzsteuer" ein (oder die in der jeweiligen Landessprache geltende Bezeichnung dafür), </para>
-			<para>
+			<tip>Trägt man hier die Kategorie "Umsatzsteuer" ein (oder die in der jeweiligen Landessprache geltende Bezeichnung dafür), 
+			
 				<inlinemediaobject>
 					<imageobject role="html">
 						<imagedata fileref="../images/editor/vat_step1.png" format="PNG" scalefit="1"/>
@@ -2496,9 +2495,9 @@
 						<imagedata contentdepth="90%" fileref="../images/editor/vat_step1.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</inlinemediaobject>
-			</para>
-			<para> dann wird dieser Steuersatz in der Artikelliste eines Dokuments (Rechnung, Lieferschein o.ä.) für die Auswahlbox der Steuer verwendet: </para>
-			<para>
+			
+			 dann wird dieser Steuersatz in der Artikelliste eines Dokuments (Rechnung, Lieferschein o.ä.) für die Auswahlbox der Steuer verwendet:
+			
 				<inlinemediaobject>
 					<imageobject role="html">
 						<imagedata fileref="../images/editor/vat_step2.png" format="PNG" scalefit="1"/>
@@ -2507,7 +2506,7 @@
 						<imagedata contentdepth="230%" fileref="../images/editor/vat_step2.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</inlinemediaobject>
-			</para>
+			</tip>
 			<para> Definiert man allerdings ein Produkt, das mit einem anderen Steuersatz versehen wurde, dann wird beim Hineinklicken oder Anspringen des MwSt.-Feldes in der Artikelliste ein mit dieser Kategorie versehener Steuersatz ausgewählt (oder der Standard-Steuersatz). Der ursprünglich dem Produkt zugewiesene Steuersatz (mit einer beliebigen anderen Kategorie) wird damit für diese Artikelliste überschrieben!</para>
 		</section>
 		<section>
