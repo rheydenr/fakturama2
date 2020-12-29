@@ -9,7 +9,7 @@ export PLUGIN_ROOT=/Users/rheydenr/git/fakturama-2/Fakturama-Parent/com.sebulli.
 xcrun codesign --force --options runtime --timestamp --entitlements entitlement.xml --sign "Developer ID" ${PLUGIN_ROOT}/target/products/Fakturama.ID/macosx/cocoa/x86_64/Fakturama2.app
 
 # Since create-dmg does not clobber, be sure to delete previous DMG
-[[ -f install/${INSTALLER_NAME}.dmg ]] && rm install/${INSTALLER_NAME}.dmg
+[[ -f ../install/${INSTALLER_NAME}.dmg ]] && rm ../install/${INSTALLER_NAME}.dmg
 
 create-dmg \
   --volname "Fakturama Installer" \
@@ -22,12 +22,12 @@ create-dmg \
   --text-size 12 \
   --hide-extension "Fakturama2.app" \
   --app-drop-link 380 210 \
-  "install/${INSTALLER_NAME}.dmg" \
+  "../install/${INSTALLER_NAME}.dmg" \
   "${PLUGIN_ROOT}/target/products/Fakturama.ID/macosx/cocoa/x86_64/Fakturama2.app/"
   
   
-xcrun codesign --force --options runtime --entitlements entitlement.xml --timestamp --sign "Developer ID" install/${INSTALLER_NAME}.dmg
-xcrun altool --notarize-app --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p "clfs-pwqz-rgcb-bneg" --file install/${INSTALLER_NAME}.dmg
-# xcrun altool --notarization-info "f3de2943-ec92-4805-a0ea-c67c49cc220b" -u "apple-dev@fakturama.net" -p "clfs-pwqz-rgcb-bneg"
-# xcrun stapler staple install/${INSTALLER_NAME}.dmg
-# spctl --assess --type open --context context:primary-signature --verbose "install/${INSTALLER_NAME}.dmg"
+xcrun codesign --force --options runtime --entitlements entitlement.xml --timestamp --sign "Developer ID" ../install/${INSTALLER_NAME}.dmg
+xcrun altool --notarize-app --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p "clfs-pwqz-rgcb-bneg" --file ../install/${INSTALLER_NAME}.dmg
+# xcrun altool --notarization-info "f8bd4620-e3ca-4adc-a293-cbd498b6d9ee" -u "apple-dev@fakturama.net" -p "clfs-pwqz-rgcb-bneg"
+# xcrun stapler staple ../install/${INSTALLER_NAME}.dmg
+# spctl --assess --type open --context context:primary-signature --verbose "../install/${INSTALLER_NAME}.dmg"
