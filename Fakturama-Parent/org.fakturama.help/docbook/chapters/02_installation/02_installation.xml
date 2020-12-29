@@ -101,7 +101,7 @@
 						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 					</imageobject>
 				</inlinemediaobject> Installer von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
-			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf dem System sollte OpenOffice (oder LibreOffice) und Java (ab Version 11) installiert sein. Auf einigen Systemen muss auch die Bibliothek <code>libwebkitgtk</code> installiert sein (das hängt von der jeweiligen Konfiguration des Fenstermanagers ab).</para>
+			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf dem System sollte OpenOffice (oder LibreOffice) und Java (ab Version 11) installiert sein. Auf einigen Systemen muss auch die Bibliothek <code>libwebkitgtk3</code> installiert sein (das hängt von der jeweiligen Konfiguration des Fenstermanagers ab).</para>
 			<para>Alternativ können Sie auch die gepackte Archivdatei (*.tar.gz) herunterladen und in einem beliebigen Verzeichnis entpacken. Für Arch-Linux gibt es ebenfalls ein separates <link xl:href="https://aur.archlinux.org/packages/fakturama/">Installationspaket</link>.</para>
 			<para>Beim ersten Start von Fakturama wird ein Arbeitsverzeichnis angelegt. In diesem werden die Firmendatenbank sowie alle 
 		Dokumente und Vorlagen abgelegt. Beispiel:</para>
@@ -292,5 +292,6 @@
                 </listitem>
 			</itemizedlist>
 		</sect2>
+		<tip>Unter dem MacOS-Betriebssystem kann die Sprache auch direkt im Kontrollzentrum eingestellt werden (über "Sprache &amp; Region").</tip>
 	</section>
 </chapter>

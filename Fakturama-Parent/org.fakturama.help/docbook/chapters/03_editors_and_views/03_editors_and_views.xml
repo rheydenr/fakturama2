@@ -1150,7 +1150,7 @@
 						<imagedata contentdepth="80%" width="40pt"  fileref="../images/application/contact_new_32.png" format="PNG" scalefit="1"/>
 					</imageobject>
 			</inlinemediaobject> Kontakt</subtitle>
-			<para>Erstellt einen neuen Adresseintrag und öffnet diesen in einem Editorfenster. Beim Klick auf das Icon erscheint ein Auswahlmenü für die Art des Kontaktes (Debitor / Kreditor).</para>
+			<para>Erstellt einen neuen Adresseintrag und öffnet diesen in einem Editorfenster. Beim Klick auf das Icon wird ein neuer Debitor erstellt. Klickt man auf das Dreieck ("Chevron") neben dem Symbol, erscheint ein Auswahlmenü für die Art des Kontaktes (Debitor / Kreditor).</para>
 			<para>Siehe auch <link linkend="editor_editor_contact">Kontakteditor</link>
 			</para>
 		</section>
@@ -1639,7 +1639,7 @@
 		</section>
 		<section>
 			<subtitle>Datum</subtitle>
-			<para>Datum des Dokumentes. Bei einer Rechnung ist dies beispielsweise das Rechnungsdatum. Änderungen beeinflussen das Datum bei "<emphasis role="bold">zahlbar in X Tagen bis zum</emphasis>"</para>
+			<para>Datum des Dokumentes. Bei einer Rechnung ist dies beispielsweise das Rechnungsdatum. Änderungen beeinflussen das Datum bei "<emphasis role="bold">zahlbar in X Tagen bis zum</emphasis>".</para>
 		</section>
 		<section>
 			<subtitle>Netto oder Brutto</subtitle>

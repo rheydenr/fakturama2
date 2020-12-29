@@ -319,7 +319,8 @@ public class InitialStartupDialog extends TitleAreaDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    ServiceReference<DataSourceFactory> sr = connectionProviders.get(1);
+                    IStructuredSelection selection = comboDriver.getStructuredSelection();
+                    ServiceReference<DataSourceFactory> sr = (ServiceReference<DataSourceFactory>) selection.getFirstElement();
                     Properties connectionProps = new Properties();
                     connectionProps.put(DataSourceFactory.JDBC_URL, txtJdbcUrl.getText());
                     connectionProps.put(DataSourceFactory.JDBC_USER, txtUser.getText());
