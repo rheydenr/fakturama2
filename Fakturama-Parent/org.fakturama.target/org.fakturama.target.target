@@ -55,23 +55,9 @@
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/releases/2020-09"/>
-		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
-		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.17.0.v20200828-0909"/>
 		<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.17.0.v20200828-0909"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.17.0.v20200831-1002"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.17.0.v20200831-1002"/>
-		<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.700.v20200812-2314"/>
-		<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.500.v20200812-2314"/>
-		<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.1400.v20200812-2314"/>
-		<unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.600.v20200816-1842"/>
-		<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.400.v20200812-2314"/>
-		<unit id="org.eclipse.emf.common.feature.group" version="2.20.0.v20200822-0801"/>
-		<unit id="org.eclipse.emf.feature.group" version="2.23.0.v20200822-0801"/>
-		<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.12.0.v20200828-1034"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.900.v20200819-0940"/>
-		<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.700.v20200813-0739"/>
 		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.20.300.v20200828-1034"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.17.0.v20200902-1800"/>
+		<unit id="org.eclipse.jdt.feature.group" version="3.18.500.v20200902-1800"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20201130205003/repository"/>
@@ -99,6 +85,7 @@
 		<unit id="org.mockito" version="2.23.0.v20200310-1642"/>
 		<unit id="org.slf4j.apis.log4j" version="1.7.30.v20200204-2150"/>
 		<unit id="org.yaml.snakeyaml" version="1.27.0.v20201111-1638"/>
+		<unit id="javax.transaction" version="1.1.1.v201105210645"/>
 		<unit id="org.junit.jupiter.api" version="5.7.0.v20201026-1537"/>
 		<unit id="org.junit.jupiter.engine" version="5.7.0.v20201026-1537"/>
 		<unit id="org.junit.jupiter.params" version="5.7.0.v20201026-1537"/>

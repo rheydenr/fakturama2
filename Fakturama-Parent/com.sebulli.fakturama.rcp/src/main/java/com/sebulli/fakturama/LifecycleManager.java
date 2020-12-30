@@ -398,6 +398,10 @@ public class LifecycleManager {
 		if (preferencesInDatabase != null) {
 			log.debug("Storing preferences in database");
             preferencesInDatabase.savePreferencesInDatabase();
+            
+            if(dbUpdateService != null && dbUpdateService.isDbAlive()) {
+                dbUpdateService.shutDownDb();
+            }
         }
         
     	saveDialogSettings(instanceLocation);

@@ -6,7 +6,8 @@
 	<section>
 		<anchor xreflabel="" xml:id="install_download"/>
 		<title>Download der Software</title>
-		<para>Fakturama steht auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> zum Download zur Verfügung. Das Programm ist kostenlos, Open-Source und steht unter der Lizenz <link linkend="license_license">EPL v1.0</link>. Seit Version 2.0.5 werden nur noch 64Bit-Versionen ausgeliefert, da mit der aktuellen Eclipse-Plattform keine 32Bit-Versionen mehr erzeugt werden können.
+		<para>Fakturama steht auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> zum Download zur Verfügung. Das Programm ist kostenlos, Open-Source und steht unter der Lizenz <link linkend="license_license">EPL v1.0</link>.
+		<warning>Seit Version 2.0.5 werden nur noch 64Bit-Versionen ausgeliefert, da mit der aktuellen Eclipse-Plattform keine 32Bit-Versionen mehr erzeugt werden können.</warning>
 		</para>
 		<para>Fakturama läuft unter folgenden Betriebssystemen:</para>
 		<itemizedlist>
@@ -14,7 +15,7 @@
 			<listitem>Mac OS X (ab Version 10.10 Yosemite)</listitem>
 			<listitem>Linux (64Bit)</listitem>
 		</itemizedlist>
-		<para>Zur Ausführung ist <trademark>Java</trademark> ab Version 8 notwendig (bis einschließlich Version 10). Zum Erstellen der Druckvorlagen und 
+		<para>Zur Ausführung ist <trademark>Java</trademark> ab Version 11 notwendig. Zum Erstellen der Druckvorlagen und 
 		der PDFs sind OpenOffice.org bzw. LibreOffice erforderlich. Für die Erstellung der Rechnungsdokumente im 
 		OpenOffice-Format ist kein OpenOffice/LibreOffice notwendig.</para>
 		<itemizedlist>
@@ -51,7 +52,7 @@
 				<imageobject role="fo">
 					<imagedata width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 				</imageobject>
-			</inlinemediaobject> Fakturama-Installer von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter und entpacken Sie die ZIP-Datei in ein leeres Verzeichnis.</para>
+			</inlinemediaobject> Fakturama-Installer von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter und entpacken Sie die ZIP-Datei in ein leeres Verzeichnis.</para>
 		<para>Beim ersten Start von Fakturama wird ein Arbeitsverzeichnis angelegt. In diesem werden die Firmendatenbank sowie alle 
 		Dokumente und Vorlagen abgelegt. Das Arbeitsverzeichnis muss sich in einem Ordner befinden, der ohne Administratorrechte 
 		beschrieben werden darf. Beispiel:</para>
@@ -100,7 +101,7 @@
 						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 					</imageobject>
 				</inlinemediaobject> Installer von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
-			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf dem System sollte OpenOffice (oder LibreOffice) und Java 8 installiert sein. Auf einigen Systemen muss auch die Bibliothek <code>libwebkitgtk</code> installiert sein (das hängt von der jeweiligen Konfiguration des Fenstermanagers ab).</para>
+			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf dem System sollte OpenOffice (oder LibreOffice) und Java (ab Version 11) installiert sein. Auf einigen Systemen muss auch die Bibliothek <code>libwebkitgtk3</code> installiert sein (das hängt von der jeweiligen Konfiguration des Fenstermanagers ab).</para>
 			<para>Alternativ können Sie auch die gepackte Archivdatei (*.tar.gz) herunterladen und in einem beliebigen Verzeichnis entpacken. Für Arch-Linux gibt es ebenfalls ein separates <link xl:href="https://aur.archlinux.org/packages/fakturama/">Installationspaket</link>.</para>
 			<para>Beim ersten Start von Fakturama wird ein Arbeitsverzeichnis angelegt. In diesem werden die Firmendatenbank sowie alle 
 		Dokumente und Vorlagen abgelegt. Beispiel:</para>
@@ -291,5 +292,6 @@
                 </listitem>
 			</itemizedlist>
 		</sect2>
+		<tip>Unter dem MacOS-Betriebssystem kann die Sprache auch direkt im Kontrollzentrum eingestellt werden (über "Sprache &amp; Region").</tip>
 	</section>
 </chapter>

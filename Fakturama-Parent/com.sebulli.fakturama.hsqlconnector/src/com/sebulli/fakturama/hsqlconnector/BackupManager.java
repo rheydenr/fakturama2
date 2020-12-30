@@ -41,7 +41,7 @@ public class BackupManager {
 		ServiceReference<LogService> loggerRefs = FrameworkUtil.getBundle(getClass()).getBundleContext().getServiceReference(LogService.class);
 		
 		log = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(loggerRefs);
-		log.log(LogService.LOG_WARNING, "TEST");
+//		log.info("TEST");
 //		dateFormatterService = new DateFormatter();
 		
 		// Get the path to the workspace
