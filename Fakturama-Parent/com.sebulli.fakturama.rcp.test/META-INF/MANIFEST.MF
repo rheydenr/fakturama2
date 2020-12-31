@@ -8,7 +8,7 @@ Fragment-Host: com.sebulli.fakturama.rcp;bundle-version="2.1.1"
 Automatic-Module-Name: com.sebulli.fakturama.rcp.test
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
- com.mytest.junit.mockito.common;bundle-version="1.0.0",
+ org.fakturama.tests.common;bundle-version="2.1.1",
  org.junit.jupiter.api,
  org.junit.jupiter.engine,
  org.junit.jupiter.migrationsupport,
