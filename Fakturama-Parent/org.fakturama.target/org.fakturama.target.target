@@ -104,6 +104,8 @@
 		<unit id="org.junit.jupiter.api" version="5.7.0.v20201026-1537"/>
 		<unit id="org.junit.jupiter.engine" version="5.7.0.v20201026-1537"/>
 		<unit id="org.junit.jupiter.params" version="5.7.0.v20201026-1537"/>
+		<unit id="net.bytebuddy.byte-buddy" version="1.9.0.v20181107-1410"/>
+		<unit id="net.bytebuddy.byte-buddy-agent" version="1.9.0.v20181106-1534"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.18.1/2020-09"/>
