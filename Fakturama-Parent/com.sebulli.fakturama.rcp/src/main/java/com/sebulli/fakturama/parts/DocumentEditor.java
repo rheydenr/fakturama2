@@ -1245,26 +1245,61 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 * @param resultingDoc the document for which the receiver's information should be created
 	 */
-	private void createReceiverInformationFromParentDoc(Document resultingDoc) {
-		Document parentDoc = resultingDoc.getSourceDocument();
-		
-		// determine parentDoc's Contact
-		DocumentReceiver addressFromParentDoc = addressManager.getAdressForBillingType(parentDoc, parentDoc.getBillingType());
+    private void createReceiverInformationFromParentDoc(Document resultingDoc) {
+        DocumentReceiver receiverCopy;
+        Document parentDoc = resultingDoc.getSourceDocument();
 
-		// lookup origin receiver for an additional address which fits to this billing type
-		Contact contactFromReceiver = contactDAO.findById(addressFromParentDoc.getOriginContactId());
-		DocumentReceiver receiver;
-		if(contactFromReceiver != null) {
-			receiver = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
-		} else {
-			// if no contact was found (mostly for manually added addresses) we copy the address from origin document receiver
-			receiver = addressFromParentDoc.clone();
-			// change type
-			receiver.setBillingType(resultingDoc.getBillingType());
-		}
-		resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(receiver));
-		resultingDoc.getReceiver().add(receiver);
-	}
+        // at first look for a receiver for the current billing type
+        java.util.Optional<DocumentReceiver> mainReceiver = parentDoc.getReceiver().stream()
+                .filter(r -> r.getBillingType().equals(resultingDoc.getBillingType())).findFirst();
+        if (!mainReceiver.isPresent()) {
+            // no main receiver found, so we look into the contact itself
+            // determine parentDoc's main receiver
+            DocumentReceiver addressFromParentDoc = addressManager.getAdressForBillingType(parentDoc, parentDoc.getBillingType());
+            Contact contactFromReceiver = contactDAO.findById(addressFromParentDoc.getOriginContactId());
+            ContactType contactType = contactUtil.convertToContactType(resultingDoc.getBillingType());
+
+            // use it only if contact has a matching contact type (else we use all receivers later from origin document)
+            if (contactFromReceiver != null 
+                    && contactType != null
+                    && contactFromReceiver.getAddresses().stream().anyMatch(a -> a.getContactTypes().contains(contactType))) {
+                DocumentReceiver rec = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
+                
+                // create a main receiver (only if address is different from parent doc's receivers)
+                java.util.Optional<DocumentReceiver> existingMatchingReceiver = parentDoc.getReceiver().stream().filter(r -> r.getOriginAddressId() != null && r.getOriginAddressId() == rec.getOriginAddressId()).findFirst();
+                if(existingMatchingReceiver.isPresent()) {
+                    mainReceiver = existingMatchingReceiver;
+                    mainReceiver.get().setBillingType(resultingDoc.getBillingType());
+                } else {
+                    // add additional fields which aren't in contact
+                    rec.setConsultant(addressFromParentDoc.getConsultant());
+                    mainReceiver = java.util.Optional.ofNullable(rec);
+                    
+                }
+            }
+        }
+
+        // add receiver to receiver's list (if present)
+        if (mainReceiver.isPresent()) {
+            receiverCopy = mainReceiver.get().clone();
+            resultingDoc.getReceiver().add(receiverCopy);
+        }
+
+        for (DocumentReceiver receiver : parentDoc.getReceiver()) {
+            // avoid doubled receivers
+            if (mainReceiver.isPresent() && mainReceiver.get().getId() == receiver.getId()) {
+                continue;
+            }
+
+            receiverCopy = receiver.clone();
+            resultingDoc.getReceiver().add(receiverCopy);
+        }
+
+        // set first address line from receiver's info
+        if (!resultingDoc.getReceiver().isEmpty()) {
+            resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(resultingDoc.getReceiver().get(0)));
+        }
+    }
 
 	/**
 	 * Returns the document

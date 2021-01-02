@@ -3,6 +3,11 @@
 # by Andy Maloney
 # http://asmaloney.com/2013/07/howto/packaging-a-mac-os-x-application-using-a-dmg/
 
+echo "*****************************************************"
+echo "DEPRECATED, PLEASE USE create_installer.sh INSTEAD!!!"
+echo "*****************************************************"
+exit 1
+
 # make sure we are in the correct dir when we double-click a .command file
 dir=${0%/*}
 if [ -d "$dir" ]; then

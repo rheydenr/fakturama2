@@ -112,8 +112,26 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 			// if we have only one receiver it is for all BillingTypes
 			return document.getReceiver().get(0);
 		}
+		
+		// for the moment, only INVOICE and DELIVERY types are valid
+		// all other types will be implemented later on
+		// therefore the filter condition contains multiple types
+		BillingType filterBillingType;
+		switch (billingType) {
+        case CREDIT:
+        case CONFIRMATION:
+        case DUNNING:
+        case OFFER:
+        case ORDER:
+        case PROFORMA:
+            filterBillingType = BillingType.INVOICE;
+            break;
+        default:
+            filterBillingType = billingType;
+            break;
+        }
 		Optional<DocumentReceiver> documentReceiver = document.getReceiver().stream()
-				.filter(rcv -> rcv.getBillingType().compareTo(billingType) == 0).findFirst();
+				.filter(rcv -> rcv.getBillingType().compareTo(filterBillingType) == 0).findFirst();
 		
 		// FALLBACK: Use billing type of the given document
 		if(!documentReceiver.isPresent()) {
