@@ -1260,13 +1260,21 @@ public class DocumentEditor extends Editor<Document> {
             ContactType contactType = contactUtil.convertToContactType(resultingDoc.getBillingType());
 
             // use it only if contact has a matching contact type (else we use all receivers later from origin document)
-            if (contactFromReceiver != null && contactType != null
+            if (contactFromReceiver != null 
+                    && contactType != null
                     && contactFromReceiver.getAddresses().stream().anyMatch(a -> a.getContactTypes().contains(contactType))) {
                 DocumentReceiver rec = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
                 
-                // create a main receiver
-                updateFromParentReceiver(addressFromParentDoc, rec);
-                mainReceiver = java.util.Optional.ofNullable(rec);
+                // create a main receiver (only if address is different from parent doc's receivers)
+                java.util.Optional<DocumentReceiver> existingMatchingReceiver = parentDoc.getReceiver().stream().filter(r -> r.getOriginAddressId() != null && r.getOriginAddressId() == rec.getOriginAddressId()).findFirst();
+                if(existingMatchingReceiver.isPresent()) {
+                    mainReceiver = existingMatchingReceiver;
+                    mainReceiver.get().setBillingType(resultingDoc.getBillingType());
+                } else {
+                    updateFromParentReceiver(addressFromParentDoc, rec);
+                    mainReceiver = java.util.Optional.ofNullable(rec);
+                    
+                }
             }
         }
 
