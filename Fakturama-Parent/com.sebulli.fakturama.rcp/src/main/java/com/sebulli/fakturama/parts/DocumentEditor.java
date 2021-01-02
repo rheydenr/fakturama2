@@ -1271,7 +1271,8 @@ public class DocumentEditor extends Editor<Document> {
                     mainReceiver = existingMatchingReceiver;
                     mainReceiver.get().setBillingType(resultingDoc.getBillingType());
                 } else {
-                    updateFromParentReceiver(addressFromParentDoc, rec);
+                    // add additional fields which aren't in contact
+                    rec.setConsultant(addressFromParentDoc.getConsultant());
                     mainReceiver = java.util.Optional.ofNullable(rec);
                     
                 }
@@ -1281,7 +1282,6 @@ public class DocumentEditor extends Editor<Document> {
         // add receiver to receiver's list (if present)
         if (mainReceiver.isPresent()) {
             receiverCopy = mainReceiver.get().clone();
-            updateFromParentReceiver(mainReceiver.get(), receiverCopy);
             resultingDoc.getReceiver().add(receiverCopy);
         }
 
@@ -1292,7 +1292,6 @@ public class DocumentEditor extends Editor<Document> {
             }
 
             receiverCopy = receiver.clone();
-            updateFromParentReceiver(receiver, receiverCopy);
             resultingDoc.getReceiver().add(receiverCopy);
         }
 
@@ -1300,11 +1299,6 @@ public class DocumentEditor extends Editor<Document> {
         if (!resultingDoc.getReceiver().isEmpty()) {
             resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(resultingDoc.getReceiver().get(0)));
         }
-    }
-    
-    private void updateFromParentReceiver(DocumentReceiver originReceiver, DocumentReceiver copy) {
-        // add additional fields which aren't in contact
-        copy.setConsultant(originReceiver.getConsultant());
     }
 
 	/**
