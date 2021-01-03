@@ -1513,6 +1513,18 @@ TODO:
 	<changeSet id="20190317-010" author="rheydenr">
 		<tagDatabase tag="version_2.1"/>
 	</changeSet>
-
+	
+	<changeSet author="rheydenr" id="20201109-002"
+		objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+		<addColumn tableName="FKT_USERPROPERTY">
+			<column name="QUALIFIER" type="VARCHAR(32)" />
+		</addColumn>
+	</changeSet>
+		
+	<!-- <changeSet id="20201109-002" author="rheydenr">
+		<tagDatabase tag="version_2.1.1"/>
+	</changeSet>
+	
+ -->
 </databaseChangeLog>
     

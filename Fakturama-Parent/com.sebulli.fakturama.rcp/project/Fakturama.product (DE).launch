@@ -23,30 +23,34 @@
     </mapAttribute>
     <stringAttribute key="org.eclipse.debug.core.source_locator_id" value="org.eclipse.pde.ui.launcher.PDESourceLookupDirector"/>
     <stringAttribute key="org.eclipse.debug.core.source_locator_memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;sourceLookupDirector&gt;&#13;&#10;&lt;sourceContainers duplicates=&quot;false&quot;&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;archive detectRoot=&amp;quot;true&amp;quot; path=&amp;quot;C:\Users\rheydenreich\.m2\repository\org\slf4j\slf4j-simple\1.7.5\slf4j-simple-1.7.5-sources.jar&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.debug.core.containerType.externalArchive&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;archive detectRoot=&amp;quot;true&amp;quot; path=&amp;quot;C:\Users\rheydenreich\.m2\repository\org\slf4j\slf4j-api\1.7.25\slf4j-api-1.7.25-sources.jar&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.debug.core.containerType.externalArchive&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;javaProject name=&amp;quot;moneta-core&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;classpathContainer path=&amp;quot;org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.classpathContainer&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;javaProject name=&amp;quot;money-api&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;folder nest=&amp;quot;true&amp;quot; path=&amp;quot;/org.eclipse.gemini.ext.di/src&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.debug.core.containerType.folder&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;folder nest=&amp;quot;true&amp;quot; path=&amp;quot;/com.opcoach.e4.preferences/src&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.debug.core.containerType.folder&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;javaProject name=&amp;quot;javamoney-calc&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;javaProject name=&amp;quot;javamoney-examples-swing&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;javaProject name=&amp;quot;javamoney-format&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;javaProject name=&amp;quot;javamoney-validity&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;javaProject name=&amp;quot;jsr354-api&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;directory nest=&amp;quot;true&amp;quot; path=&amp;quot;D:\Javalibs\Java-Money\JavaMoney-jsr354-RI\src\main\java&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.debug.core.containerType.directory&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;javaProject name=&amp;quot;jsr354-ri&amp;quot;/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#13;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#13;&amp;#10;&amp;lt;default/&amp;gt;&amp;#13;&amp;#10;&quot; typeId=&quot;org.eclipse.debug.core.containerType.default&quot;/&gt;&#13;&#10;&lt;/sourceContainers&gt;&#13;&#10;&lt;/sourceLookupDirector&gt;&#13;&#10;"/>
-    <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-10"/>
+    <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true -Dfakturama.use.dbserver=false"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true -Dfakturama.use.dbserver=false -Djaxb.debug=false -Djaxp.debug=false"/>
     <stringAttribute key="pde.version" value="3.3"/>
     <stringAttribute key="product" value="com.sebulli.fakturama.rcp.product"/>
     <stringAttribute key="productFile" value="\com.sebulli.fakturama.site\com.sebulli.fakturama.product"/>
     <booleanAttribute key="restart" value="true"/>
     <setAttribute key="selected_target_bundles">
-        <setEntry value="ca.odell.glazedlists@default:default"/>
+        <setEntry value="ca.odell.glazedlists*1.11.0.v20190926-1838@default:default"/>
         <setEntry value="ch.qos.logback.classic@2:default"/>
         <setEntry value="ch.qos.logback.core@2:default"/>
         <setEntry value="ch.qos.logback.slf4j@default:false"/>
         <setEntry value="com.ibm.icu@default:default"/>
-        <setEntry value="com.mysql.jdbc@default:default"/>
+        <setEntry value="com.mysql.jdbc@2:true"/>
         <setEntry value="com.opcoach.e4.preferences@default:default"/>
         <setEntry value="com.opencsv@default:default"/>
-        <setEntry value="com.sun.xml.bind.jaxb-osgi@default:default"/>
+        <setEntry value="com.sun.jna.platform@default:default"/>
+        <setEntry value="com.sun.jna@default:default"/>
+        <setEntry value="jakarta.activation@default:default"/>
         <setEntry value="jakarta.persistence@default:default"/>
-        <setEntry value="jakarta.xml.bind-api@2:default"/>
-        <setEntry value="javax.annotation@default:default"/>
+        <setEntry value="jakarta.xml.bind-api@default:default"/>
+        <setEntry value="jakarta.xml.bind@default:default"/>
+        <setEntry value="javax.activation@default:default"/>
+        <setEntry value="javax.annotation*1.3.5.v20200909-1856@default:default"/>
         <setEntry value="javax.inject@default:default"/>
-        <setEntry value="javax.persistence@default:default"/>
         <setEntry value="javax.servlet@default:default"/>
+        <setEntry value="javax.transaction@default:false"/>
         <setEntry value="javax.xml@default:default"/>
         <setEntry value="org.apache.batik.constants@default:default"/>
         <setEntry value="org.apache.batik.css@default:default"/>
@@ -54,14 +58,14 @@
         <setEntry value="org.apache.batik.util@default:default"/>
         <setEntry value="org.apache.commons.beanutils@default:default"/>
         <setEntry value="org.apache.commons.cli@default:default"/>
-        <setEntry value="org.apache.commons.codec*1.10.0.v20180409-1845@default:default"/>
-        <setEntry value="org.apache.commons.collections@default:default"/>
-        <setEntry value="org.apache.commons.io*2.6.0.v20190123-2029@default:default"/>
-        <setEntry value="org.apache.commons.io*2.6.0@default:default"/>
+        <setEntry value="org.apache.commons.codec*1.14.0.v20200818-1422@default:default"/>
+        <setEntry value="org.apache.commons.collections4@default:default"/>
+        <setEntry value="org.apache.commons.compress@default:default"/>
+        <setEntry value="org.apache.commons.io@default:default"/>
         <setEntry value="org.apache.commons.jxpath@default:default"/>
         <setEntry value="org.apache.commons.lang3@default:default"/>
-        <setEntry value="org.apache.commons.lang@default:default"/>
         <setEntry value="org.apache.commons.logging*1.2.0.v20180409-1502@default:default"/>
+        <setEntry value="org.apache.commons.math3@default:default"/>
         <setEntry value="org.apache.commons.text@default:default"/>
         <setEntry value="org.apache.commons.validator@default:default"/>
         <setEntry value="org.apache.derby@default:default"/>
@@ -69,9 +73,11 @@
         <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@1:true"/>
-        <setEntry value="org.apache.poi.ooxml.schemas@default:default"/>
-        <setEntry value="org.apache.poi.ooxml@default:default"/>
+        <setEntry value="org.apache.odftoolkit@default:default"/>
         <setEntry value="org.apache.poi@default:default"/>
+        <setEntry value="org.apache.xerces@default:default"/>
+        <setEntry value="org.apache.xml.resolver@default:default"/>
+        <setEntry value="org.apache.xml.serializer@default:default"/>
         <setEntry value="org.apache.xmlbeans@default:default"/>
         <setEntry value="org.apache.xmlgraphics@default:default"/>
         <setEntry value="org.dom4j@default:default"/>
@@ -186,15 +192,16 @@
         <setEntry value="org.eclipse.jface.databinding@default:default"/>
         <setEntry value="org.eclipse.jface.nl_de@default:false"/>
         <setEntry value="org.eclipse.jface@default:default"/>
-        <setEntry value="org.eclipse.nebula.cwt@default:default"/>
+        <setEntry value="org.eclipse.nebula.cwt*1.1.0.202011020719@default:default"/>
         <setEntry value="org.eclipse.nebula.jface.cdatetime@default:default"/>
-        <setEntry value="org.eclipse.nebula.widgets.cdatetime@default:default"/>
+        <setEntry value="org.eclipse.nebula.widgets.cdatetime*1.5.0.202011020719@default:default"/>
+        <setEntry value="org.eclipse.nebula.widgets.cdatetime.css@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.formattedtext@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.nattable.core@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.nattable.extension.e4@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.nattable.extension.glazedlists@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.nattable.extension.nebula@default:default"/>
-        <setEntry value="org.eclipse.nebula.widgets.nattable.extension.poi@default:default"/>
+        <setEntry value="org.eclipse.nebula.widgets.opal.checkboxgroup@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.opal.commons@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.opal.multichoice@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.pgroup@default:default"/>
@@ -213,17 +220,20 @@
         <setEntry value="org.eclipse.persistence.jpa@default:default"/>
         <setEntry value="org.eclipse.persistence.moxy@default:default"/>
         <setEntry value="org.eclipse.rcp@default:default"/>
+        <setEntry value="org.eclipse.swt.browser.chromium.win32.win32.x86_64@default:false"/>
         <setEntry value="org.eclipse.swt.nl_de@default:false"/>
         <setEntry value="org.eclipse.swt.win32.win32.x86_64@default:false"/>
         <setEntry value="org.eclipse.swt@default:default"/>
         <setEntry value="org.eclipse.ui.themes.nl_de@default:false"/>
         <setEntry value="org.eclipse.ui.themes@default:default"/>
         <setEntry value="org.eclipse.update.configurator@default:default"/>
+        <setEntry value="org.eclipse.urischeme.nl_de@default:false"/>
+        <setEntry value="org.eclipse.urischeme@default:default"/>
         <setEntry value="org.hsqldb.jdbc@default:default"/>
         <setEntry value="org.javamoney.osgi@default:default"/>
         <setEntry value="org.sat4j.core@default:default"/>
         <setEntry value="org.sat4j.pb@default:default"/>
-        <setEntry value="org.slf4j.api@default:default"/>
+        <setEntry value="org.slf4j.api*1.7.30.v20200204-2150@default:default"/>
         <setEntry value="org.slf4j.ext@default:default"/>
         <setEntry value="org.slf4j.jul@default:default"/>
         <setEntry value="org.tukaani.xz@default:default"/>
@@ -237,7 +247,7 @@
     <setAttribute key="selected_workspace_bundles">
         <setEntry value="com.sebulli.fakturama.common@default:default"/>
         <setEntry value="com.sebulli.fakturama.hsqlconnector@default:default"/>
-        <setEntry value="com.sebulli.fakturama.model@default:default"/>
+        <setEntry value="com.sebulli.fakturama.model@4:true"/>
         <setEntry value="com.sebulli.fakturama.rcp@default:default"/>
         <setEntry value="com.sebulli.fakturama.resources.icons@default:false"/>
         <setEntry value="com.sebulli.fakturama.resources.templates@default:false"/>
@@ -261,9 +271,9 @@
         <mapEntry key="org.eclipse.core.jobs/jobs/errorondeadlock" value="false"/>
         <mapEntry key="org.eclipse.core.jobs/jobs/locks" value="false"/>
         <mapEntry key="org.eclipse.core.jobs/jobs/shutdown" value="false"/>
-        <mapEntry key="org.eclipse.core.jobs/jobs/timing" value="false"/>
         <mapEntry key="org.eclipse.core.net/debug" value="false"/>
         <mapEntry key="org.eclipse.core.net/systemproviders" value="false"/>
+        <mapEntry key="org.eclipse.core.resources/build/cycle" value="false"/>
         <mapEntry key="org.eclipse.core.resources/build/delta" value="false"/>
         <mapEntry key="org.eclipse.core.resources/build/failure" value="false"/>
         <mapEntry key="org.eclipse.core.resources/build/interrupt" value="false"/>
@@ -298,7 +308,7 @@
         <mapEntry key="org.eclipse.core.resources/save/tree" value="false"/>
         <mapEntry key="org.eclipse.core.resources/strings" value="false"/>
         <mapEntry key="org.eclipse.core.runtime/compatibility/debug" value="false"/>
-        <mapEntry key="org.eclipse.core.runtime/debug" value="false"/>
+        <mapEntry key="org.eclipse.core.runtime/debug" value="true"/>
         <mapEntry key="org.eclipse.core.runtime/debug/context" value="false"/>
         <mapEntry key="org.eclipse.core.runtime/perf" value="false"/>
         <mapEntry key="org.eclipse.core.runtime/perf/success" value="false"/>
@@ -312,6 +322,7 @@
         <mapEntry key="org.eclipse.debug.core/debug/events" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug/breadcrumb" value="false"/>
+        <mapEntry key="org.eclipse.debug.ui/debug/commandservice" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug/contextlaunching" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug/launchhistory" value="false"/>
         <mapEntry key="org.eclipse.debug.ui/debug/memory/dynamicLoading" value="false"/>
@@ -326,28 +337,55 @@
         <mapEntry key="org.eclipse.e4.core.contexts/debug" value="false"/>
         <mapEntry key="org.eclipse.e4.core.contexts/debug/listeners" value="false"/>
         <mapEntry key="org.eclipse.e4.core.contexts/debug/names" value="false"/>
-        <mapEntry key="org.eclipse.e4.core.di/debug" value="false"/>
-        <mapEntry key="org.eclipse.e4.core.di/debug/injector" value="false"/>
-        <mapEntry key="org.eclipse.e4.core.services/debug" value="false"/>
-        <mapEntry key="org.eclipse.e4.core.services/debug/injector" value="false"/>
+        <mapEntry key="org.eclipse.e4.core.di/debug" value="true"/>
+        <mapEntry key="org.eclipse.e4.core.services/debug" value="true"/>
+        <mapEntry key="org.eclipse.e4.core.services/debug/injector" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/debug" value="false"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/commands" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/eclipse.context" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/eclipse.context.verbose" value="false"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/focus" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/menus" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/renderer" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench.swt/trace/workbench" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/debug" value="false"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench/trace" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/commands" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/eclipse.context" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/eclipse.context.verbose" value="false"/>
+        <mapEntry key="org.eclipse.e4.ui.workbench/trace/focus" value="true"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/menus" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/renderer" value="false"/>
         <mapEntry key="org.eclipse.e4.ui.workbench/trace/workbench" value="false"/>
-        <mapEntry key="org.eclipse.equinox.ds/debug" value="false"/>
-        <mapEntry key="org.eclipse.equinox.ds/instantiate_all" value="false"/>
-        <mapEntry key="org.eclipse.equinox.ds/performance" value="false"/>
-        <mapEntry key="org.eclipse.equinox.ds/print_on_console" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient4/debug" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient4/debug/exceptions/catching" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient4/debug/exceptions/throwing" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient4/debug/methods/entering" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient4/debug/methods/exiting" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient45/debug" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient45/debug/exceptions/catching" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient45/debug/exceptions/throwing" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient45/debug/methods/entering" value="false"/>
+        <mapEntry key="org.eclipse.ecf.provider.filetransfer.httpclient45/debug/methods/exiting" value="false"/>
+        <mapEntry key="org.eclipse.equinox.common/debug" value="false"/>
+        <mapEntry key="org.eclipse.equinox.common/progress_monitors" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/artifacts/mirrors" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/core/parseproblems" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/core/removeRepo" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/debug" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/engine/installregistry" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/engine/profilepreferences" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/events/client" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/generator/parsing" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/metadata/parsing" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/planner/encoding" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/planner/operands" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/planner/projector" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/publisher" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/reconciler" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/ui/default" value="false"/>
+        <mapEntry key="org.eclipse.equinox.p2.core/updatechecker" value="false"/>
         <mapEntry key="org.eclipse.equinox.p2.engine/certificatechecker/unsigned" value="false"/>
         <mapEntry key="org.eclipse.equinox.p2.engine/certificatechecker/untrusted" value="false"/>
         <mapEntry key="org.eclipse.equinox.p2.engine/engine/debug" value="false"/>
@@ -378,15 +416,94 @@
         <mapEntry key="org.eclipse.help/debug/context" value="false"/>
         <mapEntry key="org.eclipse.help/debug/search" value="false"/>
         <mapEntry key="org.eclipse.help/debug/toc" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core.manipulation/debug" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/buffermanager" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/builder" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/builder/stats" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/compiler" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/completion" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/cpresolution" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/cpresolution/advanced" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/cpresolution/failure" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/dom/ast" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/dom/ast/throw" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/dom/rewrite" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/formatter" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/hierarchy" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/freespacetest" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/indexer" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/insertions" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/locks" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/logsizemegs" value="0"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/pagecache" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/scheduling" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/selftest" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/space" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/index/timing" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/indexmanager" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/indexmanager/advanced" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/javadelta" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/javadelta/verbose" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/javamodel" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/javamodel/cache" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/javamodel/classpath" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/javamodel/insertions" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/javamodel/invalid_archives" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/postaction" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/resolution" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/search" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/selection" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/sourcemapper" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/debug/zipaccess" value="false"/>
+        <mapEntry key="org.eclipse.jdt.core/perf/completion" value="300"/>
+        <mapEntry key="org.eclipse.jdt.core/perf/containerinitializer" value="5000"/>
+        <mapEntry key="org.eclipse.jdt.core/perf/javadeltalistener" value="500"/>
+        <mapEntry key="org.eclipse.jdt.core/perf/reconcile" value="1000"/>
+        <mapEntry key="org.eclipse.jdt.core/perf/selection" value="300"/>
+        <mapEntry key="org.eclipse.jdt.core/perf/variableinitializer" value="5000"/>
+        <mapEntry key="org.eclipse.jdt.debug/debug" value="false"/>
+        <mapEntry key="org.eclipse.jdt.debug/debug/astEvaluations" value="false"/>
+        <mapEntry key="org.eclipse.jdt.debug/debug/astEvaluations/callingThreads" value="false"/>
+        <mapEntry key="org.eclipse.jdt.debug/debug/jdiEvents" value="false"/>
+        <mapEntry key="org.eclipse.jdt.debug/debug/jdiRequestTimes" value="false"/>
+        <mapEntry key="org.eclipse.jdt.launching/debug" value="false"/>
+        <mapEntry key="org.eclipse.jdt.launching/debug/classpath/jreContainer" value="false"/>
+        <mapEntry key="org.eclipse.jdt.ui/debug" value="false"/>
+        <mapEntry key="org.eclipse.jdt.ui/debug/ASTProvider" value="false"/>
+        <mapEntry key="org.eclipse.jdt.ui/debug/BreadcrumbItemDropDown" value="false"/>
+        <mapEntry key="org.eclipse.jdt.ui/debug/ResultCollector" value="false"/>
+        <mapEntry key="org.eclipse.jdt.ui/debug/TypeConstraints" value="false"/>
+        <mapEntry key="org.eclipse.jdt.ui/perf/content_assist/extensions" value="1000"/>
+        <mapEntry key="org.eclipse.jdt.ui/perf/content_assist_sorters/extensions" value=""/>
+        <mapEntry key="org.eclipse.jdt.ui/perf/explorer/RefactorActionGroup" value="150"/>
+        <mapEntry key="org.eclipse.jdt.ui/perf/explorer/createPartControl" value="1300"/>
+        <mapEntry key="org.eclipse.jdt.ui/perf/explorer/makeActions" value="1000"/>
+        <mapEntry key="org.eclipse.jdt.ui/perf/search/participants" value="300"/>
         <mapEntry key="org.eclipse.jface.text.source/debug/RevisionRulerColumn" value="false"/>
         <mapEntry key="org.eclipse.jface.text/assert/TextSelection/validConstructorArguments" value="false"/>
         <mapEntry key="org.eclipse.jface.text/debug/AbstractInformationControlManager" value="false"/>
         <mapEntry key="org.eclipse.jface.text/debug/AnnotationPainter" value="false"/>
         <mapEntry key="org.eclipse.jface.text/debug/ContentAssistSubjectAdapters" value="false"/>
         <mapEntry key="org.eclipse.jface.text/debug/FastPartitioner/PositionCache" value="false"/>
+        <mapEntry key="org.eclipse.jface/debug" value="false"/>
+        <mapEntry key="org.eclipse.jface/debug/bidiUtils" value="false"/>
+        <mapEntry key="org.eclipse.jface/debug/dialog/noparent" value="false"/>
+        <mapEntry key="org.eclipse.jface/debug/loadURLImageDescriptor2x" value="true"/>
+        <mapEntry key="org.eclipse.jface/debug/loadURLImageDescriptor2xPngForGif" value="false"/>
+        <mapEntry key="org.eclipse.jface/debug/loadURLImageDescriptorDirectly" value="false"/>
+        <mapEntry key="org.eclipse.jface/debug/logURLImageDescriptorMissing2x" value="false"/>
+        <mapEntry key="org.eclipse.jface/debug/trace/URLImageDescriptor" value="false"/>
+        <mapEntry key="org.eclipse.jface/debug/viewers/equalElements" value="false"/>
+        <mapEntry key="org.eclipse.jface/debug/viewers/reentrantViewerCalls" value="false"/>
+        <mapEntry key="org.eclipse.jface/newlook/preferences/showNewLook" value="false"/>
+        <mapEntry key="org.eclipse.jface/trace/actions" value="false"/>
+        <mapEntry key="org.eclipse.jface/trace/toolbarDisposal" value="false"/>
         <mapEntry key="org.eclipse.ltk.core.refactoring/perf/participants/checkConditions" value="300"/>
         <mapEntry key="org.eclipse.ltk.core.refactoring/perf/participants/createChanges" value="300"/>
         <mapEntry key="org.eclipse.osgi/debug" value="false"/>
+        <mapEntry key="org.eclipse.osgi/debug/bundleFile" value="false"/>
+        <mapEntry key="org.eclipse.osgi/debug/bundleStartTime" value="false"/>
         <mapEntry key="org.eclipse.osgi/debug/bundleTime" value="false"/>
         <mapEntry key="org.eclipse.osgi/debug/cachedmanifest" value="false"/>
         <mapEntry key="org.eclipse.osgi/debug/events" value="false"/>
@@ -401,6 +518,7 @@
         <mapEntry key="org.eclipse.osgi/debug/security" value="false"/>
         <mapEntry key="org.eclipse.osgi/debug/services" value="false"/>
         <mapEntry key="org.eclipse.osgi/debug/startlevel" value="false"/>
+        <mapEntry key="org.eclipse.osgi/debug/storage" value="false"/>
         <mapEntry key="org.eclipse.osgi/debug/systemBundle" value="false"/>
         <mapEntry key="org.eclipse.osgi/eclipseadaptor/converter/debug" value="false"/>
         <mapEntry key="org.eclipse.osgi/eclipseadaptor/debug" value="false"/>
@@ -415,6 +533,12 @@
         <mapEntry key="org.eclipse.osgi/resolver/roots" value="false"/>
         <mapEntry key="org.eclipse.osgi/resolver/uses" value="false"/>
         <mapEntry key="org.eclipse.osgi/resolver/wiring" value="false"/>
+        <mapEntry key="org.eclipse.pde.build/debug" value="false"/>
+        <mapEntry key="org.eclipse.pde.core/classpath" value="false"/>
+        <mapEntry key="org.eclipse.pde.core/debug" value="false"/>
+        <mapEntry key="org.eclipse.pde.core/model" value="false"/>
+        <mapEntry key="org.eclipse.pde.core/target/profile" value="false"/>
+        <mapEntry key="org.eclipse.pde.core/validation" value="false"/>
         <mapEntry key="org.eclipse.search/perf" value="false"/>
         <mapEntry key="org.eclipse.team.core/backgroundevents" value="false"/>
         <mapEntry key="org.eclipse.team.core/debug" value="false"/>
@@ -427,6 +551,10 @@
         <mapEntry key="org.eclipse.team.ui/history" value="false"/>
         <mapEntry key="org.eclipse.team.ui/syncmodels" value="false"/>
         <mapEntry key="org.eclipse.ui.browser/debug" value="true"/>
+        <mapEntry key="org.eclipse.ui.forms/debug" value="false"/>
+        <mapEntry key="org.eclipse.ui.forms/debug/focus" value="false"/>
+        <mapEntry key="org.eclipse.ui.forms/debug/text" value="false"/>
+        <mapEntry key="org.eclipse.ui.forms/debug/textsize" value="false"/>
         <mapEntry key="org.eclipse.ui.ide/debug" value="false"/>
         <mapEntry key="org.eclipse.ui.ide/debug/gc" value="false"/>
         <mapEntry key="org.eclipse.ui.ide/debug/internalerror/openDialog" value="false"/>
@@ -441,6 +569,7 @@
         <mapEntry key="org.eclipse.ui.intro/trace/logInfo" value="true"/>
         <mapEntry key="org.eclipse.ui.intro/trace/logPerformance" value="false"/>
         <mapEntry key="org.eclipse.ui.intro/trace/printHTML" value="false"/>
+        <mapEntry key="org.eclipse.ui.monitoring/debug/event_monitor" value="false"/>
         <mapEntry key="org.eclipse.ui.navigator/debug" value="false"/>
         <mapEntry key="org.eclipse.ui.navigator/debug/dnd" value="false"/>
         <mapEntry key="org.eclipse.ui.navigator/debug/resolution" value="false"/>
@@ -500,7 +629,6 @@
         <mapEntry key="org.eclipse.ui/trace/perspectives" value="false"/>
         <mapEntry key="org.eclipse.ui/trace/sources" value="false"/>
         <mapEntry key="org.eclipse.update.configurator/debug" value="false"/>
-        <mapEntry key="org.eclipse.xtend.emftools/trace" value="false"/>
     </mapAttribute>
     <booleanAttribute key="useCustomFeatures" value="false"/>
     <booleanAttribute key="useDefaultConfig" value="true"/>

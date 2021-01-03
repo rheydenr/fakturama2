@@ -10,7 +10,9 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.emf.ecore.EClass;
 
+import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Payment_;
 import com.sebulli.fakturama.oldmodel.OldPayments;
@@ -20,6 +22,11 @@ public class PaymentsDAO extends AbstractDAO<Payment> {
 
     protected Class<Payment> getEntityClass() {
     	return Payment.class;
+    }
+    
+    @Override
+    protected EClass getEClass() {
+        return FakturamaModelPackage.INSTANCE.getPaymentEClass();
     }
 
 	/**

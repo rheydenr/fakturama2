@@ -1,7 +1,9 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.TypedQuery;
@@ -170,6 +172,9 @@ public class ContactsDAO extends AbstractDAO<Contact> {
 
 	public Address findByAddressId(Long addressId) {
 		if (addressId != null) {
+		    Map<String, Object> props = new HashMap<>();
+		    props.put(QueryHints.CACHE_STORE_MODE, "REFRESH");
+		    getEntityManager().find(Address.class, addressId, null, props);
 			return getEntityManager().find(Address.class, addressId);
 		} else
 			return null;

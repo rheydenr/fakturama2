@@ -62,51 +62,36 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_NAME, msg.pageCompanyName, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_OWNER, msg.pageCompanyOwner, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_STREET, msg.pageCompanyStreet, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_ZIP, msg.commonFieldZipcode, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_CITY, msg.commonFieldCity, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_COUNTRY, msg.commonFieldCountry, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_TEL, msg.exporterDataTelephone, getFieldEditorParent()));
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_MOBILE, msg.exporterDataMobile, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_FAX, msg.exporterDataTelefax, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_EMAIL, msg.exporterDataEmail, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_WEBSITE, msg.exporterDataWebsite, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_VATNR, msg.pageCompanyVatno, getFieldEditorParent()));
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_TAXNR, msg.pageCompanyTaxno, getFieldEditorParent()));
 
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_TAXOFFICE, msg.pageCompanyTaxoffice, getFieldEditorParent()));
 		
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_BANK, msg.pageCompanyBankname, getFieldEditorParent()));
 		
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_IBAN, msg.exporterDataIban, getFieldEditorParent()));
 		
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_BIC, msg.exporterDataBic, getFieldEditorParent()));
 		
-		//T: Preference page "Your company"
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_CREDITORID, msg.pageCompanyCreditorid, getFieldEditorParent()));
 	}
 

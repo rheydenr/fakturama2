@@ -211,6 +211,30 @@ public class TopicTreeViewer<T extends AbstractCategory> {
 		});
 		
 		internalTreeViewer.setComparator(new TreePathViewerSorter());
+//		internalTreeViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+//            
+//            @Override
+//            public void selectionChanged(SelectionChangedEvent event) {
+//                // TODO Auto-generated method stub
+//                System.out.println("huhu");
+//            }
+//        });
+//		internalTreeViewer.addTreeListener(new ITreeViewerListener() {
+//            
+//            @Override
+//            public void treeExpanded(TreeExpansionEvent event) {
+//                ((TreeViewer)event.getSource()).getExpandedElements();
+//                Object v = ((TreeObject)event.getElement());
+//                // traverse über alle sichtbaren knoten und berechne die Summe für den Tooltip
+//              
+//            }
+//            
+//            @Override
+//            public void treeCollapsed(TreeExpansionEvent event) {
+//                // traverse über alle sichtbaren knoten und berechne die Summe für den Tooltip
+//                
+//            }
+//        });
 	}
 	
 	public void disableSorting() {

@@ -474,11 +474,21 @@ public class DocumentEditor extends Editor<Document> {
 		if(document.getBillingType().isDUNNING()) {
 		    ((Dunning)document).setDunningLevel(dunningLevel);
 		}
+        
+        if(itemListTable != null) {
+            List<DocumentItem> items = itemListTable.getDocumentItemsListData()
+                .stream()
+                .map(dto -> dto.getDocumentItem())
+                .sorted(Comparator.comparing(DocumentItem::getPosNr))
+                .collect(Collectors.toList());
+            document.setItems(items);
+        }
 
 		// Create a new document ID, if this is a new document
 		if (newDocument) {
 		    try {
                 document = documentsDAO.save(document);
+                reloadItemList();
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }
@@ -498,15 +508,6 @@ public class DocumentEditor extends Editor<Document> {
     		documentsDAO.updateDeliveries(importedDeliveryNotes, (Invoice) document);
 		}
 		importedDeliveryNotes.clear();
-		
-		if(itemListTable != null) {
-			List<DocumentItem> items = itemListTable.getDocumentItemsListData()
-			    .stream()
-			    .map(dto -> dto.getDocumentItem())
-			    .sorted(Comparator.comparing(DocumentItem::getPosNr))
-			    .collect(Collectors.toList());
-			document.setItems(items);
-		}
 
 		// Mark the (modified) document as "not printed"
 		if (wasDirty) {
@@ -518,6 +519,7 @@ public class DocumentEditor extends Editor<Document> {
 		
         try {
             document = documentsDAO.save(document);
+            reloadItemList();
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
@@ -544,6 +546,13 @@ public class DocumentEditor extends Editor<Document> {
         return Boolean.TRUE;
 	}
     
+    private void reloadItemList() {
+        itemListTable.getDocumentItemsListData().clear();
+        
+        List<DocumentItemDTO> documentItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
+        itemListTable.getDocumentItemsListData().addAll(documentItems);
+    }
+
     private void reassignDocumentReceiver() {
 		document.getReceiver().clear();
 		document.getReceiver().addAll(selectedAddresses.values());
@@ -1236,26 +1245,61 @@ public class DocumentEditor extends Editor<Document> {
 	 * 
 	 * @param resultingDoc the document for which the receiver's information should be created
 	 */
-	private void createReceiverInformationFromParentDoc(Document resultingDoc) {
-		Document parentDoc = resultingDoc.getSourceDocument();
-		
-		// determine parentDoc's Contact
-		DocumentReceiver addressFromParentDoc = addressManager.getAdressForBillingType(parentDoc, parentDoc.getBillingType());
+    private void createReceiverInformationFromParentDoc(Document resultingDoc) {
+        DocumentReceiver receiverCopy;
+        Document parentDoc = resultingDoc.getSourceDocument();
 
-		// lookup origin receiver for an additional address which fits to this billing type
-		Contact contactFromReceiver = contactDAO.findById(addressFromParentDoc.getOriginContactId());
-		DocumentReceiver receiver;
-		if(contactFromReceiver != null) {
-			receiver = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
-		} else {
-			// if no contact was found (mostly for manually added addresses) we copy the address from origin document receiver
-			receiver = addressFromParentDoc.clone();
-			// change type
-			receiver.setBillingType(resultingDoc.getBillingType());
-		}
-		resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(receiver));
-		resultingDoc.getReceiver().add(receiver);
-	}
+        // at first look for a receiver for the current billing type
+        java.util.Optional<DocumentReceiver> mainReceiver = parentDoc.getReceiver().stream()
+                .filter(r -> r.getBillingType().equals(resultingDoc.getBillingType())).findFirst();
+        if (!mainReceiver.isPresent()) {
+            // no main receiver found, so we look into the contact itself
+            // determine parentDoc's main receiver
+            DocumentReceiver addressFromParentDoc = addressManager.getAdressForBillingType(parentDoc, parentDoc.getBillingType());
+            Contact contactFromReceiver = contactDAO.findById(addressFromParentDoc.getOriginContactId());
+            ContactType contactType = contactUtil.convertToContactType(resultingDoc.getBillingType());
+
+            // use it only if contact has a matching contact type (else we use all receivers later from origin document)
+            if (contactFromReceiver != null 
+                    && contactType != null
+                    && contactFromReceiver.getAddresses().stream().anyMatch(a -> a.getContactTypes().contains(contactType))) {
+                DocumentReceiver rec = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
+                
+                // create a main receiver (only if address is different from parent doc's receivers)
+                java.util.Optional<DocumentReceiver> existingMatchingReceiver = parentDoc.getReceiver().stream().filter(r -> r.getOriginAddressId() != null && r.getOriginAddressId() == rec.getOriginAddressId()).findFirst();
+                if(existingMatchingReceiver.isPresent()) {
+                    mainReceiver = existingMatchingReceiver;
+                    mainReceiver.get().setBillingType(resultingDoc.getBillingType());
+                } else {
+                    // add additional fields which aren't in contact
+                    rec.setConsultant(addressFromParentDoc.getConsultant());
+                    mainReceiver = java.util.Optional.ofNullable(rec);
+                    
+                }
+            }
+        }
+
+        // add receiver to receiver's list (if present)
+        if (mainReceiver.isPresent()) {
+            receiverCopy = mainReceiver.get().clone();
+            resultingDoc.getReceiver().add(receiverCopy);
+        }
+
+        for (DocumentReceiver receiver : parentDoc.getReceiver()) {
+            // avoid doubled receivers
+            if (mainReceiver.isPresent() && mainReceiver.get().getId() == receiver.getId()) {
+                continue;
+            }
+
+            receiverCopy = receiver.clone();
+            resultingDoc.getReceiver().add(receiverCopy);
+        }
+
+        // set first address line from receiver's info
+        if (!resultingDoc.getReceiver().isEmpty()) {
+            resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(resultingDoc.getReceiver().get(0)));
+        }
+    }
 
 	/**
 	 * Returns the document
@@ -1523,15 +1567,26 @@ public class DocumentEditor extends Editor<Document> {
 		// sometimes the shipping value has many fraction digits so that we have to round it
 		// to a reasonable value
 		// but at first we have to decide which value is the correct shipping value (net or gross)
+		
+		/*
+		 * The following cases can occur:
+		 * 1. change an existing Shipping value which was selected from a predefined Shipping
+		 *    (select other Shipping from Combo box)
+		 * 2. change an existing Shipping value which was selected from a predefined Shipping
+		 *    (enter a new Shipping value in entry field)
+		 * 3. change a previously set manually added Shipping value to another one
+		 */
 		MonetaryAmount currentShippingValue = useGross ? documentSummary.getShippingGross() : documentSummary.getShippingNet();
-		if (shipping != null && !DataUtils.getInstance().DoublesAreEqual(newShippingValue, 
-				currentShippingValue.getNumber().doubleValue())) {
-		    document.getAdditionalInfo().setShippingDescription(shipping.getDescription());
-		    document.getAdditionalInfo().setShippingName(shipping.getName());
-		    document.getAdditionalInfo().setShippingVatValue(shipping.getShippingVat().getTaxValue());
-		    
+		if(!DataUtils.getInstance().DoublesAreEqual(newShippingValue, 
+                currentShippingValue.getNumber().doubleValue())) {
 		    document.setShippingValue(newShippingValue);
-			document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
+		    document.setShippingAutoVat(useGross ? ShippingVatType.SHIPPINGVATGROSS : ShippingVatType.SHIPPINGVATNET);
+    		if (shipping != null) {
+    		    // copy some information from previously selected Shipping record into additional info block
+    		    document.getAdditionalInfo().setShippingDescription(shipping.getDescription());
+    		    document.getAdditionalInfo().setShippingName(shipping.getName());
+    		    document.getAdditionalInfo().setShippingVatValue(shipping.getShippingVat().getTaxValue());
+    		}
 		} else {
 			// no change occurred, we can return and leave the values unchanged
 			return;
@@ -1923,7 +1978,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1200, 700);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+		scrollcomposite.setMinSize(1100, 550);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
@@ -2214,7 +2269,7 @@ public class DocumentEditor extends Editor<Document> {
 		    comboViewerNoVat.getCombo().select(0);
 		}
 
-		copyGroup = new Group(top, SWT.SHADOW_ETCHED_OUT);
+		copyGroup = new Group(top, SWT.SHADOW_OUT);
 		
 		//T: Document Editor
 		//T: Label Group box to create a new document based on this one.
@@ -2546,7 +2601,8 @@ public class DocumentEditor extends Editor<Document> {
 	final private CTabItem createAddressTabItem(DocumentReceiver documentReceiver) {
 		CTabItem addressTabItem = new CTabItem(addressAndIconComposite, SWT.NONE);
 		addressTabItem.setData(ADDRESS_TAB_BILLINGTYPE, documentReceiver.getBillingType());
-		addressTabItem.setText(documentReceiver.getBillingType().getName());
+		DocumentType documentType = DocumentTypeUtil.findByBillingType(documentReceiver.getBillingType());
+		addressTabItem.setText(msg.getMessageFromKey(documentType.getAddressKey()));
 
 		// The address field
 		Text currentAddress = new Text(addressAndIconComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
@@ -3015,11 +3071,13 @@ public class DocumentEditor extends Editor<Document> {
                 // Get the array list of all selected elements
                 for (Document deliveryNote : selectedDeliveries) {
                     // Get all items by ID from the item string
-                    List<DocumentItem> itemsString = deliveryNote.getItems();
-                    for (DocumentItem documentItem : itemsString) {
+                    List<DocumentItem> deliveryItems = deliveryNote.getItems().stream()
+                            .sorted(Comparator.comparing(DocumentItem::getPosNr))
+                            .collect(Collectors.toList());
+                    for (DocumentItem documentItem : deliveryItems) {
 	                    // And copy the item to a new one
-//	                    DocumentItem newItem = modelFactory.createDocumentItem();
 	                    DocumentItem newItem = documentItem.clone();
+	                    newItem.setId(0);
 	                    // Add the new item
 	                    itemListTable.addNewItem(new DocumentItemDTO(newItem));
 					}
@@ -3282,17 +3340,15 @@ public class DocumentEditor extends Editor<Document> {
      */
     @Inject
     @Optional
-    public void handleForceClose(@UIEventTopic(DocumentEditor.EDITOR_ID + "/forceClose") Event event) {
-        //      sync.syncExec(() -> top.setRedraw(false));
+    public void handleForceClose(@UIEventTopic(DocumentEditor.EDITOR_ID + UIEvents.TOPIC_SEP + "forceClose") Event event) {
         // the event has already all given params in it since we created them as Map
-        String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
+        String targetDocumentName = (String) event.getProperty(Editor.OBJECT_ID);
         // at first we have to check if the message is for us
         if (!StringUtils.equals(targetDocumentName, document.getName())) {
             // if not, silently ignore this event
             return;
         }
         partService.hidePart(part, true);
-        //  sync.syncExec(() -> top.setRedraw(true));
     }
 
 //    

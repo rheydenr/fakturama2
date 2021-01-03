@@ -14,7 +14,6 @@
 
 package org.fakturama.imp.wizard.csv.expenditures;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,6 +29,7 @@ import org.eclipse.e4.core.services.nls.Translation;
 import org.fakturama.imp.ImportMessages;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.dao.ExpendituresDAO;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
@@ -161,8 +161,7 @@ public class ExpendituresCsvImporter {
 		// Open the existing file
 		// TODO use NIO
 		try (InputStreamReader isr = new InputStreamReader(new FileInputStream(fileName), "UTF-8");
-			 BufferedReader in = new BufferedReader(isr);
-			 CSVReader csvr = new CSVReader(in, ';');	) {
+			 CSVReader csvr = new CSVReader(isr);	) {
 
 			// Read next CSV line
 			columns = csvr.readNext();
@@ -318,7 +317,10 @@ public class ExpendituresCsvImporter {
 			return;
 		} catch (FakturamaStoringException e) {
 			log.error("can't save or update imported expenditure");
-		}
+		} catch (CsvValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
 	public String getResult() {

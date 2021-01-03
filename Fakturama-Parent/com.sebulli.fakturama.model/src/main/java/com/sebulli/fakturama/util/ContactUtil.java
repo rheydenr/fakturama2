@@ -238,14 +238,15 @@ public class ContactUtil {
      * @return a (virtual) ID for the gender
      */
     public Integer getGenderIdFromString(String genderString) {
-    	Integer retval = Integer.valueOf(0);
-		if (genderString.equals("m"))
-			retval = Integer.valueOf(1);
-		if (genderString.equals("f"))
-			retval = Integer.valueOf(2);
-		return retval;
+        Integer retval = Integer.valueOf(0);
+        if (genderString != null) {
+            if (genderString.equals("m") || genderString.contentEquals(msg.contactFieldMrName))
+                retval = Integer.valueOf(1);
+            if (genderString.equals("f") || genderString.contentEquals(msg.contactFieldMsName))
+                retval = Integer.valueOf(2);
+        }
+        return retval;
     }
-    
     
     /**
      * Get the gender String by the gender number
@@ -294,16 +295,18 @@ public class ContactUtil {
      * @return
      *          The number
      */
-	public int getSalutationID(String s) {
-		// Test all strings
-		for (int i = 0; i <= MAX_SALUTATION_COUNT; i++) {
-			if (getSalutationString(i, false).equalsIgnoreCase(s))
-				return i;
-			// if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
-		}
-		// Default = "---"
-		return 0;
-	}
+    public int getSalutationID(String s) {
+        if (StringUtils.isNotBlank(s)) {
+            // Test all strings
+            for (int i = 0; i <= MAX_SALUTATION_COUNT; i++) {
+                if (getSalutationString(i, false).equalsIgnoreCase(s))
+                    return i;
+                // if (getGenderString(i,true).equalsIgnoreCase(s)) return i;
+            }
+        }
+        // Default = "---"
+        return 0;
+    }
     
     /**
      * Get the address as one String.
@@ -405,9 +408,18 @@ public class ContactUtil {
 		return addressString;
 	}	
 	
-	
+	/**
+	 * Creates a new {@link Address} object from a string. This is mostly used
+	 * if address field in DocumentReceiver only contains a manual address. 
+	 * The string is analyzed to break into useful tokens for an address.
+	 * <p><i>Note:</i>The name field of the string is put into {@link Address#getLocalConsultant()}.
+	 * 
+	 * @param address
+	 * @return
+	 */
 	public Address createAddressFromString(String address) {
 		Address retval = modelFactory.createAddress();
+		retval.setLocalConsultant(getDataFromAddressField(address, KEY_NAME));
 		retval.setStreet(getDataFromAddressField(address, KEY_STREET));
 		retval.setCity(getDataFromAddressField(address, KEY_CITY));
 		retval.setZip(getDataFromAddressField(address, KEY_ZIP));
@@ -480,7 +492,7 @@ public class ContactUtil {
 		if (address == null) {
 			return "";
 		} else {
-			addressLines = address.split("\\n");
+			addressLines = address.split(System.lineSeparator());
 		}
 		
 		Boolean countryFound = false;
@@ -742,9 +754,9 @@ public class ContactUtil {
 	/**
 	 * Get the reliability String by the number
 	 * 
-	 * @param i
-	 *            Gender number
-	 * @return Gender as string
+	 * @param type
+	 *            reliability type
+	 * @return Reliability as string
 	 */
 	public String getReliabilityString(ReliabilityType type) {
 		return getReliabilityString(type, true);
@@ -754,10 +766,10 @@ public class ContactUtil {
 	 * Get the reliability String by the number
 	 * 
 	 * @param type
-	 *            Gender number
+	 *            reliability type
 	 * @param translate
 	 *            TRUE, if the string should be translated
-	 * @return Gender as string
+	 * @return Reliability as string
 	 */
 	public String getReliabilityString(ReliabilityType type, boolean translate) {
 		switch (type) {
@@ -776,23 +788,21 @@ public class ContactUtil {
 		return "";
 	}
 	
-	///**
-	// * Get the reliability number by the string
-	// * 
-	// * @param s
-	// *          Reliability string
-	// * @return
-	// * 			The number
-	// */
-	//public int getReliabilityID(String s) {
-	//	// Test all strings
-	//	for (int i = 0;i < 4 ; i++) {
-	//		if (getReliabilityString(i,false).equalsIgnoreCase(s)) return i;
-	//		if (getReliabilityString(i,true).equalsIgnoreCase(s)) return i;
-	//	}
-	//	// Default = "---"
-	//	return 0;
-	//}
+	/**
+	 * Get the reliability number by the string
+	 * 
+	 * @param s
+	 *          Reliability string
+	 * @return
+	 * 			The ReliabilityType
+	 */
+	public ReliabilityType getReliabilityID(String s) {
+		// Test all strings
+	    Optional<ReliabilityType> result = ReliabilityType.VALUES.stream().filter(r -> getReliabilityString(r,false).equalsIgnoreCase(s)
+	            || getReliabilityString(r,true).equalsIgnoreCase(s)).findAny();
+		// Default = "---"
+		return result.orElse(ReliabilityType.NONE);
+	}
 
     /**
      * Returns <code>true</code> if billing and delivery addresses are equal

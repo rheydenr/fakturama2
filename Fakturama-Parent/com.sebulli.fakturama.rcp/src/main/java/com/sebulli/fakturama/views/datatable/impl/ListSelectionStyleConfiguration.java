@@ -33,14 +33,14 @@ import org.eclipse.swt.graphics.FontData;
 public class ListSelectionStyleConfiguration extends AbstractRegistryConfiguration {
 
 	// Selection style
-	public Font selectionFont = GUIHelper.getFont(new FontData("Verdana", 8, SWT.NORMAL)); //$NON-NLS-1$
-	public Color selectionBgColor = GUIHelper.COLOR_TITLE_INACTIVE_BACKGROUND;
-	public Color selectionFgColor = GUIHelper.COLOR_BLACK;
+	public Font selectionFont = GUIHelper.getFont(new FontData("Verdana", 10, SWT.NORMAL)); //$NON-NLS-1$
+	public Color selectionBgColor = GUIHelper.COLOR_LIST_SELECTION;
+	public Color selectionFgColor = GUIHelper.COLOR_LIST_SELECTION_TEXT;
 
 	// Anchor style
 	public Color anchorBorderColor = GUIHelper.COLOR_DARK_GRAY;
 	public BorderStyle anchorBorderStyle = new BorderStyle(1, anchorBorderColor, LineStyleEnum.SOLID);
-	public Color anchorBgColor = GUIHelper.COLOR_GRAY;
+	public Color anchorBgColor = GUIHelper.COLOR_BLUE;
 	public Color anchorFgColor = GUIHelper.COLOR_WHITE;
 
 	// Selected headers style

@@ -141,8 +141,9 @@ public class VatEditor extends Editor<VAT> {
              */
             editorVat = vatDao.update(editorVat);
 
-            // check if we can delete the old category (if it's empty)
-            if(oldCat != null && oldCat != editorVat.getCategory()) {
+            // check if we can delete the old category (if it's empty and is not a parent category of the current one)
+            if(oldCat != null && oldCat != editorVat.getCategory()
+                    && !isParent(oldCat, editorVat.getCategory())) {
             	long countOfEntriesInCategory = vatDao.countByCategory(oldCat);
             	if(countOfEntriesInCategory == 0) {
             		vatCategoriesDAO.deleteEmptyCategory(oldCat);
@@ -183,6 +184,24 @@ public class VatEditor extends Editor<VAT> {
     }
 
     /**
+     * Checks if the given {@link VATCategory} is parent of the other one.
+     * 
+     * @param testParent the parent {@link VATCategory} to test
+     * @param category a valid category
+     * @return <code>true</code>, if <code>testParent</code> is parent of <code>category</code>
+     */
+    private boolean isParent(VATCategory testParent, VATCategory category) {
+        if (testParent != null && category != null && category.getParent() != null) {
+            if(category.getParent() == testParent) {
+                return true;
+            } else {
+                return isParent(testParent, (VATCategory) category.getParent());
+            }
+        }
+        return false;
+    }
+
+    /**
      * Initializes the editor. If an existing data set is opened, the local
      * variable "vat" is set to this data set. If the editor is opened to create
      * a new one, a new data set is created and the local variable "vat" is set
@@ -214,7 +233,7 @@ public class VatEditor extends Editor<VAT> {
         if (newVat) {
             // Create a new data set
             editorVat = modelFactory.createVAT();
-            String category = (String) part.getProperties().get(CallEditor.PARAM_CATEGORY);
+            String category = (String) part.getTransientData().get(CallEditor.PARAM_CATEGORY);
             if(StringUtils.isNotEmpty(category)) {
                 VATCategory newCat = vatCategoriesDAO.findCategoryByName(category);
                 editorVat.setCategory(newCat);

@@ -3,6 +3,7 @@ package com.sebulli.fakturama.startup;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * 
@@ -78,4 +79,6 @@ public interface ISplashService {
 	 * @param message Text-Message to be displayed.
 	 */
 	public void setMessage(String message);
+
+    Shell getSplashShell();
 }

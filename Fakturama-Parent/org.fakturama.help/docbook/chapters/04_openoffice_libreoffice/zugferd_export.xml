@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section xmlns="http://docbook.org/ns/docbook"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:xl="http://www.w3.org/1999/xlink"
+         xml:lang="de">
+  <title>ZUGFeRD-Export (XRechnung bzw. Factur-X)</title>
+  <para>Derzeit ist der ZUGFeRD-Standard in der Version 2.1 verfügbar. Mit diesem Release wurde die Konformität mit den Vorgaben der europäischen Norm EN 16931-1 erreicht. Inhaltlich und strukturell ist ZUGFeRD 2.1 identisch mit dem französischen Hybridformat Factur-X in Version 1.0.05.</para>
+  <para>Fakturama unterstützt sowohl das ältere ZUGFeRD-Format (Version 1.0) als auch das neuere Format Factur-X. Derzeit wird allerdings nur das Comfort-Profil unterstützt, was aber in den meisten Fällen ausreichen sollte. In den Fakturama-Versionen bis einschließlich Version 2.1.0 musste das Plugin zusätzlich installiert werden. Dieser Schritt entfällt, das Plugin wurde jetzt bereits in der Grundinstallation implementiert.</para>
+  <para>Für das korrekte Erstellen der ZUGFeRD-Datei müssen in den Einstellungen die Firmendaten hinterlegt sein. Außerdem ist es hilfreich, in den Produkten eine GTIN (oder EAN) zu hinterlegen und in den Kontakten eine GLN. Beim Erzeugen der ZUGFeRD-Datei kann es sonst zu unerwarteten Abbrüchen kommen.</para>
+  <para>Die Leitweg-ID, die für XRechnung notwendig ist, wird im Feld "Kundenreferenz" hinterlegt. Des weiteren kann man folgende Felder durch einen Eintrag im Notizfeld des Kunden anders befüllen:
+  <itemizedlist>
+    <listitem><para><emphasis role="bold">Debtor ID=XXX</emphasis> vom Kunden vergebene ID</para></listitem>
+    <listitem><para><emphasis role="bold">Global ID=XXX</emphasis> Globale ID des Kunden</para></listitem>
+    <listitem><para><emphasis role="bold">Global schemeID=999</emphasis> Globale Schema-ID des Kunden</para></listitem>
+  </itemizedlist>
+  <para>"XXX" ist dabei durch einen alphanumerischen Wert, "999" durch einen numerischen zu ersetzen.</para>
+  </para>
+  <para>Siehe auch <link linkend="preferences_zugferd">ZUGFeRD-Einstellungen</link>
+	</para>
+  <caution>Um ein gültiges PDF zu erzeugen, muss im LibreOffice die Erstellung von PDF/A dauerhaft aktiviert werden. Dies erreicht man, indem einmalig eine beliebige Writer-Datei ins PDF-Format konvertiert wird. Dabei ist in den Einstellungen anzugeben, dass PDF/A zu erstellen ist.</caution>
+  <para>Beim Drucken der Rechnung wird nun neben dem Office-Dokument eine PDF-Datei erzeugt, die eine XML-Datei mit den Rechnungsdaten enthält. Das PDF wird dabei in dem in den Einstellungen angegebenen Pfad abgelegt.</para>
+  <para>Siehe auch <link linkend="preferences_openoffice">OpenOffice.org / LibreOffice-Einstellungen</link>
+	</para>
+</section>

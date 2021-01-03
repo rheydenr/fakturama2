@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:annox="http://annox.dev.java.net" jaxb:extensionBindingPrefixes="xjc annox"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+    version="2.1">
+    <jaxb:globalBindings  typesafeEnumMaxMembers="900">
+        <!-- Use java.util.Calendar instead of javax.xml.datatype.XMLGregorianCalendar for xs:dateTime -->
+        <jaxb:javaType name="java.util.Calendar" xmlType="xs:dateTime"
+                parseMethod="javax.xml.bind.DatatypeConverter.parseDateTime"
+                printMethod="javax.xml.bind.DatatypeConverter.printDateTime" />
+ 
+        <!-- Force all classes implements Serializable -->
+        <xjc:serializable uid="1" />
+    </jaxb:globalBindings>
+ 
+    <!-- Annotate the following classes with XmlRootElement -->
+    <jaxb:bindings schemaLocation="FACTUR-X_EXTENDED.xsd" node="/xs:schema">
+        <jaxb:schemaBindings><jaxb:package name="org.fakturama.export.facturx.modelgen" /></jaxb:schemaBindings>
+        <jaxb:bindings node="xs:element[@name='CrossIndustryInvoice']">
+            <annox:annotate>
+                <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="CrossIndustryInvoiceType"/>
+            </annox:annotate>
+        </jaxb:bindings>
+    </jaxb:bindings>
+</jaxb:bindings>

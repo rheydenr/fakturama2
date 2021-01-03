@@ -3,35 +3,12 @@ package com.sebulli.fakturama.model;
 
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-
-import com.sebulli.fakturama.model.Address;
-import com.sebulli.fakturama.model.BillingType;
-import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.DocumentReceiver;
-import com.sebulli.fakturama.model.FakturamaModelFactory;
-import com.sebulli.fakturama.model.FakturamaModelPackage;
-import com.sebulli.fakturama.util.ContactUtil;
-
 public class DocumentAddressManager implements IDocumentAddressManager {
-    private ContactUtil contactUtil;
-    
-    @Inject
-    private IEclipseContext ctx;
     
 	/**
 	 * the model factory
 	 */
 	private FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
-
-	@PostConstruct
-	public void init(IEclipseContext ctx) {
-	}
 
 	/**
 	 * Create a new {@link DocumentReceiver} from a contact address for a given
@@ -102,18 +79,16 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 
 	@Override
 	public Optional<Address> getAddressFromContact(Contact contact, ContactType contactType) {
-		Optional<Address> address;
+		Optional<Address> address = Optional.empty();
 		if (contact != null && contactType != null) {
 			address = contact.getAddresses().stream()
 					.filter(rcv -> rcv.getContactTypes().isEmpty() || rcv.getContactTypes().contains(contactType))
 					.findFirst();
 			
 			// if there's no fitting address use the first one (fallback)
-			if(!address.isPresent()) {
+			if(!address.isPresent() && !contact.getAddresses().isEmpty()) {
 				address = Optional.ofNullable(contact.getAddresses().get(0));
 			}
-		} else {
-			address = Optional.empty();
 		}
 		return address;
 	}
@@ -137,8 +112,26 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 			// if we have only one receiver it is for all BillingTypes
 			return document.getReceiver().get(0);
 		}
+		
+		// for the moment, only INVOICE and DELIVERY types are valid
+		// all other types will be implemented later on
+		// therefore the filter condition contains multiple types
+		BillingType filterBillingType;
+		switch (billingType) {
+        case CREDIT:
+        case CONFIRMATION:
+        case DUNNING:
+        case OFFER:
+        case ORDER:
+        case PROFORMA:
+            filterBillingType = BillingType.INVOICE;
+            break;
+        default:
+            filterBillingType = billingType;
+            break;
+        }
 		Optional<DocumentReceiver> documentReceiver = document.getReceiver().stream()
-				.filter(rcv -> rcv.getBillingType().compareTo(billingType) == 0).findFirst();
+				.filter(rcv -> rcv.getBillingType().compareTo(filterBillingType) == 0).findFirst();
 		
 		// FALLBACK: Use billing type of the given document
 		if(!documentReceiver.isPresent()) {
@@ -160,10 +153,4 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		return document;
 	}
 
-    private ContactUtil getContactUtil() {
-        if(contactUtil == null) {
-            contactUtil = ContextInjectionFactory.make(ContactUtil.class, ctx);
-        }
-        return contactUtil;
-    }
 }

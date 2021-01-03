@@ -33,7 +33,7 @@ public class FakturamaPreferenceStoreProvider implements IPreferenceStoreProvide
 		if(preferenceStore == null) {
 			ISecurePreferences secPrefs = SecurePreferencesFactory.getDefault();
 			
-			preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE,
+			preferenceStore = new FakturamaPreferenceStore(InstanceScope.INSTANCE,
 					Activator.getContext().getBundle().getSymbolicName());
 		}
 		return preferenceStore;

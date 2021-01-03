@@ -52,5 +52,16 @@ public class DummyStringCategory extends AbstractCategory {
     public void setDocType(DocumentType docType) {
         this.docType = docType;
     }
+    
+    private AbstractCategory getParentCategory(DummyStringCategory cat) {
+        if (cat.getParent() == null || cat.getName().isEmpty()) {
+            return cat;
+        } else
+            return getParentCategory((DummyStringCategory) cat.getParent());
+    }
+    
+    public AbstractCategory getRootCategory() {
+            return getParentCategory(this);
+    }
 
 }

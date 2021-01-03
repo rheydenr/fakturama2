@@ -70,6 +70,7 @@ import com.sebulli.fakturama.parts.PaymentEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
+import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
@@ -144,6 +145,7 @@ public class PaymentListTable extends AbstractViewDataTable<Payment, VoucherCate
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new ListSelectionStyleConfiguration());
         natTable.addConfiguration(new PaymentTableConfiguration());
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));

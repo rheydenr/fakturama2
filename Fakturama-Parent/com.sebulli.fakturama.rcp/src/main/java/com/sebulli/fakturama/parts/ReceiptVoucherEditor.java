@@ -61,8 +61,8 @@ public class ReceiptVoucherEditor extends VoucherEditor {
     }
     
     @Override
-    protected String[] getNameProposals() {
-    	return receiptVouchersDAO.getVoucherNames();
+    protected String[] getNameProposals(int maxLength) {
+    	return receiptVouchersDAO.getVoucherNames(maxLength);
     }
 
     @Override

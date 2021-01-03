@@ -169,13 +169,23 @@ public class ExpendituresDAO extends AbstractDAO<Voucher> {
 	/**
 	 * Get all {@link Voucher} names as String array. Used for content proposals.
 	 * 
+	 * @param maxLength max count of result items
 	 * @return array of voucher names.
 	 */
-	public String[] getVoucherNames() {
-		List<Voucher> allVouchers = findAll(true);
-		return allVouchers.stream().filter(v -> v.getName() != null).map(v -> v.getName()).sorted().collect(Collectors.toList()).toArray(new String[]{});
+	public String[] getVoucherNames(int maxLength) {
+	    CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+	    CriteriaQuery<Voucher> criteria = cb.createQuery(getEntityClass());
+	    Root<Voucher> root = criteria.from(getEntityClass());
+	    Predicate predicate = cb.and(
+				cb.not(root.get(Voucher_.deleted)),
+				cb.equal(root.get(Voucher_.voucherType), VoucherType.EXPENDITURE),
+				cb.isNotNull(root.get(Voucher_.name))
+		);
+	    
+		CriteriaQuery<Voucher> cq = criteria.where(predicate).orderBy(cb.asc(root.get(Voucher_.voucherDate)));
+	    TypedQuery<Voucher> query = getEntityManager().createQuery(cq).setMaxResults(maxLength);
+        return query.getResultList().stream().map(v -> v.getName()).sorted().distinct().collect(Collectors.toList()).toArray(new String[] {});
 	}
-	
   
     /**
     * Gets the all visible properties of this Voucher object.

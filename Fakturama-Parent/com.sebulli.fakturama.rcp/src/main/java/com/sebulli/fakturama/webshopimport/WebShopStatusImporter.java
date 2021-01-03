@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.xml.sax.SAXParseException;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
@@ -119,7 +118,7 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
             }
             
     		// 1. We need to create JAXBContext instance
-    		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
+            JAXBContext jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {ObjectFactory.class}, null);
 
     		// 2. Use JAXBContext instance to create the Unmarshaller.
     		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();

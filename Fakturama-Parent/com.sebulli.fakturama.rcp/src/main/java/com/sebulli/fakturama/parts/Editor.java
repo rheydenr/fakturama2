@@ -16,6 +16,7 @@ package com.sebulli.fakturama.parts;
 
 import java.io.IOException;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.core.databinding.Binding;
@@ -97,6 +98,7 @@ public abstract class Editor<T extends IEntity> {
 	public static final String UPDATE_EVENT = "update";
 
 	public static final String BIND_MODE_INDICATOR = "IS_IN_BIND_MODE";
+	public static final String OBJECT_ID = "OBJECT_ID";
 
     @Inject
     protected IPreferenceStore defaultValuePrefs;
@@ -455,6 +457,7 @@ public abstract class Editor<T extends IEntity> {
         
         source.addModifyListener(e -> {
         	if(((MPart) getMDirtyablePart()).getTransientData().get(BIND_MODE_INDICATOR) == null) {
+                evtBroker.post("EditorPart", "setDirty");
                 getMDirtyablePart().setDirty(true);
         	}
         });
@@ -529,22 +532,17 @@ public abstract class Editor<T extends IEntity> {
 	 * @param nextControl
 	 *            The next control
 	 */
-	protected void setTabOrder(Text text, final Control nextControl) {
-		text.addKeyListener(new KeyAdapter() {
-
+	protected void setTabOrder(Control text, final Control nextControl) {
 			/**
 			 * Capture the tab key and set the focus to the next control
 			 * 
 			 * @see org.eclipse.swt.events.KeyAdapter#keyPressed(org.eclipse.swt.events.KeyEvent)
 			 */
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == '\t') {
-					e.doit = false;
-					nextControl.setFocus();
-				}
+		text.addTraverseListener( e -> {
+			if (e.keyCode == SWT.TAB) {
+				e.doit = false;
+				nextControl.setFocus();
 			}
-
 		});
 	}
 
@@ -610,4 +608,10 @@ public abstract class Editor<T extends IEntity> {
 		}
 		return numberGenerator;
 	}
+	
+	@PreDestroy
+	public void preDestroy() {
+//	    evtBroker.post("EditorPart/close", null);
+	}
+	
 }

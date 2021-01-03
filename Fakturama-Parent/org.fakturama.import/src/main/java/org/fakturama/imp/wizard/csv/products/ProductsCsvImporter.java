@@ -39,6 +39,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.ICSVParser;
+import com.opencsv.exceptions.CsvValidationException;
 import com.sebulli.fakturama.dao.ProductCategoriesDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
@@ -53,6 +54,7 @@ import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.model.ProductCategory;
 import com.sebulli.fakturama.model.ProductOptions;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.util.ProductUtil;
 
 /**
  * CSV importer for products
@@ -91,7 +93,7 @@ public class ProductsCsvImporter {
 	// Defines all columns that are used and imported
 	private String[] requiredHeaders = { "itemnr", "name", "category", "description", "price1", "price2", "price3",
 			"price4", "price5", "block1", "block2", "block3", "block4", "block5", "vat", "options", "weight", "unit",
-			"date_added", "picturename", "quantity", "webshopid", "qunit", "costprice" };
+			"date_added", "picturename", "quantity", "webshopid", "qunit", "costprice", "note" };
 
 	// The result string
 	private String result = " ";
@@ -239,11 +241,13 @@ public class ProductsCsvImporter {
 					}
 
 					if(prop.getProperty("picturename") != null && !basePath.toString().isEmpty() && (!prop.getProperty("picturename").isEmpty() || importEmptyValues)) {
-					    byte[] picture = readPicture(prop.getProperty("picturename"), basePath);
+					    byte[] picture = ProductUtil.readPicture(prop.getProperty("picturename"), basePath);
 					    product.setPicture(picture);
 					}
 					product.setQuantity(DataUtils.getInstance().StringToDouble(prop.getProperty("quantity")));
 					product.setQuantityUnit(prop.getProperty("qunit"));
+					
+					product.setNote(prop.getProperty("note"));
 
 					String vatName = prop.getProperty("item vat");
 					Double vatValue = DataUtils.getInstance().StringToDouble(prop.getProperty("vat"));
@@ -278,7 +282,10 @@ public class ProductsCsvImporter {
 			result += NL + importMessages.wizardImportErrorOpenfile;
 		} catch (FakturamaStoringException e) {
 			log.error(e, "cant't store import data.");
-		}
+		} catch (CsvValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
     // FIXME implement!
@@ -290,19 +297,6 @@ public class ProductsCsvImporter {
         // TODO set attribute value, name, sequence
          productOptions.add(productOption);
          product.setAttributes(productOptions);
-    }
-
-    private byte[] readPicture(String fileName, Path basePath) {
-        Path productPictureFile = basePath.resolve(fileName);
-        byte[] retval = null;
-        if (StringUtils.isNotBlank(fileName)) {
-            try {
-                retval = Files.readAllBytes(productPictureFile);
-            } catch (IOException ioex) {
-                log.error(String.format("Can't read product picture from file '%s'. Reason: ", productPictureFile.toString(), ioex.getMessage()));
-            }
-        }
-        return retval;
     }
 
     public String getResult() {

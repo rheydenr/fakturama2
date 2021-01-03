@@ -309,8 +309,8 @@ public class WebShopDataImporter implements IRunnableWithProgress {
             }
             
     		// 1. We need to create JAXBContext instance
-    		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
-
+            JAXBContext jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {ObjectFactory.class}, null);
+    		
     		/* if we have larger documents we have to use SAX.         		*/
             // 2. create a new XML parser
 //                SAXParserFactory factory = SAXParserFactory.newInstance();

@@ -68,7 +68,7 @@ public class BodyLayerStack<T extends IEntity> extends AbstractIndexLayerTransfo
         
 //        HoverLayer hoverLayer = new HoverLayer(bodyDataLayer);
         
-        DetailGlazedListsEventLayer<T> glazedListsEventLayer = new DetailGlazedListsEventLayer<T>(bodyDataLayer, sortedList);
+        DetailGlazedListsEventLayer<T> glazedListsEventLayer = new DetailGlazedListsEventLayer<>(bodyDataLayer, sortedList);
         rowReorderLayer = new RowReorderLayer(glazedListsEventLayer);
         // this is for the correct coloring of alternating rows
         rowReorderLayer.setConfigLabelAccumulator(new AlternatingRowConfigLabelAccumulator());
@@ -76,7 +76,7 @@ public class BodyLayerStack<T extends IEntity> extends AbstractIndexLayerTransfo
         this.selectionLayer = new SelectionLayer(rowReorderLayer);
 
         //use a RowSelectionModel that will perform row selections and is able to identify a row via unique ID
-        RowSelectionModel<T> selectionModel = new RowSelectionModel<T>(selectionLayer, bodyDataProvider, rowIdAccessor, false);
+        RowSelectionModel<T> selectionModel = new RowSelectionModel<>(selectionLayer, bodyDataProvider, rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
         // Select complete rows
         selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<T>());

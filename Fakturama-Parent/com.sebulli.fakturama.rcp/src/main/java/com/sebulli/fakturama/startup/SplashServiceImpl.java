@@ -115,6 +115,11 @@ public class SplashServiceImpl implements ISplashService {
 		splashShell.open();
 	}
 	
+	@Override
+    public Shell getSplashShell() {
+	    return splashShell;
+	}
+	
 	private Shell createSplashShell() {
 		final Shell shell = new Shell(SWT.TOOL | SWT.NO_TRIM);
 		Image image = createBackgroundImage(shell);

@@ -23,7 +23,7 @@ public class ClosePartAddon {
 			@Override
 			public void handleEvent(Event event) {
 				Object part = event.getProperty(UIEvents.EventTags.ELEMENT);
-				if (part instanceof MPart) {
+				if (part instanceof MPart && ((MPart) part).getElementId().startsWith("com.sebulli.fakturama.editors")) {
 					eventBroker.post("EditorPart/updateCoolBar", null);			
 				}
 			}

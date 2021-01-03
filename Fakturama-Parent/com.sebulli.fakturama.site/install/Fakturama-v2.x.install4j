@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="8.0.6" transformSequenceNumber="8">
-  <directoryPresets config="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" />
-  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" pack200Compression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.0e" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="1.8" javaMaxVersion="10" jdkMode="jdk" jdkName="JDK 1.8 x64">
+<install4j version="8.0.9" transformSequenceNumber="8">
+  <directoryPresets config="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
+  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.1" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="8" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true">
       <principalLanguage id="de" />
       <additionalLanguages>
@@ -19,7 +19,11 @@
         <language id="tr" />
       </additionalLanguages>
     </languages>
-    <codeSigning macEnabled="true" macPkcs12File="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" windowsEnabled="true" windowsPkcs12File="../../../../../Library/Mobile Documents/com~apple~CloudDocs/Projekte/Fakturama-Installer/Zertifikat/Fakturama.org.p12" />
+    <variables>
+      <variable name="sys.ext.rpmDescription" value="Fakturama enables you to write your invoices in an easy way. You can create orders, delivery papers and many more documents. If you hava a web shop you can connect it to Fakturama. Furthermore, you can create e-invoices (XRechnung and Factur-X)." />
+      <variable name="sys.ext.rpmSummary" value="A tool for creating invoices and manage your products and customers." />
+    </variables>
+    <codeSigning windowsEnabled="true" windowsPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
   </application>
   <files keepModificationTimes="true" globalExcludeSuffixes=".svn,.git">
     <filesets>
@@ -39,13 +43,20 @@
     </mountPoints>
     <entries>
       <dirEntry mountPoint="34" file="../target/products/Fakturama.ID/macosx/cocoa/x86_64" subDirectory="x86_64" />
-      <dirEntry mountPoint="43" file="../target/products/Fakturama.ID/win32/win32/x86_64" subDirectory="x86_64" />
-      <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64" entryMode="subdir" subDirectory="fakturama2" />
+      <dirEntry mountPoint="43" file="../target/products/Fakturama.ID/win32/win32/x86_64" subDirectory="x86_64">
+        <exclude>
+          <entry location="plugins/javax.persistence_2.2.1.v201807122140.jar" />
+        </exclude>
+      </dirEntry>
+      <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64" entryMode="subdir" subDirectory="fakturama2">
+        <exclude>
+          <entry location="plugins/javax.persistence_2.2.1.v201807122140.jar" />
+        </exclude>
+      </dirEntry>
       <dirEntry mountPoint="56" file="linux_64bit/fakturama/usr/share" subDirectory="share" />
     </entries>
   </files>
   <launchers>
-    <launcher name="Fakturama (Mac)" id="35" external="true" externalFile="Fakturama.app/Contents/MacOS/Fakturama" />
     <launcher name="Fakturama.exe (win64)" id="44" external="true" externalFile="Fakturama.exe" />
     <launcher name="Fakturama (Linux 64bit)" id="58" external="true" externalFile="Fakturama" />
   </launchers>
@@ -248,10 +259,23 @@ return console.askOkCancel(message, true);
           </screen>
           <screen id="8" beanClass="com.install4j.runtime.beans.screens.InstallationScreen" rollbackBarrier="true">
             <actions>
+              <action id="525" beanClass="com.install4j.runtime.beans.actions.files.DeleteFileAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="files" type="array" class="java.io.File" length="1">
+                    <element index="0">
+                      <object class="java.io.File">
+                        <string>${installer:sys.installationDir}/plugins</string>
+                      </object>
+                    </element>
+                  </property>
+                  <property name="recursive" type="boolean" value="true" />
+                </serializedBean>
+              </action>
               <action id="9" beanClass="com.install4j.runtime.beans.actions.InstallFilesAction" actionElevationType="elevated" failureStrategy="quit" errorMessage="${i18n:FileCorrupted}" />
-              <action id="10" beanClass="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" actionElevationType="elevated">
+              <action id="10" beanClass="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" actionElevationType="elevated" errorMessage="An error occured :-(">
                 <serializedBean>
                   <property name="addUninstaller" type="boolean" value="true" />
+                  <property name="failForSymlinksNotCreated" type="boolean" value="true" />
                   <property name="uninstallerMenuName" type="string">${i18n:UninstallerMenuEntry(${compiler:sys.fullName})}</property>
                 </serializedBean>
                 <condition>!context.getBooleanVariable("sys.programGroupDisabled")</condition>
@@ -278,6 +302,7 @@ return console.askOkCancel(message, true);
                     </element>
                   </property>
                   <property name="mode" type="string">755</property>
+                  <property name="recursive" type="boolean" value="true" />
                 </serializedBean>
               </action>
             </actions>
@@ -649,22 +674,8 @@ return console.askYesNo(message, true);
     </styles>
   </installerGui>
   <mediaSets>
-    <macosFolder name="Mac OS X Folder" id="36" installDir="Fakturama">
-      <excludedLaunchers>
-        <launcher id="35" />
-        <launcher id="44" />
-        <launcher id="58" />
-      </excludedLaunchers>
-      <exclude>
-        <entry defaultFileset="true" />
-        <entry filesetId="41" />
-        <entry filesetId="49" />
-        <entry filesetId="54" />
-      </exclude>
-    </macosFolder>
     <windows name="Windows 64bit" id="45" mediaFileName="Installer_Fakturama_windows-x64_${compiler:sys.version}" installDir="Fakturama2">
       <excludedLaunchers>
-        <launcher id="35" />
         <launcher id="58" />
       </excludedLaunchers>
       <exclude>
@@ -676,7 +687,6 @@ return console.askYesNo(message, true);
     </windows>
     <unixInstaller name="Unix Installer (Linux 64bit)" id="59" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2">
       <excludedLaunchers>
-        <launcher id="35" />
         <launcher id="44" />
       </excludedLaunchers>
       <exclude>
@@ -686,37 +696,36 @@ return console.askYesNo(message, true);
         <entry filesetId="49" />
       </exclude>
     </unixInstaller>
-    <linuxRPM name="Linux RPM" id="119" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2" arch="x86_64">
+    <linuxRPM name="Linux RPM" id="119" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" arch="x86_64">
       <excludedLaunchers>
-        <launcher id="35" />
         <launcher id="44" />
       </excludedLaunchers>
       <exclude>
         <entry defaultFileset="true" />
         <entry filesetId="32" />
         <entry filesetId="41" />
-        <entry filesetId="49" />
       </exclude>
-      <postInstallScript>${compiler:file("./linux_32bit/make_executable.sh")}</postInstallScript>
+      <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
+sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxRPM>
-    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2" dependencies="java8-jdk | java8-runtime | java8-sdk | openjdk-8-jdk" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedLaunchers>
-        <launcher id="35" />
         <launcher id="44" />
       </excludedLaunchers>
       <exclude>
         <entry defaultFileset="true" />
         <entry filesetId="32" />
         <entry filesetId="41" />
-        <entry filesetId="49" />
       </exclude>
-      <postInstallScript>${compiler:file("./linux_32bit/make_executable.sh")}</postInstallScript>
+      <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
+sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxDeb>
   </mediaSets>
-  <buildIds buildAll="false">
+  <buildIds>
     <mediaSet refId="45" />
     <mediaSet refId="59" />
     <mediaSet refId="119" />
     <mediaSet refId="120" />
   </buildIds>
+  <buildOptions disableJreBundling="true" />
 </install4j>

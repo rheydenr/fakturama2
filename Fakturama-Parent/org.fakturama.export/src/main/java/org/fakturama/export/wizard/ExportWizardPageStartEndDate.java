@@ -19,7 +19,6 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -59,7 +58,6 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 	private Label labelEnd;
 	private CDateTime dtStartDate;
 	private CDateTime dtEndDate;
-	private boolean singlePage = false;
 
 	// Use start and end date or export all
 	private Button bDoNotUseTimePeriod;
@@ -97,7 +95,6 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		setTitle((String) ctx.get(IFakturamaWizardService.WIZARD_TITLE));
 		this.label = (String) ctx.get(IFakturamaWizardService.WIZARD_DESCRIPTION);
 		this.doNotUseTimePeriod = (Boolean) ctx.get(WIZARD_DATESELECT_DONTUSETIMEPERIOD);
-		this.singlePage = Optional.ofNullable((Boolean)ctx.get(WIZARD_SINGLEPAGE)).orElse(Boolean.FALSE);
 	}
 	
 	/**
@@ -235,18 +232,6 @@ public class ExportWizardPageStartEndDate extends WizardPage {
 		return doNotUseTimePeriod;
 	}
 
-
-	/**
-	 * Flip to the next page only of the start date is before the end date
-	 */
-	@Override
-	public boolean canFlipToNextPage() {
-		
-		if (doNotUseTimePeriod)
-			return true;
-		
-		return !singlePage && getEndDate().after(getStartDate());
-	}
 	
 	@Override
 	public boolean isPageComplete() {

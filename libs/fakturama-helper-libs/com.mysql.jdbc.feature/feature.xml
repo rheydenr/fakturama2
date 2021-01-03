@@ -2,7 +2,7 @@
 <feature
       id="com.mysql.jdbc.feature"
       label="MySQL Feature"
-      version="5.1.47"
+      version="5.1.48"
       provider-name="MySQL">
 
    <description url="https://dev.mysql.com/doc">

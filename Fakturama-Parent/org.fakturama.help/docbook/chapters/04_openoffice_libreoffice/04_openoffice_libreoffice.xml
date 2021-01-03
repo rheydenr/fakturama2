@@ -60,7 +60,7 @@ id="04_openoffice_libreoffice">
 						<imagedata fileref="../images/openoffice/template.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata width="80%" fileref="../images/openoffice/template.png" format="PNG" scalefit="1"/>
+						<imagedata width="50%" fileref="../images/openoffice/template.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
@@ -86,12 +86,12 @@ id="04_openoffice_libreoffice">
 						<imagedata fileref="../images/openoffice/placeholder_dialog.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata fileref="../images/openoffice/placeholder_dialog.png" format="PNG" scalefit="1" width="80%"/>
+						<imagedata fileref="../images/openoffice/placeholder_dialog.png" format="PNG" scalefit="1" width="70%"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
 			<para>Ein Platzhalter wird in OpenOffice/LibreOffice Writer eingefügt über das Menü <guimenuitem>Einfügen/Feldbefehl/Andere</guimenuitem> oder die Tastenkombination <keycombo>
-					<keysym>Strg-F2</keysym>        
+					<keycap>STRG</keycap><keysym>F2</keysym>        
 				</keycombo>. Im Dialog unter dem Reiter <emphasis role="bold">Funktionen</emphasis> als Feldtyp <emphasis role="bold">Platzhalter</emphasis> auswählen und als <emphasis role="bold">Format</emphasis> den Eintrag <emphasis role="bold">Text</emphasis>. Der Platzhalter wird in Großbuchstaben ohne die <emphasis role="bold">spitzen Klammern</emphasis> im Feld <emphasis role="bold">Platzhalter</emphasis> eingegeben.</para>
 		</section>
 		<section>
@@ -114,7 +114,7 @@ id="04_openoffice_libreoffice">
 					<imagedata fileref="../images/openoffice/placeholders_common.png" format="PNG" scalefit="1"/>
 				</imageobject>
 				<imageobject role="fo">
-					<imagedata contentdepth="40%" fileref="../images/openoffice/placeholders_common.png" format="PNG" scalefit="1" width="40%"/>
+					<imagedata contentdepth="30%" fileref="../images/openoffice/placeholders_common.png" format="PNG" scalefit="1" width="30%"/>
 				</imageobject>
 			</mediaobject>
 		</informalfigure>
@@ -1321,5 +1321,8 @@ id="04_openoffice_libreoffice">
 								</inlinemediaobject>
 							</para>
 		</section>
+		
+    	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="zugferd_export.xml"/>
+
 	</chapter>
 	

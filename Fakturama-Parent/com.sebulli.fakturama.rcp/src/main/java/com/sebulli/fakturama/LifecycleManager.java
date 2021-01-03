@@ -14,13 +14,14 @@ import java.util.Date;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.PersistenceException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -48,6 +49,7 @@ import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -124,8 +126,6 @@ public class LifecycleManager {
 
     @PostContextCreate
     public void checksBeforeStartup(final ISplashService splashService, final IEventBroker eventBroker) {
-//        IApplicationContext appContext = context.get(IApplicationContext.class);
-
     	splashService.setSplashPluginId(Activator.PLUGIN_ID);
     	splashService.setTotalWork(40);
     	splashService.open();
@@ -159,6 +159,7 @@ public class LifecycleManager {
         	boolean dbupdate = dbUpdateService.updateDatabase();
         	if(!dbupdate) {
         		log.error("couldn't create or update database!");
+                MessageDialog.openError(splashService.getSplashShell(), msg.dialogMessageboxTitleError, msg.startErrorNodatabase);
         		System.exit(1);
         	}
         	
@@ -166,21 +167,27 @@ public class LifecycleManager {
         	
         	splashService.setMessage("initialize classes...");
             dbInitJob = new Job("initDb") {
-    
+
                 @Override
                 protected IStatus run(IProgressMonitor monitor) {
-                	
                     log.debug("start DAOs - begin");
-                    context.set(VatsDAO.class, ContextInjectionFactory.make(VatsDAO.class, context));
-                    context.set(ShippingsDAO.class, ContextInjectionFactory.make(ShippingsDAO.class, context));
-                    context.set(PaymentsDAO.class, ContextInjectionFactory.make(PaymentsDAO.class, context));
-                    context.set(UnCefactCodeDAO.class, ContextInjectionFactory.make(UnCefactCodeDAO.class, context));
-                    context.set(ItemListTypeCategoriesDAO.class, ContextInjectionFactory.make(ItemListTypeCategoriesDAO.class, context));
-                    context.set(ItemAccountTypeDAO.class, ContextInjectionFactory.make(ItemAccountTypeDAO.class, context));
-                    log.debug("start DAOs - end");
-                    return Status.OK_STATUS;
+                    try {
+                        context.set(VatsDAO.class, ContextInjectionFactory.make(VatsDAO.class, context));
+                        context.set(ShippingsDAO.class, ContextInjectionFactory.make(ShippingsDAO.class, context));
+                        context.set(PaymentsDAO.class, ContextInjectionFactory.make(PaymentsDAO.class, context));
+                        context.set(UnCefactCodeDAO.class, ContextInjectionFactory.make(UnCefactCodeDAO.class, context));
+                        context.set(ItemListTypeCategoriesDAO.class, ContextInjectionFactory.make(ItemListTypeCategoriesDAO.class, context));
+                        context.set(ItemAccountTypeDAO.class, ContextInjectionFactory.make(ItemAccountTypeDAO.class, context));
+                        log.debug("start DAOs - end");
+                        return Status.OK_STATUS;
+                    } catch (PersistenceException e) {
+                        log.error(e, "Datenbank kann nicht gestartet werden. Anwendung wird beendet.");
+                        MessageDialog.openError(splashService.getSplashShell(), msg.dialogMessageboxTitleError, msg.startErrorNodatabase);
+                        return Status.CANCEL_STATUS;
+                    }
                 }
             };
+            
             dbInitJob.schedule(10);  // timeout that the OSGi env can be started before
             
         	splashService.worked(5);
@@ -188,8 +195,8 @@ public class LifecycleManager {
             // register event handler for saving and closing editors before shutdown
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED,
                 event -> {
-                        	// formerly known as Workbench.busyClose()
-                        	closeAndSaveEditors(context);
+                	// formerly known as Workbench.busyClose()
+                	closeAndSaveEditors(context);
 //                        	eventBroker.unsubscribe(eventHandler)
                 });            
             
@@ -227,7 +234,18 @@ public class LifecycleManager {
     	splashService.worked(1);
 
         FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
-        VatsDAO vatsDAO = context.get(VatsDAO.class);
+        
+        // the following is a workaround for the error if the database isn't available.
+        // there was only a strange error message which doesn't helped the user.
+        // If no database is available, a NPE is thrown.
+        VatsDAO vatsDAO = null;
+        try {
+            vatsDAO = context.get(VatsDAO.class);
+        } catch (NullPointerException npe) {
+            MessageDialog.openError(splashService.getSplashShell(), msg.dialogMessageboxTitleError, msg.startErrorNodatabase);
+            System.exit(1);
+        }
+        
         ShippingsDAO shippingsDAO = context.get(ShippingsDAO.class);
         PaymentsDAO paymentsDAO = context.get(PaymentsDAO.class);
         UnCefactCodeDAO unCefactCodeDAO = context.get(UnCefactCodeDAO.class);
@@ -334,7 +352,7 @@ public class LifecycleManager {
     private void initializeCodes(UnCefactCodeDAO unCefactCodeDAO, FakturamaModelFactory modelFactory) {
     	try(InputStream wbStream = FrameworkUtil.getBundle(TemplateResourceManager.class).getResource(CODELISTS_XLSX).openStream();){
     		log.info("importing code lists from " + CODELISTS_XLSX);
-    		Workbook wb = new XSSFWorkbook(wbStream);
+    		Workbook wb = WorkbookFactory.create(wbStream);
     		Sheet sheet = wb.getSheetAt(0);
 			int rows = sheet.getPhysicalNumberOfRows();
 			// skip the first n rows
@@ -380,6 +398,10 @@ public class LifecycleManager {
 		if (preferencesInDatabase != null) {
 			log.debug("Storing preferences in database");
             preferencesInDatabase.savePreferencesInDatabase();
+            
+            if(dbUpdateService != null && dbUpdateService.isDbAlive()) {
+                dbUpdateService.shutDownDb();
+            }
         }
         
     	saveDialogSettings(instanceLocation);
@@ -527,8 +549,7 @@ public class LifecycleManager {
 		try {
 			dsURL = instanceLocation.getDataArea(Activator.PLUGIN_ID + "/" + FN_DIALOG_SETTINGS);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.error(e1, "Cannot determine current data area. Reason: ");
 		}
         if (dsURL == null) {
 			return null;

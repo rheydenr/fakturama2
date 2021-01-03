@@ -33,7 +33,9 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -44,24 +46,30 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.fakturama.wizards.ExportWizardRegistry;
+import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.exporter.IContactExporter;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.office.OfficeDocument;
+import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 
 /**
@@ -72,7 +80,7 @@ import com.sebulli.fakturama.parts.DocumentEditor;
  */
 public class CreateOODocumentHandler {
 
-    private static final String OO_TEMPLATE_FILEEXTENSION = ".ott";
+    public static final String OO_TEMPLATE_FILEEXTENSION = ".ott";
 
     @Inject
     @Translation
@@ -84,6 +92,9 @@ public class CreateOODocumentHandler {
     @Inject @Optional
     private IPreferenceStore preferences;
     
+    @Inject
+    private IContactExporter exportService;
+ 
     @Inject
     private DocumentsDAO documentsDao;
 
@@ -108,7 +119,9 @@ public class CreateOODocumentHandler {
     @CanExecute
     public boolean canExecute(EPartService partService, @Optional @Named(PARAM_SILENTMODE) String silentMode) {
     	MPart activePart = partService.getActivePart();
-        return BooleanUtils.toBoolean(silentMode) || activePart != null && activePart.getElementId().contentEquals(DocumentEditor.ID);
+        return BooleanUtils.toBoolean(silentMode) 
+                || activePart != null && (activePart.getElementId().contentEquals(DocumentEditor.ID) 
+                        || activePart.getElementId().contentEquals(DebitorEditor.ID));
     }
 
     /**
@@ -176,69 +189,76 @@ public class CreateOODocumentHandler {
 			}
 		}
     	MPart activePart = partService.getActivePart();
-		if (activePart != null && StringUtils.equalsIgnoreCase(activePart.getElementId(), DocumentEditor.ID)) {
-			// Search in the folder "Templates" and also in the folder with the localized name
-			DocumentEditor documentEditor = (DocumentEditor) activePart.getObject();
-			
-			if(documentEditor != null) {
-				List<Path> templates = collectTemplates(documentEditor.getDocumentType());
-				final List<DocumentItem> olditemsList = new ArrayList<>();
-				
-				// new documents need to be saved first, we don't have an id yet
-				Document tmpDoc = null;
-				if(documentEditor.getDocument().getId() > 0 && BooleanUtils.isTrue(documentEditor.getDocument().getPrinted())) {
-					tmpDoc = documentsDao.findById(documentEditor.getDocument().getId(), true);
-				}
-				
-				if(tmpDoc != null) {
-					 olditemsList.addAll(tmpDoc.getItems());
-				}
-				
-				// If more than 1 template is found, show a pup up menu
-				if (templates.size() > 1) {
-					Menu menu = new Menu(shell, SWT.POP_UP);
-					for (int i = 0; i < templates.size(); i++) {
-						template = templates.get(i);
-						MenuItem item = new MenuItem(menu, SWT.PUSH);
-						item.setText(StringUtils.substringBeforeLast(template.getFileName().toString(),
-								OO_TEMPLATE_FILEEXTENSION));
-						item.setData(template);
-						item.addListener(SWT.Selection, (Event e) -> {
-								// save the document and open the exporter
-								documentEditor.doSave(null);
-								openOODocument(documentEditor.getDocument(true), (Path) e.widget.getData(), shell, silentMode);
-								// documentEditor.markAsPrinted();
-								updateStockQuantity(shell, olditemsList, documentEditor.getDocument());
-						});
-					}
-	
-					// Set the location of the pop up menu near to the upper left
-					// corner,
-					// but with a gap, so it should be under the tool bar icon of
-					// this action.
-					int x = shell.getLocation().x;
-					int y = shell.getLocation().y;
-					menu.setLocation(x + 80, y + 80);
-					menu.setVisible(true);
-	
-				} else if (templates.size() == 1) {
-					// Save the document and open the exporter
-					documentEditor.doSave(null);
-					openOODocument(documentEditor.getDocument(true), templates.get(0), shell, silentMode);
-					// documentEditor.markAsPrinted();
-					updateStockQuantity(shell, olditemsList, documentEditor.getDocument());
-				} else {
-					// Show an information dialog if no template was found
-					MessageDialog.openWarning(shell, msg.dialogMessageboxTitleInfo,
-							MessageFormat.format(msg.dialogPrintooNotemplate, StringUtils.join(getLocalizedRelativeFolder(documentEditor.getDocumentType()), File.separatorChar)));
-				}
-			} else {
-				MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.dialogPrintooErrorNoactivepart);
-			}
-		}
+		if (activePart != null) {
+            if (StringUtils.equalsIgnoreCase(activePart.getElementId(), DebitorEditor.ID)) {
+                Contact currentContact = ((DebitorEditor)activePart.getObject()).getCurrentContact();
+                context.set(Shell.class, shell);
+                ContextInjectionFactory.inject(exportService, context);
+                exportService.writeDatasheet(currentContact);
+            } else if (StringUtils.equalsIgnoreCase(activePart.getElementId(), DocumentEditor.ID)) {
+            	// Search in the folder "Templates" and also in the folder with the localized name
+            	DocumentEditor documentEditor = (DocumentEditor) activePart.getObject();
+            	
+            	if(documentEditor != null) {
+            		List<Path> templates = collectTemplates(documentEditor.getDocumentType());
+            		final List<DocumentItem> olditemsList = new ArrayList<>();
+            		
+            		// new documents need to be saved first, we don't have an id yet
+            		Document tmpDoc = null;
+            		if(documentEditor.getDocument().getId() > 0 && BooleanUtils.isTrue(documentEditor.getDocument().getPrinted())) {
+            			tmpDoc = documentsDao.findById(documentEditor.getDocument().getId(), true);
+            		}
+            		
+            		if(tmpDoc != null) {
+            			 olditemsList.addAll(tmpDoc.getItems());
+            		}
+            		
+            		// If more than 1 template is found, show a pup up menu
+            		if (templates.size() > 1) {
+            			Menu menu = new Menu(shell, SWT.POP_UP);
+            			for (int i = 0; i < templates.size(); i++) {
+            				template = templates.get(i);
+            				MenuItem item = new MenuItem(menu, SWT.PUSH);
+            				item.setText(StringUtils.substringBeforeLast(template.getFileName().toString(),
+            						OO_TEMPLATE_FILEEXTENSION));
+            				item.setData(template);
+            				item.addListener(SWT.Selection, (Event e) -> {
+            						// save the document and open the exporter
+            						documentEditor.doSave(null);
+            						openOODocument(documentEditor.getDocument(true), (Path) e.widget.getData(), shell, silentMode);
+            						// documentEditor.markAsPrinted();
+            						updateStockQuantity(shell, olditemsList, documentEditor.getDocument());
+            				});
+            			}
+
+            			// Set the location of the pop up menu near to the upper left
+            			// corner,
+            			// but with a gap, so it should be under the tool bar icon of
+            			// this action.
+            			int x = shell.getLocation().x;
+            			int y = shell.getLocation().y;
+            			menu.setLocation(x + 80, y + 80);
+            			menu.setVisible(true);
+
+            		} else if (templates.size() == 1) {
+            			// Save the document and open the exporter
+            			documentEditor.doSave(null);
+            			openOODocument(documentEditor.getDocument(true), templates.get(0), shell, silentMode);
+            			// documentEditor.markAsPrinted();
+            			updateStockQuantity(shell, olditemsList, documentEditor.getDocument());
+            		} else {
+            			// Show an information dialog if no template was found
+            			MessageDialog.openWarning(shell, msg.dialogMessageboxTitleInfo,
+            					MessageFormat.format(msg.dialogPrintooNotemplate, StringUtils.join(getLocalizedRelativeFolder(documentEditor.getDocumentType()), File.separatorChar)));
+            		}
+            	} else {
+            		MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.dialogPrintooErrorNoactivepart);
+            	}
+            }
+        }
 	}
 
-	/**
+    /**
 	 * <p>The stock update works as follows:</p>
 	 * <p>You have to collect the
 	 * <ul><li>changed,</li><li>new and</li><li>deleted</li></ul>

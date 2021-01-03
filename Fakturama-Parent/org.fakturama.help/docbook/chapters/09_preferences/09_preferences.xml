@@ -18,7 +18,7 @@
         <title>Allgemeine Einstellungen</title>
         <section>
             <anchor xreflabel="" xml:id="preferences_general_navigationbar"/>
-            <title>Navigationsfenster: Expandbar einklappen</title>
+            <subtitle>Navigationsfenster: Expandbar einklappen</subtitle>
             <para>In der linken Navigationsleiste werden beim Ausklappen einer Expandbar die anderen Expandbars automatisch eingeklappt. Ist diese Option nicht ausgewählt, bleiben die anderen unbeeinflusst.</para>
             <informalfigure>
                 <mediaobject>
@@ -32,23 +32,23 @@
             </informalfigure>
         </section>
         <section>
-            <title>Andere Editoren schließen</title>
+            <subtitle>Andere Editoren schließen</subtitle>
             <para>Ist diese Option angewählt werden beim Öffnen eines neuen Editorfensters automatisch alle anderen Editorfenster geschlossen. Geänderte und noch nicht gespeicherte bleiben weiterhin geöffnet.</para>
         </section>
         <section>
-            <title>Währungsland</title>
+            <subtitle>Währungsland</subtitle>
             <para>Legt fest, in welcher Währung die Geldbeträge erscheinen sollen. Ein Wechsel des Währungslandes ändert nicht den Wert, sondern nur die Währungseinheit.</para>
             <para>Es ist möglich, nur ein Symbol wie '€' zu verwenden, aber auch einen ISO-Code wie 'EUR' oder gar kein Währungskennzeichen. Im Beispielfeld kann man sehen, wie Beträge mit den ausgewählten Einstellungen angezeigt werden würden. Zu beachten ist, dass sich abhängig vom gewählten Land auch die Darstellung der Betragszahl ändert, da hier die unterschiedlichen länderspezifischen Einstellungen greifen.</para>
 			<para>Wählt man als Währungsland <emphasis role="bold">Schweiz</emphasis> aus, kann man das Feld "Bar-Rundung" anklicken. Dies sorgt dafür, dass alle berechneten Beträge auf volle 0.05 Rappen gerundet werden.</para>
 		</section>
-		<section><title>Anzahl der Nachkommastellen (Währung)</title>
+		<section><subtitle>Anzahl der Nachkommastellen (Währung)</subtitle>
 			<para>Die Anzahl der Nachkommastellen legt fest, wie viele Nachkommastellen bei Beträgen angezeigt und gedruckt werden sollen. Die maximale Anzahl ist derzeit 5.</para>
         </section>
-		<section><title>Anzahl der Nachkommastellen</title>
+		<section><subtitle>Anzahl der Nachkommastellen</subtitle>
 			<para>Die Anzahl der Nachkommastellen legt fest, wie viele Nachkommastellen bei allen Zahlen angezeigt und gedruckt werden sollen, die keine Währung darstellen (Mengen, Gewichte usw.). Die maximale Anzahl ist derzeit 5.</para>
         </section>
         <section>
-            <title>Zahlen mit Tausenderpunkt darstellen</title>
+            <subtitle>Zahlen mit Tausenderpunkt darstellen</subtitle>
             <para>Ist diese Option gesetzt, werden alle Zahlen mit Tausenderpunkt dargestellt, z. B. 1.000,00 €.</para>
         </section>
     </section>
@@ -56,8 +56,8 @@
         <anchor xreflabel="" xml:id="preferences_document"/>
         <title>Dokumenten-Einstellungen</title>
         <section>
-            <title>Preise in Artikelliste</title>
-            <para>Legt fest, ob die Preise in der Artikelliste der Dokumente (Rechnungen, Lieferscheine&#x2026;) als Netto oder Brutto angezeigt werden</para>
+            <subtitle>Preise in Artikelliste</subtitle>
+            <para>Legt fest, ob die Preise in der Artikelliste der Dokumente (Rechnungen, Lieferscheine…) als Netto oder Brutto angezeigt werden</para>
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -70,7 +70,7 @@
             </informalfigure>
         </section>
         <section>
-            <title>Kommentar beim Duplizieren von Dokumenten übernehmen</title>
+            <subtitle>Kommentar beim Duplizieren von Dokumenten übernehmen</subtitle>
             <para>Wird ein Dokument dupliziert (wird zum Beispiel aus einer Bestellung eine Rechnung erzeugt), so werden Adresse und Artikel übernommen. Es ist möglich, den Kommentartext ebenfalls zu übernehmen oder beim Duplizierten Dokument leer zu lassen.</para>
             <para>Der Kommentar einer Bestellung ist derjenige, den der Kunde bei seiner Bestellung im Webshop eingegeben hat. Es ist nicht immer sinnvoll, diesen Text auch auf die Rechnung weiter zu geben. Der Text dort ist vielmals eine Information an den Kunden.</para>
             <informalfigure>
@@ -85,7 +85,7 @@
             </informalfigure>
         </section>
         <section>
-            <title>Beschreibung aus Produktauswahl-Dialog übernehmen</title>
+            <subtitle>Beschreibung aus Produktauswahl-Dialog übernehmen</subtitle>
             <para>In den Dokumenten kann ein neuer Artikel über den Produktauswahl-Dialog eingefügt werden. Diese Einstellung legt fest, ob die Produktbeschreibung mit übernommen wird. Oftmals ist die Produktbeschreibung ein längerer Text und nicht geeignet für die Artikelliste eines Dokumentes. Ist diese Option nicht ausgewählt bleibt das Feld 'Beschreibung' der Artikelliste leer und kann mit zusätzlichen Informationen wie 'Farbe: rot' versehen werden.</para>
             <informalfigure>
                 <mediaobject>
@@ -102,7 +102,7 @@
         </section>
         <section>
             <anchor xreflabel="" xml:id="preferences_document_previewpicture"/>
-            <title>Vorschaubild anzeigen</title>
+            <subtitle>Vorschaubild anzeigen</subtitle>
             <para>Im Dokumenteneditor wird eine zusätzliche Spalte mit dem Produktbild eingefügt.</para>
             <informalfigure>
                 <mediaobject>
@@ -118,11 +118,11 @@
             </para>
         </section>
         <!-- section> @deprecated
-        <title>Artikelposition benutzen</title>
+        <subtitle>Artikelposition benutzen</subtitle>
         <para>Die Spalte <emphasis role="bold">POS</emphasis> in der Artikelliste wird ein- oder ausgeblendet.</para>
       </section -->
         <section>
-            <title>Rabatt auf einzelne Artikel benutzen</title>
+            <subtitle>Rabatt auf einzelne Artikel benutzen</subtitle>
             <para>Die Spalte <emphasis role="bold">Rabatt</emphasis> in der Artikelliste wird ein- oder ausgeblendet.</para>
             <informalfigure>
                 <mediaobject>
@@ -136,7 +136,7 @@
             </informalfigure>
         </section>
         <section>
-            <title>Rabatt auf alle Artikel benutzen</title>
+            <subtitle>Rabatt auf alle Artikel benutzen</subtitle>
             <para>Die Zeile <emphasis role="bold">Rabatt</emphasis> auf alle Artikel wird ein- oder ausgeblendet.</para>
             <informalfigure>
                 <mediaobject>
@@ -150,21 +150,31 @@
             </informalfigure>
         </section>
         <section>
-            <title>Leistungszeitraum verwenden</title>
+            <subtitle>Leistungszeitraum verwenden</subtitle>
             <para>Hier kann festgelegt werden, ob im Dokumenteneditor ein Leistungszeitraum verwendet werden soll (in der Artikeltabelle). Dabei kann ausgewählt werden, ob nur ein Startdatum oder sowohl Start- als auch Endedatum angegeben werden können soll.</para>
+            <informalfigure>
+                <mediaobject>
+                    <imageobject role="html">
+                        <imagedata fileref="../images/preferences/document_use_vestingperiod.png" format="PNG" scalefit="1"/>
+                    </imageobject>
+                    <imageobject role="fo">
+                        <imagedata contentdepth="75%" fileref="../images/preferences/document_use_vestingperiod.png" format="PNG" scalefit="1" width="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </informalfigure>
         </section>
         <section>
-            <title>Artikelpreise im Lieferschein anzeigen</title>
+            <subtitle>Artikelpreise im Lieferschein anzeigen</subtitle>
             <para>Im Dokumenteneditor für Lieferscheine können die Artikelpreise ein- oder ausgeblendet werden. Dies ist unabhängig davon, ob sie später gedruckt werden oder nicht.</para>
         </section>
         <section>
             <anchor xreflabel="" xml:id="preferences_document_importdeliverynote"/>
-            <title>Lieferscheinnummer beim Import hinzufügen</title>
+            <subtitle>Lieferscheinnummer beim Import hinzufügen</subtitle>
             <para>Werden alle Produkte eines Lieferscheins importiert, kann zusätzlich die Lieferscheinnummer in das Textfeld <emphasis role="bold">Bemerkung</emphasis> übernommen werden.</para>
         </section>
         <section>
             <anchor xreflabel="" xml:id="preferences_document_customer_statistics"/>
-            <title>Dialog bei Stammkunden anzeigen</title>
+            <subtitle>Dialog bei Stammkunden anzeigen</subtitle>
             <para>Ist diese Einstellung aktiv, wird beim Öffnen einer Bestellung geprüft, ob der Kunde in der Vergangenheit bereits bestellt hat. Umsatz und Anzahl der bezahlten Rechnungen werden in einem Dialog angezeigt.</para>
             <informalfigure>
                 <mediaobject>
@@ -178,7 +188,7 @@
             </informalfigure>
         </section>
         <section>
-            <title>Vergleichen:</title>
+            <subtitle>Vergleichen:</subtitle>
             <para>Legt fest, welche Dokumente beim Überprüfen eines Stammkunden verwendet werden.</para>
             <itemizedlist>
                 <listitem>
@@ -193,17 +203,17 @@
         </section>
         <section>
             <anchor xreflabel="" xml:id="preferences_document_messagefields"/>
-            <title>Anzahl der zusätzlichen Felder "Bemerkung"</title>
+            <subtitle>Anzahl der zusätzlichen Felder "Bemerkung"</subtitle>
             <para>Im Dokumenteneditor können bis zu 3 Felder für Bemerkungen eingeblendet werden.</para>
             <para>Siehe auch <link linkend="openoffice_placeholders_message">Platzhalter Feld "Bemerkung"</link>
             </para>
         </section>
        <section>
-            <title>Text in der Abschlagszahlungszeile</title>
+            <subtitle>Text in der Abschlagszahlungszeile</subtitle>
             <para>Dieser Text wird als Ersetzungstext für den Platzhalter <emphasis role="bold">&lt;DOCUMENT.DEPOSIT.DEP_TEXT&gt;</emphasis> verwendet.</para>
         </section>
        <section>
-            <title>Text der letzten Zeile der Zahlungsbedingungen</title>
+            <subtitle>Text der letzten Zeile der Zahlungsbedingungen</subtitle>
             <para>Dieser Text wird als Ersetzungstext für den Platzhalter <emphasis role="bold">&lt;DOCUMENT.DEPOSIT.FINALPMT_TEXT&gt;</emphasis> verwendet.</para>
         </section>
     </section>
@@ -211,15 +221,15 @@
         <anchor xreflabel="" xml:id="preferences_optional_items"/>
         <title>Bedarfspositionen</title>
         <section>
-            <title>Bedarfspositionen</title>
+            <subtitle>Bedarfspositionen</subtitle>
             <para>Ist diese Einstellung aktiviert, wird im Dokumenteditor eine zusätzliche Spalte "Opt." für optionale Artikel / Bedarfsposition eingeblendet. Enthält ein Dokument einen solchen Artikel, wird die Spalte auch dann angezeigt, wenn diese Einstellung deaktiviert ist.</para>
         </section>
         <section>
-            <title>Preis ersetzen</title>
+            <subtitle>Preis ersetzen</subtitle>
             <para>Der Gesamtpreis eines Artikels (Menge x Einzelpreis) kann durch einen Platzhalter wie zum Beispiel "---" ersetzt werden, um eine Bedarfsposition zusätzlich zu markieren.</para>
         </section>
         <section>
-            <title>Ersatztext für Preisangabe</title>
+            <subtitle>Ersatztext für Preisangabe</subtitle>
             <para>Dieser Text wird bei einer Bedarfsposition anstatt des Gesamtpreises eines Artikels angezeigt.
             Dabei wird sowohl der Platzhalter für Nettopreis als auch MwSt. und Bruttopreis ersetzt. Soll stattdessen der eigentliche Preis dargestellt werden, sind die Zeichen "{}" zu verwenden.</para>
             <para>Beispiel:
@@ -230,7 +240,7 @@
             </para>
         </section>
         <section>
-            <title>Text Bedarfsposition</title>
+            <subtitle>Text Bedarfsposition</subtitle>
             <para>Der Platzhalter <emphasis role="bold">ITEM.OPTIONAL.TEXT</emphasis> wird bei einer Bedarfsposition durch diesen Text ersetzt.</para>
             <para>Siehe <link linkend="placeholder_itemtable_optional_text">Platzhalter ITEM.OPTIONAL.TEXT</link>
             </para>
@@ -250,20 +260,20 @@
 			</mediaobject>
 		</informalfigure>
         <section>
-            <title>Zahldatum anstatt Rechnungsdatum verwenden</title>
+            <subtitle>Zahldatum anstatt Rechnungsdatum verwenden</subtitle>
             <para>Beim Export der Umsätze und Ausgaben in einer Tabelle wird ein Zeitabschnitt, zum Beispiel ein Monat oder ein Quartal angegeben. Es werden nur diejenigen Rechnungen und Belege exportiert, deren Datum in diesem Zeitabschnitt liegen. Hier kann festgelegt werden, ob dabei das Zahldatum oder das Rechnungsdatum berücksichtigt wird.</para>
             <para>Bei einer Istversteuerung wird hier üblicherweise das Zahldatum gewählt. Bei einer Sollversteuerung das Rechnungsdatum.</para>
             <para>Siehe auch <link linkend="importexport_export_expenditure_vouchers">Export Liste Ausgaben</link> und <link linkend="importexport_export_sales">Export Liste Umsätze</link>
             </para>
         </section>
         <section>
-            <title>Datenaustausch-Verzeichnis für QRK Kasse</title>
+            <subtitle>Datenaustausch-Verzeichnis für QRK Kasse</subtitle>
             <para>Damit legt man das Datenaustausch-Verzeichnis für das Opensource-Programm QRK Kasse fest. Dieses Programm ist separat zu installieren. Wurde das Verzeichnis festgelegt, kann man mit Hilfe des Buttons "QRK Kasse" in der Toolbar ein Rechnungss-Dokument an das Kassenprogramm übergeben. Dort wird die Rechnung dann als Kassenbon weiterverarbeitet.</para>
             <para>Siehe auch <link linkend="preferences_toolbars">Einstellungen Werkzeugleiste</link>
             </para>
         </section>
         <section>
-            <title>aktiviere CSV-Export für DHL</title>
+            <subtitle>aktiviere CSV-Export für DHL</subtitle>
             <para>Aktiviert die Export-Funktion für den CSV-Export einer Adresse aus dem Dokumenteneditor.</para>
             <para>Siehe auch <link linkend="editor_editor_document_address">Adresse (Dokumenteneditor)</link>
             </para>
@@ -273,7 +283,7 @@
         <anchor xreflabel="" xml:id="preferences_yourcompany"/>
         <title>Firmendaten</title>
         <section>
-            <title>Adresse und zusätzliche Daten Ihrer Firma</title>
+            <subtitle>Adresse und zusätzliche Daten Ihrer Firma</subtitle>
             <para>Die Adresse wird benutzt, um beispielsweise beim Exportieren der Umsätze in einer Tabelle diese mit den Firmendaten zu füllen oder auch zum Ausfüllen der Formulardaten des Paketdienstes.</para>
             <informalfigure>
                 <mediaobject>
@@ -304,26 +314,26 @@
         </informalfigure>
         <section>
             <anchor xreflabel="" xml:id="preferences_help_search"/>
-            <title>Öffnen der Suche für die Hilfe</title>
+            <subtitle>Öffnen der Suche für die Hilfe</subtitle>
             <para>Legt fest, ob bei Hilfe/Suchen ein Fenster innerhalb Fakturama oder ein extra Fenster geöffnet wird.</para>
         </section>
         <section>
             <anchor xreflabel="" xml:id="preferences_help_content"/>
-            <title>Hilfeinhalte öffnen</title>
+            <subtitle>Hilfeinhalte öffnen</subtitle>
             <para>Legt fest, ob bei Hilfe/Handbuch ein extra Fenster oder der Webbrowser geöffnet wird.</para>
         </section>
         <section>
-            <title>Kontexthilfe für Fenster</title>
-            <para>Legt fest, ob die Kontexthilfe (STRG+F1) bei einem Fenster in einem Fakturama-Fenster oder in einem extra Popup-Fenster angezeigt wird.</para>
+            <subtitle>Kontexthilfe für Fenster</subtitle>
+            <para>Legt fest, ob die Kontexthilfe (<keycombo><keycap>STRG</keycap><keycap>F1</keycap></keycombo>) bei einem Fenster in einem Fakturama-Fenster oder in einem extra Popup-Fenster angezeigt wird.</para>
         </section>
         <section>
-            <title>Kontexthilfe für Dialog</title>
-            <para>Legt fest, ob die Kontexthilfe (STRG+F1) bei einem Dialog im erweiterten Dialog oder in einem extra Popup-Fenster angezeigt wird.</para>
+            <subtitle>Kontexthilfe für Dialog</subtitle>
+            <para>Legt fest, ob die Kontexthilfe (<keycombo><keycap>STRG</keycap><keycap>F1</keycap></keycombo>) bei einem Dialog im erweiterten Dialog oder in einem extra Popup-Fenster angezeigt wird.</para>
         </section>
     </section -->
     <!-- section>
         <anchor xreflabel="" xml:id="preferences_help_content.1"/>
-        <title>Hilfe Inhalt</title>
+        <subtitle>Hilfe Inhalt</subtitle>
         <para>Es ist nicht nur möglich, das lokale Hilfesystem auf dem Rechner zu benutzen, auch kann eine Online-Hilfe eingebunden werden. Je nach Einstellung wird die lokale Hilfe oder die Online-Hilfe bevorzugt.</para>
     </section -->
     <section>
@@ -331,7 +341,7 @@
         <title>Einstellungen Kontakte</title>
         <para>Legt das Erscheinungsbild des Kontakteditors fest. Einige Felder können ausgeblendet werden, um die Übersichtlichkeit zu erhöhen.</para>
         <section>
-            <title>Lieferadresse benutzen</title>
+            <subtitle>Lieferadresse benutzen</subtitle>
             <para>Falls die Rechnungsadresse und Lieferadresse bei jedem Vorgang übereinstimmen kann das Feld 'Lieferadresse' ausgeblendet werden.</para>
             <informalfigure>
                 <mediaobject>
@@ -339,13 +349,13 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_address.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="100%" fileref="../images/preferences/../editor/editor_contact_address.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="120%" fileref="../images/preferences/../editor/editor_contact_address.png" format="PNG" scalefit="1" width="120%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
         </section>
         <section>
-            <title>Bankkonto benutzen</title>
+            <subtitle>Bankkonto benutzen</subtitle>
             <para>Die Seite 'Bankkonto' kann eingeblendet werden, falls die Bankverbindung der Kunden hinterlegt werden soll.</para>
             <informalfigure>
                 <mediaobject>
@@ -353,13 +363,13 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="60%" fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1" width="70%"/>
+                        <imagedata contentdepth="120%" fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1" width="120%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
         </section>
         <section>
-            <title>Seite Sonstiges benutzen</title>
+            <subtitle>Seite Sonstiges benutzen</subtitle>
             <para>Die Seite 'Sonstiges' kann eingeblendet werden, falls zusätzliche Informationen hinterlegt werden sollen.</para>
             <informalfigure>
                 <mediaobject>
@@ -367,13 +377,13 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="60%" fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="120%" fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1" width="120%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
         </section>
         <section>
-            <title>Seite Notiz benutzen</title>
+            <subtitle>Seite Notiz benutzen</subtitle>
             <para>Die Seite 'Notiz' kann eingeblendet werden, falls zusätzliche Notizen hinterlegt werden sollen. Ist eine Notiz hinterlegt, wird die Seite beim Aufruf einer Adresse im Vordergrund angezeigt.</para>
             <informalfigure>
                 <mediaobject>
@@ -389,22 +399,22 @@
             </para>
         </section>       
 		<section>
-            <title>Titel benutzen</title>
+            <subtitle>Titel benutzen</subtitle>
             <para>Das Feld für den Titel eines Kontaktes kann ein- oder ausgeblendet werden.</para>
 		</section>
 		<section>
-            <title>Format des Namens</title>
+            <subtitle>Format des Namens</subtitle>
             <para>Die Reihenfolge von Vor- und Nachname kann für die Anzeige vertauscht werden.</para>
 		</section>
 		<section>
-            <title>Firmenfeld benutzen</title>
+            <subtitle>Firmenfeld benutzen</subtitle>
             <para>Das Feld für die Firma kann ein- oder ausgeblendet werden.</para>
 		</section>
 		<section>
-            <title>Länderfeld benutzen</title>
+            <subtitle>Länderfeld benutzen</subtitle>
             <para>Das Feld für das Land eines Kontaktes kann ein- oder ausgeblendet werden. Zusätzlich kann unter dem Punkt <link linkend="preferences_contactformat">Format des Adressfeldes</link> festgelegt werden, welche Länder bei der Ausgabe nicht mit aufgeführt werden sollen.</para>
 		</section>
-		<sect2><title>Ausgleichsteuer verwenden</title>
+		<sect2><subtitle>Ausgleichsteuer verwenden</subtitle>
 		<para>Aktiviert die Verwendung der Ausgleichsteuer. Dazu muss gleichzeitig auch der Tab "Sonstiges" aktiv sein, da die Einstellung im Kontakteditor auf dieser Seite vorgenommen wird.</para>
 		<para>Die Einstellung bewirkt, dass im <link linkend="editor_editor_vat">Editor für die Steuersätze</link> ein weiteres Eingabefeld angezeigt wird, in das man die Ausgleichsteuer eingeben kann. Des weiteren erscheint im <link linkend="editor_editor_contact">Kontakteditor</link> im Tab "Sonstiges" eine neue Checkbox, mit der man die Berechnung der Ausgleichsteuer für diesen Kontakt aktivieren kann. Im <link linkend="editor_editor_document">Dokumenteneditor</link> wird eine zusätzliche Spalte eingeblendet, aus der die prozentuale Höhe der Ausgleichsteuer ersichtlich wird. Sämtliche Preisberechnungen beinhalten in diesem Fall die zusätzliche Steuer, wenn der Rechnungsempfänger entsprechend gekennzeichnet wurde.</para>
             <informalfigure>
@@ -463,7 +473,7 @@
         </para>
         <section>
             <anchor xreflabel="" xml:id="preferences_contactformat_greeting"/>
-            <title>Allgemeine Grußformel</title>
+            <subtitle>Allgemeine Grußformel</subtitle>
             <para>Format der Grußformel, die dann benutzt wird, wenn dem Kontakteintrag keine Anrede zugewiesen wurde.</para>
             <para>Beispiel:
             <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">{company}</emphasis></programlisting>
@@ -473,7 +483,7 @@
             </para>
         </section>
         <section>
-            <title>Grußformel Männer</title>
+            <subtitle>Grußformel Männer</subtitle>
             <para>Format der Grußformel, die dann benutzt wird, wenn es sich bei dem Kontakt um einen Mann handelt.</para>
             <para>Beispiel:
             <programlisting>Sehr geehrter Herr <emphasis role="bold">{lastname}</emphasis></programlisting>
@@ -483,7 +493,7 @@
             </para>
         </section>
         <section>
-            <title>Grußformel Frauen</title>
+            <subtitle>Grußformel Frauen</subtitle>
             <para>Format der Grußformel, die dann benutzt wird, wenn es sich bei dem Kontakt um eine Frau handelt.</para>
             <para>Beispiel:
             <programlisting>Sehr geehrte Frau <emphasis role="bold">{lastname}</emphasis></programlisting>
@@ -493,7 +503,7 @@
             </para>
         </section>
         <section>
-            <title>Grußformel Firma</title>
+            <subtitle>Grußformel Firma</subtitle>
             <para>Format der Grußformel, die dann benutzt wird, wenn es sich bei dem Kontakt um eine Firma handelt.</para>
             <para>Beispiel:
             <programlisting>Sehr geehrte Damen und Herren der Firma <emphasis role="bold">{company}</emphasis></programlisting>
@@ -571,17 +581,17 @@
                 </imageobject>
             </mediaobject>
         </informalfigure>
-        <section>
-            <title>Fortlaufende Nummerierung</title>
+        <sect2>
+            <subtitle>Fortlaufende Nummerierung</subtitle>
             <para>Als Platzhalter für die Nummer dient die Zeichensequenz: {Xnr}</para>
             <para>Das X ist durch die Anzahl der Stellen zu ersetzen. Die Zahl wird mit Nullen aufgefüllt, bis die Anzahl der Stellen erreicht ist.</para>
             <para>Beispiel:</para>
             <programlisting>RE{5nr}</programlisting>
             <para>erzeugt bei einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> eine formatierte Rechnungsnummer von:</para>
             <programlisting>RE00200</programlisting>
-        </section>
-        <section>
-            <title>Nummerierung mit Datum und fortlaufender Nummerierung</title>
+        </sect2>
+        <sect2>
+            <subtitle>Nummerierung mit Datum und fortlaufender Nummerierung</subtitle>
             <para>Für das Datum sind folgende Platzhalter vorgesehen:</para>
             <itemizedlist>
                 <listitem>
@@ -601,9 +611,9 @@
             <programlisting>RE{YYYY}-{MM}-{DD}-{5nr}</programlisting>
             <para>erzeugt bei einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> eine formatierte Rechnungsnummer von:</para>
             <programlisting>RE2011-04-09-00200</programlisting>
-        </section>
-        <section>
-            <title>Nummerierung mit Datum und neu beginnender Nummerierung</title>
+        </sect2>
+        <sect2>
+            <subtitle>Nummerierung mit Datum und neu beginnender Nummerierung</subtitle>
             <para>Soll die Dokumentennummer täglich / monatlich / jährlich bei 1 beginnen, so sind die Platzhalter für das Datum in Kleinbuchstaben zu setzen:</para>
             <itemizedlist>
                 <listitem>
@@ -623,7 +633,7 @@
             <programlisting>RE{yyyy}-{mm}-{5nr}</programlisting>
             <para>erzeugt trotz einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> am 31.03.2011 eine formatierte Rechnungsnummer am Beginn des 01.04.2011 von:</para>
             <programlisting>RE2011-04-00001</programlisting>
-        </section>
+        </sect2>
         <section>
             <title>Verwendung</title>
             <para>Für folgende Daten kann das Format vorgegeben werden:</para>
@@ -669,17 +679,17 @@
        <title>OpenOffice.org / LibreOffice-Einstellungen</title>
         <para>Fakturama benutzt OpenOffice / LibreOffice, um Dokumente und Tabellen zu exportieren.</para>
         <section>
-            <title>OpenOffice-org Pfad/App</title>
+            <subtitle>OpenOffice-org Pfad/App</subtitle>
             <para>Je nach Betriebssystem wird hier der Ordner ausgewählt, in dem sich die OpenOffice / LibreOffice Installation oder die OpenOffice App befindet. In Klammern steht der Standard-Pfad. Wurde es an einer anderen Stelle installiert, ist diese auszuwählen.</para>
             <para>Standardpfad für Windows-Betriebssysteme</para>
-            <programlisting>C:\Program Files\OpenOffice.org 6</programlisting>
+            <programlisting>C:\Programme\LibreOffice 7</programlisting>
             <para>Standardpfad für Linux-Betriebssysteme</para>
-            <programlisting>/usr/lib/openoffice</programlisting>
+            <programlisting>/usr/lib/libreoffice</programlisting>
             <para>Standardapp für MacOS-Betriebssysteme</para>
-            <programlisting>/Applications/OpenOffice.org.app</programlisting>
+            <programlisting>/Applications/LibreOffice.app</programlisting>
         </section>
         <section>
-            <title>Dokument als ODT und PDF exportieren</title>
+            <subtitle>Dokument als ODT und PDF exportieren</subtitle>
             <para>Beim Exportieren/Drucken eines Dokumentes wird dieses automatisch im Ordner <emphasis role="bold">Dokumente</emphasis> im Arbeitsverzeichnis gespeichert. Entweder als OpenOffice.org/LibreOffice-ODT-Dokument, als PDF oder beides.</para>
             <!-- informalfigure>
                 <mediaobject>
@@ -704,9 +714,9 @@
         </section>
         <section>
                 <anchor xreflabel="" xml:id="preferences_office_path"/>
-            <title>Format und Pfad der Dateien</title>
+            <subtitle>Format und Pfad der Dateien</subtitle>
             <para>Legt den Pfad der gedruckten und gespeicherten Office und PDF Dokumente fest. Hier können auch absolute Pfadangaben eingetragen werden. Ansonsten sind die Pfade relativ zum Arbeitsverzeichnis.</para>
-            <para>Über das Hauptmenü Extras -> <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
+            <para>Über das Hauptmenü Extras -&gt; <emphasis role="bold">Dokumente neu organisieren</emphasis> ist es möglich, bereits gespeicherte Dokumente nach den neuen Vorgaben zu verschieben und umzubenennen.</para>
             <para>Beispiel:
             <programlisting>ODT2/{doctype}/{yyyy}/{mm}/{docname}_{address}.odt</programlisting>
             Folgende Platzhalter können benutzt werden:</para>
@@ -786,7 +796,7 @@
 			<para>Mit dem Schalter <emphasis role="bold">PDF nach Druck anzeigen</emphasis> kann man sich das erstellte PDF-Dokument direkt nach dem Erstellen anzeigen lassen.</para>
         </section>
         <!-- section> @deprecated
-            <title>OpenOffice in eigenem Thread starten</title>
+            <subtitle>OpenOffice in eigenem Thread starten</subtitle>
             <para>Wird diese Option aktiviert, so wird beim Drucken eines Dokumentes die Anwendung OpenOffice.org Writer in einem eigenen Thread gestartet. Dies ermöglicht bei einigen Windows Betriebssystemen einen Start von OpenOffice.org.</para>
             <para>
                 <emphasis role="italic">Hinweis:</emphasis> Für die LibreOffice-Versionen ab 4 ist ein neues Plugin erforderlich, das die Fakturama-Version 1.6 bereits beinhaltet. Möchte man eine ältere Version von LibreOffice bzw. auch eine Openoffice 3-Version nutzen muß man das NOA-Plugin entsprechend den Hinweisen auf der Download-Seite ersetzen.</para>
@@ -799,7 +809,7 @@
         <title>Produkteinstellungen</title>
         <para>Legt das Erscheinungsbild des Produkteditors fest. Einige Felder können ausgeblendet werden, um die Übersichtlichkeit zu erhöhen.</para>
         <section>
-            <title>Artikelnummer benutzen</title>
+            <subtitle>Artikelnummer benutzen</subtitle>
             <para>Falls keine Artikelnummern vergeben werden und die Produkte nur über den Namen identifiziert werden kann das Feld 'Artikelnummer' ausgeblendet werden.</para>
             <informalfigure>
                 <mediaobject>
@@ -813,12 +823,12 @@
             </informalfigure>
         </section>
         <section>
-            <title>Mengeneinheiten benutzen</title>
+            <subtitle>Mengeneinheiten benutzen</subtitle>
             <para>Es wird zusätzlich ein Feld für die Mengeneinheit im Produkteditor eingeblendet. Im Dokumenteneditor erscheint eine neue Spalte für diesen Wert.</para>
             <para>Beispiel für Mengeneinheit: <emphasis role="bold">m, Stück, kg</emphasis>.</para>
         </section>
         <section>
-            <title>Beschreibung benutzen</title>
+            <subtitle>Beschreibung benutzen</subtitle>
             <para>Falls zum Produkt neben dem Namen keine weitere Beschreibung notwendig ist, kann das Feld 'Beschreibung' ausgeblendet werden.</para>
             <informalfigure>
                 <mediaobject>
@@ -833,7 +843,7 @@
         </section>
         <section>
                 <anchor xreflabel="" xml:id="preferences_product_netgross"/>
-            <title>Preise als Netto und Brutto eingeben</title>
+            <subtitle>Preise als Netto und Brutto eingeben</subtitle>
             <para>Es ist möglich, den Preis sowohl als Netto- als auch als Bruttowert darstellen zu lassen.</para>
             <informalfigure>
                 <mediaobject>
@@ -847,7 +857,7 @@
             </informalfigure>
         </section>
         <section>
-            <title>Staffelpreise benutzen</title>
+            <subtitle>Staffelpreise benutzen</subtitle>
             <para>Hier kann angegeben werden, ob und wie viele Preisstaffelungen benutzt werden sollen.</para>
             <informalfigure>
                 <mediaobject>
@@ -861,7 +871,7 @@
             </informalfigure>
         </section>
         <section>
-            <title>MwSt. auswählbar und Gewicht benutzen</title>
+            <subtitle>MwSt. auswählbar und Gewicht benutzen</subtitle>
             <para>Falls die Produkte immer mit dem gleichen (Standard-) Steuersatz ausgezeichnet werden, kann das Feld 'Mehrwertsteuer' ausgeblendet werden.</para>
 			<para>Falls die Produkte ohne Gewichtsangabe angelegt werden, kann das Feld 'Gewicht' ausgeblendet werden.</para>
             <informalfigure>
@@ -876,7 +886,7 @@
             </informalfigure>
         </section>
         <section>
-            <title>Mengenangaben benutzen</title>
+            <subtitle>Mengenangaben benutzen</subtitle>
             <para>Falls die Produkte ohne Mengenangaben angelegt werden, kann das Feld 'Menge' ausgeblendet werden. Ansonsten kann 
 			in diesem Feld ein Lagerbestand angegeben werden. Dieser wird angepasst, wenn Bestellungen aus dem Webshop abgerufen werden oder
 			wenn eines der nachfolgenden Ereignisse eintritt. Alternativ kann die Lagermenge auch geändert werden, wenn ein Auftrag in den Status "versandt" gesetzt wird. 
@@ -894,7 +904,7 @@
 			</para>
         </section>
         <section>
-            <title>Produktbild benutzen</title>
+            <subtitle>Produktbild benutzen</subtitle>
             <para>Falls die Produkte ohne Produktbild angelegt werden, kann das Feld 'Produktbild' ausgeblendet werden.</para>
             <informalfigure>
                 <mediaobject>
@@ -915,7 +925,7 @@
         <title>Webbrowser / Startseite</title>
         <section>
             <anchor xreflabel="" xml:id="preferences_general_url_start"/>
-            <title>URL der Startseite</title>
+            <subtitle>URL der Startseite</subtitle>
             <para>Die Fakturama-Startseite kann frei gewählt werden.</para>
             <para>Voreingestellt ist "leer" und somit die Startseite im Ordner <emphasis role="bold">Vorlagen/Start/start.html</emphasis>.</para>
             <para>Beispiele:</para>
@@ -940,11 +950,11 @@
             <para>Siehe <link linkend="editor_editor_browser">Webbrowser</link>
             </para>
         </section>
-		<section><title>Adressleiste anzeigen</title>
+		<section><subtitle>Adressleiste anzeigen</subtitle>
 		<para>Mit diesem Schalter kann die Adressleiste im Browserfenster ein- oder ausgeblendet werden.</para>
 		</section>
         <!-- section>
-            <title>Art des Webbrowsers</title>
+            <subtitle>Art des Webbrowsers</subtitle>
             <para>Je nach Betriebssystem wird ein WebKit oder Mozilla basierter Browser benutzt, um die Startseite, die Seite des Paketdienstes oder die Fakturama Projektseite anzuzeigen. Über diese Einstellung kann man dies explizit angeben.</para>
             <para>Siehe <link xl:href="http://www.eclipse.org/swt/faq.php#browserplatforms">http://www.eclipse.org/swt/faq.php#browserplatforms</link>
             </para>
@@ -958,22 +968,22 @@
 		<para>Zur Zuordnung der unterschiedlichen Status zwischen Webshop und Fakturama siehe <link linkend="webshop_webshop_status">Zuordnung von Webshop-Status</link>.</para>
         <section>
             <anchor xreflabel="" xml:id="webshop_url"/>
-            <title>Webshop URL</title>
+            <subtitle>Webshop URL</subtitle>
             <para>Vollständige URL des Importskriptes des Webshops. Wird kein Protokoll angegeben, wird http verwendet. Ansonsten kann auch ein <emphasis role="bold">https://</emphasis> vorangestellt werden.</para>
             <para>Beispiel:</para>
             <programlisting>www.deinshop.de/admin/fakturama_connector.php</programlisting>
             <para>Die Datei <emphasis role="bold">fakturama_connector.php</emphasis> muss auf dem Webserver zur Verfügung stehen. Siehe dazu Kapitel <link linkend="install_main">Installation</link>.</para>
         </section>
         <section>
-            <title>Benutzername</title>
+            <subtitle>Benutzername</subtitle>
             <para>Benutzername (z.B. E-Mail) des Shop-Administrators.</para>
         </section>
         <section>
-            <title>Passwort</title>
+            <subtitle>Passwort</subtitle>
             <para>Passwort des Shop-Administrators.</para>
         </section>
         <section>
-            <title>Produkte in Kategorie</title>
+            <subtitle>Produkte in Kategorie</subtitle>
             <para>Kategorie, in die alle importierten Produkte aus dem Webshop abgelegt werden. Ist keine Kategorie angegeben, wird die Kategorie aus dem Webshop übernommen.</para>
             <informalfigure>
                 <mediaobject>
@@ -987,7 +997,7 @@
             </informalfigure>
         </section>
         <section>
-            <title>Kunden in Kategorie</title>
+            <subtitle>Kunden in Kategorie</subtitle>
             <para>Kategorie, in die alle importierten Kunden aus dem Webshop abgelegt werden.</para>
             <informalfigure>
                 <mediaobject>
@@ -1001,28 +1011,28 @@
             </informalfigure>
         </section>
         <section>
-            <title>Versandart in Kategorie</title>
+            <subtitle>Versandart in Kategorie</subtitle>
             <para>Kategorie, in die alle importierten Versandarten aus dem Webshop abgelegt werden.</para>
         </section>
         <section>
                 <anchor xreflabel="" xml:id="preferences_notification"/>
-            <title>Kunde bei 'in Bearbeitung' benachrichtigen</title>
+            <subtitle>Kunde bei 'in Bearbeitung' benachrichtigen</subtitle>
             <para>Wird der Status einer Bestellung auf 'in Bearbeitung' gesetzt, so kann der Kunde darüber per E-Mail benachrichtigt werden. Der Status im Webshop wird ebenfalls aktualisiert.</para>
         </section>
         <section>
-            <title>Kunde bei 'versendet' benachrichtigen</title>
+            <subtitle>Kunde bei 'versendet' benachrichtigen</subtitle>
             <para>Wird der Status einer Bestellung auf 'versendet' gesetzt, so kann der Kunde darüber per E-Mail benachrichtigt werden. Der Status im Webshop wird ebenfalls aktualisiert.</para>
         </section>
         <section>
-            <title>Maximale Anzahl importierter Produkte</title>
+            <subtitle>Maximale Anzahl importierter Produkte</subtitle>
             <para>Die maximale Anzahl der importierten Produkte während eines Importvorgangs kann begrenzt werden.</para>
         </section>
         <section>
-            <title>Nur geänderte Produkte importieren</title>
+            <subtitle>Nur geänderte Produkte importieren</subtitle>
             <para>Beim Import aus dem Webshop werden nur diejenigen Produkte eingelesen, die seit dem letzten Import verändert wurden. Zum Beispiel: Neuer Preis, geänderte Produktbeschreibung.</para>
         </section>
         <section>
-            <title>EAN als Artikelnummer importieren</title>
+            <subtitle>EAN als Artikelnummer importieren</subtitle>
             <para>Die im Webshop hinterlegte EAN wird als Artikelnummer importiert.</para>
             <para>Siehe auch <link linkend="webshop_webshop_connector">Die Schnittstelle zum Webshop</link>
             </para>
@@ -1032,15 +1042,15 @@
        <anchor xreflabel="" xml:id="preferences_webshopauthorization"/>
        <title>Webshop Autorisierung</title>
         <section>
-            <title>Webshop ist passwortgeschützt</title>
+            <subtitle>Webshop ist passwortgeschützt</subtitle>
             <para>Diese Einstellung soll nur dann aktiviert sein, wenn das Webverzeichnis, in dem das Skript der Webshop Schnittstelle liegt noch zusätzlich passwortgeschützt ist.</para>
         </section>
         <section>
-            <title>Benutzername</title>
+            <subtitle>Benutzername</subtitle>
             <para>Benutzername des geschützten Webverzeichnisses.</para>
         </section>
         <section>
-            <title>Passwort</title>
+            <subtitle>Passwort</subtitle>
             <para>Passwort des geschützten Webverzeichnisses.</para>
             <para>Siehe auch <link linkend="webshop_webshop_connector">Die Schnittstelle zum Webshop</link>
             </para>
@@ -1050,12 +1060,39 @@
        <anchor xreflabel="" xml:id="preferences_toolbars"/>
         <title>Einstellungen Werkzeugleiste</title>
         <section>
-            <title>Icons in der Werkzeugleiste ein/ausblenden</title>
+            <subtitle>Icons in der Werkzeugleiste ein/ausblenden</subtitle>
             <para>Alle Icons in der Werkzeugleiste können ein- oder ausgeblendet werden.</para>
             <para>Die Werkzeugleiste lässt sich so an die eigenen Bedürfnisse anpassen. Selten oder nicht benutze Icons werden ausgeblendet. Das Programm bleibt übersichtlich.</para>
         </section>
     </section>
-	<section><title>ZUGFeRD-Einstellungen</title>
-	<para>In diesem Dialog können Sie die Einstellungen für den ZUGFeRD-Export vornehmen.</para>
-	<sect2><title>Standardpfad für die ZUGFeRD-Datei</title><para>In diesem Feld legen Sie fest, wo die ZUGFeRD-Datei nach der Generierung abgelegt werden soll.</para></sect2></section>
+	<section><anchor xreflabel="" xml:id="preferences_zugferd"/>
+		<title>ZUGFeRD-Einstellungen</title>
+		<para>In diesem Dialog kann man die Einstellungen für den ZUGFeRD-Export vornehmen.<footnote><para>Der in früheren Versionen vorhandene Testschalter ist nur im Extended-Profil verfügbar, deswegen wurde er hier nicht mit aufgeführt.</para></footnote>
+		</para>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/preferences/zugferd-settings.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="100%" fileref="../images/preferences/zugferd-settings.png" format="PNG" scalefit="1" width="100%"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
+		<section>
+			<subtitle>Erzeuge ZUGFeRD-Datei</subtitle><para>Damit wird festgelegt, ob eine ZUGFeRD-Datei erzeugt werden soll.</para>
+			<important>Damit das ZUGFeRD-PDF erzeugt werden kann, ist in den Einstellungen für die Office-Integration die PDF-Erstellung zu aktivieren sowie ein gültiger Pfad anzugeben.</important>
+		<para>Siehe auch <link linkend="preferences_openoffice">OpenOffice.org / LibreOffice-Einstellungen</link>
+		</para></section>
+		<section>
+			<subtitle>ZUGFeRD-Version</subtitle><para>Über die Radiobuttons kann man die zu erstellende Version auswählen. Derzeit sind noch nicht alle Formate auswählbar. Das wird ggf. in künftigen Versionen 
+			noch vervollständigt.</para></section> 
+			<section><subtitle>Profil</subtitle><para>Aktuell ist nur das COMFORT-Profil auswählbar. Beim Umschalten zwischen den Versionen wird auch der Inhalt der Dropdown-Box aktualisiert.
+			</para></section>
+			<section><subtitle>Standardpfad für die XRechnung-Datei</subtitle><para>In diesem Feld legt man fest, wo die XRechnung-Datei (XML) nach der Generierung abgelegt werden soll. 
+			Das Feld ist nur aktiv, wenn man das XRechnung-Profil angewählt hat.
+			Hier ist die gleiche Syntax wie für die restlichen Dokumente zu verwenden (die Platzhalter können hier ebenfalls verwendet werden). Die Pfadangabe ist relativ zum aktuellen 
+			Arbeitsverzeichnis anzugeben.</para>
+		</section>
+	</section>
 </chapter>

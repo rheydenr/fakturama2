@@ -67,6 +67,7 @@ import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
@@ -143,6 +144,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new ShippingTableConfiguration());
+        natTable.addConfiguration(new ListSelectionStyleConfiguration());
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //		natTable.addConfiguration(new HeaderMenuConfiguration(n6));
         gridLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);

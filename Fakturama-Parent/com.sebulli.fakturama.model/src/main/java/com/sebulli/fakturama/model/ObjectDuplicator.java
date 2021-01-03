@@ -3,7 +3,11 @@
  */
 package com.sebulli.fakturama.model;
 
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.texo.converter.ObjectCopier;
+import org.eclipse.emf.texo.model.ModelObject;
+import org.eclipse.emf.texo.model.ModelResolver;
+import org.eclipse.emf.texo.model.ModelResolver.ModelDescriptor;
 
 /**
  * Helper class for duplicating model objects. Since not all references have to
@@ -12,6 +16,25 @@ import org.eclipse.emf.texo.converter.ObjectCopier;
  *
  */
 public class ObjectDuplicator {
+    
+    public void einTest(Document invoice) {
+        
+//        FakturamaModelPackage fakturamaModelPackage = FakturamaModelPackage.INSTANCE;
+        ModelDescriptor modelDescriptor = ModelResolver.getInstance().getModelDescriptor(invoice.getClass(), true);
+//        modelDescriptor.setModelPackage(fakturamaModelPackage);
+//        EClassifier eClassifier = fakturamaModelPackage.getEPackage().getEClassifiers().get(FakturamaModelPackage.DOCUMENT_CLASSIFIER_ID);
+//        modelDescriptor.setEClassifier(eClassifier);
+//      productAttributes = ((EClass) FakturamaModelPackage.INSTANCE.getEPackage().getEClassifiers().get(FakturamaModelPackage.PRODUCT_CLASSIFIER_ID)) //
+//      .getEAllAttributes().stream() //
+//      .filter(f -> !f.isMany()) //
+//      .sorted(Comparator.comparing(EStructuralFeature::getName))
+//      .collect(Collectors.toList());
+        
+        ModelObject<?> adapter = modelDescriptor.createAdapter(invoice);
+        EStructuralFeature eStructuralFeature = adapter.eClass().getEStructuralFeature(FakturamaModelPackage.INVOICE_CUSTOMERREF_FEATURE_ID);
+        Object feat = adapter.eGet(eStructuralFeature);
+        System.out.println(feat);
+    }
 
 	@SuppressWarnings("unchecked")
 	public <T extends Document> T duplicateDocument(T document) {

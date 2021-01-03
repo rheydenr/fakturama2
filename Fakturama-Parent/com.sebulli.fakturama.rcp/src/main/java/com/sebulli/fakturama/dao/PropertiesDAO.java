@@ -1,7 +1,10 @@
 package com.sebulli.fakturama.dao;
 
+import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
@@ -60,19 +63,20 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<UserProperty> criteria = cb.createQuery(getEntityClass());
         Root<UserProperty> root = criteria.from(UserProperty.class);
-        criteria.where(cb.equal(root.get(UserProperty_.name), name));
-        Optional<String> retval = Optional.empty();
+        criteria.where(cb.equal(root.get(UserProperty_.name), name)).orderBy(cb.desc(root.get(UserProperty_.dateAdded)));
+        TypedQuery<UserProperty> query = null;
+        UserProperty result = null;
 		try {
-			TypedQuery<UserProperty> query = getEntityManager().createQuery(criteria);
+            query = getEntityManager().createQuery(criteria);
 			query.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
-			UserProperty result = query.getSingleResult();
-			retval = Optional.ofNullable(result.getValue());
+            result = query.getSingleResult();
 		} catch (NoResultException e) {
 			// ignore, retval is an empty Optional
 		} catch (NonUniqueResultException nuex) {
-			log.error(nuex, "non-unique result found for property " + name);
+			log.warn("non-unique result found for property " + name);
+			result = query.getResultList().get(0);
 		}
-        return retval;
+        return result != null ? Optional.ofNullable(result.getValue()) : Optional.empty();
     }
 
     /**
@@ -100,5 +104,39 @@ public class PropertiesDAO extends AbstractDAO<UserProperty> {
         catch (FakturamaStoringException e) {
             getLog().error(e);
         }
+    }
+
+    /**
+     * Find all stored mappings for a certain section.
+     * 
+     * @param qualifier which section should be used (product, contact etc)
+     * @return List of valid mappings
+     */
+    public List<UserProperty> findMappingSpecs(String qualifier) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<UserProperty> criteria = cb.createQuery(getEntityClass());
+        Root<UserProperty> root = criteria.from(UserProperty.class);
+        criteria.where(cb.equal(root.get(UserProperty_.qualifier), qualifier));
+        List<UserProperty> result = null;
+        try {
+            TypedQuery<UserProperty> query = getEntityManager().createQuery(criteria);
+            query.setHint(QueryHints.CACHE_STORE_MODE, "REFRESH");
+            result = query.getResultList();
+        } catch (NoResultException e) {
+            // ignore
+        }
+        return result;
+    }
+    
+    public boolean delete(UserProperty prop) {
+        if (prop != null) {
+            EntityManager entityManager = getEntityManager();
+            EntityTransaction trx = entityManager.getTransaction();
+            trx.begin();
+            prop = entityManager.merge(prop);
+            getEntityManager().remove(prop);
+            trx.commit();
+        }
+        return true;
     }
 }

@@ -3,19 +3,23 @@
 # by Andy Maloney
 # http://asmaloney.com/2013/07/howto/packaging-a-mac-os-x-application-using-a-dmg/
 
+echo "*****************************************************"
+echo "DEPRECATED, PLEASE USE create_installer.sh INSTEAD!!!"
+echo "*****************************************************"
+exit 1
+
 # make sure we are in the correct dir when we double-click a .command file
 dir=${0%/*}
 if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-VERSION=2.1.0e
+VERSION=2.1.1
 # prepare the correct directory structure
 tar -xzf ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-macosx.cocoa.x86_64.tar.gz
 
 # set up your app name, version number, and background image file name
 APP_NAME="Fakturama2"
-
 
 DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
 # cp ../${DMG_BACKGROUND_IMG} .
@@ -25,7 +29,7 @@ APP_EXE="${APP_NAME}.app/Contents/MacOS/Fakturama"
 
 VOL_NAME="Installer_Fakturama_macos_x64_${VERSION}"   # volume name will be "Installer_Fakturama_macos_x64_2.0.0”
 DMG_TMP="${VOL_NAME}-temp.dmg"
-DMG_FINAL="${VOL_NAME}.dmg" # final DMG name will be "Installer_Fakturama_macos_x64_2.0.0.dmg"
+DMG_FINAL="${VOL_NAME}.dmg" # final DMG name will be "Installer_Fakturama_macos_x64_2.1.1.dmg"
 STAGING_DIR="./Install"             # we copy all our stuff into this dir
 
 # Check the background image DPI and convert it if it isn't 72x72
@@ -52,9 +56,10 @@ mkdir -p "${STAGING_DIR}"
 
 echo "staging dir created: ${STAGING_DIR}"
 
-
 cp -rpf "${APP_NAME}.app" "${STAGING_DIR}"
 # ... cp anything else you want in the DMG - documentation, etc.
+
+# cp DS_Store ${STAGING_DIR}/.DS_Store
 
 pushd "${STAGING_DIR}"
 
@@ -70,6 +75,9 @@ if hash upx 2>/dev/null; then
 fi
 
 # ... perform any other stripping/compressing of libs and executables
+
+echo "sign the app..."
+codesign -f -v -s "Developer ID" ${APP_NAME}.app 
 
 popd
 
@@ -115,7 +123,7 @@ echo '
            set current view of container window to icon view
            set toolbar visible of container window to false
            set statusbar visible of container window to false
-           set the bounds of container window to {400, 100, 920, 440}
+           set the bounds of container window to {400, 100, 940, 560}
            set viewOptions to the icon view options of container window
            set arrangement of viewOptions to not arranged
            set icon size of viewOptions to 72
@@ -150,3 +158,4 @@ mv ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products
 mv "${DMG_FINAL}" ../install
 zip -m -o -v -j ../install/Installer_Fakturama_windows_x64_${VERSION}.zip ../install/Installer_Fakturama_windows-x64_${VERSION}.exe
 exit
+

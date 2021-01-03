@@ -256,7 +256,7 @@ public class BrowserEditor {
 
 			// URL field
 			urlText = new Text(urlComposite, SWT.BORDER);
-			urlText.setText("http://");
+			urlText.setText(url.toString());
 			GridDataFactory.fillDefaults().grab(true, false).applyTo(urlText);
 			urlText.addKeyListener(new KeyAdapter() {
 

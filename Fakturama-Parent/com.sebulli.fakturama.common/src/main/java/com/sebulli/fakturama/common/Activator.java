@@ -16,7 +16,8 @@ package com.sebulli.fakturama.common;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -26,11 +27,11 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
-import org.osgi.service.prefs.Preferences;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+import com.opcoach.e4.preferences.IPreferenceStoreProvider;
 import com.sebulli.fakturama.log.LogbackAdapter;
 
 /**
@@ -52,7 +53,7 @@ public class Activator implements BundleActivator {
     /** The shared instance */
     private static BundleContext context;
     
-    private static Preferences preferences;
+    private static IPreferenceStore preferenceStore;
 
     private LogListener logAdapter;
     private LinkedList<LogReaderService> logReaders = new LinkedList<LogReaderService>();
@@ -116,8 +117,10 @@ public class Activator implements BundleActivator {
 		}
 		
 		// get Preferences
-		ServiceReference<IPreferencesService> servRef = context.getServiceReference(IPreferencesService.class);
-		preferences = context.getService(servRef).getRootNode().node("/instance/com.sebulli.fakturama.rcp");
+		ServiceReference<IPreferenceStoreProvider> serviceReference = context.getServiceReference(IPreferenceStoreProvider.class);
+		preferenceStore = context.getService(serviceReference).getPreferenceStore();
+		EclipseContextFactory.getServiceContext(context).set(IPreferenceStore.class, preferenceStore);
+		
 		// don't close the tracker, else the logger won't work!
 		//		logReaderTracker.close();
 	}
@@ -125,8 +128,18 @@ public class Activator implements BundleActivator {
     /**
      * @return the preferences
      */
-    public static Preferences getPreferences() {
-        return preferences;
+    public static IPreferenceStore getPreferenceStore() {
+        
+        // without preferences nothing makes sense...
+        if(preferenceStore == null) {
+            preferenceStore = EclipseContextFactory.getServiceContext(getContext()).get(IPreferenceStore.class);
+            if(preferenceStore == null) {
+                System.err.println("no preference store available, Activator for common package can't be initialized!");
+                return null;
+            }
+        }
+
+        return preferenceStore;
     }
 
     /**

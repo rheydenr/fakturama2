@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -97,6 +98,7 @@ import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
 import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
@@ -292,6 +294,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         natTable.setConfigRegistry(configRegistry);
         natTable.addConfiguration(new NoHeaderRowOnlySelectionBindings());
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+        natTable.addConfiguration(new ListSelectionStyleConfiguration());
         natTable.addConfiguration(new DocumentTableConfiguration());
 
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
@@ -429,6 +432,10 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     	} else {
     		documentListData = GlazedLists.eventList(documentsDAO.findAll(true));
     	}
+    	
+//    	
+//    	ObjectDuplicator objectDuplicator = new ObjectDuplicator();
+//    	objectDuplicator.einTest(documentListData.get(0));
 
         // get the visible properties to show in list view
         String[] propertyNames = documentsDAO.getVisibleProperties();
@@ -493,6 +500,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         return gridLayer;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected TopicTreeViewer<DummyStringCategory> createCategoryTreeViewer(Composite top) {
         Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_DELIVERIES_CLICKHANDLER);
@@ -501,7 +509,6 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         } else {
 	        context.set("useDocumentAndContactFilter", true);
 	        context.set("useAll", false);
-	        //    	topicTreeViewer = (TopicTreeViewer<DummyStringCategory>)ContextInjectionFactory.make(TopicTreeViewer.class, context);
 	        try {
 				categories = GlazedLists.eventList(documentsDAO.getCategoryStrings());
 
@@ -513,7 +520,15 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 				topicTreeViewer.setAddressManager(addressManager);
 				topicTreeViewer.disableSorting();
 				topicTreeViewer.setInput(categories);
-				topicTreeViewer.setLabelProvider(new TreeCategoryLabelProvider());
+				
+				Function<DummyStringCategory, String> categorySummarizer = cat -> {
+				    java.util.Optional<Double> sum = documentsDAO.sumAllDocumentsWithinCategory(cat);
+				    return sum.isPresent() ? numberFormatterService.doubleToFormattedPrice(sum.get()) : "--";
+				};
+				
+				TreeCategoryLabelProvider treeTableLabelProvider = new TreeCategoryLabelProvider(categorySummarizer);
+				ContextInjectionFactory.inject(treeTableLabelProvider, context);
+                topicTreeViewer.setLabelProvider(treeTableLabelProvider);
 			} catch (PersistenceException e) {
 				// if no database is created an exception occurs at this point
 				log.warn("Category tree couldn't be created, perhaps because of initially startup?");
@@ -533,16 +548,14 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     @Inject
     @Optional
     public void handleRefreshEvent(@UIEventTopic(DocumentEditor.EDITOR_ID) String message) {
-        if (StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
-            sync.asyncExec(() -> {
-                top.setRedraw(false);
-                // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
-                GlazedLists.replaceAll(documentListData, GlazedLists.eventList(documentsDAO.findAll(true)), false);
-                treeFilteredIssues.setMatcher(currentFilter);
-                GlazedLists.replaceAll(categories, GlazedLists.eventList(documentsDAO.getCategoryStrings()), false);
-                top.setRedraw(true);
-            });
-        }
+    	if(StringUtils.equals(message, Editor.UPDATE_EVENT) && !top.isDisposed()) {
+	        sync.syncExec(() -> top.setRedraw(false));
+	        // As the eventlist has a GlazedListsEventLayer this layer reacts on the change
+	        GlazedLists.replaceAll(documentListData, GlazedLists.eventList(documentsDAO.findAll(true)), false);
+	        treeFilteredIssues.setMatcher(currentFilter);
+	        GlazedLists.replaceAll(categories, GlazedLists.eventList(documentsDAO.getCategoryStrings()), false);
+	        sync.syncExec(() -> top.setRedraw(true));
+    	}
     }
 
     /**
@@ -664,7 +677,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 //          filterLabel.setText(contactUtil.getNameWithCompany(contact));
 //          filterLabel.pack(true);
       }
-//
+
         // Reset transaction and category filter, set contact filter
       
 //      contentProvider.setContactFilter(filter);

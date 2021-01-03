@@ -84,6 +84,8 @@ public final class CommandIds {
      */
     public static final String LISTTOOLBAR_ADD_VAT      = "com.sebulli.fakturama.listview.vat.add";
     public static final String LISTTOOLBAR_ADD_TEXT     = "com.sebulli.fakturama.listview.text.add";
+    public static final String LISTTOOLBAR_ADD_CREDITOR = "com.sebulli.fakturama.listview.creditor.add";
+    public static final String LISTTOOLBAR_ADD_DEBTOR = "com.sebulli.fakturama.listview.debtor.add";
     public static final String LISTTOOLBAR_ADD_CONTACT  = "com.sebulli.fakturama.listview.contact.add";
     public static final String LISTTOOLBAR_ADD_SHIPPING = "com.sebulli.fakturama.listview.shipping.add";
     public static final String LISTTOOLBAR_ADD_PAYMENT  = "com.sebulli.fakturama.listview.payment.add";
@@ -124,6 +126,7 @@ public final class CommandIds {
 	public static final String CMD_REORGANIZE_DOCUMENTS = "com.sebulli.fakturama.command.reorganizeDocuments";
 	public static final String CMD_QRK_EXPORT = "org.fakturama.command.export.qrk";
 	public static final String CMD_EXPORT_CSV4DP =  "org.fakturama.command.exportcsv4dp";
+    public static final String CMD_OBJECT_DUPLICATE = "com.sebulli.fakturama.editor.duplicate";
 	
 	
 }

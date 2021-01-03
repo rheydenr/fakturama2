@@ -6,8 +6,6 @@ package com.sebulli.fakturama.i18n;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-//import java.util.Locale;
-//import java.util.Locale.Builder;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -16,8 +14,6 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +34,8 @@ public class LocaleUtil implements ILocaleService {
     private ULocale defaultLocale = ULocale.getDefault();
     private SortedMap<String, String> localeCountryMap;
     private final Map<String, ULocale> localeLookUp = new HashMap<>();
-    
+    private ULocale currencyLocale = null;
+
     /**
      * Returns a reference to the {@link LocaleUtil}. Used for initialization with a language code.
      * @param lang the language code to be used. If <code>null</code>, then "en_US" is used.
@@ -123,7 +120,10 @@ public class LocaleUtil implements ILocaleService {
     @Override
 	public String findCodeByDisplayCountry(String country, String lang) {
     	// TODO use lang, but without interfering with other methods!
-        Optional<ULocale> retval = findLocaleByDisplayCountry(country);
+//        Optional<ULocale> retval = findLocaleByDisplayCountry(country);
+        
+        Optional<ULocale> retval = countryLocaleMap.values().stream().filter(e -> country.equalsIgnoreCase(e.getDisplayCountry(getDefaultLocale()))
+                || country.equalsIgnoreCase(e.getDisplayCountry(ULocale.ENGLISH))).findAny();
         // hint: countryLocaleString.getDisplayCountry(defaultLocale) gives
         // the country as localized string
         return retval.isPresent() ? retval.get().getCountry() : null;
@@ -182,11 +182,12 @@ public class LocaleUtil implements ILocaleService {
 	 * @see com.sebulli.fakturama.i18n.ILocaleService#getCurrencyLocale()
 	 */
     @Override
-	public ULocale getCurrencyLocale() {
-        
-         ULocale currencyLocale = null;
-//        if(currencyLocale == null) {
-            String localeString = Activator.getPreferences().get(Constants.PREFERENCE_CURRENCY_LOCALE, ULocale.US.getDisplayCountry());
+    public ULocale getCurrencyLocale() {
+        if (currencyLocale == null) {
+            String localeString = Activator.getPreferenceStore().getString(Constants.PREFERENCE_CURRENCY_LOCALE);
+            if (localeString.isEmpty()) {
+                localeString = ULocale.US.getDisplayCountry();
+            }
             Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
             Matcher matcher = pattern.matcher(localeString);
             if (matcher.matches() && matcher.groupCount() > 1) {
@@ -196,10 +197,15 @@ public class LocaleUtil implements ILocaleService {
             } else {
                 currencyLocale = getDefaultLocale();
             }
-//        }
+        }
         return currencyLocale;
     }
-    
+
+    @Override
+    public void refresh() {
+        currencyLocale = null;
+    }
+
     /**
      * Main method. For tests only.
      * 

@@ -306,7 +306,7 @@ public class SalesExporter extends OOCalcExporter {
 				} else {
 					col++;
 				}
-			} else if(addressid.getManualAddress() != null) {
+			} else if(addressid != null && addressid.getManualAddress() != null) {
 				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getManualAddress(), ContactUtil.KEY_FIRSTNAME));
 				setCellText(row, col++, contactUtil.getDataFromAddressField(addressid.getManualAddress(), ContactUtil.KEY_LASTNAME));
 				col += 3;
@@ -418,7 +418,7 @@ public class SalesExporter extends OOCalcExporter {
 			setBorder(headLine, col, Color.BLACK, false, false, true, false);
 			setBorder(sumrow, col, Color.BLACK, true, false, false, false);
 		}
-		
+		spreadsheet.getColumnList().forEach(c -> c.setUseOptimalWidth(true));
 		save();
 
 		// True = Export was successful

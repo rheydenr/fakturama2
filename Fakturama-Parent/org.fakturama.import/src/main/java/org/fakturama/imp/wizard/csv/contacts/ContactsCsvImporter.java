@@ -40,6 +40,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.ICSVParser;
+import com.opencsv.exceptions.CsvValidationException;
 import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
@@ -230,7 +231,7 @@ public class ContactsCsvImporter {
 					
 					// TODO make BillingType changeable
 					address.getContactTypes().add(ContactType.BILLING);
-					contact.getAddresses().add(address);
+//					contact.getAddresses().add(address);
 					/*
 					 * Customer number, first name, name and ZIP are compared
 					 */
@@ -248,7 +249,7 @@ public class ContactsCsvImporter {
 					}
 					
 					String categoryString = StringUtils.stripStart(prop.getProperty("category"), "/");
-					if (categoryString != null) {
+					if (StringUtils.isNotEmpty(categoryString)) {
 						ContactCategory category = contactCategoriesDAO.getCategory(prop.getProperty("category"), true);
 						testContact.setCategories(category);
 					}
@@ -260,11 +261,12 @@ public class ContactsCsvImporter {
 					// if previous address is given use it
 					Address tmpAddress = addressManager.getAddressFromContact(testContact, ContactType.BILLING).orElse(null);
 					if(tmpAddress != null) {
-						address = tmpAddress;
+    					address = createOrUpdateAddressFromProperties(prop, tmpAddress, "");
+					} else { // if it's a completely new address
+    					address = createOrUpdateAddressFromProperties(prop, address, "");
+    					testContact.getAddresses().add(address);
+    					address.setContact(testContact);
 					}
-					address = createAddressFromProperties(prop, address, "");
-					testContact.getAddresses().add(address);
-					address.setContact(testContact);
 					
 					if(isDeliveryAddressAvailable(prop)) {
 						Address deliveryAddress = addressManager.getAddressFromContact(testContact, ContactType.DELIVERY).orElse(null);
@@ -272,21 +274,27 @@ public class ContactsCsvImporter {
 							// recreation of delivery address, if any
 							deliveryAddress = modelFactory.createAddress();
 						}
-						deliveryAddress = createAddressFromProperties(prop, deliveryAddress, DELIVERY_FIELD_PREFIX);
+						deliveryAddress = createOrUpdateAddressFromProperties(prop, deliveryAddress, DELIVERY_FIELD_PREFIX);
 						deliveryAddress.getContactTypes().add(ContactType.DELIVERY);
-						testContact.getAddresses().add(deliveryAddress);
-						deliveryAddress.setContact(testContact);
+						
+						// only if it's a new address
+						if(deliveryAddress.getId() == 0) {
+    						testContact.getAddresses().add(deliveryAddress);
+    						deliveryAddress.setContact(testContact);
+						}
 					}
 
-					BankAccount account = testContact.getBankAccount() != null ? testContact.getBankAccount() : modelFactory.createBankAccount();
-					account.setValidFrom(Calendar.getInstance().getTime());
-					account.setAccountHolder(prop.getProperty("account_holder"));
-					account.setName(prop.getProperty("account"));
-//					testContact.setStringValueByKey("bank_code", prop.getProperty("bank_code"));
-					account.setBankName(prop.getProperty("bank_name"));
-					account.setIban(prop.getProperty("iban"));
-					account.setBic(prop.getProperty("bic"));
-					testContact.setBankAccount(account);
+					if(StringUtils.isNotBlank(prop.getProperty("iban"))) {
+    					BankAccount account = testContact.getBankAccount() != null ? testContact.getBankAccount() : modelFactory.createBankAccount();
+    					account.setValidFrom(Calendar.getInstance().getTime());
+    					account.setAccountHolder(prop.getProperty("account_holder"));
+    					account.setName(prop.getProperty("account"));
+    //					testContact.setStringValueByKey("bank_code", prop.getProperty("bank_code"));
+    					account.setBankName(prop.getProperty("bank_name"));
+    					account.setIban(prop.getProperty("iban"));
+    					account.setBic(prop.getProperty("bic"));
+    					testContact.setBankAccount(account);
+					}
 					
 					testContact.setNote(prop.getProperty("note"));
 					
@@ -351,7 +359,10 @@ public class ContactsCsvImporter {
 		}
 		catch (FakturamaStoringException e) {
 			log.error("can't save or update imported contact");
-		}
+		} catch (CsvValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 		evtBroker.post(classifier == FakturamaModelPackage.DEBITOR_CLASSIFIER_ID ? "Debtor" : "Creditor", "update");
 	}
 
@@ -376,7 +387,7 @@ public class ContactsCsvImporter {
 	 * @param prefix necessary e.g. for delivery addresses
 	 * @return 
 	 */
-	private Address createAddressFromProperties(Properties prop, Address address, String prefix) {
+	private Address createOrUpdateAddressFromProperties(Properties prop, Address address, String prefix) {
 		address.setValidFrom(Calendar.getInstance().getTime());
 		address.setStreet(prop.getProperty(StringUtils.join(prefix, "street")));
 		address.setZip(prop.getProperty(StringUtils.join(prefix, "zip")));

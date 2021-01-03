@@ -1,1 +1,0 @@
-fakeroot dpkg -b ./fakturama Fakturama_Linux_32Bit_2_0_0.deb

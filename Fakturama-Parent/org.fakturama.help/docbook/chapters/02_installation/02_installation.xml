@@ -6,7 +6,8 @@
 	<section>
 		<anchor xreflabel="" xml:id="install_download"/>
 		<title>Download der Software</title>
-		<para>Fakturama steht auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> zum Download zur Verfügung. Das Programm ist kostenlos, Open-Source und steht unter der Lizenz <link linkend="license_license">EPL v1.0</link>. Seit Version 2.0.5 werden nur noch 64Bit-Versionen ausgeliefert, da mit der aktuellen Eclipse-Plattform keine 32Bit-Versionen mehr erzeugt werden können.
+		<para>Fakturama steht auf der <link xl:href="https://www.fakturama.info/downloads/">Projektseite</link> zum Download zur Verfügung. Das Programm ist kostenlos, Open-Source und steht unter der Lizenz <link linkend="license_license">EPL v1.0</link>.
+		<warning>Seit Version 2.0.5 werden nur noch 64Bit-Versionen ausgeliefert, da mit der aktuellen Eclipse-Plattform keine 32Bit-Versionen mehr erzeugt werden können.</warning>
 		</para>
 		<para>Fakturama läuft unter folgenden Betriebssystemen:</para>
 		<itemizedlist>
@@ -14,7 +15,7 @@
 			<listitem>Mac OS X (ab Version 10.10 Yosemite)</listitem>
 			<listitem>Linux (64Bit)</listitem>
 		</itemizedlist>
-		<para>Zur Ausführung ist <trademark>Java</trademark> ab Version 8 notwendig (bis einschließlich Version 10). Zum Erstellen der Druckvorlagen und 
+		<para>Zur Ausführung ist <trademark>Java</trademark> ab Version 11 notwendig. Zum Erstellen der Druckvorlagen und 
 		der PDFs sind OpenOffice.org bzw. LibreOffice erforderlich. Für die Erstellung der Rechnungsdokumente im 
 		OpenOffice-Format ist kein OpenOffice/LibreOffice notwendig.</para>
 		<itemizedlist>
@@ -35,6 +36,7 @@
         <para>Sollten Sie sich für den Einsatz einer MySQL- oder MariaDB entscheiden (z. B. wegen des Mehrbenutzerzugriffes), 
         müssen Sie diese ebenfalls bereits installiert haben. Für den Betrieb von Fakturama erzeugen Sie bitte eine leere Datenbank und konfigurieren Sie zu dieser Datenbank einen Nutzer, der die Rechte zum Anlegen von Tabellen, zum Selektieren, Ändern und Löschen von Daten hat sowie Tabellen ändern darf.
         Es wird <emphasis role="bold">nicht</emphasis> empfohlen, den <computeroutput>root</computeroutput>-Benutzer für den Zugriff zu verwenden.</para>
+		<tip>Für die Einrichtung des MySQL-Zugriffes per SSL gibt es ein <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/src/master/Fakturama-Parent/org.fakturama.help/howto/mysql/ssl4mysql.md">kleines Tutorial</link> (in Englisch). In diesem wird beschrieben, wie eine sichere Verbindung mit der MySQL-Datenbank hergestellt werden kann.</tip>
 		<warning>Leider scheinen sich in den letzten Jahren MariaDB und MySQL auseinanderbewegt zu haben. Es kann also vorkommen, daß eine MariaDB nicht mit der aktuellen Fakturama-Version funktioniert. Dann kann momentan nur MySQL oder HSQLDB (Standard) verwendet werden.</warning>
 		<tip>Wenn Sie MySQL oder MariaDB verwenden, achten Sie bitte darauf, die Fakturama-Datenbank mit dem Encoding <computeroutput>utf8mb4</computeroutput> und der Collaction <computeroutput>utf8mb4_general_ci</computeroutput> anzulegen.</tip>
 		<para>Sofern Sie bereits eine frühere Version von Fakturama verwenden (bis 1.6.9), geben Sie bitte als Arbeitsverzeichnis ein neues an. Sie können die alten Daten automatisch übernehmen, wenn Sie möchten.</para>
@@ -50,7 +52,7 @@
 				<imageobject role="fo">
 					<imagedata width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 				</imageobject>
-			</inlinemediaobject> Fakturama-Installer von der <link xl:href="http://www.fakturama.info/download">Fakturama-Projektseite</link> herunter und entpacken Sie die ZIP-Datei in ein leeres Verzeichnis.</para>
+			</inlinemediaobject> Fakturama-Installer von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter und entpacken Sie die ZIP-Datei in ein leeres Verzeichnis.</para>
 		<para>Beim ersten Start von Fakturama wird ein Arbeitsverzeichnis angelegt. In diesem werden die Firmendatenbank sowie alle 
 		Dokumente und Vorlagen abgelegt. Das Arbeitsverzeichnis muss sich in einem Ordner befinden, der ohne Administratorrechte 
 		beschrieben werden darf. Beispiel:</para>
@@ -64,7 +66,7 @@
 			<anchor xreflabel="" xml:id="install_install_linux"/>
 		<title>Installation unter einem <trademark>Linux</trademark>-Betriebssystem</title>
 		<sect2>
-			<title>Für Debian- und Ubuntu-Betriebssysteme:</title>
+			<subtitle>Für Debian- und Ubuntu-Betriebssysteme:</subtitle>
 			<para>Laden Sie den 
 				<inlinemediaobject>
 					<imageobject role="html">
@@ -77,7 +79,7 @@
 			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt.</para>
 		</sect2>
 		<sect2>
-			<title>Für <trademark class="registered">RedHat</trademark>, SUSE Linux- und <trademark class="registered">Fedora</trademark>-Betriebssysteme:</title>
+			<subtitle>Für <trademark class="registered">RedHat</trademark>, SUSE Linux- und <trademark class="registered">Fedora</trademark>-Betriebssysteme:</subtitle>
 			<para>Laden Sie den <inlinemediaobject>
 					<imageobject role="html">
 						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
@@ -90,7 +92,7 @@
 			<para>Starten Sie den Fakturama Installer. Sie werden durch den Installationsprozess geführt.</para>
 		</sect2>
 		<sect2>
-			<title>Für sonstige Linux-Systeme</title>
+			<subtitle>Für sonstige Linux-Systeme</subtitle>
 			<para>Laden Sie den für Linux gebauten <inlinemediaobject>
 					<imageobject role="html">
 						<imagedata align="left" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
@@ -99,7 +101,7 @@
 						<imagedata align="left" width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="0"/>
 					</imageobject>
 				</inlinemediaobject> Installer von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter.</para>
-			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf dem System sollte OpenOffice (oder LibreOffice) und Java 8 installiert sein. Auf einigen Systemen muss auch die Bibliothek <code>libwebkitgtk</code> installiert sein (das hängt von der jeweiligen Konfiguration des Fenstermanagers ab).</para>
+			<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf dem System sollte OpenOffice (oder LibreOffice) und Java (ab Version 11) installiert sein. Auf einigen Systemen muss auch die Bibliothek <code>libwebkitgtk3</code> installiert sein (das hängt von der jeweiligen Konfiguration des Fenstermanagers ab).</para>
 			<para>Alternativ können Sie auch die gepackte Archivdatei (*.tar.gz) herunterladen und in einem beliebigen Verzeichnis entpacken. Für Arch-Linux gibt es ebenfalls ein separates <link xl:href="https://aur.archlinux.org/packages/fakturama/">Installationspaket</link>.</para>
 			<para>Beim ersten Start von Fakturama wird ein Arbeitsverzeichnis angelegt. In diesem werden die Firmendatenbank sowie alle 
 		Dokumente und Vorlagen abgelegt. Beispiel:</para>
@@ -154,14 +156,16 @@
 		<title>Erstes Starten von Fakturama</title>
 		<para>Starten Sie Fakturama.</para>
 		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch über den Dateidialog geschehen.
-		Falls Sie Fakturama von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://www.fakturama.info/migration-der-altdaten">Wiki-Artikel</link>. Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die Datenbank auswählen. Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend:
+		Falls Sie Fakturama von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://www.fakturama.info/migration-der-altdaten">Wiki-Artikel</link>. 
+		Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die Datenbank auswählen. Die zusätzlichen Eingabefelder werden über das Entfernen des Häkchens "verwende Standardeinstellungen" sichtbar.
+		Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend. Über den Button "Verbindung testen" kann die Datenbankverbindung mit den eingegebenen Zugangsdaten getestet werden.
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
-						<imagedata fileref="../images/install/first_install_with_question.png" format="PNG" scalefit="1"/>
+						<imagedata fileref="../images/install/first_install.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata contentdepth="50%" fileref="../images/install/first_install_with_question.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="50%" fileref="../images/install/first_install.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
@@ -189,16 +193,17 @@
 		<para>Fakturama benutzt zum Drucken von Dokumenten wie Rechnungen oder Lieferscheinen Vorlagen, die mit dem Programm OpenOffice bzw. LibreOffice erstellt wurden. 
 		Diese müssen auf das eigene Design angepasst und mit den Firmendaten versehen werden. Die Vorlagen befinden sich im Arbeitsverzeichnis im Unterordner Vorlagen (dort jeweils
 		in einem separaten Ordner).</para>
-		<para>Bitte beachten Sie, dass zum Erstellen der PDF-Dateien OpenOffice bzw. LibreOffice installiert sein muss. Wenn Sie Ihre Dokumente nur im OpenOffice-Format erzeugen möchten benötigen Sie dieses Programm nicht unbedingt. Für die Erstellung von ZUGFeRD-Dokumenten müssen Sie einmalig im LibreOffice einen PDF-Export eines beliebigen Dokumentes durchführen und dabei als Option PDF/A-1 einstellen.</para>
+		<para>Bitte beachten Sie, dass zum Erstellen der PDF-Dateien OpenOffice bzw. LibreOffice installiert sein muss. Wenn Sie Ihre Dokumente nur im OpenOffice-Format erzeugen möchten benötigen Sie dieses Programm nicht unbedingt. 
+		Für die Erstellung von ZUGFeRD-Dokumenten müssen Sie einmalig im LibreOffice einen PDF-Export eines beliebigen Dokumentes durchführen und dabei als Option PDF/A einstellen.</para>
 		<para>Siehe auch <link linkend="preferences_main">Einstellungen</link> und <link linkend="openoffice_templates">OpenOffice.org / LibreOffice Vorlagen</link>
 		</para>
 	</section>
 	<section>
 			<anchor xreflabel="" xml:id="install_startparameter"/>
-		<title>Zusätzliche Programmparameter beim Programmaufruf</title>
+		<subtitle>Zusätzliche Programmparameter beim Programmaufruf</subtitle>
 		<para>Sie können Fakturama mit zusätzlichen Parametern starten, um bestimmte Einstellungen zu überschreiben bzw. neu zu setzen (z. B. Sprache oder Arbeitsverzeichnis). </para>
 		<sect2>
-			<title>Arbeitsverzeichnis / Mandant - Variante A</title>
+			<subtitle>Arbeitsverzeichnis / Mandant - Variante A</subtitle>
 			<para>Startet Fakturama mit einem bestimmten Arbeitsverzeichnis. Aufruf:
 				<programlisting>--workspace <emphasis role="italic">Verzeichnispfad</emphasis>
 				</programlisting>
@@ -207,7 +212,7 @@
 			<para>Statt <computeroutput>--workspace</computeroutput> kann auch der Schalter <computeroutput>-w</computeroutput> verwendet werden.</para>
 		</sect2>
 		<sect2>
-			<title>Arbeitsverzeichnis / Mandant - Variante B</title>
+			<subtitle>Arbeitsverzeichnis / Mandant - Variante B</subtitle>
 			<para>Startet Fakturama komplett mit neuen Einstellungen. Aufruf:
 				<programlisting>-data <emphasis role="italic">Verzeichnispfad</emphasis>
 				</programlisting>
@@ -222,7 +227,7 @@
 		<note>Beim ersten Start des Programmes kann es etwas länger dauern, bis alle Initialisierungen vorgenommen wurden und die initialen Daten in die Datenbank geschrieben wurden. Dasselbe gilt auch für das erste Beenden des Programmes, da bestimmte Einstellungen gesichert werden müssen. Die nachfolgenden Programmaufrufe werden dann schneller ausgeführt. Die Zeit ist auch abhängig von der gewählten Datenbank.</note>
 		
 		<sect2>
-			<title>Sprache / Land</title>
+			<subtitle>Sprache / Land</subtitle>
 			<para>Fakturama kann mit einer bestimmten Sprach- oder Ländereinstellung gestartet werden. Aufruf:
 				<programlisting>-nl <emphasis role="italic">Sprach_LÄNDERCODE</emphasis>
 				</programlisting>
@@ -280,12 +285,13 @@
                         <emphasis role="bold">-nl tr_TR</emphasis> Türkisch
                 </listitem>
                 <listitem>
-                        <emphasis role="bold">-nl sv</emphasis> Schwedisch
+                        <emphasis role="bold">-nl sv_SE</emphasis> Schwedisch
                 </listitem>
                 <listitem>
-                        <emphasis role="bold">-nl ar -Dforce.rtl=true</emphasis> Arabisch
+                        <emphasis role="bold">-nl ar_LY -Dforce.rtl=true</emphasis> Arabisch
                 </listitem>
 			</itemizedlist>
 		</sect2>
+		<tip>Unter dem MacOS-Betriebssystem kann die Sprache auch direkt im Kontrollzentrum eingestellt werden (über "Sprache &amp; Region").</tip>
 	</section>
 </chapter>

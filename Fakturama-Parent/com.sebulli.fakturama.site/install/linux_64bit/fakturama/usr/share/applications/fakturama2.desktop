@@ -1,9 +1,10 @@
 [Desktop Entry]
+Version=2.1.1_BETA
 Name=Fakturama2
 Name[de]=Fakturama2
-Comment=Invoicing Software - http://www.fakturama.info
-Comment[de]=Programm - http://www.fakturama.info
-Exec=/usr/share/fakturama2/Fakturama
+Comment=Invoicing Software - https://www.fakturama.info
+Comment[de]=Programm - https://www.fakturama.info
+Exec=Fakturama
 Icon=fakturama2.xpm
 Terminal=false
 Type=Application

@@ -12,6 +12,7 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
@@ -123,6 +124,17 @@ public class DocumentSummaryCalculator {
         DocumentSummary retval = new DocumentSummary(currencyUnit);
         MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
 
+/*
+ * FIXME Hints for refactoring:
+ * - divide this method in separate calls (complexity is too hight)
+ * - the allowance for a single item isn't calculated => this is necessary in ZUGFeRD exporter!
+ *   (for the moment, the allowance is calculated separately there)
+ * - write some tests
+ * - try to simplify that method
+ * - see also Bug #855 (https://bugs.fakturama.info/view.php?id=855)
+ *         
+ */
+        
 		// This VAT summary contains only the VAT entries of this document,
 		// whereas the the parameter vatSummaryItems is a global VAT summary
 		// and contains entries from this document and from others.
@@ -143,13 +155,15 @@ public class DocumentSummaryCalculator {
 
 			// Add the total net value of this item to the sum of net items
 			retval.setItemsNet(retval.getItemsNet().add(price.getTotalNet()));
+			retval.setItemsNetDiscounted(retval.getItemsNetDiscounted().add(price.getTotalNetRounded()));
+			retval.setTotalDiscount(retval.getTotalDiscount().add(price.getTotalAllowance()));
 
 			// Sums the total amount of item quantities. 
 			retval.setTotalQuantity(retval.getTotalQuantity() + item.getQuantity()); 
 
 			// If noVat is set, the VAT is 0%
 			if (noVatReference != null) {
-				vatDescription = noVatReference.getDescription();
+				vatDescription = StringUtils.defaultString(noVatReference.getDescription(), noVatReference.getName());
 				vatPercent = noVatReference.getTaxValue();
 				itemVatAmount = Money.zero(getCurrencyCode());
 			}
@@ -158,7 +172,7 @@ public class DocumentSummaryCalculator {
 			retval.setTotalVat(retval.getTotalVat().add(itemVatAmount));
 
 			// Add the VAT summary item to the ... 
-			VatSummaryItem vatSummaryItem = new VatSummaryItem(vatDescription, vatPercent, price.getTotalNet(), itemVatAmount);
+			VatSummaryItem vatSummaryItem = new VatSummaryItem(StringUtils.defaultString(vatDescription, itemVat.getName()), vatPercent, price.getTotalNet(), itemVatAmount);
 			if(itemVat != null && this.useSET && itemVat.getSalesEqualizationTax() != null) {
 				vatSummaryItem.setSalesEqTaxPercent(itemVat.getSalesEqualizationTax());
 				retval.setTotalSET(retval.getTotalSET().add(vatSummaryItem.getSalesEqTax()));
@@ -179,7 +193,7 @@ public class DocumentSummaryCalculator {
 		// Gross value is the sum of net and VAT and sales equalization tax value 
 		retval.setTotalNet(retval.getItemsNet());
 		retval.setItemsGross(retval.getItemsNet().add(retval.getTotalVat()).add(retval.getTotalSET()));
-		
+
 		// round to full gross cents
 		if (netGross == DocumentSummary.ROUND_GROSS_VALUES) {
 //			retval.getItemsGross().round();
@@ -198,6 +212,7 @@ public class DocumentSummaryCalculator {
 		MonetaryAmount discountNet = itemsNet.multiply(itemsDiscount);
 		retval.setDiscountNet(discountNet);
 		retval.setDiscountGross(itemsGross.multiply(itemsDiscount));
+		retval.setTotalDiscount(retval.getTotalDiscount().add(discountNet));
 
 		final MonetaryAmount zero = Money.zero(getCurrencyCode());
 
@@ -434,7 +449,7 @@ public class DocumentSummaryCalculator {
 		} else {
 		    retval.setShippingNet(retval.getShippingNet().with(rounding));
 		    retval.setShippingGross(retval.getShippingGross().with(rounding));
-		    retval.setShippingVat(retval.getShippingGross().subtract(retval.getShippingVat()));
+		    retval.setShippingVat(retval.getShippingGross().subtract(retval.getShippingNet()));
 		}
 
 		//calculate the final payment

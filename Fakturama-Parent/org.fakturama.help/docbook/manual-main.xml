@@ -26,7 +26,7 @@
 				<surname>Fakturama Team</surname>
 			</author>
 		</authorgroup>
-		<edition>Benutzerhandbuch für Fakturama v2.1.0a</edition>
+		<edition>Benutzerhandbuch für Fakturama v2.1.1</edition>
 		<pubdate>
 			<?dbtimestamp format="d.m.Y"?>
 		</pubdate>
@@ -131,7 +131,7 @@
 				<para>Diese "Commons Deed" ist lediglich eine vereinfachte Zusammenfassung des <link xl:href="http://creativecommons.org/licenses/by-nc-nd/3.0/de/legalcode">rechtsverbindlichen Lizenzvertrages</link> in allgemeinverständlicher Sprache.</para>
 		</legalnotice>
 
-		<releaseinfo>Version 2.1.0a</releaseinfo>
+		<releaseinfo>Version 2.1.1</releaseinfo>
 	</bookinfo>
 
 	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/01_introduction/01_introduction.xml"/>
@@ -153,13 +153,16 @@
 	<qandadiv>
 	<title>Allgemeines</title>
 	<qandaentry>
+	<question><para>Der Installer findet kein Java, obwohl es installiert ist.</para></question>
+	<answer><para>
+	Man kann den Installer mit dem Schalter <code>-manual</code> aufrufen, dann kann man die Laufzeitumgebung auswählen.
+	</para></answer></qandaentry>
+	<qandaentry>
 	<question><para>In der türkischen Lokalisierung startet Fakturama nicht.</para></question>
 	<answer><para>Beim Start von Fakturama werden die Metadaten der Datenbank von EclipseLink aus den Model-Dateien ermittelt.
 Dabei werden alle Attribute in Großbuchstaben konvertiert, allerdings mit der Default-Locale (also tr_TR). Das hat
 zur Folge, daß der Kleinbuchstabe "i" in einen Großbuchstaben "I" (mit einem Punkt darüber) konvertiert wird. Dieses
-Attribut gibt es natürlich nicht, deswegen kann die Datenbank nicht initialisiert werden. Dafür gibt es aktuell
-noch keine Lösung, der Versuch, das mit einem Patch (Fragment) zu beheben war noch nicht erfolgreich.
-Es gibt dazu das Ticket <ulink url="https://bugs.eclipse.org/bugs/show_bug.cgi?id=527415"/>.</para></answer>
+Attribut gibt es natürlich nicht, deswegen kann die Datenbank nicht initialisiert werden. Das Problem ist ab Fakturama 2.1.1 gelöst.</para></answer>
 	</qandaentry>
 	<qandaentry>
 	<question><para>Verwendung von MySQL ab Version x bringt Fehler</para></question>
@@ -317,24 +320,6 @@ Zum Beispiel:
         <para>Die Transaktionsnummer ist eine über alle Dokumente desselben Vorganges einheitliche Nummer. Diese Nummer wird beispielsweise verwendet um zu prüfen, welche Mahnungen zu einer Rechnung gehören oder ob bereits ein Folgedokument für diesen Arbeitsablauf existiert.</para>
       </glossdef>
     </glossentry>
-    <!-- glossentry>
-      <glossterm>Machine address</glossterm>
-      <glosssee otherterm="NetAddr">network address</glosssee>
-    </glossentry>
-    <glossentry>
-      <glossterm id="NetAddr">Network address</glossterm>
-      <glossdef>
-        <para>Domain name plus machine name.</para> 
-        <glossseealso otherterm="DomainName"/>
-      </glossdef>
-    </glossentry>
-    <glossentry id="ge-xslfoprocessor">
-      <glossterm id="gt-xslfoprocessor">XSL-FO processor</glossterm>
-      <glossdef>
-        <para>Software component that converts an XSL-FO document into a
-          formatted document.</para>
-      </glossdef>
-    </glossentry -->
   </glossary>
 	<!--index/-->
 </book>

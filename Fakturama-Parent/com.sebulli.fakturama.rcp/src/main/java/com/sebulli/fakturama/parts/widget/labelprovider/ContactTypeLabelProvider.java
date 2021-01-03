@@ -31,10 +31,10 @@ public class ContactTypeLabelProvider implements MultiChoiceLabelProvider {
         	ContactType type = (ContactType)element;
             switch (type) {
             case BILLING:
-                retval = "Invoice";
+                retval = msg.documentTypeInvoiceAddress;
                 break;
             case DELIVERY:
-                retval = "Delivery";
+                retval = msg.documentTypeDeliverynoteAddress;
                 break;
             default:
                 retval = "invalid";

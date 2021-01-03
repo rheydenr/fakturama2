@@ -2,7 +2,7 @@
 <feature
       id="org.slf4j.osgi.feature"
       label="slf4j.osgi.feature"
-      version="1.0.0">
+      version="1.7.30">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -17,14 +17,14 @@
    </license>
 
    <plugin
-         id="org.slf4j.api"
+         id="ch.qos.logback.classic"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.slf4j.ext"
+         id="ch.qos.logback.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -39,14 +39,14 @@
          unpack="false"/>
 
    <plugin
-         id="ch.qos.logback.classic"
+         id="org.slf4j.api"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="ch.qos.logback.core"
+         id="org.slf4j.ext"
          download-size="0"
          install-size="0"
          version="0.0.0"

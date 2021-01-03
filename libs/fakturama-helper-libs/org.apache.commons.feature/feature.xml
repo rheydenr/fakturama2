@@ -2,11 +2,11 @@
 <feature
       id="org.apache.commons.feature"
       label="Several Apache Commons Libs"
-      version="3.4.0"
+      version="3.4.2"
       provider-name="apache.org">
 
    <description url="http://www.example.com/description">
-      Provides the current Apache Commons Lang3, Apache Commons IO, Apache Commons Validator, Apache Commons Collections4, Apache Commons Text and Apache Commons BeanUtils libraries as Eclipse plugin.
+      Provides the current Apache Commons Lang3, Apache Commons Validator, Apache Commons Text and Apache Commons BeanUtils libraries as Eclipse plugin.
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -19,20 +19,6 @@
 
    <plugin
          id="org.apache.commons.lang3"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.io"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.collections"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -53,6 +39,12 @@
 
    <plugin
          id="org.apache.commons.beanutils"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.collections4"
          download-size="0"
          install-size="0"
          version="0.0.0"/>

@@ -145,6 +145,7 @@ import com.sebulli.fakturama.views.datatable.CellImagePainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
 //import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -447,11 +448,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                	retval = tmpVat != null ? DataUtils.getInstance().round(tmpVat, 3) : Double.valueOf(0.0);
 	                	break;
 	                case UNITPRICE:
-	                	MonetaryAmount amount;
-	                	amount = container.getUseGross() 
+	                    retval = container.getUseGross() 
 	                			? new Price(rowObject.getDocumentItem(), useSET).getUnitGrossRounded() 
 	                			: new Price(rowObject.getDocumentItem(), useSET).getUnitNetRounded();
-	                	retval = amount.getNumber().doubleValue();
 	                    break;
 	                case TOTALPRICE:
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"
@@ -743,7 +742,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.ITEMNUMBER);
         }
         
-        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_USE_PREVIEW_PICTURE)) {
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_PICTURE)) {
            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.PICTURE);
         }        
 
@@ -756,11 +755,17 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         }        
         
         propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.NAME);
-        propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
-
+        
+        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_DESCRIPTION)) {
+            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.DESCRIPTION);
+        }
+        
         if (documentType.hasPrice() 
         		|| document.getBillingType().isDELIVERY() && getEclipsePrefs().getBoolean(Constants.PREFERENCES_DOCUMENT_DELIVERY_NOTE_ITEMS_WITH_PRICE)) {
-            propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
+
+            if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_PRODUCT_USE_VAT)) {
+                propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.VAT); 
+            }
 	        
 	        if (getEclipsePrefs().getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX) && useSET) {
 	        	propertyNamesList.put(columnIndex++, DocumentItemListDescriptor.SALESEQUALIZATIONTAX);
@@ -835,6 +840,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         natTable.addConfiguration(new SingleClickSortConfiguration());
         natTable.addConfiguration(new DefaultRowReorderLayerConfiguration());
         natTable.addConfiguration(new DocumentItemTableConfiguration());
+        natTable.addConfiguration(new ListSelectionStyleConfiguration());
         natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //      natTable.addConfiguration(new HeaderMenuConfiguration(n6));

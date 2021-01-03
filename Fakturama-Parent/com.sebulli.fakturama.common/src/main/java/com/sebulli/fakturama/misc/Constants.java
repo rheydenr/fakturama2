@@ -6,6 +6,7 @@ package com.sebulli.fakturama.misc;
 import java.util.Locale;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 
 /**
@@ -569,4 +570,6 @@ public class Constants {
 	public static final String PARAM_PROGRESS = "com.sebulli.fakturama.command.order.markas.progress";
 
 	public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
+
+    public static final String DISPLAY_SUCCESSFUL_PRINTING = "DISPLAY_SUCCESSFUL_PRINTING";
 }

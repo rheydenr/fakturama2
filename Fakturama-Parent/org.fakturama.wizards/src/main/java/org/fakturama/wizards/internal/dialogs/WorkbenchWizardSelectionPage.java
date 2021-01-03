@@ -4,7 +4,6 @@ import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.IWizardNode;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardSelectionPage;
 import org.fakturama.wizards.internal.AdaptableList;
 

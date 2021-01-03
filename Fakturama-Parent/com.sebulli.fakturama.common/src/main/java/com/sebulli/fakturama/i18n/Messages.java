@@ -185,8 +185,10 @@ public class Messages {
 	public String editorContactFieldAlias;
 	public String editorContactWarningDuplicate;
 	public String editorContactWarningDuplicateStreet;
+	public String editorContactQuestionRemoveaddress;
+	public String editorContactHintAddaddresstooltip;
 
-	public String Data653;
+	public String startErrorNodatabase;
 	public String dataDefaultContactFormatExcludedcountries;
 	public String dataDefaultContactFormatSalutation;
 	public String dataDefaultContactFormatSalutationMen;
@@ -220,11 +222,13 @@ public class Messages {
 	public String dialogMessageboxTitleInfo;
 	public String dialogMessageboxTitleWarning;
 	public String dialogMessageboxTitleError;
+    public String dialogMessageboxDontshowagain;
 	public String dialogOrderstatusFieldNotify;
 	public String dialogOrderstatusTitle;
 	public String dialogPrintooDocumentalreadycreated;
 	public String dialogPrintooNotemplate;
 	public String dialogPrintooSuccessful;
+	public String dialogPrintooPdfsuccessful;
 	public String dialogPrintooCantprint;
 	public String dialogPrintooErrorNoactivepart;
 	public String dialogProductPicturePreview;
@@ -245,6 +249,7 @@ public class Messages {
 	public String documentOrderStatePaid;
 	public String documentOrderStateShipped;
 	public String documentOrderStateUnpaid;
+	
 	public String documentTypeConfirmationPlural;
 	public String documentTypeCredititemsPlural;
 	public String documentTypeDeliverynotePlural;
@@ -255,6 +260,11 @@ public class Messages {
 	public String documentTypeOrderPlural;
 	public String documentTypeProforma;
 	public String documentTypeProformaPlural;
+	
+	public String documentTypeInvoiceAddress;
+	public String documentTypeDeliverynoteAddress;
+	public String documentTypeLetterAddress;
+	
 	public String editorBrowserButtonBack;
 	public String editorBrowserButtonForward;
 	public String editorBrowserButtonHome;
@@ -715,9 +725,11 @@ public class Messages {
 	public String preferencesGeneralCurrencyUsesymbol;
 	public String preferencesGeneralCurrencyUseisocode;
 	public String preferencesGeneralCurrencyUsenothing;
+	public String preferencesGeneralCurrencyGroup;
 	public String preferencesGeneralThousandseparator;
 	public String preferencesGeneralCurrencyDecimalplaces;
 	public String preferencesGeneralQuantityDecimalplaces;
+	public String preferencesGeneralResetdialogsettings;
 	public String preferencesGeneralDatabase;
 	public String preferencesNumberrangeFormatConfirmationoLabel;
 	public String preferencesNumberrangeFormatConfirmationoValue;
@@ -832,12 +844,18 @@ public class Messages {
 	public String dialogReorganizeQuestion;
 	public String dialogReorganizeDonemessage;
 	public String startFirstRestartmessage;
+	
 	public String startFirstSelectDbCredentialsJdbc;
 	public String startFirstSelectDbCredentialsName;
 	public String startFirstSelectDbCredentialsPassword;
 	public String startFirstSelectDbCredentialsUser;
 	public String startFirstSelectDbUsedefault;
 	public String startFirstSelectDbUsedefaultTooltip;
+    public String startFirstSelectDbCheck;
+    public String startFirstSelectDbDriver;
+    public String startFirstSelectDbname;
+    public String startFirstSelectDbConnectionsuccessful;
+	
 	public String startFirstSelectOldworkdirShort;
 	public String startFirstSelectOldworkdirVerbose;
 	public String startFirstSelectWorkdir;
