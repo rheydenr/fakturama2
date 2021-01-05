@@ -1298,6 +1298,11 @@ public class DocumentEditor extends Editor<Document> {
         // set first address line from receiver's info
         if (!resultingDoc.getReceiver().isEmpty()) {
             resultingDoc.setAddressFirstLine(contactUtil.getNameWithCompany(resultingDoc.getReceiver().get(0)));
+            
+            // if only one receiver exists we set the billing type to current document billing type
+            if(resultingDoc.getReceiver().size() == 1) {
+            	resultingDoc.getReceiver().get(0).setBillingType(resultingDoc.getBillingType());
+            }
         }
     }
 
