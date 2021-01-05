@@ -79,8 +79,8 @@ Require-Bundle: javax.inject,
  org.eclipse.update.configurator,
  org.eclipse.persistence.moxy,
  org.apache.poi,
- jakarta.xml.bind;bundle-version="2.3.3",
- jakarta.xml.bind-api;bundle-version="2.3.2"
+ jakarta.xml.bind-api;bundle-version="2.3.2",
+ org.apache.odftoolkit;bundle-version="0.9.0"
 Import-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.bag,
  org.apache.commons.collections4.bidimap,
@@ -94,6 +94,9 @@ Import-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.multimap,
  org.apache.commons.collections4.multiset,
  org.apache.commons.io,
+ org.apache.xerces.dom;version="2.9.0",
+ org.apache.xerces.dom.events;version="2.9.0",
+ org.apache.xerces.dom3.as;version="2.9.0",
  org.eclipse.core.commands,
  org.eclipse.core.net.proxy,
  org.eclipse.core.runtime,
@@ -145,5 +148,5 @@ Import-Package: org.apache.commons.collections4,
  org.osgi.util.xml
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: com.sebulli.fakturama.rcp
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Service-Component: OSGI-INF/parcelservice.xml,OSGI-INF/splashservice.xml

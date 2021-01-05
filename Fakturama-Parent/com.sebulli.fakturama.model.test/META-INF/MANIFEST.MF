@@ -6,7 +6,7 @@ Bundle-Version: 2.0.3.qualifier
 Bundle-Vendor: Fakturama.org
 Fragment-Host: com.sebulli.fakturama.model;bundle-version="2.0.3"
 Automatic-Module-Name: com.sebulli.fakturama.model.test
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.junit;bundle-version="4.12.0",
  net.bytebuddy.byte-buddy;bundle-version="1.7.9",
  net.bytebuddy.byte-buddy-agent;bundle-version="1.7.9",

@@ -81,7 +81,6 @@
         <setEntry value="org.apache.xml.serializer@default:default"/>
         <setEntry value="org.apache.xmlbeans@default:default"/>
         <setEntry value="org.apache.xmlgraphics@default:default"/>
-        <setEntry value="org.dom4j@default:default"/>
         <setEntry value="org.eclipse.core.commands.nl_de@default:false"/>
         <setEntry value="org.eclipse.core.commands@default:default"/>
         <setEntry value="org.eclipse.core.contenttype.nl_de@default:false"/>
