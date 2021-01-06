@@ -381,9 +381,10 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                 GlazedLists.textFilterator(Product.class, Product_.itemNumber.getName(), Product_.name.getName(), Product_.description.getName()));
         
         // Filtered list for Search text field filter
+        final FilterList<Product> textFilteredIssues = new FilterList<Product>(productListData, textMatcherEditor);
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
-        treeFilteredIssues = new FilterList<Product>(productListData, textMatcherEditor);
+        treeFilteredIssues = new FilterList<Product>(textFilteredIssues);
        
         gridListLayer = new EntityGridListLayer<>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         
@@ -486,7 +487,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Reset transaction and contact filter, set category filter
     	currentFilter = new ProductMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
-		treeFilteredIssues.setMatcher(currentFilter);
+//		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...
     }
