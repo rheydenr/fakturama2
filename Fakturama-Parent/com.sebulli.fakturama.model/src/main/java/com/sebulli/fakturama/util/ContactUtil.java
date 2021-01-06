@@ -822,28 +822,38 @@ public class ContactUtil {
     	 */
     	
     	Optional<DocumentReceiver> billingAddressFromReceiverDocument = document.getReceiver().stream().filter(rcv -> rcv.getBillingType() == null || rcv.getBillingType().isINVOICE()).findFirst();
-    	if(!billingAddressFromReceiverDocument.isPresent()) {
+    	if(!billingAddressFromReceiverDocument.isPresent() && !document.getReceiver().isEmpty()) {
     		// use the receiver's address which corresponds to billing type of the document
     		billingAddressFromReceiverDocument = document.getReceiver().stream().filter(rcv -> rcv.getBillingType() == null || rcv.getBillingType().compareTo(document.getBillingType()) == 0).findFirst();
+    		
+    		// fallback if nothing is found: use first receiver
+    		if(!billingAddressFromReceiverDocument.isPresent()) {
+    			billingAddressFromReceiverDocument = Optional.of(document.getReceiver().get(0));
+    		}
     	}
-    	String billingAddress = getAddressAsString(billingAddressFromReceiverDocument.get());
-
-    	Optional<DocumentReceiver> deliveryAddressFromReceiverDocument = document.getReceiver().stream().filter(rcv -> rcv.getBillingType() == null || rcv.getBillingType().isDELIVERY()).findFirst();
     	
-    	// if no explicit delivery address is found we just use the billing address
-        String deliveryAddress = getAddressAsString(deliveryAddressFromReceiverDocument.orElse(billingAddressFromReceiverDocument.get()));
-
-//        if (oldContact.getGender() != oldContact.getDeliveryGender()) { return false; }
-//        if (!oldContact.getDeliveryTitle().equals(oldContact.getTitle())) { return false; }
-//        if (!oldContact.getDeliveryFirstname().equals(oldContact.getFirstname())) { return false; }
-//        if (!oldContact.getDeliveryName().equals(oldContact.getName())) { return false; }
-//        if (!oldContact.getDeliveryCompany().equals(oldContact.getCompany())) { return false; }
-//        if (!oldContact.getDeliveryStreet().equals(oldContact.getStreet())) { return false; }
-//        if (!oldContact.getDeliveryZip().equals(oldContact.getZip())) { return false; }
-//        if (!oldContact.getDeliveryCity().equals(oldContact.getCity())) { return false; }
-//        if (!oldContact.getDeliveryCountry().equals(oldContact.getCountry())) { return false; }
-//        
-        return deliveryAddress.isEmpty() || deliveryAddress.equalsIgnoreCase(billingAddress);
+    	if(billingAddressFromReceiverDocument.isPresent()) {
+	    	String billingAddress = getAddressAsString(billingAddressFromReceiverDocument.get());
+	
+	    	Optional<DocumentReceiver> deliveryAddressFromReceiverDocument = document.getReceiver().stream().filter(rcv -> rcv.getBillingType() == null || rcv.getBillingType().isDELIVERY()).findFirst();
+	    	
+	    	// if no explicit delivery address is found we just use the billing address
+	        String deliveryAddress = getAddressAsString(deliveryAddressFromReceiverDocument.orElse(billingAddressFromReceiverDocument.get()));
+	
+	//        if (oldContact.getGender() != oldContact.getDeliveryGender()) { return false; }
+	//        if (!oldContact.getDeliveryTitle().equals(oldContact.getTitle())) { return false; }
+	//        if (!oldContact.getDeliveryFirstname().equals(oldContact.getFirstname())) { return false; }
+	//        if (!oldContact.getDeliveryName().equals(oldContact.getName())) { return false; }
+	//        if (!oldContact.getDeliveryCompany().equals(oldContact.getCompany())) { return false; }
+	//        if (!oldContact.getDeliveryStreet().equals(oldContact.getStreet())) { return false; }
+	//        if (!oldContact.getDeliveryZip().equals(oldContact.getZip())) { return false; }
+	//        if (!oldContact.getDeliveryCity().equals(oldContact.getCity())) { return false; }
+	//        if (!oldContact.getDeliveryCountry().equals(oldContact.getCountry())) { return false; }
+	//        
+	        return deliveryAddress.isEmpty() || deliveryAddress.equalsIgnoreCase(billingAddress);
+    	} else {
+    		return true;
+    	}
     }
 	
 
