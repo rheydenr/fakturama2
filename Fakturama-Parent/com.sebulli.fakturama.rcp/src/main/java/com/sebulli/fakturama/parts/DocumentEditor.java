@@ -547,6 +547,11 @@ public class DocumentEditor extends Editor<Document> {
 	}
     
     private void reloadItemList() {
+    	
+		if (!getDocumentType().hasPrice()) {
+			return;
+		}
+		
         itemListTable.getDocumentItemsListData().clear();
         
         List<DocumentItemDTO> documentItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
