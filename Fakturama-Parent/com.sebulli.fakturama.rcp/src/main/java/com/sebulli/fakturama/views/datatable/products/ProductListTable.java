@@ -487,7 +487,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Reset transaction and contact filter, set category filter
     	currentFilter = new ProductMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
-//		treeFilteredIssues.setMatcher(currentFilter);
+		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...
     }
