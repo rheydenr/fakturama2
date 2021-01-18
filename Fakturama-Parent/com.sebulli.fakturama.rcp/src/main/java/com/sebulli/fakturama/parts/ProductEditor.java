@@ -384,6 +384,10 @@ public class ProductEditor extends Editor<Product> {
 			// Set the vat to the standard value
             long vatId = defaultValuePrefs.getLong(Constants.DEFAULT_VAT);
             VAT vat = vatDao.findById(vatId);  // initially set default VAT
+            if(vat.getTaxValue() == null) {
+            	MessageDialog.openWarning(parent.getShell(), msg.dialogMessageboxTitleWarning, "No Tax value for VAT defined, please update your VAT settings!");
+            	vat.setTaxValue(Double.valueOf(0));
+            }
 			editorProduct.setVat(vat);
 
 			// Get the next item number

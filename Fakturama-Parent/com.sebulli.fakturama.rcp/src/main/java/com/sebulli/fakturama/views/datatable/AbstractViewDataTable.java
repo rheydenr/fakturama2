@@ -55,6 +55,7 @@ import org.eclipse.nebula.widgets.nattable.selection.config.DefaultSelectionStyl
 import org.eclipse.nebula.widgets.nattable.sort.SortStatePersistor;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle;
 import org.eclipse.nebula.widgets.nattable.style.BorderStyle.LineStyleEnum;
+import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.MouseEventMatcher;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -224,7 +225,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
 //			}
 //		});
         
-//        natTable.setTheme(new ModernNatTableThemeConfiguration());
+        natTable.setTheme(new ModernNatTableThemeConfiguration());
 
 		return top;
 	}
