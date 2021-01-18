@@ -14,6 +14,7 @@ import javax.money.MonetaryRounding;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 
@@ -38,6 +39,9 @@ public class DocumentSummaryCalculator {
 
 	@Inject
 	private DocumentReceiverDAO documentReceiverDao;
+	
+	@Inject
+	private IEclipseContext ctx;
 
     /**
      * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
@@ -45,9 +49,10 @@ public class DocumentSummaryCalculator {
     private boolean useSET = false;
 	private CurrencyUnit currencyCode;
 	
-	public DocumentSummaryCalculator() {
-	    this(false, DataUtils.getInstance().getDefaultCurrencyUnit());
-	}
+//	// only for injection framework
+//	public DocumentSummaryCalculator() {
+////	    this(false, DataUtils.getInstance().getDefaultCurrencyUnit());
+//	}
 	
 	@Inject
 	public DocumentSummaryCalculator(IEclipseContext context) {
@@ -120,13 +125,14 @@ public class DocumentSummaryCalculator {
             int netGross, MonetaryAmount deposit) {
 		Double vatPercent;
 		String vatDescription;
-        CurrencyUnit currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
+		DataUtils dataUtils = ContextInjectionFactory.make(DataUtils.class, ctx);
+        CurrencyUnit currencyUnit = dataUtils.getDefaultCurrencyUnit();
         DocumentSummary retval = new DocumentSummary(currencyUnit);
-        MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
+        MonetaryRounding rounding = dataUtils.getRounding(currencyUnit);  
 
 /*
  * FIXME Hints for refactoring:
- * - divide this method in separate calls (complexity is too hight)
+ * - divide this method in separate calls (complexity is too high)
  * - the allowance for a single item isn't calculated => this is necessary in ZUGFeRD exporter!
  *   (for the moment, the allowance is calculated separately there)
  * - write some tests
@@ -138,7 +144,7 @@ public class DocumentSummaryCalculator {
 		// This VAT summary contains only the VAT entries of this document,
 		// whereas the the parameter vatSummaryItems is a global VAT summary
 		// and contains entries from this document and from others.
-		VatSummarySet documentVatSummaryItems = new VatSummarySet();
+		VatSummarySet documentVatSummaryItems = ContextInjectionFactory.make(VatSummarySet.class, ctx);
 
 		// Set the values to 0.0
 //		resetValues();

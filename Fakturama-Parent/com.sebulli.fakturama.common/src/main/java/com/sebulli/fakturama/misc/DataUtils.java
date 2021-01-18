@@ -31,10 +31,10 @@ import javax.money.RoundingQueryBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.javamoney.moneta.Money;
 import org.osgi.framework.ServiceReference;
 
-import com.ibm.icu.util.ULocale;
 import com.sebulli.fakturama.common.Activator;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.money.FakturamaMonetaryRoundingProvider;
@@ -47,10 +47,13 @@ import com.sebulli.fakturama.money.FakturamaMonetaryRoundingProvider;
  */
 public class DataUtils {
 	
-	@Inject
+	@Inject @org.eclipse.e4.core.di.annotations.Optional
 	private ILocaleService localeUtil;
 	
-	private static ULocale currencyLocale;
+	@Inject @org.eclipse.e4.core.di.annotations.Optional
+	private IPreferenceStore preferenceStore;
+	
+//	private static ULocale currencyLocale;
 
 //    private static final String ZERO_DATE = "2000-01-01";
     protected static final double EPSILON = 0.00000001;
@@ -81,13 +84,23 @@ public class DataUtils {
      * @param localeUtil 
      */
     private void initialize() {
-    	ServiceReference<ILocaleService> serviceReference = Activator.getContext().getServiceReference(ILocaleService.class);
-    	this.localeUtil = Activator.getContext().getService(serviceReference);
-        currencyLocale = localeUtil.getCurrencyLocale();
+//        currencyLocale = getLocaleUtil().getCurrencyLocale();
     }
     
+    public ILocaleService getLocaleUtil() {
+        if (localeUtil == null) {
+            ServiceReference<ILocaleService> serviceReference = Activator.getContext().getServiceReference(ILocaleService.class);
+            this.setLocaleUtil(Activator.getContext().getService(serviceReference));
+        }
+        return localeUtil;
+    }
+
+    public void setLocaleUtil(ILocaleService localeUtil) {
+        this.localeUtil = localeUtil;
+    }
+
     public CurrencyUnit getDefaultCurrencyUnit() {
-        return Monetary.getCurrency(currencyLocale.toLocale());
+        return Monetary.getCurrency(getLocaleUtil().getCurrencyLocale().toLocale());
     }
     
     public MonetaryRounding getDefaultRounding() {
@@ -98,13 +111,24 @@ public class DataUtils {
         return Monetary.getRounding(RoundingQueryBuilder.of()
                 .setCurrency(currencyUnit)
                 .setProviderName(FakturamaMonetaryRoundingProvider.DEFAULT_ROUNDING_ID)
-                .setScale(Activator.getPreferenceStore().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES))
+                .setScale(getPreferenceStore().getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES))
                 .set("cashRounding", cashRounding)
                 .build());
     }
     
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit) {
-        return getRounding(currencyUnit, Activator.getPreferenceStore().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING));
+        return getRounding(currencyUnit, getPreferenceStore().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING));
+    }
+    
+    private IPreferenceStore getPreferenceStore() {
+        if(preferenceStore == null) {
+            preferenceStore = Activator.getPreferenceStore();
+        }
+        return preferenceStore;
+    }
+    
+    public void setPreferenceStore(IPreferenceStore preferenceStore) {
+        this.preferenceStore = preferenceStore;
     }
     
 /* * * * * * * * * * * * [Price and Number calculations] * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

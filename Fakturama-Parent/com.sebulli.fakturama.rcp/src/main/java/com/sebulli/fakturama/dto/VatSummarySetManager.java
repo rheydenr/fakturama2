@@ -46,7 +46,7 @@ public class VatSummarySetManager {
 	 * Constructor Creates a new VatSummarySet
 	 */
 	public VatSummarySetManager() {
-		vatSummarySet = new VatSummarySet();
+		vatSummarySet = ContextInjectionFactory.make(VatSummarySet.class, context);
 	}
 
 	/**

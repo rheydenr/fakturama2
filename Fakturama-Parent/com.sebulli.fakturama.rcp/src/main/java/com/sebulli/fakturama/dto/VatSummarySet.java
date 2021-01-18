@@ -16,10 +16,14 @@ package com.sebulli.fakturama.dto;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.misc.DataUtils;
@@ -37,17 +41,20 @@ import com.sebulli.fakturama.misc.DataUtils;
  * @author Gerd Bartelt
  */
 public class VatSummarySet extends TreeSet<VatSummaryItem> {
+    
+    @Inject
+    private IEclipseContext ctx;
 
 	private static final long serialVersionUID = 1L;
     
     private CurrencyUnit currencyCode;
     private MonetaryRounding rounding;
 
-    public VatSummarySet() {
-        super();
-        currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
-        rounding = DataUtils.getInstance().getRounding(currencyCode);  
-
+    @PostConstruct
+    public void init() {
+        DataUtils dataUtils = ContextInjectionFactory.make(DataUtils.class, ctx);
+        currencyCode = dataUtils.getDefaultCurrencyUnit();
+        rounding = dataUtils.getRounding(currencyCode);  
     }
     
 	/**

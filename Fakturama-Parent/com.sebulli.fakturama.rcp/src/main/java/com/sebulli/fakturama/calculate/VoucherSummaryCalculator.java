@@ -21,6 +21,8 @@ import javax.inject.Inject;
 import javax.money.MonetaryAmount;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dto.Price;
@@ -41,6 +43,9 @@ public class VoucherSummaryCalculator {
     @Inject
     private ILogger log;
     
+    @Inject
+    private IEclipseContext ctx;
+   
     public VoucherSummary calculate(Voucher voucher) {
     	MonetaryAmount paidValue = Money.of(Optional.ofNullable(voucher.getPaidValue()).orElse(Double.valueOf(0.0)), DataUtils.getInstance().getDefaultCurrencyUnit());
     	MonetaryAmount totalValue = Money.of(Optional.ofNullable(voucher.getTotalValue()).orElse(Double.valueOf(0.0)), DataUtils.getInstance().getDefaultCurrencyUnit());
@@ -88,7 +93,7 @@ public class VoucherSummaryCalculator {
         // This Vat summary contains only the VAT entries of this document,
         // whereas the the parameter vatSummaryItems is a global VAT summary
         // and contains entries from this document and from others.
-        VatSummarySet voucherSummaryItems = new VatSummarySet();
+        VatSummarySet voucherSummaryItems = ContextInjectionFactory.make(VatSummarySet.class, ctx);
 
         // Set the values to 0.0
 //        resetValues();

@@ -46,7 +46,7 @@ public class VoucherSummarySetManager {
 	 * Constructor Creates a new voucherSummarySet
 	 */
 	public VoucherSummarySetManager() {
-		voucherSummarySet = new VatSummarySet();
+		voucherSummarySet = ContextInjectionFactory.make(VatSummarySet.class, ctx);;
 	}
 
 	/**
