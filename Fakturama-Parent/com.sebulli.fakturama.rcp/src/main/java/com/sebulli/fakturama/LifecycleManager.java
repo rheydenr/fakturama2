@@ -393,19 +393,23 @@ public class LifecycleManager {
 	}
 
 	@PreDestroy
-    public void postWindowClose(@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation) {
-        PreferencesInDatabase preferencesInDatabase = context.get(PreferencesInDatabase.class);
+	public void postWindowClose(@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation) {
+		PreferencesInDatabase preferencesInDatabase = context.get(PreferencesInDatabase.class);
 		if (preferencesInDatabase != null) {
 			log.debug("Storing preferences in database");
-            preferencesInDatabase.savePreferencesInDatabase();
-            
-            if(dbUpdateService != null && dbUpdateService.isDbAlive()) {
-                dbUpdateService.shutDownDb();
-            }
-        }
-        
-    	saveDialogSettings(instanceLocation);
-    }
+			preferencesInDatabase.savePreferencesInDatabase();
+
+			if (dbUpdateService != null && dbUpdateService.isDbAlive()) {
+				dbUpdateService.shutDownDb();
+			}
+		}
+		try {
+			eclipsePrefs.flush();
+		} catch (BackingStoreException e) {
+			log.error(e);
+		}
+		saveDialogSettings(instanceLocation);
+	}
 	
     /**
      * Saves this plug-in's dialog settings.

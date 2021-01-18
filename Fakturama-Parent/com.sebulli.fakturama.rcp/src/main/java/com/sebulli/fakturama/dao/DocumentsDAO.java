@@ -667,18 +667,26 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
 				cb.or(
 						cb.equal(root.get(Document_.billingType), BillingType.INVOICE),
 						cb.equal(root.get(Document_.billingType), BillingType.CREDIT)
-					  ),
-				cb.equal(root.get(Document_.paid), paidFlag)
+					  )
 		);
 	    
-	    if(startDate != null && endDate != null) {
-	    	// if startDate is after endDate we switch the two dates silently
-	    	predicate = cb.and(predicate,
-	    			cb.between(root.get(usePaidDate ? Document_.payDate : Document_.documentDate), 
-	    					startDate.before(endDate) ? startDate : endDate, 
-	    					endDate.after(startDate) ? endDate : startDate)
-	    		);
-	    }
+		if (paidFlag) {
+			predicate = cb.and(predicate, cb.equal(root.get(Document_.paid), paidFlag));
+		} else {
+			// unpaid documents could have a null paid flag
+			predicate = cb.and(predicate,
+							cb.or(
+									cb.isNull(root.get(Document_.paid)), 
+									cb.equal(root.get(Document_.paid), paidFlag)));
+		}
+	    
+		if (startDate != null && endDate != null) {
+			// if startDate is after endDate we switch the two dates silently
+			predicate = cb.and(predicate,
+					cb.between(root.get(usePaidDate ? Document_.payDate : Document_.documentDate),
+							startDate.before(endDate) ? startDate : endDate,
+							endDate.after(startDate) ? endDate : startDate));
+		}
 	    // take the paydate OR the document date into account
 		CriteriaQuery<Document> cq = criteria.where(predicate).orderBy(
 				cb.asc(root.get(usePaidDate ? Document_.payDate : Document_.documentDate)));
