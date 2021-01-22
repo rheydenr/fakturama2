@@ -64,7 +64,6 @@ public class Price {
 	private MonetaryAmount totalSalesEqTax;
 	private MonetaryAmount totalGross;
 	
-	private DataUtils dataUtils;
 	private INumberFormatterService numberFormatterService;
 
 	// unit values rounded
@@ -86,7 +85,16 @@ public class Price {
 	private MonetaryAmount totalGrossRounded;
     private MonetaryAmount totalAllowance;
     private MonetaryAmount unitAllowance;
+    private CurrencyUnit currencyUnit;
+    private MonetaryRounding rounding;
+    private boolean asGross;
 	
+    // only visible for PriceBuilder
+    protected Price(CurrencyUnit currencyUnit, MonetaryRounding rounding, boolean asGross) {
+        this.currencyUnit = currencyUnit;
+        this.rounding = rounding;
+        this.asGross = asGross;
+    }
 	
 	public Price(DocumentItem item) {
 		this(item, false);
@@ -99,9 +107,13 @@ public class Price {
 	 *            Item as DocumentItem
 	 */
 	public Price(DocumentItem item, boolean useSET) {
-		this(BooleanUtils.isTrue(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
+		this(   BooleanUtils.isTrue(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
 		        Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()), 
-		        item.getItemVat().getTaxValue(), item.getItemRebate(), BooleanUtils.toBoolean(item.getNoVat()), false, useSET ? item.getItemVat().getSalesEqualizationTax() : null);
+		        item.getItemVat().getTaxValue(), 
+		        item.getItemRebate(), 
+		        BooleanUtils.toBoolean(item.getNoVat()), 
+		        false, 
+		        useSET ? item.getItemVat().getSalesEqualizationTax() : null);
 	}
 
 	/**
@@ -143,7 +155,12 @@ public class Price {
 	 * 				Scale factor of this expenditure item
 	 */
 	public Price(VoucherItem item, Double scaleFactor) {
-		this(1.0, Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(scaleFactor), item.getVat().getTaxValue(), Double.valueOf(0.0), false, false);
+		this(Double.valueOf(1.0), 
+		     Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(scaleFactor), 
+		     item.getVat().getTaxValue(), 
+		     Double.valueOf(0.0), 
+		     false, 
+		     false);
 	}
 
 	
@@ -209,29 +226,29 @@ public class Price {
 	 * @param salesEqualizationTax
 	 *            the sales equalization tax in %, if any
 	 */
-	public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross, Double salesEqualizationTax) {
+    public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross, Double salesEqualizationTax) {
 
-		// if noVat is set, the vat value is set to 0.0
-        if (noVat) {
-            this.vatPercent = Double.valueOf(0.0);
-        } else {
-            this.vatPercent = vatPercent;
+        // if noVat is set, the vat value is set to 0.0
+        this.vatPercent = (noVat) ? Double.valueOf(0.0) : vatPercent;
+
+        this.quantity = quantity != null ? quantity : Double.valueOf(0);
+        this.unitPrice = unitPrice;
+        this.discount = discount;
+
+        if (salesEqualizationTax != null) {
+            this.salesEqTaxPercent = salesEqualizationTax;
         }
-		
-		this.quantity = quantity != null ? quantity : Double.valueOf(0);
-		this.unitPrice = unitPrice;
-		this.discount = discount;
-		
-		if(salesEqualizationTax != null) {
-			this.salesEqTaxPercent = salesEqualizationTax;
-		}
 
-		// do the calculation
-		calculate(asGross);
-	}
+        // do the calculation
+        calculate(asGross);
+    }
 
 	public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross) {
 		this(quantity, unitPrice, vatPercent, discount, noVat, asGross, null);
+	}
+	
+	protected void calculate() {
+	    calculate(asGross);
 	}
 	
 	/**
@@ -241,17 +258,14 @@ public class Price {
 	 *            <code>true</code> if price is a gross value
 	 */
 	private void calculate(boolean asGross) {
-		
-         CurrencyUnit currencyUnit = getDataUtils().getDefaultCurrencyUnit();
-         MonetaryRounding rounding = getDataUtils().getRounding(currencyUnit);  
 
-		// Calculate net from gross
+		// Calculate net from gross...
 		if (asGross) {
 			this.unitGross = this.unitPrice;
 			this.unitNet = this.unitPrice.divide(1 + vatPercent + Optional.ofNullable(salesEqTaxPercent).orElse(Double.valueOf(0.0)));
 		}
-		// or gross from net
 		else {
+		    // ...or gross from net
 			this.unitGross = this.unitPrice.multiply(1 + vatPercent + Optional.ofNullable(salesEqTaxPercent).orElse(Double.valueOf(0.0)));
 			this.unitNet = this.unitPrice;
 		}
@@ -607,23 +621,6 @@ public class Price {
     }
 
     /**
-     * @return the dataUtils
-     */
-    private DataUtils getDataUtils() {
-        if(dataUtils == null) {
-            dataUtils = DataUtils.getInstance();
-        }
-        return dataUtils;
-    }
-
-    /**
-     * @param dataUtils the dataUtils to set
-     */
-    public void setDataUtils(DataUtils dataUtils) {
-        this.dataUtils = dataUtils;
-    }
-
-    /**
 	 * @return the numberFormatterService
 	 */
 	public INumberFormatterService getNumberFormatterService() {
@@ -641,7 +638,15 @@ public class Price {
 		this.numberFormatterService = numberFormatterService;
 	}
 
-	@Override
+	protected void setCurrencyUnit(CurrencyUnit currencyUnit) {
+        this.currencyUnit = currencyUnit;
+    }
+
+    protected void setRounding(MonetaryRounding rounding) {
+        this.rounding = rounding;
+    }
+
+    @Override
     public String toString() {
     	return ToStringBuilder.reflectionToString(this);
     }

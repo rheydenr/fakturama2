@@ -115,6 +115,9 @@ public class DataUtils {
                 .set("cashRounding", cashRounding)
                 .build());
     }
+    public MonetaryRounding getRounding() {
+        return getRounding(getDefaultCurrencyUnit());
+    }
     
     public MonetaryRounding getRounding(CurrencyUnit currencyUnit) {
         return getRounding(currencyUnit, getPreferenceStore().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING));
