@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RCP Tests
 Bundle-SymbolicName: com.sebulli.fakturama.rcp.test
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.1.2.qualifier
 Bundle-Vendor: Fakturama Team
 Fragment-Host: com.sebulli.fakturama.rcp;bundle-version="2.1.0"
 Automatic-Module-Name: com.sebulli.fakturama.rcp.test
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: com.sebulli.fakturama.office
 Require-Bundle: org.junit;bundle-version="4.12.0"
