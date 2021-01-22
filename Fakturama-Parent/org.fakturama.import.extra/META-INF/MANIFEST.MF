@@ -5,6 +5,6 @@ Bundle-SymbolicName: org.fakturama.import.extra;singleton:=true
 Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: Fakturama.org
 Fragment-Host: org.fakturama.import;bundle-version="2.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Localization: OSGI-INF/l10n/orderimport
 Require-Bundle: org.eclipse.e4.core.commands

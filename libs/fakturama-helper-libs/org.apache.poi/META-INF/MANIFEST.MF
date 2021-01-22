@@ -21,7 +21,7 @@ Require-Bundle: org.apache.commons.collections4;bundle-version="4.4.0",
  org.apache.commons.compress;bundle-version="1.19.0",
  org.apache.xmlbeans;bundle-version="3.1.0",
  org.apache.commons.math3;bundle-version="3.6.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.apache.poi,
  org.apache.poi.common,
  org.apache.poi.common.usermodel,

@@ -6,7 +6,7 @@ Bundle-Version: 5.1.48
 Specification-Version: 5.1.48
 Bundle-ClassPath: lib/mysql-connector-java-5.1.48.jar
 Bundle-Vendor: mysql.org
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Export-Package: com.mysql.fabric;version="5.1.48",
  com.mysql.fabric.hibernate;version="5.1.48",
