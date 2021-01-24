@@ -26,6 +26,6 @@ Export-Package: org.hsqldb,
  org.hsqldb.trigger,
  org.hsqldb.types,
  org.hsqldb.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ClassPath: lib/hsqldb-2.5.1.jar
 Automatic-Module-Name: org.hsqldb.jdbc
