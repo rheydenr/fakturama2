@@ -67,6 +67,16 @@ public class PriceBuilder {
         this.scaleFactor = scaleFactor;
         return this;
     }
+    
+    public PriceBuilder withVatPercent(Double vatPercent) {
+        this.vatPercent = vatPercent;
+        return this;
+    }
+    
+    public PriceBuilder withDiscount(Double discount) {
+       this.discount = discount;
+       return this;
+    }
 
     public Price build() {
         Price price;
@@ -74,7 +84,6 @@ public class PriceBuilder {
             vatPercent = documentItem.getItemVat().getTaxValue();
             noVat = BooleanUtils.toBoolean(documentItem.getNoVat());
             // if noVat is set, the vat value is set to 0.0
-            this.vatPercent = (noVat) ? Double.valueOf(0.0) : vatPercent;
 
             this.quantity = BooleanUtils.toBoolean(documentItem.getOptional()) ? Double.valueOf(0.0) : documentItem.getQuantity();
             this.unitPrice = Money.of(documentItem.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(scaleFactor);
@@ -90,6 +99,7 @@ public class PriceBuilder {
         
         CurrencyUnit currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
         MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
+        this.vatPercent = (noVat) ? Double.valueOf(0.0) : vatPercent;
 
         price = new Price(currencyUnit, rounding, useAsGross);
         // set attributes
@@ -97,8 +107,7 @@ public class PriceBuilder {
         price.setUnitPrice(unitPrice);
         price.setVatPercent(vatPercent);
         price.setDiscount(discount);
-        price.setNoVat(noVat);
-        price.setSalesEqualizationTax(salesEqualizationTax);
+        price.setSalesEqTaxPercent(salesEqualizationTax);
         
         price.calculate();
 

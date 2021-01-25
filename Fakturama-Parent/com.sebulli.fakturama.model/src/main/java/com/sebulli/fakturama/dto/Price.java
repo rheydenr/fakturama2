@@ -646,6 +646,34 @@ public class Price {
         this.rounding = rounding;
     }
 
+    protected Double getQuantity() {
+        return quantity;
+    }
+
+    protected void setQuantity(Double quantity) {
+        this.quantity = quantity;
+    }
+
+    protected Double getDiscount() {
+        return discount;
+    }
+
+    protected void setDiscount(Double discount) {
+        this.discount = discount;
+    }
+
+    protected MonetaryAmount getUnitPrice() {
+        return unitPrice;
+    }
+
+    protected void setUnitPrice(MonetaryAmount unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    protected void setVatPercent(Double vatPercent) {
+        this.vatPercent = vatPercent;
+    }
+
     @Override
     public String toString() {
     	return ToStringBuilder.reflectionToString(this);
