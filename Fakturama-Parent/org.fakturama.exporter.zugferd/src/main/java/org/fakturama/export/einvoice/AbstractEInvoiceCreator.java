@@ -147,6 +147,13 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
             FileOrganizer fo = ContextInjectionFactory.make(FileOrganizer.class, eclipseContext);
             Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
             Path path = fo.getDocumentPath(pathOptions, TargetFormat.XML, eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, ""), invoice);
+            
+            // only to be on the safe side...
+            try {
+                Files.deleteIfExists(path);
+            } catch (IOException exception) {
+                log.error(exception, "can't delete old XRechnung document: " + exception.getMessage());
+            }
             createXmlFile(root, path);
         } else {
             try (ByteArrayOutputStream buffo = new ByteArrayOutputStream()) {
