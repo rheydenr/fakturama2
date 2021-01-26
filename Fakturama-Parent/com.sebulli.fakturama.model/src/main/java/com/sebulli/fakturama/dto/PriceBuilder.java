@@ -29,7 +29,6 @@ import com.sebulli.fakturama.model.DocumentItem;
  */
 public class PriceBuilder {
     private DocumentItem documentItem;
-    private MonetaryAmount amount;
     private boolean useSET = false;
     private double scaleFactor = 1.0;
     private Double vatPercent;
@@ -53,11 +52,6 @@ public class PriceBuilder {
         return this;
     }
 
-    public PriceBuilder withAmount(MonetaryAmount amount) {
-        this.amount = amount;
-        return this;
-    }
-
     public PriceBuilder withUseSET(boolean useSET) {
         this.useSET = useSET;
         return this;
@@ -77,6 +71,27 @@ public class PriceBuilder {
        this.discount = discount;
        return this;
     }
+    
+    public PriceBuilder withUnitPrice(MonetaryAmount unitPrice) {
+        this.unitPrice = unitPrice;
+        return this;
+    }
+    
+    public PriceBuilder withQuantity(Double quantity) {
+        this.quantity = quantity;
+        return this;
+    }
+    
+    /**
+     * Set it to <code>true</code> if the given amount is a gross price.
+     * 
+     * @param usePriceAsGrossPrice
+     * @return
+     */
+    public PriceBuilder withGrossPrices(boolean usePriceAsGrossPrice) {
+       this.useAsGross = usePriceAsGrossPrice;
+       return this;
+    }
 
     public Price build() {
         Price price;
@@ -91,15 +106,12 @@ public class PriceBuilder {
 
             this.salesEqualizationTax = useSET ? documentItem.getItemVat().getSalesEqualizationTax() : null;
 
-            this.useAsGross = false;
-
-            //     public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, 
-            // boolean asGross, Double salesEqualizationTax) {
         }
         
         CurrencyUnit currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
         MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
         this.vatPercent = (noVat) ? Double.valueOf(0.0) : vatPercent;
+        this.discount = discount == null ? Double.valueOf(0.0) : discount;
 
         price = new Price(currencyUnit, rounding, useAsGross);
         // set attributes

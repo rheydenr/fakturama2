@@ -92,7 +92,7 @@ public class Price {
     // only visible for PriceBuilder
     protected Price(CurrencyUnit currencyUnit, MonetaryRounding rounding, boolean asGross) {
         this.currencyUnit = currencyUnit;
-        this.rounding = rounding;
+        this.setRounding(rounding);
         this.asGross = asGross;
     }
 	
@@ -233,7 +233,7 @@ public class Price {
 
         this.quantity = quantity != null ? quantity : Double.valueOf(0);
         this.unitPrice = unitPrice;
-        this.discount = discount;
+        this.discount = discount == null ? Double.valueOf(0.0) : discount;
 
         if (salesEqualizationTax != null) {
             this.salesEqTaxPercent = salesEqualizationTax;
@@ -258,7 +258,7 @@ public class Price {
 	 *            <code>true</code> if price is a gross value
 	 */
 	private void calculate(boolean asGross) {
-
+	    
 		// Calculate net from gross...
 		if (asGross) {
 			this.unitGross = this.unitPrice;
@@ -277,7 +277,7 @@ public class Price {
 		if(salesEqTaxPercent != null) {
 			this.unitSalesEqTax = this.unitNet.multiply(salesEqTaxPercent);
 		} else {
-			this.unitSalesEqTax = Money.zero(currencyUnit);
+			this.unitSalesEqTax = Money.zero(getCurrencyUnit());
 		}
 
 		// Calculate the discount factor.
@@ -310,36 +310,36 @@ public class Price {
 		// But only if the Net value is still a rounded value and the gross is not,
 		// then the rounded gross value is calculated from rounded net and VAT. 
 		if (asGross) {
-			this.unitGrossRounded = unitGross.with(rounding);
-			this.unitVatRounded = unitVat.with(rounding);
-			this.unitSalesEqTaxRounded = unitSalesEqTax.with(rounding);
-			this.unitNetRounded = this.unitGross.subtract(this.unitVat).subtract(this.unitSalesEqTax).with(rounding);
+			this.unitGrossRounded = unitGross.with(getRounding());
+			this.unitVatRounded = unitVat.with(getRounding());
+			this.unitSalesEqTaxRounded = unitSalesEqTax.with(getRounding());
+			this.unitNetRounded = this.unitGross.subtract(this.unitVat).subtract(this.unitSalesEqTax).with(getRounding());
 
-			this.unitGrossDiscountedRounded = unitGrossDiscounted.with(rounding);
-			this.unitVatDiscountedRounded = unitVatDiscounted.with(rounding);
-			this.unitSalesEqTaxDiscountedRounded = unitSalesEqTaxDiscounted.with(rounding);
-			this.unitNetDiscountedRounded = this.unitGrossDiscounted.subtract(this.unitVatDiscounted).subtract(this.unitSalesEqTaxDiscounted).with(rounding);
+			this.unitGrossDiscountedRounded = unitGrossDiscounted.with(getRounding());
+			this.unitVatDiscountedRounded = unitVatDiscounted.with(getRounding());
+			this.unitSalesEqTaxDiscountedRounded = unitSalesEqTaxDiscounted.with(getRounding());
+			this.unitNetDiscountedRounded = this.unitGrossDiscounted.subtract(this.unitVatDiscounted).subtract(this.unitSalesEqTaxDiscounted).with(getRounding());
 
-			this.totalGrossRounded = totalGross.with(rounding);
-			this.totalVatRounded = totalVat.with(rounding);
-			this.totalSalesEqTaxRounded = totalSalesEqTax.with(rounding);
-			this.totalNetRounded = this.totalGross.subtract(this.totalVat).subtract(totalSalesEqTax).with(rounding);
+			this.totalGrossRounded = totalGross.with(getRounding());
+			this.totalVatRounded = totalVat.with(getRounding());
+			this.totalSalesEqTaxRounded = totalSalesEqTax.with(getRounding());
+			this.totalNetRounded = this.totalGross.subtract(this.totalVat).subtract(totalSalesEqTax).with(getRounding());
 		} else {
 		    
-			this.unitNetRounded = unitNet.with(rounding);
-			this.unitVatRounded = unitVat.with(rounding);
-			this.unitSalesEqTaxRounded = unitSalesEqTax.with(rounding);
-			this.unitGrossRounded = this.unitNet.add(this.unitVat).add(this.totalSalesEqTax).with(rounding);
+			this.unitNetRounded = unitNet.with(getRounding());
+			this.unitVatRounded = unitVat.with(getRounding());
+			this.unitSalesEqTaxRounded = unitSalesEqTax.with(getRounding());
+			this.unitGrossRounded = this.unitNet.add(this.unitVat).add(this.totalSalesEqTax).with(getRounding());
 
-			this.unitNetDiscountedRounded = unitNetDiscounted.with(rounding);
-			this.unitVatDiscountedRounded = unitVatDiscounted.with(rounding);
-			this.unitSalesEqTaxDiscountedRounded = unitSalesEqTaxDiscounted.with(rounding);
-			this.unitGrossDiscountedRounded = this.unitNetDiscounted.add(this.unitVatDiscounted).add(this.unitSalesEqTaxDiscounted).with(rounding);
+			this.unitNetDiscountedRounded = unitNetDiscounted.with(getRounding());
+			this.unitVatDiscountedRounded = unitVatDiscounted.with(getRounding());
+			this.unitSalesEqTaxDiscountedRounded = unitSalesEqTaxDiscounted.with(getRounding());
+			this.unitGrossDiscountedRounded = this.unitNetDiscounted.add(this.unitVatDiscounted).add(this.unitSalesEqTaxDiscounted).with(getRounding());
 
-			this.totalNetRounded = totalNet.with(rounding);
-			this.totalVatRounded = totalVat.with(rounding);
-			this.totalSalesEqTaxRounded = totalSalesEqTax.with(rounding);
-			this.totalGrossRounded = this.totalNet.add(this.totalVat).add(totalSalesEqTax).with(rounding);
+			this.totalNetRounded = totalNet.with(getRounding());
+			this.totalVatRounded = totalVat.with(getRounding());
+			this.totalSalesEqTaxRounded = totalSalesEqTax.with(getRounding());
+			this.totalGrossRounded = this.totalNet.add(this.totalVat).add(totalSalesEqTax).with(getRounding());
 		}
 	}
 
@@ -638,6 +638,13 @@ public class Price {
 		this.numberFormatterService = numberFormatterService;
 	}
 
+	protected CurrencyUnit getCurrencyUnit() {
+	    if(currencyUnit == null) {
+	        currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
+	    }
+	    return currencyUnit;
+	}
+	
 	protected void setCurrencyUnit(CurrencyUnit currencyUnit) {
         this.currencyUnit = currencyUnit;
     }
@@ -683,4 +690,11 @@ public class Price {
 		this.unitPrice = this.unitPrice.multiply(sign);		
 		calculate(false);
 	}
+
+    private MonetaryRounding getRounding() {
+        if(rounding == null) {
+            rounding = DataUtils.getInstance().getRounding(getCurrencyUnit());
+        }
+        return rounding;
+    }
 }

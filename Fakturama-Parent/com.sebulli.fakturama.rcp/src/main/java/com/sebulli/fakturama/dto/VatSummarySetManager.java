@@ -17,6 +17,7 @@ package com.sebulli.fakturama.dto;
 
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
@@ -37,6 +38,7 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
  * @author Gerd Bartelt
  */
 public class VatSummarySetManager {
+    
 	@Inject
 	private IEclipseContext context;
 	
@@ -45,7 +47,8 @@ public class VatSummarySetManager {
 	/**
 	 * Constructor Creates a new VatSummarySet
 	 */
-	public VatSummarySetManager() {
+	@PostConstruct
+	public void init() {
 		vatSummarySet = ContextInjectionFactory.make(VatSummarySet.class, context);
 	}
 
