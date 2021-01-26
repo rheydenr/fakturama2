@@ -214,7 +214,7 @@ public class OfficeDocument {
             // check if we have to use sales equalization tax
             setUseSalesEquationTaxForDocument(document);
 
-            // remove previous images            
+            // remove previously created images            
             cleanup();
             
             // Recalculate the sum of the document before exporting
@@ -521,7 +521,7 @@ public class OfficeDocument {
     private void cleanup() throws IOException {
         // remove temp images
         final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(
-                "glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"/tmpImage*");
+                "glob:"+preferences.getString(Constants.GENERAL_WORKSPACE).replaceAll("\\\\", "/")+"tmpImage*");
         
         Files.walkFileTree(Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE)), new SimpleFileVisitor<Path>() {
             
@@ -532,7 +532,7 @@ public class OfficeDocument {
                     try {
                         Files.deleteIfExists(path);
                     } catch (FileSystemException e) {
-                        log.warn(String.format("temporary File couldn't be deleted! %s", e.getMessage()));
+                        log.warn(String.format("temporary file couldn't be deleted! %s", e.getMessage()));
                     }
                 }
                 return FileVisitResult.CONTINUE;
@@ -840,6 +840,7 @@ public class OfficeDocument {
                 for (int k = 0; k < countOfPlaceholders; k++) {
                   Node item = cellPlaceholders.item(0);
                   PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
+                  cellPlaceholder.setOwnerDocument(pTable.getOwnerDocument());
                   fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
                 }
             }
@@ -1159,14 +1160,6 @@ public class OfficeDocument {
                 }
                 catch (IOException e) {
                     log.error("Can't create temporary image file. Reason: " + e);
-                } finally {
-                    if(workDir != null) {
-                        try {
-                            Files.deleteIfExists(workDir);
-                        } catch (IOException e) {
-                            log.error("Can't delete temporary image file. Reason: " + e);
-                        }
-                    }
                 }
             }
             
