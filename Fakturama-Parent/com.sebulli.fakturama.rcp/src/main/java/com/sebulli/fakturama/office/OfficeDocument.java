@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -42,6 +43,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -1137,7 +1140,21 @@ public class OfficeDocument {
 //                  grph.dispose();
                     // ============================================
 
-                    ImageIO.write(image, "jpg", workDir.toFile());
+                    String formatName = "jpg"; // fallback
+                    ImageInputStream iis = ImageIO.createImageInputStream(new ByteArrayInputStream(item.getPicture()));
+					if (iis != null) {
+						Iterator<ImageReader> iter = ImageIO.getImageReaders(iis);
+						if (!iter.hasNext()) {
+							throw new IOException("cannot determine image format");
+						}
+						// get the first reader
+						ImageReader reader = iter.next();
+						formatName = reader.getFormatName();
+						reader.dispose();
+						iis.close();
+					}
+
+                    ImageIO.write(image, formatName, workDir.toFile());
                     
                     // with NoaLibre:
 //                  GraphicInfo graphicInfo = null;
