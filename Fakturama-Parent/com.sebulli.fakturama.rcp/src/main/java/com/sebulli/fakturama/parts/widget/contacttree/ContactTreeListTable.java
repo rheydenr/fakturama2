@@ -430,6 +430,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
                 case LASTNAME:
                 case ZIP:
                 case CITY:
+                case NAMEADDON: /* GS/ */
+                case LOCALCONSULTANT: /* GS/ */
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
                 case COMPANY:
                 	String value = (String) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
