@@ -28,9 +28,10 @@ public enum ProductListDescriptor {
     ITEMNO("itemNumber", "product.field.itemno", 0, 55),
     NAME("name", "common.field.name", 1, 120),
     DESCRIPTION("description", "common.field.description", 2, 200),
-    QUANTITY("quantity", "common.field.quantity", 3, 70),
-    PRICE("price1", "common.field.price", 4, 70),  // but sometimes it's the gross price!!!
-    VAT("vat", "common.field.vat", 5, 70)
+    SUPPNO("supplierItemNumber", "editor.product.field.supplier.itemnumber", 3, 55), // GS/ add supplier art nbr
+    QUANTITY("quantity", "common.field.quantity", 4, 70),
+    PRICE("price1", "common.field.price", 5, 70),  // but sometimes it's the gross price!!!
+    VAT("vat", "common.field.vat", 6, 70)
     ;
 
     private String propertyName, messageKey;
@@ -91,12 +92,13 @@ public enum ProductListDescriptor {
 
     public static final String[] getProductPropertyNames() {
         return new String[]{
-        ProductListDescriptor.ITEMNO.getPropertyName(), 
+        ProductListDescriptor.ITEMNO.getPropertyName(),
         ProductListDescriptor.NAME.getPropertyName(), 
         ProductListDescriptor.DESCRIPTION.getPropertyName(), 
+        ProductListDescriptor.SUPPNO.getPropertyName(),
         ProductListDescriptor.QUANTITY.getPropertyName(),
         ProductListDescriptor.PRICE.getPropertyName(),
-        ProductListDescriptor.VAT.getPropertyName(),
+        ProductListDescriptor.VAT.getPropertyName()
         };
     }
 

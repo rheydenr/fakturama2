@@ -85,6 +85,8 @@ public class ProductsDAO extends AbstractDAO<Product> {
             restrictions.add(cb.equal(product.get(Product_.webshopId), object.getWebshopId()));
         }
         restrictions.add(cb.equal(product.get(Product_.itemNumber), StringUtils.defaultString(object.getItemNumber())));
+// GS/
+        restrictions.add(cb.equal(product.get(Product_.supplierItemNumber), StringUtils.defaultString(object.getItemNumber())));
         restrictions.add(cb.equal(product.get(Product_.name), StringUtils.defaultString(object.getName())));
         return restrictions;
     }
@@ -109,6 +111,7 @@ public class ProductsDAO extends AbstractDAO<Product> {
     	List<String> resultList = Arrays.asList(Product_.itemNumber.getName(), 
             Product_.name.getName(), 
             Product_.description.getName(),
+/* GS/ */   Product_.supplierItemNumber.getName(),
             Product_.quantity.getName(), 
             Product_.price1.getName(), 
             Product_.vat.getName()).stream().filter((String prop) -> {
