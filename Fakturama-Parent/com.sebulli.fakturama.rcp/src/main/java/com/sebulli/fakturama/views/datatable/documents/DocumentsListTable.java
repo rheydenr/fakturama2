@@ -391,6 +391,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex-1);
                 case NAME:
                     return columnPropertyAccessor.getDataValue(rowObject, 1);
+                case CUSTREF:
+                    return columnPropertyAccessor.getDataValue(rowObject, 4); // GS/
                 case TOTAL:
                     // alternative: return rowObject.getFirstName();
                     return columnPropertyAccessor.getDataValue(rowObject, 3);
@@ -455,7 +457,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         searchColumns[3] = "total";
  */
         final MatcherEditor<Document> textMatcherEditor = new TextWidgetMatcherEditor<Document>(searchText.getTextControl(), GlazedLists.textFilterator(Document.class,
-                Document_.name.getName(), Document_.addressFirstLine.getName()));
+                Document_.name.getName(), Document_.addressFirstLine.getName(), /* GS/ */ Document_.customerRef.getName()));
         
         // Filtered list for Search text field filter
         final FilterList<Document> textFilteredIssues = new FilterList<Document>(documentListData, textMatcherEditor);
