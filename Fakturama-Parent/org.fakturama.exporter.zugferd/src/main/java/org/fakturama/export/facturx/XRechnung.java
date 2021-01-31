@@ -341,11 +341,11 @@ public class XRechnung extends AbstractEInvoice {
                     schemaId = grepFromNoteField(originContact.getNote(), ".*?Global schemeID=(\\d+).*", schemaId);
                 }
                 
-                buyer.getID().add(createIdFromString(debtorId));
-                buyer.getGlobalID()
-                    .add(createIdWithSchemeFromString(
-                            globalId, StringUtils.defaultString(schemaId)
-                        ));
+                if (StringUtils.isNotEmpty(globalId)) {
+                    buyer.getGlobalID().add(createIdWithSchemeFromString(globalId, StringUtils.defaultString(schemaId)));
+                } else {
+                    buyer.getID().add(createIdFromString(debtorId));
+                }
             } else {
                  buyer.getID().add(createIdFromString(documentReceiver.getCustomerNumber()));
             }

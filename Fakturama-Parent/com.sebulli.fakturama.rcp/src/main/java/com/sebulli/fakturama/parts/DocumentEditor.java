@@ -1989,7 +1989,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
 
 		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1100, 550);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
+// GS/ resize/scrolling (this will be set dynamically at the end of this method)
 		scrollcomposite.setExpandHorizontal(true);
 		scrollcomposite.setExpandVertical(true);
         scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
@@ -2589,6 +2589,9 @@ public class DocumentEditor extends Editor<Document> {
 			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), itemListTable.getNatTable());
 		else
 			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtMessage);
+// GS/ resize/scrolling
+		// finally calculate and set required size
+		scrollcomposite.setMinSize(top.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 
 	private DocumentReceiver createOrGetMainReceiver() {
