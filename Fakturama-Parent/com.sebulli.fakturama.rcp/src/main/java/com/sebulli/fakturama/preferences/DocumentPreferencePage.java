@@ -24,6 +24,7 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 
@@ -106,6 +107,9 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 			 }, getFieldEditorParent()));
 		addField(new StringFieldEditor(Constants.PREFERENCES_DEPOSIT_TEXT, msg.preferencesDocumentLabelDepositrow, getFieldEditorParent()));
 		addField(new StringFieldEditor(Constants.PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow, getFieldEditorParent()));
+// GS/
+// TODO GS/ i18n		addField(new IntegerFieldEditor(Constants.PREFERENCES_DOCUMENT_PRODUCTLIST_VISIBLE_ROWS, msg.preferencesDocumentProductlistVisiblerows, getFieldEditorParent(), 2));
+		addField(new IntegerFieldEditor(Constants.PREFERENCES_DOCUMENT_PRODUCTLIST_VISIBLE_ROWS, "Anzahl sichtbarer Zeilen in der Artikelliste (5-99)", getFieldEditorParent(), 2));
 	}
 
     /* (non-Javadoc)
@@ -169,6 +173,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_DIALOG, true);
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_CUSTOMER_STATISTICS_COMPARE_ADDRESS_FIELD, "1");
 		node.setDefault(Constants.PREFERENCES_DOCUMENT_MESSAGES, "1");
+		node.setDefault(Constants.PREFERENCES_DOCUMENT_PRODUCTLIST_VISIBLE_ROWS, 8); // GS/
 		node.setDefault(Constants.PREFERENCES_DEPOSIT_TEXT, msg.preferencesDocumentLabelDepositrow);
 		node.setDefault(Constants.PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow);
 	}

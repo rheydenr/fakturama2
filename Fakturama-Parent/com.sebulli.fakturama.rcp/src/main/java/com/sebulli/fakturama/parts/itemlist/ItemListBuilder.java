@@ -195,6 +195,13 @@ public class ItemListBuilder {
         final DocumentItemListTable itemListTable = ContextInjectionFactory.make(DocumentItemListTable.class, context);
         Control tableComposite = itemListTable.createPartControl(parent, document/*, useGross*/, container, netgross);
         GridDataFactory.fillDefaults().span(3, 1).hint(SWT.DEFAULT, 350).grab(true, false).applyTo(tableComposite);
+// GS/ set height of Product list by preferences
+        final int pixelsPerRow = 20; // GS/ can we get this dynamically from the UI system?
+        // read value form preferences, plus 1 for the header row
+        int prefsProductListVisibleRows = preferences.getInt(Constants.PREFERENCES_DOCUMENT_PRODUCTLIST_VISIBLE_ROWS, 8) + 1;
+        if (prefsProductListVisibleRows < 6) prefsProductListVisibleRows = 6;
+//        GridDataFactory.fillDefaults().span(3, 1).hint(SWT.DEFAULT, 180).grab(true, false).applyTo(tableComposite);
+        GridDataFactory.fillDefaults().span(3, 1).hint(SWT.DEFAULT, prefsProductListVisibleRows*pixelsPerRow).grab(true, false).applyTo(tableComposite);
 
         itemListTable.setItemsNoVat(document.getNoVatReference() != null, document.getNoVatReference());
 

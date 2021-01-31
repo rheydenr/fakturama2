@@ -322,6 +322,11 @@ public class Constants {
     public static final String PREFERENCES_DOCUMENT_USE_NET_GROSS = "DOCUMENT_USE_NET_GROSS";
 
     /**
+     * GS/ visible rows in product list (to calc height of list)
+     */
+    public static final String PREFERENCES_DOCUMENT_PRODUCTLIST_VISIBLE_ROWS = "DOCUMENT_PRODUCTLIST_VISIBLE_ROWS";
+
+    /**
      * 
      */
     public static final String PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT = "OPTIONALITEMS_OPTIONALITEM_TEXT";
