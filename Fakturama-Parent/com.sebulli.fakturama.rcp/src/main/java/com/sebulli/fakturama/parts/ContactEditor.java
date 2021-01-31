@@ -1011,6 +1011,27 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 				        addressTabFolder.getItemCount(), invisible, createAddressPanel(), SWT.CLOSE);
 				bindAddressWidgetForIndex(newAddressTab, addressTabFolder.getItemCount() - 1);
 				
+// GS/ copy/duplicate address data by [Ctrl]+Click
+//   wouldn't it be nice to have it mentioned in the ToolTip? e.g. "[Strg]+Click = Copy"
+				if ((e.stateMask & SWT.CTRL) != 0) {
+					CTabItem currentAddressTab = addressTabFolder.getSelection();
+					AddressTabWidget currentAddress = (AddressTabWidget)currentAddressTab.getData(ADDRESS_TAB_WIDGET);
+					AddressTabWidget newAddress = (AddressTabWidget)newAddressTab.getData(ADDRESS_TAB_WIDGET);
+					newAddress.getAdditionalPhone().setText(currentAddress.getAdditionalPhone().getText());
+					newAddress.getAddressAddon().setText(currentAddress.getAddressAddon().getText());
+					newAddress.getCity().setText(currentAddress.getCity().getText());
+					newAddress.getCityAddon().setText(currentAddress.getCityAddon().getText());
+					newAddress.getCountryCombo().setSelection(currentAddress.getCountryCombo().getSelection());
+					newAddress.getEmail().setText(currentAddress.getEmail().getText());
+					newAddress.getFax().setText(currentAddress.getFax().getText());
+					newAddress.getLocalConsultant().setText(currentAddress.getLocalConsultant().getText());
+					newAddress.getMobile().setText(currentAddress.getMobile().getText());
+					newAddress.getNameAddon().setText(currentAddress.getNameAddon().getText());
+					newAddress.getPhone().setText(currentAddress.getPhone().getText());
+					newAddress.getStreet().setText(currentAddress.getStreet().getText());
+					newAddress.getZip().setText(currentAddress.getZip().getText());
+				}
+
 				addressTabFolder.setSelection(newAddressTab);
 			}
 		});
