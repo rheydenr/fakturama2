@@ -255,14 +255,7 @@ public class VatSummarySet extends TreeSet<VatSummaryItem> {
 	 *            The other VatSummarySet
 	 */
 	public void addVatSummarySet(VatSummarySet otherVatSummarySet) {
-
-		// Add all items of the other VatSummarySet
 		otherVatSummarySet.forEach(vat -> this.add(vat));
-//		for (Iterator<VatSummaryItem> iterator = otherVatSummarySet.iterator(); iterator.hasNext();) {
-//			VatSummaryItem item = iterator.next();
-//			this.add(item);
-//		}
-//
 	}
 
 }

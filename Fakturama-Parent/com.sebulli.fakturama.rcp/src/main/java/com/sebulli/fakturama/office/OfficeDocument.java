@@ -81,11 +81,11 @@ import org.w3c.dom.NodeList;
 
 import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.Activator;
+import com.sebulli.fakturama.calculate.DocumentSummary;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
-import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;

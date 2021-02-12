@@ -36,8 +36,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.browser.Browser;
 
+import com.sebulli.fakturama.calculate.DocumentSummary;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
-import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.IDateFormatterService;

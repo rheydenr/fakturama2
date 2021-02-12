@@ -12,7 +12,7 @@
  *     Gerd Bartelt - initial API and implementation
  */
 
-package com.sebulli.fakturama.dto;
+package com.sebulli.fakturama.calculate;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;

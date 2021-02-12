@@ -27,7 +27,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 
-import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.calculate.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 

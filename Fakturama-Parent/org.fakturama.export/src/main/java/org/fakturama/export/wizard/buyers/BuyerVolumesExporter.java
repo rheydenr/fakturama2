@@ -40,9 +40,9 @@ import org.fakturama.export.wizard.OOCalcExporter;
 import org.fakturama.export.wizard.TotalSoldAndQuantity;
 import org.odftoolkit.odfdom.type.Color;
 
+import com.sebulli.fakturama.calculate.DocumentSummary;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.DocumentsDAO;
-import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Document;

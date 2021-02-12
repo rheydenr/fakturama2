@@ -19,7 +19,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.DocumentReceiverDAO;
-import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySet;
@@ -74,6 +73,10 @@ public class DocumentSummaryCalculator {
 	}
 	
     public DocumentSummary calculate(Document dataSetDocument) {
+    	return calculate(dataSetDocument, null);
+    }
+    
+    public DocumentSummary calculate(Document dataSetDocument, VatSummarySet vatSummarySet) {
     	this.useSET = documentReceiverDao.isSETEnabled(dataSetDocument);
         Double scaleFactor = NumberUtils.DOUBLE_ONE;
         int netGross = dataSetDocument.getNetGross() != null ? dataSetDocument.getNetGross() : 0;
@@ -82,13 +85,15 @@ public class DocumentSummaryCalculator {
         // amount is not equal to zero we get unpredictable results in later processing)
         MonetaryAmount deposit = Money.of(BooleanUtils.isTrue(dataSetDocument.getDeposit()) ? dataSetDocument.getPaidValue() : NumberUtils.DOUBLE_ZERO, getCurrencyCode());
         Shipping shipping = dataSetDocument.getShipping();
-		return calculate(null, dataSetDocument.getItems(), 
+		return calculate(vatSummarySet, dataSetDocument.getItems(), 
         		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(NumberUtils.DOUBLE_ZERO), 
         		shipping != null ? shipping.getShippingVat() : null, 
                 shipping != null ? shipping.getAutoVat() : dataSetDocument.getShippingAutoVat(), 
                 Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO), noVatReference, 
                 scaleFactor, netGross, deposit);
+    	
     }
+    
 
 	public DocumentSummary calculate(List<DocumentItem> items, Shipping shipping, ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, 
             int netGross, MonetaryAmount deposit) {
@@ -306,12 +311,12 @@ public class DocumentSummaryCalculator {
 		Double shippingVatPercent = shippingVat != null ? shippingVat.getTaxValue() : NumberUtils.DOUBLE_ZERO;
 		String shippingVatDescription = shippingVat != null ? shippingVat.getDescription() : ""; // TODO or get it from additional document info???
 
-		// If shippingAutoVat is not fix, the shipping vat is 
-		// an average value of the vats of the items.
+		// If shippingAutoVat is not fix, the shipping VAT is 
+		// an average value of the VATs of the items.
 		if (shippingAutoVat != null && !shippingAutoVat.isSHIPPINGVATFIX()) {
 
 			// If the shipping is set as gross value, calculate the net value.
-			// Use the average vat of all the items.
+			// Use the average VAT of all the items.
 			if (shippingAutoVat.isSHIPPINGVATGROSS()) {
 				if (!itemsGross.isZero()) {
 					// shippingValue * itemsNet / itemsGross
@@ -326,24 +331,23 @@ public class DocumentSummaryCalculator {
 				retval.setShippingNet(shippingAmount);
 			}
 
-			// Use the average vat of all the items.
+			// Use the average VAT of all the items.
 			if (itemsNet.isEqualTo(zero)) {
 				shippingVatPercent = NumberUtils.DOUBLE_ZERO;
 			} else {
 				shippingVatPercent = itemsGross.divide(itemsNet.getNumber()).getNumber().doubleValue() - 1;
 			}
 			
-			// Increase the vat summary entries by the shipping ratio
+			// Increase the VAT summary entries by the shipping ratio
 
 			// Calculate the sum of all VatSummary entries
 			MonetaryAmount netSumOfAllVatSummaryItems = Money.from(zero);
 
-			for (VatSummaryItem vatSummaryItem : documentVatSummaryItems) {
-				
 				// TODO How do I use Lambdas???
-	// 			documentVatSummaryItems.forEach(vatItem -> {
-	// 			    netSumOfAllVatSummaryItems = netSumOfAllVatSummaryItems.add(vatItem.getNet());
-	// 			});
+//	 			documentVatSummaryItems.stream()
+//	 			.map(i -> i.getNet())
+//	 			.reduce(Money.from(zero),netSumOfAllVatSummaryItems.add(i));
+			for (VatSummaryItem vatSummaryItem : documentVatSummaryItems) {
 			    netSumOfAllVatSummaryItems = netSumOfAllVatSummaryItems.add(vatSummaryItem.getNet());
 			}
 
@@ -462,7 +466,7 @@ public class DocumentSummaryCalculator {
 		retval.setDeposit(deposit);
 		retval.setFinalPayment(retval.getTotalGross().subtract(retval.getDeposit()));
 
-		// Round also the Vat summaries
+		// Round also the VAT summaries
 		documentVatSummaryItems.roundAllEntries();
 
 		// Add the entries of the document summary set also to the global one

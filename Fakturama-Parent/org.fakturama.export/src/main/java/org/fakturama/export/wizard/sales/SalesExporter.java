@@ -39,9 +39,9 @@ import org.fakturama.export.wizard.OOCalcExporter;
 import org.javamoney.moneta.Money;
 import org.odftoolkit.odfdom.type.Color;
 
+import com.sebulli.fakturama.calculate.DocumentSummary;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.DocumentsDAO;
-import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.i18n.Messages;
