@@ -88,8 +88,8 @@ import org.fakturama.export.facturx.modelgen.TradeTaxType;
 import org.fakturama.export.facturx.modelgen.UniversalCommunicationType;
 import org.javamoney.moneta.Money;
 
-import com.sebulli.fakturama.calculate.DocumentSummary;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
+import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.dto.VatSummaryItem;

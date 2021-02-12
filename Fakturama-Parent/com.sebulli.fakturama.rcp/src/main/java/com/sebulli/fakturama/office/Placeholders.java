@@ -37,9 +37,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.ULocale;
-import com.sebulli.fakturama.calculate.DocumentSummary;
 import com.sebulli.fakturama.dao.AddressDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Transaction;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;

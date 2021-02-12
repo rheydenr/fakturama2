@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.dao.DocumentReceiverDAO;
+import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.PriceBuilder;
 import com.sebulli.fakturama.dto.VatSummarySet;

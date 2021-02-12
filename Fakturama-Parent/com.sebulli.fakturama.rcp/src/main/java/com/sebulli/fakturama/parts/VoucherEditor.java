@@ -65,13 +65,13 @@ import org.eclipse.swt.widgets.Text;
 import org.javamoney.moneta.Money;
 import org.osgi.service.event.Event;
 
-import com.sebulli.fakturama.calculate.DocumentSummary;
 import com.sebulli.fakturama.calculate.VoucherSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.VoucherCategoriesDAO;
 import com.sebulli.fakturama.dao.VoucherItemsDAO;
+import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.VoucherItemDTO;
 import com.sebulli.fakturama.dto.VoucherSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;

@@ -18,7 +18,7 @@ import java.util.Map;
 
 import javax.money.MonetaryAmount;
 
-import com.sebulli.fakturama.calculate.DocumentSummary;
+import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.model.DocumentItem;
 
