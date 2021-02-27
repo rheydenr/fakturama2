@@ -1,9 +1,14 @@
 package com.sebulli.fakturama.calculate;
 
+import java.text.NumberFormat;
+
+import javax.money.MonetaryAmount;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.javamoney.moneta.Money;
 import org.javamoney.moneta.spi.MoneyUtils;
 import org.junit.Assert;
@@ -16,140 +21,254 @@ import org.mockito.MockitoAnnotations;
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.dto.DocumentSummaryManager;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.PriceBuilder;
-import com.sebulli.fakturama.dto.VatSummarySet;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.model.Invoice;
+import com.sebulli.fakturama.model.Shipping;
+import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
 
 public class DocumentSummaryCalcTest {
 
-    private static final boolean DEBUG_PRICES = false;
+	private static final boolean DEBUG_PRICES = false;
 
-    private IEclipseContext ctx;
-    
-    @Mock
+	private IEclipseContext ctx;
+
+	@Mock
 	private DocumentReceiverDAO documentReceiverDao;
 
+	@Mock
+	private IPreferenceStore defaultValuePrefs;
+	MonetaryAmount testAmount0EUR = Money.of(MoneyUtils.getBigDecimal(0.0), "EUR");
+	MonetaryAmount testAmount1EUR = Money.of(MoneyUtils.getBigDecimal(1.0), "EUR");
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        ctx = EclipseContextFactory.getServiceContext(Activator.getContext());
-        Mockito.when(documentReceiverDao.isSETEnabled(Mockito.any(Document.class))).thenReturn(Boolean.FALSE);
-        ctx.set(DocumentReceiverDAO.class, documentReceiverDao);
-        ContextInjectionFactory.setDefault(ctx);
-    }
-    
-    /**
-     * Test simple document with one item:<br>
-     * <ul><li>use net price
-     * <li>1 item with 10% VAT at 10 EUR (net)
-     * <li>no shipping costs or discounts
-     * </ul>
-     * 
-     */
-    @Test
-    public void testOneItemInADocument() {
-    	DocumentItem documentItem = createDocumentItem(1, Double.valueOf(1.0), Double.valueOf(10.0), Double.valueOf(0.1));
-    	Invoice invoice = FakturamaModelPackage.MODELFACTORY.createInvoice();
-    	invoice.addToItems(documentItem);
-    	invoice.setNetGross(DocumentSummary.ROUND_NOTSPECIFIED); // this is the default
-    	
-		VatSummarySet globalVatSummarySet = ContextInjectionFactory.make(VatSummarySet.class, ctx);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
+		ctx = EclipseContextFactory.getServiceContext(Activator.getContext());
+		Mockito.when(documentReceiverDao.isSETEnabled(Mockito.any(Document.class))).thenReturn(Boolean.FALSE);
+		ctx.set(DocumentReceiverDAO.class, documentReceiverDao);
 
-    	DocumentSummaryCalculator calc = ContextInjectionFactory.make(DocumentSummaryCalculator.class, ctx);
-    	DocumentSummary summary = calc.calculate(invoice, globalVatSummarySet);
-    	Assert.assertEquals(1.0, summary.getTotalQuantity(), 0.0);
-        Assert.assertEquals(10.0, summary.getTotalNet().getNumber().doubleValue(), 0);
-        Assert.assertEquals(11.0, summary.getTotalGross().getNumber().doubleValue(), 0);
-        Assert.assertEquals(1.0, summary.getTotalVat().getNumber().doubleValue(), 0);
-        
-//        globalVatSummarySet.g
-       
-//        Assert.assertEquals(0.1, documentVatSummaryItems.getIndex(0));
-    }
+		Mockito.when(defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX))
+				.thenReturn(Boolean.FALSE);
+		ctx.set(IPreferenceStore.class, defaultValuePrefs);
+		ContextInjectionFactory.setDefault(ctx);
+	}
 
-    @Test
-    public void testSimplePrice() {
-        Price testPrice = new PriceBuilder()
-                .withUnitPrice(Money.of(MoneyUtils.getBigDecimal(10), "EUR"))
-                .withGrossPrices(false).withQuantity(1.0)
-                .withVatPercent(0.1).build();
+	/**
+	 * Test simple document with one item:<br>
+	 * <ul>
+	 * <li>use net price
+	 * <li>1 item with 10% VAT at 10 EUR (net)
+	 * <li>no shipping costs or discounts
+	 * </ul>
+	 * 
+	 */
+	@Test
+	public void testOneItemInADocument() {
+		DocumentItem documentItem = createDocumentItem(1, Double.valueOf(1.0), Double.valueOf(10.0),
+				Double.valueOf(0.1));
+		Invoice invoice = FakturamaModelPackage.MODELFACTORY.createInvoice();
+		invoice.addToItems(documentItem);
+		invoice.setNetGross(DocumentSummary.ROUND_NOTSPECIFIED); // this is the default
 
-        Assert.assertEquals(10.0, testPrice.getTotalNet().getNumber().doubleValue(), 0);
-        Assert.assertEquals(11.0, testPrice.getTotalGross().getNumber().doubleValue(), 0);
-        Assert.assertEquals(1.0, testPrice.getTotalVat().getNumber().doubleValue(), 0);
+		DocumentSummaryManager calc = ContextInjectionFactory.make(DocumentSummaryManager.class, ctx);
+		DocumentSummary summary = calc.calculate(invoice);
+		Assert.assertEquals(1.0, summary.getTotalQuantity(), 0.0);
+		Assert.assertEquals(10.0, summary.getTotalNet().getNumber().doubleValue(), 0);
+		Assert.assertEquals(11.0, summary.getTotalGross().getNumber().doubleValue(), 0);
+		Assert.assertEquals(1.0, summary.getTotalVat().getNumber().doubleValue(), 0);
+
+		Assert.assertEquals(2, calc.getVatSummary(invoice).size());
+		Assert.assertEquals(testAmount0EUR, calc.getVatSummaryItemForTaxValue(0.0).get(0).getVat());
+		Assert.assertEquals(testAmount1EUR, calc.getVatSummaryItemForTaxValue(0.1).get(0).getVat());
+	}
+
+	/**
+	 * <ul>
+	 * <li>use gross prices
+	 * <li>25 items with 7% VAT at 2.20 EUR (gross)
+	 * <li>5 items with 7% VAT at 2.50 EUR (gross)
+	 * <li>1 item with 19% VAT at 10 EUR (gross)
+	 * </ul>
+	 */
+	@Test
+	public void testFullSizeDocument_001() {
+		int id = 1;
+		Invoice invoice = FakturamaModelPackage.MODELFACTORY.createInvoice();
+		invoice.addToItems(createDocumentItem(id++, Double.valueOf(25.0), Double.valueOf(2.2),
+				Double.valueOf(0.07)));
+		invoice.addToItems(createDocumentItem(id++, Double.valueOf(5.0), Double.valueOf(2.5),
+				Double.valueOf(0.07)));
+		invoice.addToItems(createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(10.0),
+				Double.valueOf(0.19)));
+		invoice.setNetGross(DocumentSummary.ROUND_GROSS_VALUES);
+
+		DocumentSummaryManager calc = ContextInjectionFactory.make(DocumentSummaryManager.class, ctx);
+		DocumentSummary summary = calc.calculate(invoice);
+		Assert.assertEquals(31.0, summary.getTotalQuantity(), 0.0);
+		Assert.assertEquals(71.49, summary.getTotalNet().getNumber().doubleValue(), 0);
+		Assert.assertEquals(77.50, summary.getTotalGross().getNumber().doubleValue(), 0);
+		Assert.assertEquals(6.01, summary.getTotalVat().getNumber().doubleValue(), 0);
+		
+		Assert.assertEquals(71.49, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
+
+		Assert.assertEquals(2, calc.getVatSummary(invoice).size());
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(4.42), "EUR"),
+				calc.getVatSummaryItemForTaxValue(0.07).get(0).getVatRounded());
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(1.6), "EUR"),
+				calc.getVatSummaryItemForTaxValue(0.19).get(0).getVatRounded());
+	}
+
+//	/**
+//	 * <ul>
+//	 * <li>use net prices
+//	 * <li>25 items with 7% VAT at 2.20 EUR (gross)
+//	 * <li>5 items with 7% VAT at 2.50 EUR (gross)
+//	 * <li>1 item with 19% VAT at 10 EUR (gross)
+//	 * <li>shipping costs: 5 EUR
+//	 * <li>global discount: 5%
+//	 * </ul>
+//	 */
+//	@Test
+//	public void testFullSizeDocument_002() {
+//		int id = 1;
+//		Invoice invoice = FakturamaModelPackage.MODELFACTORY.createInvoice();
+//		invoice.addToItems(createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(10.0),
+//				Double.valueOf(0.1)));
+//		DocumentItem documentItem = createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(10.0),
+//				Double.valueOf(0.1));
+//		documentItem.setItemRebate(0.03);
+//		invoice.addToItems(documentItem);
+//		invoice.addToItems(createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(10.0),
+//				Double.valueOf(0.05)));
+//		invoice.setNetGross(DocumentSummary.ROUND_NOTSPECIFIED); // this is the default
+//		Shipping testShipping = createTestShipping();
+//		invoice.setShipping(testShipping );
+//		
+//	}
+
+	/**
+	 * Create a Shipping object with 5.90EUR and 19% VAT.
+	 * 
+	 * @return Shipping object
+	 */
+	private Shipping createTestShipping() {
+		Shipping testShipping = FakturamaModelPackage.MODELFACTORY.createShipping();
+		testShipping.setAutoVat(ShippingVatType.SHIPPINGVATFIX);
+		testShipping.setName("A test shipping");
+		testShipping.setShippingValue(Double.valueOf(5.9));
+		testShipping.setShippingVat(createVat("shipping VAT", 0.19));
+		return testShipping;
+	}
+
+	private VAT createVat(String vatName, double taxValue) {
+		VAT vat = FakturamaModelPackage.MODELFACTORY.createVAT();
+		vat.setName(vatName);
+		vat.setTaxValue(taxValue);
+		return vat;
+	}
+
+	@Test
+	public void testSimplePrice() {
+		Price testPrice = new PriceBuilder().withUnitPrice(Money.of(MoneyUtils.getBigDecimal(10), "EUR"))
+				.withGrossPrices(false).withQuantity(1.0).withVatPercent(0.1).build();
+
+		Assert.assertEquals(10.0, testPrice.getTotalNet().getNumber().doubleValue(), 0);
+		Assert.assertEquals(11.0, testPrice.getTotalGross().getNumber().doubleValue(), 0);
+		Assert.assertEquals(1.0, testPrice.getTotalVat().getNumber().doubleValue(), 0);
 
 //        printPrice(testPrice);
-    }
-    
-    /**
-     * <p>Test a simple {@link DocumentItem}.</p>
-     * <p>
-     * <table border=1>
-     * <tr><th>quantity</th><th>VAT</th><th>price</th></tr>
-     * <tr><td>1</td><td>10 %</td><td>10 EUR</td></tr>
-     * </table>
-     * </p>
-     */
-    @Test
-    public void testSimpleDocumentItem() {
-        DocumentItem documentItem = createDocumentItem(1, Double.valueOf(1.0), Double.valueOf(10.0), Double.valueOf(0.1));
-        
-        Price testPrice = new PriceBuilder().withDocumentItem(documentItem).build();
-        Assert.assertEquals(10.0, testPrice.getTotalNet().getNumber().doubleValue(), 0);
-        Assert.assertEquals(11.0, testPrice.getTotalGross().getNumber().doubleValue(), 0);
-        Assert.assertEquals(1.0, testPrice.getTotalVat().getNumber().doubleValue(), 0);
-    }
+	}
+
+	/**
+	 * <p>
+	 * Test a simple {@link DocumentItem}.
+	 * </p>
+	 * <p>
+	 * <table border=1>
+	 * <tr>
+	 * <th>quantity</th>
+	 * <th>VAT</th>
+	 * <th>price</th>
+	 * </tr>
+	 * <tr>
+	 * <td>1</td>
+	 * <td>10 %</td>
+	 * <td>10 EUR</td>
+	 * </tr>
+	 * </table>
+	 * </p>
+	 */
+	@Test
+	public void testSimpleDocumentItem() {
+		DocumentItem documentItem = createDocumentItem(1, Double.valueOf(1.0), Double.valueOf(10.0),
+				Double.valueOf(0.1));
+
+		Price testPrice = new PriceBuilder().withDocumentItem(documentItem).build();
+		Assert.assertEquals(10.0, testPrice.getTotalNet().getNumber().doubleValue(), 0);
+		Assert.assertEquals(11.0, testPrice.getTotalGross().getNumber().doubleValue(), 0);
+		Assert.assertEquals(1.0, testPrice.getTotalVat().getNumber().doubleValue(), 0);
+	}
 
 	private DocumentItem createDocumentItem(int id, Double quantity, Double price, Double taxValue) {
 		DocumentItem documentItem = FakturamaModelPackage.MODELFACTORY.createDocumentItem();
-        VAT itemVat = FakturamaModelPackage.MODELFACTORY.createVAT();
-        itemVat.setId(id);
-        itemVat.setTaxValue(taxValue);
-        
-        documentItem.setId(1);
-        documentItem.setPrice(price);
-        documentItem.setQuantity(quantity);
-        documentItem.setItemVat(itemVat);
+		VAT itemVat = FakturamaModelPackage.MODELFACTORY.createVAT();
+		itemVat.setId(id);
+		itemVat.setTaxValue(taxValue);
+		itemVat.setName("Test VAT " + NumberFormat.getPercentInstance().format(taxValue));
+
+		documentItem.setId(1);
+		documentItem.setPrice(price);
+		documentItem.setQuantity(quantity);
+		documentItem.setItemVat(itemVat);
 		return documentItem;
 	}
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	private void printPrice(Price testPrice) {
-        if (DEBUG_PRICES) {
-            int longestLabel = 30;
-            System.out.println("Calculated price:");
-            System.out.println(StringUtils.repeat("=", longestLabel + 6));
-            System.out.println(StringUtils.rightPad("UnitNet:", longestLabel)+ testPrice.getUnitNet());
-            System.out.println(StringUtils.rightPad("UnitNetDiscounted:", longestLabel) + testPrice.getUnitNetDiscounted());
-            System.out.println(StringUtils.rightPad("UnitNetDiscountedRounded:", longestLabel)+ testPrice.getUnitNetDiscountedRounded());
+		if (DEBUG_PRICES) {
+			int longestLabel = 30;
+			System.out.println("Calculated price:");
+			System.out.println(StringUtils.repeat("=", longestLabel + 6));
+			System.out.println(StringUtils.rightPad("UnitNet:", longestLabel) + testPrice.getUnitNet());
+			System.out.println(
+					StringUtils.rightPad("UnitNetDiscounted:", longestLabel) + testPrice.getUnitNetDiscounted());
+			System.out.println(StringUtils.rightPad("UnitNetDiscountedRounded:", longestLabel)
+					+ testPrice.getUnitNetDiscountedRounded());
 
-            System.out.println(StringUtils.rightPad("UnitGross:", longestLabel) + testPrice.getUnitGross());
-            System.out.println(StringUtils.rightPad("UnitGrossRounded:", longestLabel) + testPrice.getUnitGrossRounded());
-            System.out.println(StringUtils.rightPad("UnitGrossDiscounted:", longestLabel) + testPrice.getUnitGrossDiscounted());
-            System.out.println(StringUtils.rightPad("UnitGrossDiscountedRounded:", longestLabel) + testPrice.getUnitGrossDiscountedRounded());
+			System.out.println(StringUtils.rightPad("UnitGross:", longestLabel) + testPrice.getUnitGross());
+			System.out
+					.println(StringUtils.rightPad("UnitGrossRounded:", longestLabel) + testPrice.getUnitGrossRounded());
+			System.out.println(
+					StringUtils.rightPad("UnitGrossDiscounted:", longestLabel) + testPrice.getUnitGrossDiscounted());
+			System.out.println(StringUtils.rightPad("UnitGrossDiscountedRounded:", longestLabel)
+					+ testPrice.getUnitGrossDiscountedRounded());
 
-            System.out.println(StringUtils.rightPad("TotalAllowance:", longestLabel) + testPrice.getTotalAllowance());
+			System.out.println(StringUtils.rightPad("TotalAllowance:", longestLabel) + testPrice.getTotalAllowance());
 
-            System.out.println(StringUtils.rightPad("TotalNet:", longestLabel) + testPrice.getTotalNet());
-            System.out.println(StringUtils.rightPad("TotalNetRounded:", longestLabel) + testPrice.getTotalNetRounded());
+			System.out.println(StringUtils.rightPad("TotalNet:", longestLabel) + testPrice.getTotalNet());
+			System.out.println(StringUtils.rightPad("TotalNetRounded:", longestLabel) + testPrice.getTotalNetRounded());
 
-            System.out.println(StringUtils.rightPad("VatPercent:", longestLabel) + testPrice.getVatPercent());
-            System.out.println(StringUtils.rightPad("TotalVat:", longestLabel) + testPrice.getTotalVat());
-            System.out.println(StringUtils.rightPad("TotalVatRounded:", longestLabel) + testPrice.getTotalVatRounded());
+			System.out.println(StringUtils.rightPad("VatPercent:", longestLabel) + testPrice.getVatPercent());
+			System.out.println(StringUtils.rightPad("TotalVat:", longestLabel) + testPrice.getTotalVat());
+			System.out.println(StringUtils.rightPad("TotalVatRounded:", longestLabel) + testPrice.getTotalVatRounded());
 
-            System.out.println(StringUtils.rightPad("SalesEqTaxPercent:", longestLabel) + testPrice.getSalesEqTaxPercent());
-            System.out.println(StringUtils.rightPad("TotalSalesEqTax:", longestLabel) + testPrice.getTotalSalesEqTax());
-            System.out.println(StringUtils.rightPad("TotalSalesEqTaxRounded:", longestLabel) + testPrice.getTotalSalesEqTaxRounded());
+			System.out.println(
+					StringUtils.rightPad("SalesEqTaxPercent:", longestLabel) + testPrice.getSalesEqTaxPercent());
+			System.out.println(StringUtils.rightPad("TotalSalesEqTax:", longestLabel) + testPrice.getTotalSalesEqTax());
+			System.out.println(StringUtils.rightPad("TotalSalesEqTaxRounded:", longestLabel)
+					+ testPrice.getTotalSalesEqTaxRounded());
 
-            System.out.println(StringUtils.rightPad("TotalGross:", longestLabel) + testPrice.getTotalGross());
-            System.out.println(StringUtils.rightPad("TotalGrossRounded:", longestLabel) + testPrice.getTotalGrossRounded());
-        }
-    }
+			System.out.println(StringUtils.rightPad("TotalGross:", longestLabel) + testPrice.getTotalGross());
+			System.out.println(
+					StringUtils.rightPad("TotalGrossRounded:", longestLabel) + testPrice.getTotalGrossRounded());
+		}
+	}
 
 }

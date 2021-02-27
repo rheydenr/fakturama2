@@ -77,6 +77,8 @@ hier klingt vor allem das interessant:
 	
 	private CurrencyUnit currencyCode;
 	
+	private VatSummarySet vatSummary;
+	
 	/**
 	 * Default constructor. Resets all value to 0.
 	 */
@@ -351,7 +353,15 @@ hier klingt vor allem das interessant:
         this.totalDiscount = totalDiscount;
     }
 
-    @Override
+    public VatSummarySet getVatSummary() {
+		return vatSummary;
+	}
+
+	public void setVatSummary(VatSummarySet vatSummary) {
+		this.vatSummary = vatSummary;
+	}
+
+	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}

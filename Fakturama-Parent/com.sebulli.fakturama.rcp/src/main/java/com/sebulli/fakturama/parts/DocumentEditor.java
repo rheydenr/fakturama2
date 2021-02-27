@@ -112,7 +112,6 @@ import org.javamoney.moneta.Money;
 import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.calculate.CustomerStatistics;
-import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
@@ -124,6 +123,8 @@ import com.sebulli.fakturama.dialogs.SelectTreeContactDialog;
 import com.sebulli.fakturama.dto.AddressDTO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.dto.DocumentSummaryManager;
+import com.sebulli.fakturama.dto.DocumentSummaryParam;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
@@ -1399,22 +1400,48 @@ public class DocumentEditor extends Editor<Document> {
 			shipping = lookupDefaultShippingValue();
 		}
 		
-		DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
-		documentSummaryCalculator.setUseSET(
-				defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX));
+		DocumentSummaryManager documentSummaryManager = ContextInjectionFactory.make(DocumentSummaryManager.class, context);
+		
+//		DocumentSummaryCalculator documentSummaryCalculator;
+		
+		DocumentSummaryParam sumCalcParam;
         if(document.getShipping() == null) {
-    		documentSummary = documentSummaryCalculator.calculate(null, docItems,
-    				document.getShippingValue()/* * sign*/,
-                    null, 
-                    document.getShippingAutoVat(), 
-                    rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+			sumCalcParam = new DocumentSummaryParam()
+        		.withItems(docItems)
+        		.withAutoVat(document.getShippingAutoVat())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withShippingValue(document.getShippingValue())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withScaleFactor(Double.valueOf(1.0))
+        		.withNetGross(netgross)
+        		.withDeposit(deposit)
+        		.withItemsDiscount(rebate);
+        	
+//    		documentSummary = documentSummaryCalculator.calculate(null, docItems,
+//    				document.getShippingValue()/* * sign*/,
+//                    null, 
+//                    document.getShippingAutoVat(), 
+//                    rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         } else {
-			documentSummary = documentSummaryCalculator.calculate(null, docItems,
-	                document.getShipping().getShippingValue(),
-	                document.getShipping().getShippingVat(), 
-	                document.getShipping().getAutoVat(), 
-	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+			sumCalcParam = new DocumentSummaryParam()
+        		.withItems(docItems)
+        		.withAutoVat(document.getShipping().getAutoVat())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withShippingValue(document.getShipping().getShippingValue())
+        		.withShippingVat(document.getShipping().getShippingVat())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withScaleFactor(Double.valueOf(1.0))
+        		.withNetGross(netgross)
+        		.withDeposit(deposit)
+        		.withItemsDiscount(rebate);
+//			documentSummary = documentSummaryCalculator.calculate(null, docItems,
+//	                document.getShipping().getShippingValue(),
+//	                document.getShipping().getShippingVat(), 
+//	                document.getShipping().getAutoVat(), 
+//	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         }
+        	
+        documentSummary = documentSummaryManager.calculate(document, sumCalcParam);
 
 		// Get the total result
 		total = documentSummary.getTotalGross();

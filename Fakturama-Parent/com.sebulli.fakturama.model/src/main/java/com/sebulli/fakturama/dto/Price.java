@@ -115,6 +115,10 @@ public class Price {
 		        false, 
 		        useSET ? item.getItemVat().getSalesEqualizationTax() : null);
 	}
+	
+//    public Price(DocumentItem item, Double scaleFactor, boolean useSET) {
+//    	this(item, scaleFactor, useSET, false);
+//    }
 
 	/**
 	 * Create a price value from an item and a scale factor
@@ -125,13 +129,13 @@ public class Price {
 	 * @param scaleFactor
 	 * 				Scale factor of this item
 	 */
-    public Price(DocumentItem item, Double scaleFactor, boolean useSET) {
+    public Price(DocumentItem item, Double scaleFactor, boolean useSET, boolean useGross) {
         this(BooleanUtils.toBoolean(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
         	 Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(scaleFactor), 
         	 item.getItemVat().getTaxValue(), 
         	 item.getItemRebate(), 
         	 BooleanUtils.toBoolean(item.getNoVat()), 
-        	 false,
+        	 useGross,
         	 useSET ? item.getItemVat().getSalesEqualizationTax() : null);
     }
 
@@ -234,6 +238,7 @@ public class Price {
         this.quantity = quantity != null ? quantity : Double.valueOf(0);
         this.unitPrice = unitPrice;
         this.discount = discount == null ? Double.valueOf(0.0) : discount;
+        this.asGross = asGross;
 
         if (salesEqualizationTax != null) {
             this.salesEqTaxPercent = salesEqualizationTax;
