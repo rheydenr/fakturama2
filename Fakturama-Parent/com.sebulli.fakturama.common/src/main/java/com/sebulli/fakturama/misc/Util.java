@@ -21,4 +21,31 @@ public final class Util {
 
     private Util() {
     }	
+    
+// GS/
+	/**
+	 * Helper method
+	 * if theValue is null defaultValue is returned
+	 * @param theValue
+	 * @param defaultValue
+	 * @return
+	 */
+	public static String defaultIfNull(String theValue, String defaultValue) {
+		return theValue != null ? theValue : defaultValue;
+	}
+
+	/**
+	 * Helper method
+	 * if theValue is null or empty (theValue.trim().length() == 0) defaultValue is returned
+	 * @param theValue
+	 * @param defaultValue
+	 * @return
+	 */
+	public static String defaultIfEmpty(String theValue, String defaultValue) {
+		if (theValue != null && theValue.trim().length() > 0) {
+			return theValue.trim();
+		} else {
+			return defaultValue;
+		}
+	}
 }
