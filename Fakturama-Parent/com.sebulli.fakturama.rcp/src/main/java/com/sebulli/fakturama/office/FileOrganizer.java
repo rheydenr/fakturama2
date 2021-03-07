@@ -100,7 +100,8 @@ public class FileOrganizer {
 			     .replaceAll("\\|", "_")
 			     .replaceAll("\\&", "_")
 			     .replaceAll("\\n", "_")
-			     .replaceAll("\\t", "_");
+			     .replaceAll("\\t", "_")
+			     .replaceAll(",", "_"); /* GS/ */
 		}
 		return StringUtils.defaultString(s);
 	}
