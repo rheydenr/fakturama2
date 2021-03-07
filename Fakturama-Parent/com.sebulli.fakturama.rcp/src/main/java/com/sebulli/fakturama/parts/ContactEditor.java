@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -102,14 +104,17 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.EmbeddedProperties;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.Address_;
 import com.sebulli.fakturama.model.BankAccount_;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.CategoryComparator;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactCategory;
 import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Contact_;
+import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.Payment;
@@ -118,6 +123,7 @@ import com.sebulli.fakturama.parts.converter.CategoryConverter;
 import com.sebulli.fakturama.parts.converter.EntityConverter;
 import com.sebulli.fakturama.parts.converter.StringToCategoryConverter;
 import com.sebulli.fakturama.parts.converter.StringToEntityConverter;
+import com.sebulli.fakturama.parts.widget.ContactEditorTabExtrasComposite;
 import com.sebulli.fakturama.parts.widget.contacttree.ContactTreeListTable;
 import com.sebulli.fakturama.parts.widget.contentprovider.EntityComboProvider;
 import com.sebulli.fakturama.parts.widget.contentprovider.HashMapContentProvider;
@@ -186,6 +192,9 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private FormattedText txtDiscount;
 	private CCombo comboCategory;
 	private ComboViewer comboUseNetGross;
+	
+// GS/ tab Extras
+	private ContactEditorTabExtrasComposite tabExtras;
 
 	// These flags are set by the preference settings.
 	// They define, if elements of the editor are displayed, or not.
@@ -317,6 +326,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 //		if(editorContact.getAlternateContacts() != null && editorContact.getAlternateContacts().getAddress() != null) {
 //			editorContact.getAlternateContacts().getAddress().setManualAddress(null);
 //		}
+		
+// GS/
+		// merge data from tabExtras (back) to txtNote
+		tabExtras.appendData(textNote);
 
         try {
             // save the new or updated Contact
@@ -358,6 +371,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
         bindModel();
         
         // reset dirty flag
+        tabExtras.setDirty(false); // GS/
         getMDirtyablePart().setDirty(false);
         return Boolean.TRUE;
 	}
@@ -715,6 +729,22 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			tabNote = new Composite(invisible, SWT.NONE);
 		}
 		tabNote.setLayout(new FillLayout());
+		
+// GS/ 
+		// Create extras tab
+		CTabItem item6 = null;
+		item6 = new CTabItem(tabFolder, SWT.NONE);
+		//T: Label in the contact editor
+		item6.setText(msg.editorContactLabelExtras);
+		tabExtras = new ContactEditorTabExtrasComposite(tabFolder, SWT.NONE);
+		tabExtras.addModifyListener(new ModifyListener() {			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				setDirty(true);
+			}
+		});		
+		item6.setControl(tabExtras);
+
 		if(tabFolder != null) {
 			tabFolder.setSelection(0);
 		}
@@ -1365,6 +1395,10 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		bindModelValue(editorContact, txtDiscount, Contact_.discount.getName(), 16);
         bindModelValue(editorContact, comboUseNetGross, Contact_.useNetGross.getName());
 		bindModelValue(editorContact, textNote, Contact_.note.getName(), -1);
+		
+// GS/
+		// "bind" the Extras tab
+		tabExtras.extractData(textNote);
 		
 		bindAdditionalValues(editorContact);
 		

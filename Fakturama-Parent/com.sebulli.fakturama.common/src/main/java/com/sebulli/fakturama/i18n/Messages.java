@@ -308,6 +308,7 @@ public class Messages {
 	public String editorContactLabelAddress;
 	public String editorContactLabelBankaccount;
 	public String editorContactLabelNotice;
+	public String editorContactLabelExtras; // GS/
 	public String editorContactLabelAdditionaladdress;
 	public String editorContactLabelMaintab;
 	public String editorDocumentAdditemTooltip;
