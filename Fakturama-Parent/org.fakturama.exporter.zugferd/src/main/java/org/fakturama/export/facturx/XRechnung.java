@@ -97,6 +97,8 @@ import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
+import com.sebulli.fakturama.misc.EmbeddedProperties;
+import com.sebulli.fakturama.misc.Util;
 import com.sebulli.fakturama.model.Address;
 import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.CEFACTCode;
@@ -119,6 +121,10 @@ public class XRechnung extends AbstractEInvoice {
 
     private DocumentAllowances itemAllowances;
 
+ // GS/ embedded properties from contact.note
+    EmbeddedProperties propertiesFromContactNote = null;
+
+
     @Override
     public CrossIndustryInvoice getInvoiceXml(Optional<Invoice> invoiceDoc) {
         if(!invoiceDoc.isPresent()) {
@@ -129,6 +135,16 @@ public class XRechnung extends AbstractEInvoice {
         itemAllowances = new DocumentAllowances();
 
         Document invoice = invoiceDoc.get();
+// GS/ contact.note.properties
+        DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
+        Contact contact = getOriginContact(documentReceiver);
+        if (contact != null) {
+    		propertiesFromContactNote = new EmbeddedProperties(contact.getNote());
+        } else {
+        	propertiesFromContactNote = new EmbeddedProperties();
+        }
+// GS/ -end-
+
         // Recalculate the sum of the document before exporting
         DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, eclipseContext);
         DocumentSummary documentSummary = documentSummaryCalculator.calculate(invoice);
@@ -184,8 +200,33 @@ public class XRechnung extends AbstractEInvoice {
         
         // now follows the huge part for trade transaction
         SupplyChainTradeTransactionType tradeTransaction = factory.createSupplyChainTradeTransactionType();
-        HeaderTradeAgreementType tradeAgreement = factory.createHeaderTradeAgreementType()
-                .withBuyerReference(createText(invoice.getCustomerRef()));  // "Kundenreferenz"
+// GS/
+//        HeaderTradeAgreementType tradeAgreement = factory.createHeaderTradeAgreementType()
+//                .withBuyerReference(createText(invoice.getCustomerRef()));  // "Kundenreferenz"
+		HeaderTradeAgreementType tradeAgreement = factory.createHeaderTradeAgreementType();
+
+		// BT-10 (Leitweg-ID)
+		String sFieldValue = null;
+		if (!propertiesFromContactNote.isEmpty()) {
+			sFieldValue = propertiesFromContactNote.getProperty(EmbeddedProperties.PROPERTY_EINVOICE_BT10, null, null);
+		} else {
+			sFieldValue = EmbeddedProperties.VALUE_FIELD_CUSTREF;
+		}
+		if (EmbeddedProperties.VALUE_FIELD_CUSTREF.equals(sFieldValue)) {
+			sFieldValue = invoice.getCustomerRef();
+		} else if (EmbeddedProperties.VALUE_FIELD_CUSTREF_LEFT.equals(sFieldValue)) {
+			sFieldValue = EmbeddedProperties.left(invoice.getCustomerRef());
+		}
+		if (sFieldValue != null) {
+			tradeAgreement.setBuyerReference(createText(sFieldValue));
+		} else {
+/* TODO GS/ this should not be, at least for XRechnung it's a required field
+ * there shall be at least a rough validation on/after generation to inform user about missing/invalid data (in general)
+ * idea: (2 B tested) in the info dialog after generation add link(s) to online validators
+ *   to encourage user to validate the document ... maybe later on a link to a locally installed tool?
+ */
+		}
+// GS/ -end-
         tradeTransaction.setApplicableHeaderTradeAgreement(tradeAgreement);
         
         // create seller information
@@ -197,18 +238,63 @@ public class XRechnung extends AbstractEInvoice {
             tradeAgreement.setBuyerTradeParty(buyer);
         }
         
+// GS/
+        if (!propertiesFromContactNote.isEmpty()) {
+        	// BT-13 (Bestellnr.)
+	        sFieldValue = propertiesFromContactNote.getProperty(EmbeddedProperties.PROPERTY_EINVOICE_BT13, null, null);
+	        if (EmbeddedProperties.VALUE_FIELD_CUSTREF.equals(sFieldValue)) {
+	        	sFieldValue = invoice.getCustomerRef();
+	        } else if (EmbeddedProperties.VALUE_FIELD_CUSTREF_LEFT.equals(sFieldValue)) {
+	        	sFieldValue = EmbeddedProperties.left(invoice.getCustomerRef());
+	        } else if (EmbeddedProperties.VALUE_FIELD_ORDER_NAME.equals(sFieldValue)) {
+		        Transaction transaction = ContextInjectionFactory.make(Transaction.class, eclipseContext).of(invoice);
+		        if(transaction != null)
+		        	sFieldValue = Util.defaultIfEmpty(transaction.getReference(DocumentType.ORDER), null);
+	        }
+	        if (sFieldValue != null) {
+		        tradeAgreement.setBuyerOrderReferencedDocument(factory.createReferencedDocumentType()
+		        		.withIssuerAssignedID(createIdFromString(sFieldValue)));
+	        }
+        	// BT-12 (Vertragsnr.)
+	        sFieldValue = propertiesFromContactNote.getProperty(EmbeddedProperties.PROPERTY_EINVOICE_BT12, null, null);
+	        if (EmbeddedProperties.VALUE_FIELD_CUSTREF.equals(sFieldValue)) {
+	        	sFieldValue = invoice.getCustomerRef();
+	        } else if (EmbeddedProperties.VALUE_FIELD_CUSTREF_LEFT.equals(sFieldValue)) {
+	        	sFieldValue = EmbeddedProperties.left(invoice.getCustomerRef());
+	        }
+	        if (sFieldValue != null) {
+		        tradeAgreement.setContractReferencedDocument(factory.createReferencedDocumentType()
+		        		.withIssuerAssignedID(createIdFromString(sFieldValue)));
+	        }
+	        // BT-11 (Projektreferenz)
+	        sFieldValue = propertiesFromContactNote.getProperty(EmbeddedProperties.PROPERTY_EINVOICE_BT11, null, null);
+	        if (EmbeddedProperties.VALUE_FIELD_CUSTREF.equals(sFieldValue)) {
+	        	sFieldValue = invoice.getCustomerRef();
+	        } else if (EmbeddedProperties.VALUE_FIELD_CUSTREF_LEFT.equals(sFieldValue)) {
+	        	sFieldValue = EmbeddedProperties.left(invoice.getCustomerRef());
+	        }
+	        if (sFieldValue != null) {
+		        tradeAgreement.setSpecifiedProcuringProject(factory.createProcuringProjectType()
+		        		.withID(createIdFromString(sFieldValue))
+		        		.withName(createText(sFieldValue)));
+	        }
+        }
+// GS/ -end-
+        
 //        tradeAgreement.setSellerTaxRepresentativeTradeParty(value);  // Steuerbevollmächtigter des Verkäufers
 //        tradeAgreement.setSellerOrderReferencedDocument(value); // Detailangaben zur zugehörigen Auftragsbestätigung
         
         // referenced order
-        Transaction transaction = ContextInjectionFactory.make(Transaction.class, eclipseContext).of(invoice);
-        if(transaction != null) {
-            ReferencedDocumentType orderRef = factory.createReferencedDocumentType()
-                    .withIssuerAssignedID(createIdFromString(transaction.getReference(DocumentType.ORDER)));
-            // only if ID is not empty!
-            if(!StringUtils.isEmpty(transaction.getReference(DocumentType.ORDER))) {
-                tradeAgreement.setBuyerOrderReferencedDocument(orderRef);
-            }
+        if (propertiesFromContactNote.isEmpty()) { // GS/
+	        Transaction transaction = ContextInjectionFactory.make(Transaction.class, eclipseContext).of(invoice);
+	        if(transaction != null) {
+	            ReferencedDocumentType orderRef = factory.createReferencedDocumentType()
+	                    .withIssuerAssignedID(createIdFromString(transaction.getReference(DocumentType.ORDER)));
+	            // only if ID is not empty!
+	            if(!StringUtils.isEmpty(transaction.getReference(DocumentType.ORDER))) {
+	                tradeAgreement.setBuyerOrderReferencedDocument(orderRef);
+	            }
+	        }
         }
 
         // there is no contract information in Fakturama!
@@ -251,8 +337,10 @@ public class XRechnung extends AbstractEInvoice {
                 ;
 
         // TODO tradeSettlement.setPayeeTradeParty(value);   // Zahlungsempfänger
-        DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
-        Contact contact = getOriginContact(documentReceiver);
+// GS/ already used above (to read the properties from contact's note
+//        DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
+//        Contact contact = getOriginContact(documentReceiver);
+// GS/ -end-
         if (contact != null) {
             DebtorFinancialAccountType debtorAccount = createDebtorAccount(contact.getBankAccount());
 
@@ -325,27 +413,60 @@ public class XRechnung extends AbstractEInvoice {
 //                    .withURIUniversalCommunication(email)
                     .withSpecifiedTaxRegistration(createTaxNumber(invoice, ContactType.BUYER))
                     ;
+/* GS/ why not the easier way?
             Long originContactId = invoice.getReceiver() != null && !invoice.getReceiver().isEmpty() 
                     ? invoice.getReceiver().get(0).getOriginContactId() 
                     : Long.valueOf(0);
             if(originContactId != null && originContactId != 0) {
                 Contact originContact = contactsDAO.findById(originContactId);
-                String schemaId = "0088";
-                String globalId = Optional.ofNullable(originContact.getGln()).orElse(Long.valueOf(0)).toString();
-                String debtorId = documentReceiver.getCustomerNumber();
-                
-                // additional fields from customer note takes precedence over "regular" fields 
-                if(originContact.getNote() != null) {
-                    debtorId = grepFromNoteField(originContact.getNote(), ".*?Debtor ID=(\\p{Alnum}+).*", debtorId);
-                    globalId = grepFromNoteField(originContact.getNote(), ".*?Global ID=(\\p{Alnum}+).*", globalId);
-                    schemaId = grepFromNoteField(originContact.getNote(), ".*?Global schemeID=(\\d+).*", schemaId);
-                }
-                
-                if (StringUtils.isNotEmpty(globalId)) {
-                    buyer.getGlobalID().add(createIdWithSchemeFromString(globalId, StringUtils.defaultString(schemaId)));
-                } else {
-                    buyer.getID().add(createIdFromString(debtorId));
-                }
+*/
+			Contact originContact = getOriginContact(documentReceiver);
+			if (originContact != null) {
+				if (!propertiesFromContactNote.isEmpty()) {
+					// Buyer ID
+			        String sFieldValue = Util.defaultIfEmpty(
+			        		propertiesFromContactNote.getProperty(EmbeddedProperties.PROPERTY_EINVOICE_BUYER_ID),
+			        		documentReceiver.getCustomerNumber());
+					if (sFieldValue != null)
+						buyer.getID().add(createIdFromString(sFieldValue));
+					// Buyer GlobalID (+ schemeID)
+			        sFieldValue = propertiesFromContactNote.getProperty
+			        		(EmbeddedProperties.PROPERTY_EINVOICE_BUYER_GLOBALID, null, null);
+			        String schemeID = null;
+					if (sFieldValue != null) {
+						schemeID = propertiesFromContactNote.getProperty
+				        		(EmbeddedProperties.PROPERTY_EINVOICE_BUYER_GLOBALID_SCHEMEID, null, null);
+					} else {
+						// DocumentReceiver.GLN ?
+						sFieldValue = (documentReceiver.getGln() != null ? documentReceiver.getGln().toString() : null);
+						if (sFieldValue != null)
+							schemeID = "0088"; // EAN Location Code
+					}
+					if (sFieldValue != null) {
+						if (schemeID != null)
+			                buyer.getGlobalID().add(createIdWithSchemeFromString(sFieldValue, schemeID));
+						else
+			                buyer.getGlobalID().add(createIdFromString(sFieldValue));
+					}
+				} else {
+// GS/ -end-
+	                String schemaId = "0088";
+	                String globalId = Optional.ofNullable(originContact.getGln()).orElse(Long.valueOf(0)).toString();
+	                String debtorId = documentReceiver.getCustomerNumber();
+	                
+	                // additional fields from customer note takes precedence over "regular" fields 
+	                if(originContact.getNote() != null) {
+	                    debtorId = grepFromNoteField(originContact.getNote(), ".*?Debtor ID=(\\p{Alnum}+).*", debtorId);
+	                    globalId = grepFromNoteField(originContact.getNote(), ".*?Global ID=(\\p{Alnum}+).*", globalId);
+	                    schemaId = grepFromNoteField(originContact.getNote(), ".*?Global schemeID=(\\d+).*", schemaId);
+	                }
+	                
+	                if (StringUtils.isNotEmpty(globalId)) {
+	                    buyer.getGlobalID().add(createIdWithSchemeFromString(globalId, StringUtils.defaultString(schemaId)));
+	                } else {
+	                    buyer.getID().add(createIdFromString(debtorId));
+	                }
+				}
             } else {
                  buyer.getID().add(createIdFromString(documentReceiver.getCustomerNumber()));
             }
@@ -365,9 +486,17 @@ public class XRechnung extends AbstractEInvoice {
         UniversalCommunicationType email = factory.createUniversalCommunicationType()
                 // EM = Electronic mail (SMPT)
                 .withURIID(createIdWithSchemeFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_EMAIL), "EM"));
-
+// GS/ Supplier-Number
+        IDType theId = null;
+        DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
+        if (documentReceiver != null) {
+        	// DocumentReceiver.SupplierNumber ?
+        	String sFieldValue = Util.defaultIfEmpty(documentReceiver.getSupplierNumber(), null);
+        	if (sFieldValue != null)
+        		theId = createIdFromString(sFieldValue);
+        }
         TradePartyType seller = factory.createTradePartyType()
-//              .withID(createIdFromString(""))  // Kennung des Verkäufers (Durch den Kunden zugewiesene Lieferantennummer)
+              .withID(theId)  // Kennung des Verkäufers (Durch den Kunden zugewiesene Lieferantennummer)
               .withName(createText(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME)))
 //              .withDescription(createText(""))  // Sonstige rechtliche Informationen des Verkäufers
               .withSpecifiedLegalOrganization(createLegalOrganizationType(invoice))
@@ -377,11 +506,13 @@ public class XRechnung extends AbstractEInvoice {
               .withSpecifiedTaxRegistration(createTaxNumber(invoice, ContactType.SELLER))
               .withSpecifiedLegalOrganization(createLegalOrganization(invoice, ContactType.SELLER))
                 ;
+/* TODO GS/ is this really correct???
         if(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR) == null) {
             seller.getGlobalID().add(createIdFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXNR)));
         } else {
             seller.getGlobalID().add(createIdWithSchemeFromString(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR), "0088"));  // "EAN" according to ISO 6523
         }
+*/
         
         return seller;
     }
@@ -762,6 +893,7 @@ public class XRechnung extends AbstractEInvoice {
             .withDueDateDateTime(createDateTime(out));
         
         DocumentReceiver documentReceiver = addressManager.getBillingAdress(invoice);
+/* GS/ use the value from documentReceiver as it might be overwritten for this invoice (or even no contact given / manual receiver entry)
         Contact contact = getOriginContact(documentReceiver);
         if (contact != null) {
     
@@ -769,8 +901,13 @@ public class XRechnung extends AbstractEInvoice {
                     ? factory.createIDType().withValue(contact.getMandateReference()).withSchemeID(
                             preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CREDITORID))
                     : null;
+*/
+            IDType id = StringUtils.isNotBlank(documentReceiver.getMandateReference())
+                    ? factory.createIDType().withValue(documentReceiver.getMandateReference()).withSchemeID(
+                            preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CREDITORID))
+                    : null;
             tradePaymentTerms.setDirectDebitMandateID(id);
-        }
+//        }
         return tradePaymentTerms;
     }
 
@@ -1029,7 +1166,9 @@ public class XRechnung extends AbstractEInvoice {
         case BUYER:
             DocumentReceiver billingAddress = addressManager.getBillingAdress(invoice);
             // attention! Mind the manualAddress!
-            if (billingAddress.getManualAddress() == null) {
+// GS/ parsing w/o respecting the configurable pattern does not make much sense
+//            if (billingAddress.getManualAddress() == null) {
+            if (true || billingAddress.getManualAddress() == null) {
                 retval = factory.createTradeAddressType()     //
                         .withPostcodeCode(createCode(billingAddress.getZip()))  //
                         .withLineOne(createText(billingAddress.getStreet()))    //

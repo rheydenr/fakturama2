@@ -56,6 +56,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -83,6 +84,7 @@ import com.ibm.icu.text.NumberFormat;
 import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.converter.CommonConverter;
+import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
@@ -95,14 +97,19 @@ import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
+import com.sebulli.fakturama.misc.EmbeddedProperties;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
+import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
+import com.sebulli.fakturama.model.DocumentReceiver;
+import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.office.FileOrganizer.PathOption;
 import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.EInvoiceNoticeDialog;
 
 /**
  * This class fills an OpenOffice template and replaces all the
@@ -135,6 +142,12 @@ public class OfficeDocument {
     
     @Inject
     private DocumentReceiverDAO documentReceiverDao;
+
+ // GS/
+    @Inject
+    protected IDocumentAddressManager addressManager;
+    @Inject
+    protected ContactsDAO contactsDAO;
 
     @Inject
     private ILocaleService localeUtil;
@@ -383,10 +396,42 @@ public class OfficeDocument {
                 }
             }
             
-            if (!messages.isEmpty() && !preferences.getString(Constants.DISPLAY_SUCCESSFUL_PRINTING).contentEquals(MessageDialogWithToggle.ALWAYS)) {
-                MessageDialogWithToggle.openInformation(shell, msg.dialogMessageboxTitleInfo, String.join("\n", messages), 
-                        null, false, preferences, Constants.DISPLAY_SUCCESSFUL_PRINTING);
-            }
+// GS/ show info for e-invoice (if desired)
+            // get document -> contact -> EmbeddedProperties
+			EmbeddedProperties embeddedProperties = null;
+			if (document != null && document.getBillingType().isINVOICE()) {
+				DocumentReceiver documentReceiver = addressManager.getBillingAdress(document);
+				if (documentReceiver != null && documentReceiver.getOriginContactId() != null) {
+					Contact contact = contactsDAO.findById(documentReceiver.getOriginContactId());
+					if (contact != null) {
+						embeddedProperties = new EmbeddedProperties(contact.getNote());
+						contact = null;
+					}
+					documentReceiver = null;
+				}
+				if (embeddedProperties != null
+						&& embeddedProperties.getProperty(EmbeddedProperties.PROPERTY_EINVOICE_NOTICE, null, null) == null
+						&& embeddedProperties.getProperty(EmbeddedProperties.PROPERTY_EINVOICE_MAILTO, null, null) == null
+						&& embeddedProperties.getProperty(EmbeddedProperties.PROPERTY_EINVOICE_URL, null, null) == null
+						) {
+					// means: no notification
+					embeddedProperties = null;
+				}
+			}
+			if (embeddedProperties != null) {
+				EInvoiceNoticeDialog einDialog = new EInvoiceNoticeDialog(shell,
+						msg.dialogMessageboxTitleInfo,
+						(!messages.isEmpty() ? String.join("\n", messages) : ""),
+						embeddedProperties);
+				einDialog.open();
+				einDialog = null;
+			} else {
+// GS/ -end-
+	            if (!messages.isEmpty() && !preferences.getString(Constants.DISPLAY_SUCCESSFUL_PRINTING).contentEquals(MessageDialogWithToggle.ALWAYS)) {
+	                MessageDialogWithToggle.openInformation(shell, msg.dialogMessageboxTitleInfo, String.join("\n", messages), 
+	                        null, false, preferences, Constants.DISPLAY_SUCCESSFUL_PRINTING);
+	            }
+			} // GS/
         }
     }
 
