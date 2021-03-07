@@ -781,6 +781,7 @@ public class Messages {
 	public String preferencesOfficeOdtpdfOnlyodt;
 	public String preferencesOfficeOdtpdfOnlypdf;
 	public String preferencesOfficeStartnewthread;
+	public String preferencesOfficeMailclientcall;
 	public String preferencesOptionalitems;
 	public String preferencesOptionalitemsItemlabel;
 	public String preferencesOptionalitemsLabel;

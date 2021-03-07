@@ -2,6 +2,7 @@
  * 
  */
 package com.sebulli.fakturama.util;
+// TODO GS/ fix workaround for missing fields when available in DB
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -385,6 +386,60 @@ public class ContactUtil {
 		return addressString;
 	}
 	
+	/**
+	 * GS/
+	 * extension/workaround for missing fields/placeholders: nameaddon | addressaddon | cityaddon | consultant
+	 * @param address
+	 * @param contact
+	 * @param separator
+	 * @return formatted address or null if address or contact is null
+	 */
+	public String getAddressAsString(final Address address, final Contact contact, String separator) {
+		String addressFormat = "";
+		String addressString = "";
+		// Get the format string
+		addressFormat = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_ADDRESS);
+		if (address == null || contact == null) {
+			// if a manual address is set we use it
+			return null;
+		} else {
+			// Hide the following countries
+			String hideCountriesString = eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES);
+			String[] hideCountries = hideCountriesString.split(",");
+			for (String hideCountry : hideCountries) {
+				String hiddenCountry = "";
+				if (hideCountry.length() <= 3) {
+					Optional<ULocale> hiddenLocale = localeUtil.findByCode(hideCountry);
+					// if(hiddenLocale.isPresent()) {
+					hiddenCountry = hiddenLocale.orElse(ULocale.US).getISO3Country();
+					// }
+				}
+
+				if (address != null && (StringUtils.equalsIgnoreCase(address.getCountryCode(), hideCountry)
+						|| StringUtils.equalsIgnoreCase(
+								localeUtil.findByCode(address.getCountryCode()).orElse(ULocale.US).getISO3Country(),
+								hiddenCountry))) {
+					addressFormat = replaceAllWithSpace(addressFormat, "\\{country\\}", "{removed}");
+					addressFormat = replaceAllWithSpace(addressFormat, "\\{countrycode\\}", "{removed}");
+				}
+			}
+
+			// Get each line
+			String[] addressFormatLines = addressFormat.split("<br>");
+			for (String addressFormatLine : addressFormatLines) {
+				String formatedAddressLine = replaceFormatString(addressFormatLine, address, contact);
+				String trimmedAddressLine = formatedAddressLine.trim();
+				if ((formatedAddressLine.equals(addressFormatLine) || !trimmedAddressLine.isEmpty())
+						&& !addressString.isEmpty()) {
+					addressString += separator;
+				}
+
+				addressString += trimmedAddressLine;
+			}
+		}
+		return addressString;
+	}
+	
     /**
 	 * Get the address as one String. Use a specified separator.
 	 *
@@ -708,6 +763,61 @@ public class ContactUtil {
 			formatString = replaceAllWithSpace(formatString, "\\{countrycode\\}", countrycode);
 
 			formatString = replaceAllWithSpace(formatString, "\\{removed\\}", "");
+
+// GS/
+			formatString = replaceAllWithSpace(formatString, "\\{nameaddon\\}", contact.getNameAddon());
+			formatString = replaceAllWithSpace(formatString, "\\{addressaddon\\}", contact.getAddressAddon());
+			formatString = replaceAllWithSpace(formatString, "\\{cityaddon\\}", contact.getCityAddon());
+			formatString = replaceAllWithSpace(formatString, "\\{consultant\\}", contact.getConsultant());
+		return formatString;
+	}
+
+	
+	/** GS (new placeholders: nameaddon | addressaddon | cityaddon | consultant)
+	 * Replaces the placeholders of a string with information from the given {@link Contact}.
+	 * 
+	 * @param formatString
+	 *            The string with placeholders
+	 * @param address the given {@link Address}
+	 * @param contact the given {@link Contact}
+	 * @return the formatted string.
+	 */
+	public String replaceFormatString(String formatString, final Address address, final Contact contact) {
+		if(address == null || contact == null) {
+			return "";
+		}
+		// Replace the placeholders
+		formatString = replaceAllWithSpace(formatString, "\\{company\\}", contact.getCompany());
+		formatString = replaceAllWithSpace(formatString, "\\{gender\\}", getGenderString(contact).replaceAll("---", ""));
+		formatString = replaceAllWithSpace(formatString, "\\{title\\}", contact.getTitle());
+		formatString = replaceAllWithSpace(formatString, "\\{firstname\\}", contact.getFirstName());
+		formatString = replaceAllWithSpace(formatString, "\\{lastname\\}", contact.getName());
+		// GS/ new placeholders
+		formatString = replaceAllWithSpace(formatString, "\\{nameaddon\\}", address.getName());
+		formatString = replaceAllWithSpace(formatString, "\\{addressaddon\\}", address.getAddressAddon());
+		formatString = replaceAllWithSpace(formatString, "\\{cityaddon\\}", address.getCityAddon());
+		formatString = replaceAllWithSpace(formatString, "\\{consultant\\}", address.getLocalConsultant());
+		
+		formatString = replaceAllWithSpace(formatString, "\\{street\\}", address.getStreet());
+		formatString = replaceAllWithSpace(formatString, "\\{zip\\}", address.getZip());
+		formatString = replaceAllWithSpace(formatString, "\\{city\\}", address.getCity());
+		
+		// determine the country from country code
+		if(address.getCountryCode() != null) {
+			ULocale cLocale = new ULocale.Builder().setRegion(address.getCountryCode()).build();
+			formatString = replaceAllWithSpace(formatString, "\\{country\\}", cLocale.getDisplayCountry());
+		} else {
+			formatString = replaceAllWithSpace(formatString, "\\{country\\}", "");
+		}
+		
+		String countrycode = StringUtils.defaultString(address.getCountryCode());
+
+		if (!countrycode.isEmpty() && !StringUtils.containsAny(countrycode, eclipsePrefs.getString(Constants.PREFERENCES_CONTACT_FORMAT_HIDE_COUNTRIES).split(","))) {
+			countrycode += "-";
+		}
+		formatString = replaceAllWithSpace(formatString, "\\{countrycode\\}", countrycode);
+
+		formatString = replaceAllWithSpace(formatString, "\\{removed\\}", "");
 
 		return formatString;
 	}

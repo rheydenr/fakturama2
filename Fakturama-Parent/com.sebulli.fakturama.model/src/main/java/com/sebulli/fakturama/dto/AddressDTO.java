@@ -1,4 +1,5 @@
 package com.sebulli.fakturama.dto;
+//TODO GS/ fix workaround for missing fields when available in DB
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -21,6 +22,11 @@ public class AddressDTO {
 	private Long gln = null;
 	private String manualAddress = null;
 	private String name = null;
+// GS/
+	private String consultant = null;
+// TODO GS/ to be added in DB
+	private String nameAddon = null;
+	private String addressAddon = null;
     
     public static AddressDTO from(DocumentReceiver documentReceiver) {
     	AddressDTO addressDTO = new AddressDTO()
@@ -35,7 +41,9 @@ public class AddressDTO {
 			.withTitle(documentReceiver.getTitle())
 			.withStreet(documentReceiver.getStreet())
 			.withCity(documentReceiver.getCity())
+			.withCityAddon(documentReceiver.getCityAddon())
 			.withZip(documentReceiver.getZip())
+			.withConsultant(documentReceiver.getConsultant())
 			;
     	return addressDTO;
     }
@@ -52,7 +60,9 @@ public class AddressDTO {
 					.withCountryCode(specificAddress.getCountryCode()) //
 					.withStreet(specificAddress.getStreet()) //
 					.withCity(specificAddress.getCity()) //
-					.withZip(specificAddress.getZip());
+					.withCityAddon(specificAddress.getCityAddon()) //
+					.withZip(specificAddress.getZip())
+					.withConsultant(specificAddress.getLocalConsultant());
 		}
 		return addressDTO;
 	}
@@ -185,6 +195,41 @@ public class AddressDTO {
 		return this;
 	}
 
+// GS/
+	public String getCityAddon() {
+		return cityAddon;
+	}
+	public AddressDTO withCityAddon(String cityAddon) {
+		this.cityAddon = cityAddon;
+		return this;
+	}
+
+	public String getNameAddon() {
+		return nameAddon;
+	}
+	public AddressDTO withNameAddon(String nameAddon) {
+		this.nameAddon = nameAddon;
+		return this;
+	}
+
+	public String getAddressAddon() {
+		return addressAddon;
+	}
+	public AddressDTO withAddressAddon(String addressAddon) {
+		this.addressAddon = addressAddon;
+		return this;
+	}
+
+	public String getConsultant() {
+		return consultant;
+	}
+	public AddressDTO withConsultant(String consultant) {
+		this.consultant = consultant;
+		return this;
+	}
+
+// GS/ -end-
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

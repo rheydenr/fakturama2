@@ -520,6 +520,12 @@ public class Constants {
     public static final String PREFERENCES_OPENOFFICE_PATH = "OPENOFFICE_PATH";
 	public static final String PREFERENCES_QRK_EXPORT_PATH = "QRK_EXPORT_PATH";
 
+    /**
+     * GS/  
+     */
+    public static final String PREFERENCES_OPENOFFICE_MAILCLIENTCALL = "OPENOFFICE_MAILCLIENTCALL";
+
+	
 	public static final String PROPERTY_CONTACTS_CLICKHANDLER = "fakturama.datatable.contacts.clickhandler";
 
 	public static final String PROPERTY_PRODUCTS_CLICKHANDLER = "fakturama.datatable.products.clickhandler";

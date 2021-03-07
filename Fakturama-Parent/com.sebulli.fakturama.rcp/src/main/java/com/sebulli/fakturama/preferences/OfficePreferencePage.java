@@ -109,6 +109,10 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		
 		//T: Preference page "Office" - Label checkbox "Start Office in a new thread"
 		addField(new BooleanFieldEditor(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, msg.preferencesOfficeStartnewthread, getFieldEditorParent()));
+
+// GS/ mail client call
+		//T: Preference page "Office"
+		addField(new StringFieldEditor(Constants.PREFERENCES_OPENOFFICE_MAILCLIENTCALL, msg.preferencesOfficeMailclientcall, getFieldEditorParent()));
 	}
 	
 	/**
@@ -126,6 +130,8 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_PDF_PATH_FORMAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENPDF, write);
+// GS/
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_OPENOFFICE_MAILCLIENTCALL, write);
 	}
 	
     @Synchronize
@@ -148,7 +154,8 @@ public class OfficePreferencePage extends FieldEditorPreferencePage implements I
 		node.setDefault(Constants.PREFERENCES_ADDITIONAL_OPENOFFICE_PDF_PATH_FORMAT, "");
 		node.setDefault(Constants.PREFERENCES_OPENOFFICE_START_IN_NEW_THREAD, true);
 		node.setDefault(Constants.PREFERENCES_OPENPDF, false);
-		
+// GS/		
+		node.setDefault(Constants.PREFERENCES_OPENOFFICE_MAILCLIENTCALL, "mailto\\:{to}{subject\\:e|?subject\\=}{body\\:e|&body\\=}{attachment\\:e|&attach\\=}");
 		// Set the default value
 		// Search for the Office installation only if there is no path set.
 		String oOHome = node.getString(Constants.PREFERENCES_OPENOFFICE_PATH);
