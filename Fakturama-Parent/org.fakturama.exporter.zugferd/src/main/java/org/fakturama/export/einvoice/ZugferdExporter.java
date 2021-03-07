@@ -24,9 +24,6 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.fakturama.export.facturx.XRechnungCreator;
 import org.osgi.service.component.annotations.Component;
@@ -34,7 +31,6 @@ import org.osgi.service.component.annotations.Component;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.EmbeddedProperties;
-import com.sebulli.fakturama.misc.Util;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentReceiver;
@@ -42,8 +38,6 @@ import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.office.IPdfPostProcessor;
 import com.sebulli.fakturama.office.TargetFormat;
-import com.sebulli.fakturama.parts.DocumentReceiverEditorDialog;
-import com.sebulli.fakturama.parts.EInvoiceNoticeDialog;
 
 /**
  * This is the main class for the exporter interface for the ZUGFeRD invoice. At the
