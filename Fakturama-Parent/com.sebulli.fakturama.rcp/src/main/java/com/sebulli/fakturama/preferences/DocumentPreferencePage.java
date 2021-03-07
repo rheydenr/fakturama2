@@ -108,8 +108,7 @@ public class DocumentPreferencePage extends FieldEditorPreferencePage implements
 		addField(new StringFieldEditor(Constants.PREFERENCES_DEPOSIT_TEXT, msg.preferencesDocumentLabelDepositrow, getFieldEditorParent()));
 		addField(new StringFieldEditor(Constants.PREFERENCES_FINALPAYMENT_TEXT, msg.preferencesDocumentLabelFinalrow, getFieldEditorParent()));
 // GS/
-// TODO GS/ i18n		addField(new IntegerFieldEditor(Constants.PREFERENCES_DOCUMENT_PRODUCTLIST_VISIBLE_ROWS, msg.preferencesDocumentProductlistVisiblerows, getFieldEditorParent(), 2));
-		addField(new IntegerFieldEditor(Constants.PREFERENCES_DOCUMENT_PRODUCTLIST_VISIBLE_ROWS, "Anzahl sichtbarer Zeilen in der Artikelliste (5-99)", getFieldEditorParent(), 2));
+		addField(new IntegerFieldEditor(Constants.PREFERENCES_DOCUMENT_PRODUCTLIST_VISIBLE_ROWS, msg.preferencesDocumentProductlistVisiblerows, getFieldEditorParent(), 2));
 	}
 
     /* (non-Javadoc)

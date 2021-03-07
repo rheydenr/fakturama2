@@ -699,6 +699,7 @@ public class Messages {
 	public String preferencesDocumentLabelCompare;
 	public String preferencesDocumentLabelDepositrow;
 	public String preferencesDocumentLabelFinalrow;
+	public String preferencesDocumentProductlistVisiblerows;
 	public String preferencesDocumentNumberofremarkfields;
 	public String preferencesDocumentOnlycontactid;
 	public String preferencesDocumentShowcustomerstat;
