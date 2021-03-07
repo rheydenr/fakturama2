@@ -1,7 +1,15 @@
 
 package com.sebulli.fakturama.model;
+//TODO GS/ fix workaround for missing fields when available in DB
 
 import java.util.Optional;
+
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+
+import com.sebulli.fakturama.util.ContactUtil;
 
 public class DocumentAddressManager implements IDocumentAddressManager {
     
@@ -9,6 +17,10 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 	 * the model factory
 	 */
 	private FakturamaModelFactory modelFactory = FakturamaModelPackage.MODELFACTORY;
+	
+    @Inject
+    private IEclipseContext context;
+
 
 	/**
 	 * Create a new {@link DocumentReceiver} from a contact address for a given
@@ -39,6 +51,14 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		documentReceiver.setPhone(address.getPhone());
 		documentReceiver.setFax(address.getFax());
 		documentReceiver.setConsultant(address.getLocalConsultant());
+// GS/ additional fields
+		documentReceiver.setCityAddon(address.getCityAddon());
+// GS/ workaround for missing fields (nameAddon and addressAddon)
+		if (address.getName() != null || address.getAddressAddon() != null) {
+			ContactUtil contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+			String manualAddress = contactUtil.getAddressAsString(address, contact, "\n");
+			documentReceiver.setManualAddress(manualAddress);
+		}
 
 		// copy fields from contact
 		documentReceiver.setOriginContactId(contact.getId());
@@ -118,7 +138,14 @@ public class DocumentAddressManager implements IDocumentAddressManager {
 		// therefore the filter condition contains multiple types
 		BillingType filterBillingType;
 		switch (billingType) {
-        case CREDIT:
+// GS/ simplify (if address is not DELIVERY, it's INVOICE)
+		case DELIVERY:
+			filterBillingType = billingType;
+			break;
+		default:
+			filterBillingType = BillingType.INVOICE;
+/* GS/ 
+		case CREDIT:
         case CONFIRMATION:
         case DUNNING:
         case OFFER:
@@ -129,19 +156,29 @@ public class DocumentAddressManager implements IDocumentAddressManager {
         default:
             filterBillingType = billingType;
             break;
+*/
         }
 		Optional<DocumentReceiver> documentReceiver = document.getReceiver().stream()
 				.filter(rcv -> rcv.getBillingType().compareTo(filterBillingType) == 0).findFirst();
 		
 		// FALLBACK: Use billing type of the given document
+// GS/ fallback: use the first contact found of non-DELIVERY billing type (if there's only one address we won't get here anyway)
+		if(!documentReceiver.isPresent()) {
+			documentReceiver = document.getReceiver().stream()
+					.filter(rcv -> rcv.getBillingType().compareTo(BillingType.DELIVERY) != 0).findFirst();
+		}
+/* GS/
 		if(!documentReceiver.isPresent()) {
 			documentReceiver = document.getReceiver().stream()
 					.filter(rcv -> rcv.getBillingType().compareTo(document.getBillingType()) == 0).findFirst();
 		}
+*/
 		return documentReceiver.orElse(null);
 	}
 
+
 	@Override
+// GS/ obsolete/unused with new address handling
 	public Document addOrReplaceReceiverToDocument(Document document, DocumentReceiver documentReceiver) {
 		Optional<DocumentReceiver> existingReceiver = document.getReceiver().stream()
 				.filter(r -> r.getBillingType().compareTo(documentReceiver.getBillingType()) == 0).findAny();

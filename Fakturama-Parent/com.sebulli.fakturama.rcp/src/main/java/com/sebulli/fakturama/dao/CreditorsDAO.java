@@ -114,9 +114,22 @@ public class CreditorsDAO extends AbstractDAO<Creditor> {
         /*
          * Create a list of DebitorAddresses. This is done by creating at least one
          * entry (for the main address) and some child entries for other matching addresses.
+		 * 
+		 * GS/ nope, add ONLY addresses that are:
+		 *   - not flagged as deleted
+		 *   - untyped
+		 *   - of correct type
          */
         for (Creditor debitor : debitorsFromDb) {
             List<Address> addresses = debitor.getAddresses();
+// GS/ respect deleted flag and ONLY suitable addresses
+ 			if (addresses.size() >= 1) {
+ 				addresses.subList(0, addresses.size())
+ 					.stream()
+ 					.filter(adr -> !adr.getDeleted() && (adr.getContactTypes().isEmpty() || adr.getContactTypes().contains(contactType)) )
+ 					.forEach(adr -> treeItems.add(createDebitorTreeItem(debitor, adr)));
+ 			}
+/* GS/
             DebitorAddress treeItemDebitorAddress;
             if (addresses.size() >= 1) {
                 // create the first entry for a debitor
@@ -130,6 +143,7 @@ public class CreditorsDAO extends AbstractDAO<Creditor> {
                 }
                 treeItems.add(treeItemDebitorAddress);
             }
+*/
         }
 
         return treeItems;
