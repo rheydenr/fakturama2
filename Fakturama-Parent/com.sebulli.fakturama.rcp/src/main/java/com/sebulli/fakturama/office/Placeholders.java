@@ -547,8 +547,7 @@ public class Placeholders {
 		}
 		
 		// Encode some special characters
-		retval = encodeEntities(retval);
-		return retval;
+		return encodeEntities(retval);
 	}
 
 	private Integer extractLengthFromParameter(String par, Integer defaultValue) {

@@ -268,12 +268,6 @@ hier klingt vor allem das interessant:
 		this.totalNet = totalNet;
 	}
 
-	/**
-	 * @param totalVat the totalVat to set
-	 */
-	public void setTotalVat(MonetaryAmount totalVat) {
-		this.totalVat = totalVat;
-	}
 
 	/**
 	 * @param totalGross the totalGross to set
@@ -337,20 +331,9 @@ hier klingt vor allem das interessant:
 	public double getTotalQuantity() {
 		return totalQuantity;
 	}
-
-	/**
-	 * @param totalQuantity the totalQuantity to set
-	 */
-	public void setTotalQuantity(double totalQuantity) {
-		this.totalQuantity = totalQuantity;
-	} 
 	
 	public MonetaryAmount getTotalDiscount() {
         return totalDiscount;
-    }
-
-    public void setTotalDiscount(MonetaryAmount totalDiscount) {
-        this.totalDiscount = totalDiscount;
     }
 
     public VatSummarySet getVatSummary() {
@@ -364,5 +347,18 @@ hier klingt vor allem das interessant:
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
+	}
+
+	public void addQuantity(Double quantity) {
+		this.totalQuantity += quantity;
+		
+	}
+
+	public void addDiscount(MonetaryAmount totalAllowance) {
+		this.totalDiscount = this.totalDiscount.add(totalAllowance);
+	}
+
+	public void addVat(MonetaryAmount itemVatAmount) {
+		this.totalVat = this.totalVat.add(itemVatAmount);
 	}
 }
