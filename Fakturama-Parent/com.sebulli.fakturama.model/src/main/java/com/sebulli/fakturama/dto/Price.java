@@ -268,7 +268,7 @@ public class Price {
 		// Calculate net from gross...
 		if (asGross) {
 			this.unitGross = this.unitPrice;
-			this.unitNet = this.unitPrice.divide(1 + vatPercent + Optional.ofNullable(salesEqTaxPercent).orElse(NumberUtils.DOUBLE_ZERO)); //.with(getRounding());
+			this.unitNetDiscounted = this.unitGross.multiply(1-this.discount).divide(1 -this.discount + vatPercent + Optional.ofNullable(salesEqTaxPercent).orElse(NumberUtils.DOUBLE_ZERO)); //.with(getRounding());
 		}
 		else {
 		    // ...or gross from net
@@ -298,74 +298,71 @@ public class Price {
 		// But only if the Net value is still a rounded value and the gross is not,
 		// then the rounded gross value is calculated from rounded net and VAT. 
 		if (asGross) {
-			this.unitNetRounded = this.unitGross.divide(1 + vatPercent).with(getRounding());
-
-			this.unitAllowance = this.unitNetRounded.multiply(this.discount).with(getRounding());
-			this.totalAllowance = this.unitNetRounded.multiply(this.quantity).multiply(this.discount).with(getRounding());
 
 			// Calculate the discounted values and use the quantity
-			this.unitNetDiscounted = this.unitGross.divide(1 + vatPercent).multiply(discountFactor);
+			this.unitNet = this.unitNetDiscounted.divide(discountFactor);
+			this.unitNetRounded = this.unitNet.with(getRounding());
+			this.unitNetDiscountedRounded = unitNetDiscounted.with(getRounding());
 
 			// Calculate the absolute VAT value from gross value and VAT in percent
 			this.unitVat = this.unitGross.multiply(vatPercent).divide(1+vatPercent);
-			this.unitVatDiscounted = unitNetDiscounted.multiply(vatPercent);
-			this.unitSalesEqTaxDiscounted = this.unitSalesEqTax.multiply(discountFactor);
-			
-			this.unitNetDiscountedRounded = unitNetRounded.add(unitAllowance);
-			this.unitGrossDiscounted = this.unitGross.multiply(discountFactor);
-
-			// Calculate the total values and use the quantity
-			this.totalNet = unitNetDiscounted.multiply(this.quantity);
-			this.unitVatDiscountedRounded = unitNetDiscountedRounded.multiply(vatPercent).with(getRounding());
-			this.totalVat = this.unitVatDiscountedRounded.multiply(this.quantity);
-			this.totalSalesEqTax = this.unitSalesEqTax.multiply(this.quantity * discountFactor);
-
-			this.unitGrossRounded = unitGross.with(getRounding());
 			this.unitVatRounded = unitVat.with(getRounding());  // w/o discount!
+			this.unitVatDiscounted = unitVat.multiply(discountFactor);
+			this.unitVatDiscountedRounded = unitNetDiscountedRounded.multiply(vatPercent).with(getRounding());
+			
 			this.unitSalesEqTaxRounded = unitSalesEqTax.with(getRounding());
-
-			this.unitGrossDiscountedRounded = unitNetDiscountedRounded.add(this.unitVatDiscountedRounded);
+			this.unitSalesEqTaxDiscounted = this.unitSalesEqTax.multiply(discountFactor);
 			this.unitSalesEqTaxDiscountedRounded = unitSalesEqTaxDiscounted.with(getRounding());
 
-			this.totalGrossRounded = unitGrossDiscountedRounded.multiply(quantity);
-			this.totalVatRounded = unitVatDiscountedRounded.multiply(quantity);
+			this.unitGrossRounded = unitGross.with(getRounding());
+			this.unitGrossDiscounted = this.unitGross.multiply(discountFactor);
+			this.unitGrossDiscountedRounded = this.unitGross.add(unitAllowance).with(getRounding());
+		
+			this.unitAllowance = this.unitNetDiscountedRounded.multiply(this.discount).divide(discountFactor).with(getRounding());
+			this.totalAllowance = this.unitNetDiscountedRounded.multiply(this.quantity).multiply(this.discount).with(getRounding());
+
+			// Calculate the total values and use the quantity
+			this.totalNet = unitNetDiscountedRounded.multiply(this.quantity);
+			this.totalNetRounded = this.unitNetDiscountedRounded.multiply(quantity).with(getRounding());
+			this.totalGross = (unitGrossDiscountedRounded).multiply(this.quantity);
+			this.totalGrossRounded =  (unitNetDiscountedRounded.add(unitVatRounded)).multiply(this.quantity);
+			this.totalSalesEqTax = this.unitSalesEqTax.multiply(this.quantity * discountFactor);
 			this.totalSalesEqTaxRounded = totalSalesEqTax.with(getRounding());
-			this.totalGross = this.unitGrossDiscountedRounded.multiply(this.quantity);
-			this.totalNetRounded = this.unitNetDiscountedRounded.multiply(quantity);
+			this.totalVat = this.unitVatDiscountedRounded.multiply(this.quantity);
+			this.totalVatRounded = totalGrossRounded.subtract(totalNetRounded).subtract(totalSalesEqTaxRounded);
 		} else {
 
 			// Calculate the absolute VAT value from net value and VAT in percent
 			this.unitVat = this.unitNet.multiply(vatPercent);
+			this.unitVatRounded = unitVat.with(getRounding());
+			this.unitVatDiscounted = this.unitVat.multiply(discountFactor);
+			this.unitVatDiscountedRounded = unitVatDiscounted.with(getRounding());
 
 			// Calculate the discounted values and use the quantity
-			this.unitNetDiscounted = this.unitNet.multiply(discountFactor);
-			this.unitVatDiscounted = this.unitVat.multiply(discountFactor);
-			this.unitSalesEqTaxDiscounted = this.unitSalesEqTax.multiply(discountFactor);
-			this.unitGrossDiscounted = this.unitGross.multiply(discountFactor);
-
-			// Calculate the total values and use the quantity
-			this.totalNet = this.unitNet.multiply(discountFactor).multiply(this.quantity);
-			this.totalVat = this.unitVat.multiply(this.quantity * discountFactor);
-			this.totalSalesEqTax = this.unitSalesEqTax.multiply(this.quantity * discountFactor);
-			this.totalGross = this.unitGross.multiply(this.quantity * discountFactor);
-
-			this.totalAllowance = this.unitNet.multiply(this.quantity).multiply(this.discount).with(getRounding());
-			this.unitAllowance = this.unitNet.multiply(this.discount).with(getRounding());
-		    
 			this.unitNetRounded = unitNet.with(getRounding());
-			this.unitVatRounded = unitVat.with(getRounding());
-			this.unitSalesEqTaxRounded = unitSalesEqTax.with(getRounding());
-			this.unitGrossRounded = this.unitNet.add(this.unitVat).add(this.totalSalesEqTax).with(getRounding());
-
+			this.unitNetDiscounted = this.unitNet.multiply(discountFactor);
 			this.unitNetDiscountedRounded = unitNetDiscounted.with(getRounding());
-			this.unitVatDiscountedRounded = unitVatDiscounted.with(getRounding());
+			
+			this.unitSalesEqTaxRounded = unitSalesEqTax.with(getRounding());
+			this.unitSalesEqTaxDiscounted = this.unitSalesEqTax.multiply(discountFactor);
 			this.unitSalesEqTaxDiscountedRounded = unitSalesEqTaxDiscounted.with(getRounding());
+			
+			this.unitGrossRounded = this.unitNetRounded.add(this.unitVatRounded).add(this.unitSalesEqTax).with(getRounding());
+			this.unitGrossDiscounted = this.unitGross.multiply(discountFactor);
 			this.unitGrossDiscountedRounded = this.unitNetDiscounted.add(this.unitVatDiscounted).add(this.unitSalesEqTaxDiscounted).with(getRounding());
 
-			this.totalNetRounded = unitNetDiscountedRounded.multiply(this.quantity);
-			this.totalVatRounded = totalVat.with(getRounding());
+			this.unitAllowance = this.unitNet.multiply(this.discount).with(getRounding());
+			this.totalAllowance = this.unitAllowance.multiply(this.quantity);
+
+			// Calculate the total values and use the quantity
+			this.totalNet = this.unitNetDiscounted.multiply(this.quantity);
+			this.totalNetRounded = totalNet.with(getRounding());
+			this.totalGross = this.unitGrossDiscounted.multiply(this.quantity);
+			this.totalGrossRounded = this.unitGrossDiscountedRounded.multiply(this.quantity).with(getRounding());
+			this.totalSalesEqTax = this.unitSalesEqTax.multiply(this.quantity * discountFactor);
 			this.totalSalesEqTaxRounded = totalSalesEqTax.with(getRounding());
-			this.totalGrossRounded = (this.unitNetDiscountedRounded.add(this.unitVatRounded).add(unitSalesEqTaxDiscountedRounded)).multiply(this.quantity);
+			this.totalVat = this.unitVatDiscounted.multiply(this.quantity);
+			this.totalVatRounded = totalGrossRounded.subtract(totalNetRounded).subtract(totalSalesEqTaxRounded);
 		}
 	}
 

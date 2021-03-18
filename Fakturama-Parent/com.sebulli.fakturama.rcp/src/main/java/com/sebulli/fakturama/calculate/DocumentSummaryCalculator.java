@@ -16,14 +16,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.dao.DocumentReceiverDAO;
+import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.DocumentSummaryParam;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySet;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.DocumentItem;
@@ -44,6 +47,9 @@ public class DocumentSummaryCalculator {
 	@Inject
 	private IEclipseContext ctx;
 
+    @Inject
+    protected IPreferenceStore defaultValuePrefs;
+
     /**
      * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
      */
@@ -55,7 +61,6 @@ public class DocumentSummaryCalculator {
 	    this((CurrencyUnit)context.get(CURRENCY_CODE));
 	}
 
-	
 	public DocumentSummaryCalculator(boolean useSET) {
 	    this(useSET, DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
@@ -88,9 +93,7 @@ public class DocumentSummaryCalculator {
                 shipping != null ? shipping.getAutoVat() : dataSetDocument.getShippingAutoVat(), 
                 Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO), noVatReference, 
                 scaleFactor, netGross, deposit);
-    	
     }
-    
 
 	public DocumentSummary calculate(List<DocumentItem> items, Shipping shipping, ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, 
             int netGross, MonetaryAmount deposit) {
@@ -145,7 +148,14 @@ public class DocumentSummaryCalculator {
 		DataUtils dataUtils = ContextInjectionFactory.make(DataUtils.class, ctx);
         CurrencyUnit currencyUnit = dataUtils.getDefaultCurrencyUnit();
         DocumentSummary retval = new DocumentSummary(currencyUnit);
-        MonetaryRounding rounding = dataUtils.getRounding(currencyUnit);  
+        MonetaryRounding rounding = dataUtils.getRounding(currencyUnit);
+ 
+        boolean useGross;
+        if (param.getNetGross() == DocumentSummary.ROUND_NOTSPECIFIED) {
+            useGross = (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
+        } else { 
+            useGross = (param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES);
+        }
 
 /*
  * FIXME Hints for refactoring:
@@ -155,7 +165,6 @@ public class DocumentSummaryCalculator {
  * - write some tests
  * - try to simplify that method
  * - see also Bug #855 (https://bugs.fakturama.info/view.php?id=855)
- *         
  */
         
 		// This VAT summary contains only the VAT entries of this document,
@@ -173,12 +182,13 @@ public class DocumentSummaryCalculator {
 			VAT itemVat = getItemVat(item);
 			vatDescription = itemVat.getDescription();
 			vatPercent = itemVat.getTaxValue();
-			Price price = new Price(item, param.getScaleFactor(), useSET, param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES);  // scaleFactor was always 1.0 in the old application, hence we could omit this
+			Price price = new DocumentItemDTO(item).getPrice(useSET,  useGross);  // scaleFactor was always 1.0 in the old application, hence we could omit this
 			MonetaryAmount itemVatAmount = price.getTotalVatRounded();
 
 			// Add the total net value of this item to the sum of net items
-			retval.setItemsNet(retval.getItemsNet().add(price.getTotalNetRounded()));
+			retval.setItemsNet(retval.getItemsNet().add(price.getUnitNetRounded().multiply(item.getQuantity())));
 			retval.setItemsNetDiscounted(retval.getItemsNetDiscounted().add(price.getTotalNetRounded()));
+			retval.setItemsGrossDiscounted(retval.getItemsGrossDiscounted().add(price.getUnitGrossDiscountedRounded().multiply(item.getQuantity())));
 			retval.addDiscount(price.getTotalAllowance());
 
 			// Sums the total amount of item quantities. 
@@ -203,7 +213,6 @@ public class DocumentSummaryCalculator {
 
 			// .. VAT summary of the document ..
 			documentVatSummaryItems.add(vatSummaryItem);
-
 		}
 
 		// *** round sum of items
@@ -214,7 +223,7 @@ public class DocumentSummaryCalculator {
 //		} 
 		
 		// Gross value is the sum of net and VAT and sales equalization tax value 
-		retval.setTotalNet(retval.getItemsNet());
+		retval.setTotalNet(retval.getItemsNetDiscounted());
 		retval.setItemsGross(retval.getItemsNet().add(retval.getTotalVat()).add(retval.getTotalSET()));
 
 		// round to full gross cents
@@ -223,7 +232,7 @@ public class DocumentSummaryCalculator {
 //		    retval.setItemsNet(retval.getItemsGross().subtract(retval.getTotalVat()).subtract(retval.getTotalSET()));
 //		    retval.setTotalNet(retval.getItemsNet());
 //		}
-		retval.setTotalGross(retval.getItemsGross());
+		retval.setTotalGross(retval.getItemsGrossDiscounted());
 		
 		MonetaryAmount itemsNet = retval.getItemsNet();
 		MonetaryAmount itemsGross = retval.getItemsGross();
@@ -417,7 +426,6 @@ public class DocumentSummaryCalculator {
 				// Adjust the vat summary item by the shipping part
 				documentVatSummaryItems.add(shippingVatSummaryItem);
 			}
-
 		}
 		
 		retval.setShippingGross(retval.getShippingNet().add(retval.getShippingVat()));
@@ -442,21 +450,7 @@ public class DocumentSummaryCalculator {
 		retval.setTotalNet(retval.getTotalNet().add(retval.getShippingNet()));
 		retval.setTotalGross(retval.getTotalGross().add(retval.getShippingGross()));
 
-//		// Finally, round the values
-//		if (param.getNetGross() == DocumentSummary.ROUND_NET_VALUES) {
-//            retval.setTotalNet(retval.getTotalNet().with(rounding));
-//            retval.setTotalVat(retval.getTotalVat().with(rounding));
-//		    retval.setTotalGross(retval.getTotalGross().with(rounding));
-//		} else if (param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
-//		    retval.setTotalGross(retval.getTotalGross().with(rounding));
-//            retval.setTotalVat(retval.getTotalVat().with(rounding));
-//		    retval.setTotalNet(retval.getTotalGross().subtract(retval.getTotalVat()).subtract(retval.getTotalSET().with(rounding)));
-//		} else {
-//            retval.setTotalNet(retval.getTotalNet().with(rounding));
-//		    retval.setTotalGross(retval.getTotalGross().with(rounding));
-//			retval.setTotalVat(retval.getTotalGross().subtract(retval.getTotalNet()));
-//		}
-
+		// Finally, round the values
 		retval.setDiscountNet(retval.getDiscountNet().with(rounding));
 		retval.setDiscountGross(retval.getDiscountGross().with(rounding));
 

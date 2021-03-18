@@ -92,9 +92,13 @@ public class DocumentItemDTO implements IEntity {
 	 * @return the price
 	 */
 	public Price getPrice(boolean useSET) {
-		return new Price(documentItem, 1.0, useSET, false);
+		return getPrice(useSET, false);
 	}
 
+	public Price getPrice(boolean useSET, boolean useGross) {
+		return new Price(documentItem, 1.0, useSET, useGross);
+	}
+	
 	@Override
 	public String getName() {
 		return documentItem.getName();

@@ -1125,7 +1125,7 @@ public class DocumentEditor extends Editor<Document> {
 		    noVatName = document.getNoVatReference().getName();
 		}
 		
-		netgross = document.getNetGross() != null ? document.getNetGross() : DocumentSummary.ROUND_NET_VALUES;
+		netgross = document.getNetGross() != null ? document.getNetGross() : defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS);
 		if (dunningLevel <= 0) {
             if (document.getBillingType().isDUNNING()) {
             	dunningLevel = ((Dunning)document).getDunningLevel();
@@ -1448,7 +1448,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Set the items sum
 		if (itemsSum != null) {
-			itemsSum.setValue(useGross ? documentSummary.getItemsGross() : documentSummary.getItemsNet());
+			itemsSum.setValue(useGross ? documentSummary.getItemsGrossDiscounted() : documentSummary.getItemsNetDiscounted());
 		}
 
 		// Set the shipping
@@ -1482,7 +1482,7 @@ public class DocumentEditor extends Editor<Document> {
 			        .filter(d -> d.getWeight() != null)
 					.mapToDouble(i -> i.getWeight() * i.getDocumentItem().getQuantity()).sum();
 			netWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue));
-			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
+			Double taraValue = java.util.Optional.ofNullable(document.getTara()).orElse(Double.valueOf(0.0));
 			totalWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue));
 		}
     }

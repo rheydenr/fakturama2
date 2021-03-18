@@ -448,17 +448,19 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                	retval = tmpVat != null ? DataUtils.getInstance().round(tmpVat, 3) : Double.valueOf(0.0);
 	                	break;
 	                case UNITPRICE:
-	                    retval = container.getUseGross() 
-	                			? new Price(rowObject.getDocumentItem(), useSET).getUnitGrossRounded() 
-	                			: new Price(rowObject.getDocumentItem(), useSET).getUnitNetRounded();
+	                    Price price = rowObject.getPrice(useSET);
+						retval = container.getUseGross() 
+	                			? price.getUnitGrossRounded() 
+	                			: price.getUnitNetDiscountedRounded();
 	                    break;
 	                case TOTALPRICE:
+	                    price = rowObject.getPrice(useSET);
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"
 	                        // Fill the cell with the total gross value of the item
-	                        retval = rowObject.getPrice(useSET).getTotalGrossRounded();
+	                        retval = price.getTotalGrossRounded();
 	                    } else { // "$ItemNetTotal"
 	                        // Fill the cell with the total net value of the item
-	                        retval = rowObject.getPrice(useSET).getTotalNetRounded();
+	                        retval = price.getTotalNetRounded();
 	                    }
 	                    break;
 	                default:
@@ -549,7 +551,14 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 case VAT:
                     // Set the VAT
                     if (newValue != null) {
+            			// Set the vat and store the vat value before and after the modification.
+            			Double oldVat = 1.0 + rowObject.getDocumentItem().getItemVat().getTaxValue();
                         rowObject.getDocumentItem().setItemVat((VAT) newValue);
+
+            			// Modify the net value that the gross value stays constant.
+            			if (container.getUseGross()) {
+            				rowObject.getDocumentItem().setPrice(oldVat / (1 + ((VAT) newValue).getTaxValue()) * rowObject.getDocumentItem().getPrice());
+            			}
                     }
                     break;
                 case UNITPRICE:
@@ -574,12 +583,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     // Set the price as gross or net value.
                     // If the editor displays gross values, calculate the net value,
                     // because only net values are stored.
+                    MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
                     if (useGross) {
-                        MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
-                        Price newPrice = new Price(amount, rowObject.getDocumentItem().getItemVat().getTaxValue(), rowObject.getDocumentItem().getNoVat(), true);
+                        Price newPrice = new Price(amount, rowObject.getDocumentItem().getItemVat().getTaxValue(), rowObject.getDocumentItem().getNoVat(), useGross);
                         rowObject.getDocumentItem().setPrice(newPrice.getUnitNet().getNumber().doubleValue());
                     } else {
-                        MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
                         rowObject.getDocumentItem().setPrice(amount.getNumber().doubleValue());
                     }
                     break;
