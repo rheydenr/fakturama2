@@ -144,11 +144,9 @@ public class DocumentSummaryCalculator {
     
     public DocumentSummary calculate(DocumentSummaryParam param) {
 		DataUtils dataUtils = ContextInjectionFactory.make(DataUtils.class, ctx);
-        CurrencyUnit currencyUnit = dataUtils.getDefaultCurrencyUnit();
         
-        ctx.set(CurrencyUnit.class, currencyUnit);
         DocumentSummary retval = ContextInjectionFactory.make(DocumentSummary.class, ctx);
-        MonetaryRounding rounding = dataUtils.getRounding(currencyUnit);
+        MonetaryRounding rounding = dataUtils.getRounding();
  
         boolean useGross;
         if (param.getNetGross() == DocumentSummary.ROUND_NOTSPECIFIED) {
@@ -275,7 +273,7 @@ public class DocumentSummaryCalculator {
 		// Scale the shipping
 		MonetaryAmount shippingAmount = Money.of(param.getShippingValue() * param.getScaleFactor(), getCurrencyCode());
 		Double shippingVatPercent = param.getShippingVat() != null ? param.getShippingVat().getTaxValue() : NumberUtils.DOUBLE_ZERO;
-		String shippingVatDescription = param.getShippingVat() != null
+		String currentVatDescription = param.getShippingVat() != null
 				? StringUtils.defaultString(param.getShippingVat().getDescription(), param.getShippingVat().getName()) 
 				: ""; // TODO or get it from additional document info???
 
@@ -300,35 +298,23 @@ public class DocumentSummaryCalculator {
 			}
 
 			// Use the average VAT of all the items.
-			if (itemsNet.isEqualTo(zero)) {
-				shippingVatPercent = NumberUtils.DOUBLE_ZERO;
-			} else {
-				shippingVatPercent = itemsGross.divide(itemsNet.getNumber()).getNumber().doubleValue() - 1;
-			}
+			shippingVatPercent = itemsNet.isZero() ? NumberUtils.DOUBLE_ZERO : itemsGross.divide(itemsNet.getNumber()).getNumber().doubleValue() - 1;
 			
 			// Increase the VAT summary entries by the shipping ratio
 
 			// Calculate the sum of all VatSummary entries
-			MonetaryAmount netSumOfAllVatSummaryItems = Money.from(zero);
-
-				// TODO How do I use Lambdas???
-//	 			documentVatSummaryItems.stream()
-//	 			.map(i -> i.getNet())
-//	 			.reduce(Money.from(zero),netSumOfAllVatSummaryItems.add(i));
-			for (VatSummaryItem vatSummaryItem : retval.getVatSummary()) {
-			    netSumOfAllVatSummaryItems = netSumOfAllVatSummaryItems.add(vatSummaryItem.getNet());
-			}
+			MonetaryAmount netSumOfAllVatSummaryItems = retval.getTotalVatBase();
 
 			// at this point we have all relevant VATs (discounted items)
 			// and store them into a separate container.
 			for (VatSummaryItem vatSummaryItem : retval.getVatSummary()) {
 				// Get the data from each entry
-				shippingVatDescription = vatSummaryItem.getVatName();
+				currentVatDescription = vatSummaryItem.getVatName();
 				shippingVatPercent = vatSummaryItem.getVatPercent();
 
 				// If noVat is set, the VAT is 0%
 				if (param.getNoVatRef() != null) {
-					shippingVatDescription = param.getNoVatRef().getDescription();
+					currentVatDescription = param.getNoVatRef().getDescription();
 					shippingVatPercent = NumberUtils.DOUBLE_ZERO;
 				}
 
@@ -341,13 +327,13 @@ public class DocumentSummaryCalculator {
 
 				// Add shippingNetPart to the sum "shippingVatValue"  
 				Price shippingPart = new Price(shippingNetPart, shippingVatPercent);
-				retval.setShippingVat(retval.getShippingVat().add(shippingPart.getUnitVat()));
+				retval.addToShippingVat(shippingPart.getUnitVat());
 
-				VatSummaryItem shippingVatSummaryItem = new VatSummaryItem(shippingVatDescription, shippingVatPercent, shippingPart.getUnitNet(),
+				VatSummaryItem shippingVatSummaryItem = new VatSummaryItem(currentVatDescription, shippingVatPercent, shippingPart.getUnitNet(),
 						shippingPart.getUnitVat());
 
 				// Adjust the vat summary item by the shipping part
-				retval.getVatSummary().add(shippingVatSummaryItem);
+				retval.addVatSummaryItem(shippingVatSummaryItem);
 			}
 		}
 
@@ -358,7 +344,7 @@ public class DocumentSummaryCalculator {
 
 			// If noVat is set, the VAT is 0%
 			if (param.getNoVatRef() != null) {
-				shippingVatDescription = param.getNoVatRef().getDescription();
+				currentVatDescription = param.getNoVatRef().getDescription();
 				shippingVatPercent = NumberUtils.DOUBLE_ZERO;
 			}
 
@@ -367,7 +353,7 @@ public class DocumentSummaryCalculator {
 			
 			// only add VAT if a shipping value is set
 			if (!shippingAmount.isEqualTo(zero)) {
-				VatSummaryItem shippingVatSummaryItem = new VatSummaryItem(shippingVatDescription, shippingVatPercent,
+				VatSummaryItem shippingVatSummaryItem = new VatSummaryItem(currentVatDescription, shippingVatPercent,
 						retval.getShippingNet(), retval.getShippingVat());
 
 				// Adjust the vat summary item by the shipping part

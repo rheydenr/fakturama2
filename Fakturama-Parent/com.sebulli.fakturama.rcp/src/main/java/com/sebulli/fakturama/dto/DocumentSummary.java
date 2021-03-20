@@ -17,12 +17,15 @@ package com.sebulli.fakturama.dto;
 import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
+import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
 import org.javamoney.moneta.function.MonetaryFunctions;
+
+import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  * Calculates the tax, gross and sum of one document. This is the central
@@ -80,18 +83,21 @@ hier klingt vor allem das interessant:
 	private CurrencyUnit currencyCode;
 	
 	private VatSummarySet vatSummary;
+	private MonetaryRounding rounding;
 	
 	/**
 	 * Default constructor. Resets all value to 0.
 	 */
 	@Inject
-	public DocumentSummary(CurrencyUnit currencyCode, IEclipseContext ctx) {
-	    this.currencyCode = currencyCode;
+	public DocumentSummary(IEclipseContext ctx) {
+		DataUtils dataUtils = ContextInjectionFactory.make(DataUtils.class, ctx);
+		this.currencyCode = dataUtils.getDefaultCurrencyUnit();
 
 		// This VAT summary contains only the VAT entries of this document,
 		// whereas the the parameter vatSummaryItems is a global VAT summary
 		// and contains entries from this document and from others.
 	    this.vatSummary = ContextInjectionFactory.make(VatSummarySet.class, ctx);
+        rounding = dataUtils.getRounding();
 		resetValues();
 	}
 
@@ -122,7 +128,6 @@ hier klingt vor allem das interessant:
 			addToItemsNetDiscounted(price.getTotalNetRounded());
 			addToItemsGrossDiscounted(price.getUnitGrossDiscountedRounded().multiply(quantity));
 			addDiscount(price.getTotalAllowance());
-
 		}
 	}
 
@@ -187,7 +192,11 @@ hier klingt vor allem das interessant:
 	 */
 	public MonetaryAmount getTotalVat() {
 		return this.vatSummary.parallelStream().map(v -> v.getVat()).reduce(Money.zero(currencyCode),
-				MonetaryFunctions::sum);
+				MonetaryFunctions::sum).with(rounding);
+	}
+	public MonetaryAmount getTotalVatBase() {
+		return this.vatSummary.parallelStream().map(v -> v.getNet()).reduce(Money.zero(currencyCode),
+				MonetaryFunctions::sum).with(rounding);
 	}
 
 	/**
@@ -195,7 +204,7 @@ hier klingt vor allem das interessant:
 	 */
 	public final MonetaryAmount getTotalSET() {
 		return this.vatSummary.parallelStream().map(v -> v.getSalesEqTax()).reduce(Money.zero(currencyCode),
-				MonetaryFunctions::sum);
+				MonetaryFunctions::sum).with(rounding);
 	}
 
 	/**
@@ -339,6 +348,10 @@ hier klingt vor allem das interessant:
 		this.shippingVat = shippingVat;
 	}
 
+	public void addToShippingVat(MonetaryAmount shippingVat) {
+		this.shippingVat = this.shippingVat.add(shippingVat);
+	}
+	
 	/**
 	 * @param shippingGross the shippingGross to set
 	 */
@@ -375,10 +388,6 @@ hier klingt vor allem das interessant:
 		return vatSummary;
 	}
 
-	public void setVatSummary(VatSummarySet vatSummary) {
-		this.vatSummary = vatSummary;
-	}
-	
 	public void addVatSummaryItem(VatSummaryItem vatSummaryItem) {
 		this.vatSummary.add(vatSummaryItem);
 	}

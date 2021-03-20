@@ -232,6 +232,43 @@ public class DocumentSummaryCalcTest {
 				calc.getVatSummaryItemForTaxValue(0.0).get(0).getVatRounded());
 	}	
 	
+	@Test
+	public void testFullSizeDocumentWithAutoVATShipping() {
+		int id = 1;
+		Invoice invoice = FakturamaModelPackage.MODELFACTORY.createInvoice();
+		invoice.addToItems(createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(10.0),
+				Double.valueOf(0.1)));
+		DocumentItem documentItem = createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(10.0),
+				Double.valueOf(0.1));
+		documentItem.setItemRebate(-0.03);
+		invoice.addToItems(documentItem);
+		invoice.addToItems(createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(10.0),
+				Double.valueOf(0.05)));
+		invoice.setNetGross(DocumentSummary.ROUND_NET_VALUES);
+		Shipping testShipping = createTestShipping();
+		
+		// change shipping Auto VAT
+		testShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);
+		invoice.setShipping(testShipping);
+		
+		DocumentSummaryManager calc = ContextInjectionFactory.make(DocumentSummaryManager.class, ctx);
+		DocumentSummary summary = calc.calculate(invoice);
+		Assert.assertEquals(3.0, summary.getTotalQuantity(), 0.0);
+		
+		// net value including shipping net value
+		Assert.assertEquals(35.15, summary.getTotalNet().getNumber().doubleValue(), 0);
+		Assert.assertEquals(38.07, summary.getTotalGross().getNumber().doubleValue(), 0.002);
+		Assert.assertEquals(2.92, summary.getTotalVat().getNumber().doubleValue(), 0.002);
+		
+		Assert.assertEquals(35.15, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
+
+		Assert.assertEquals(2, calc.getVatSummary(invoice).size());
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(2.33), "EUR"),
+				calc.getVatSummaryItemForTaxValue(0.1).get(0).getVatRounded());
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(0.59), "EUR"),
+				calc.getVatSummaryItemForTaxValue(0.05).get(0).getVatRounded());
+	}
+	
 
 	/**
 	 * Create a Shipping object with 5.90EUR and 19% VAT.
