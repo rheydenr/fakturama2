@@ -35,7 +35,7 @@ import com.sebulli.fakturama.model.VAT;
 
 public class DocumentSummaryCalcTest {
 
-	private static final double DOUBLE_DELTA = 0.0001;
+	private static final double DOUBLE_DELTA = 0.001;
 
 	private static final boolean DEBUG_PRICES = false;
 
@@ -199,28 +199,31 @@ public class DocumentSummaryCalcTest {
 		
 		invoice.addToItems(createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(10.0), Double.valueOf(0)));
 		invoice.setNetGross(DocumentSummary.ROUND_NOTSPECIFIED); // this is the default
-//		Shipping testShipping = createTestShipping();
-//		invoice.setShipping(testShipping);
+		Shipping testShipping = createTestShipping();
+		invoice.setShipping(testShipping);
 
 		DocumentSummaryManager calc = ContextInjectionFactory.make(DocumentSummaryManager.class, ctx);
 		DocumentSummary summary = calc.calculate(invoice);
 		Assert.assertEquals(3.0, summary.getTotalQuantity(), 0.0);
 
 		// net value
-		Assert.assertEquals(29.7, summary.getTotalNet().getNumber().doubleValue(), 0);
-		Assert.assertEquals(29.7, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
+		Assert.assertEquals(35.6, summary.getTotalNet().getNumber().doubleValue(), 0);
+		Assert.assertEquals(35.6, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
 		Assert.assertEquals(-0.3, summary.getTotalDiscount().getNumber().doubleValue(), 0);
-		Assert.assertEquals(32.8, summary.getTotalGross().getNumber().doubleValue(), DOUBLE_DELTA);
-		Assert.assertEquals(2.58, summary.getTotalVat().getNumber().doubleValue(), DOUBLE_DELTA);
+		Assert.assertEquals(39.82, summary.getTotalGross().getNumber().doubleValue(), DOUBLE_DELTA);
+		Assert.assertEquals(3.70, summary.getTotalVat().getNumber().doubleValue(), DOUBLE_DELTA);
 		Assert.assertEquals(0.52, summary.getTotalSET().getNumber().doubleValue(), DOUBLE_DELTA);
 
 		Assert.assertEquals(33.1, summary.getItemsGross().getNumber().doubleValue(), DOUBLE_DELTA);
 		Assert.assertEquals(32.8, summary.getItemsGrossDiscounted().getNumber().doubleValue(), DOUBLE_DELTA);
 		
+		Assert.assertEquals(30.0, summary.getItemsNet().getNumber().doubleValue(), DOUBLE_DELTA);
+		Assert.assertEquals(29.7, summary.getItemsNetDiscounted().getNumber().doubleValue(), DOUBLE_DELTA);
+		
 		Assert.assertEquals(3, calc.getVatSummary(invoice).size());
-		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(1.9), "EUR"),
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(3.02), "EUR"),
 				calc.getVatSummaryItemForTaxValue(0.19).get(0).getVatRounded());
-		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(10.0), "EUR"),
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(15.9), "EUR"),
 				calc.getVatSummaryItemForTaxValue(0.19).get(0).getNet());
 		
 		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(0.68), "EUR"),
@@ -239,8 +242,9 @@ public class DocumentSummaryCalcTest {
 		Shipping testShipping = FakturamaModelPackage.MODELFACTORY.createShipping();
 		testShipping.setAutoVat(ShippingVatType.SHIPPINGVATFIX);
 		testShipping.setName("A test shipping");
+		testShipping.setDescription("A test shipping description");
 		testShipping.setShippingValue(Double.valueOf(5.9));
-		testShipping.setShippingVat(createVat("shipping VAT", 0.19));
+		testShipping.setShippingVat(createVat("Test VAT " + NumberFormat.getPercentInstance().format(0.19), 0.19));
 		return testShipping;
 	}
 
@@ -276,7 +280,7 @@ public class DocumentSummaryCalcTest {
 		Assert.assertEquals(49.955, testPrice.getTotalNet().getNumber().doubleValue(), 0);
 		Assert.assertEquals(49.96, testPrice.getTotalNetRounded().getNumber().doubleValue(), 0);
 		
-		Assert.assertEquals(53.45185, testPrice.getTotalGross().getNumber().doubleValue(), 0);
+		Assert.assertEquals(53.45, testPrice.getTotalGross().getNumber().doubleValue(), 0);
 		Assert.assertEquals(53.5, testPrice.getTotalGrossRounded().getNumber().doubleValue(), 0);
 		
 		Assert.assertEquals(3.49685, testPrice.getTotalVat().getNumber().doubleValue(), 0);

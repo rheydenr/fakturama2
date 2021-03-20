@@ -617,4 +617,8 @@ public class DataUtils {
 
         return s;
     }
+
+	public boolean isDoubleZero(Double doubleToTest) {
+		return DoublesAreEqual(doubleToTest, NumberUtils.DOUBLE_ZERO);
+	}
 }
