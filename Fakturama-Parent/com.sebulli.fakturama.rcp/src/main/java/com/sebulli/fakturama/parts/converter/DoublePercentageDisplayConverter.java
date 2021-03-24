@@ -55,9 +55,7 @@ public class DoublePercentageDisplayConverter extends DisplayConverter {
         	return null;
         }
     	try {
-    		// don't use NumberFormat.getPercentInstance()! The formatting of percentage values is evil!
-    		// We can use "normal" numbers. 
-    		return NumberFormat.getNumberInstance(localeUtil.getDefaultLocale()).parse(displayString).doubleValue()/100;
+    		return NumberFormat.getPercentInstance(localeUtil.getDefaultLocale()).parse(displayString).doubleValue();
         } catch (ParseException e) {
             throw new NumberFormatException(e.getLocalizedMessage());
         }

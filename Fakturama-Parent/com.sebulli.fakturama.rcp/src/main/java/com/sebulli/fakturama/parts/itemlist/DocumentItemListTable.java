@@ -451,7 +451,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                    Price price = rowObject.getPrice(useSET);
 						retval = container.getUseGross() 
 	                			? price.getUnitGrossRounded() 
-	                			: price.getUnitNetDiscountedRounded();
+	                			: price.getUnitNetRounded();
 	                    break;
 	                case TOTALPRICE:
 	                    price = rowObject.getPrice(useSET);

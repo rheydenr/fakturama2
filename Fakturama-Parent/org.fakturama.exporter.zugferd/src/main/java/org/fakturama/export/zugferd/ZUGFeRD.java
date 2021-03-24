@@ -581,7 +581,7 @@ public class ZUGFeRD extends AbstractEInvoice {
         TradeSettlementMonetarySummationType retval = factory.createTradeSettlementMonetarySummationType()
                 .withLineTotalAmount(createAmount(price.getTotalNetRounded()));
         
-        storeNetPrice(price.getVatPercent(), price.getTotalNetRounded());
+        storeNetPrice(price.getVatPercentFormatted(), price.getTotalNetRounded());
 
         // alle anderen hier angebotenen Felder resultieren nur aus dem XSD, die sind in der Spezifikation
         // gar nicht aufgeführt (nur an anderer Stelle, wo sie sinnvoller sind)

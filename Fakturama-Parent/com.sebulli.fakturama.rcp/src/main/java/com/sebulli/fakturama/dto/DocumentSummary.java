@@ -124,10 +124,11 @@ hier klingt vor allem das interessant:
 	public void addPrice(Price price, Double quantity) {
 		if(price != null && quantity != null) {
 			addQuantity(quantity); 
-			addToItemsNet(price.getUnitNetRounded().multiply(quantity));
+			addToItemsNet(price.getTotalNet());
 			addToItemsNetDiscounted(price.getTotalNetRounded());
-			addToItemsGrossDiscounted(price.getUnitGrossDiscountedRounded().multiply(quantity));
-			addDiscount(price.getTotalAllowance());
+			addToItemsGross(price.getUnitNet().multiply(1+ price.getVatPercent() + price.getSalesEqTaxPercent()).multiply(quantity));
+			addToItemsGrossDiscounted(price.getTotalGross());
+			addToTotalDiscount(price.getTotalAllowance());
 		}
 	}
 
@@ -402,7 +403,7 @@ hier klingt vor allem das interessant:
 		
 	}
 
-	public void addDiscount(MonetaryAmount totalAllowance) {
+	public void addToTotalDiscount(MonetaryAmount totalAllowance) {
 		this.totalDiscount = this.totalDiscount.add(totalAllowance);
 	}
 }

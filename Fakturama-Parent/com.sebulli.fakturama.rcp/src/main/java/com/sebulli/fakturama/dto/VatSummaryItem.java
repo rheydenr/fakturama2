@@ -14,6 +14,8 @@
 
 package com.sebulli.fakturama.dto;
 
+import java.text.NumberFormat;
+
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
@@ -35,7 +37,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	// Absolute Net and Vat value
 	// This can be the sum of more than one item
 	private MonetaryAmount net;
-	private MonetaryAmount vat;
+//	private MonetaryAmount vat;
 	
 	// sales equalization tax (could be zero)
 	private MonetaryAmount salesEqTax;
@@ -87,7 +89,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 		this.vatName = vatName;
 		this.vatPercent = vatPercent;
 		this.net = net;
-		this.vat = vat;
+//		this.vat = vat;
 		this.salesEqTax = Money.zero(net.getCurrency());
 //		this.netRoundingError = 0.0;
 //		this.vatRoundingError = 0.0;
@@ -123,7 +125,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	 */
 	public void add(VatSummaryItem other) {
 	    this.net = this.net.add(other.net);
-	    this.vat = this.vat.add(other.vat);
+//	    this.vat = this.vat.add(other.vat);
 	    this.salesEqTax = this.salesEqTax != null && other.salesEqTax != null ? this.salesEqTax.add(other.salesEqTax) : Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
 //
@@ -152,15 +154,15 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 		this.net = value;
 	}
 
-	/**
-	 * Sets the absolute vat value
-	 * 
-	 * @param Vat
-	 *            value
-	 */
-	public void setVat(MonetaryAmount value) {
-		this.vat = value;
-	}
+//	/**
+//	 * Sets the absolute vat value
+//	 * 
+//	 * @param Vat
+//	 *            value
+//	 */
+//	public void setVat(MonetaryAmount value) {
+//		this.vat = value;
+//	}
 
 	/**
 	 * Get the absolute net value
@@ -177,11 +179,11 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	 * @return Vat value as Double
 	 */
 	public MonetaryAmount getVat() {
-		return vat;
+		return this.net.with(rounding).multiply(this.vatPercent);
 	}
 
 	public MonetaryAmount getVatRounded() {
-		return this.vat.with(rounding);
+		return this.net.multiply(this.vatPercent).with(rounding);
 	}
 	
 	/**
@@ -284,7 +286,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
     @Override
     public String toString() {
         return new StringBuilder("[Amount (net): ").append(net)
-        		.append("; VAT: ").append(vat).append(" (").append(vatPercent*100).append("%) - ")
+        		.append("; VAT: ").append(getVatRounded()).append(" (").append(NumberFormat.getPercentInstance().format(vatPercent)).append(") - ")
         		.append(StringUtils.defaultIfBlank(vatName, "(no name)"))
         		.append("; SET: ").append(salesEqTaxPercent != null ? salesEqTaxPercent : "0").append("%").append(salesEqTax != null ? " (" + salesEqTax + ")" : "")
         		.append(']').toString();

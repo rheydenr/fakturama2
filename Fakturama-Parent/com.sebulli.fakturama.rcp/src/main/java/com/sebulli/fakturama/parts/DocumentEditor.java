@@ -1413,7 +1413,7 @@ public class DocumentEditor extends Editor<Document> {
         		.withShippingValue(document.getShippingValue())
         		.withNoVatRef(document.getNoVatReference())
         		.withScaleFactor(Double.valueOf(1.0))
-        		.withNetGross(netgross)
+        		.withNetGross(DocumentSummary.ROUND_NET_VALUES)
         		.withDeposit(deposit)
         		.withItemsDiscount(rebate);
         	
@@ -1431,7 +1431,7 @@ public class DocumentEditor extends Editor<Document> {
         		.withShippingVat(document.getShipping().getShippingVat())
         		.withNoVatRef(document.getNoVatReference())
         		.withScaleFactor(Double.valueOf(1.0))
-        		.withNetGross(netgross)
+        		.withNetGross(DocumentSummary.ROUND_NET_VALUES)
         		.withDeposit(deposit)
         		.withItemsDiscount(rebate);
 //			documentSummary = documentSummaryCalculator.calculate(null, docItems,
@@ -2851,7 +2851,7 @@ public class DocumentEditor extends Editor<Document> {
             	// Recalculate, if the discount field looses the focus.
             	itemsDiscount.getControl().addFocusListener(new FocusAdapter() {
             		public void focusLost(FocusEvent e) {
-            			calculate();
+        				calculate();
             		}
             	});
     
