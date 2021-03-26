@@ -24,6 +24,7 @@ import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.DocumentSummaryParam;
 import com.sebulli.fakturama.dto.Price;
+import com.sebulli.fakturama.dto.PriceBuilder;
 import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.dto.VatSummarySet;
 import com.sebulli.fakturama.misc.Constants;
@@ -182,9 +183,16 @@ public class DocumentSummaryCalculator {
 			retval.addVatSummaryItem(vatSummaryItem);
 		}
 
+		// *** round sum of items
+		
+		// round to full net cents
+		if (param.getNetGross() == DocumentSummary.ROUND_NET_VALUES) {
+			retval.setItemsNet(retval.getItemsNet().with(rounding));
+		} 
+
 		// Gross value is the sum of net and VAT and sales equalization tax value 
-		retval.setTotalNet(retval.getItemsNetDiscounted());
-		retval.setTotalGross(retval.getItemsNetDiscounted().add(retval.getTotalVat()).add(retval.getTotalSET()));
+		retval.setTotalNet(retval.getItemsNet());
+		retval.setTotalGross(retval.getItemsGross());
 		
 		MonetaryAmount itemsNet = retval.getItemsNet();
 		MonetaryAmount itemsGross = retval.getItemsGross();
@@ -196,7 +204,7 @@ public class DocumentSummaryCalculator {
 		MonetaryAmount discountNet = itemsNet.multiply(param.getItemsDiscount());
 		retval.setDiscountNet(discountNet);
 		retval.setDiscountGross(itemsGross.multiply(param.getItemsDiscount()));
-		retval.addToTotalDiscount(discountNet);
+//		retval.addToTotalDiscount(discountNet);
 
 		final MonetaryAmount zero = Money.zero(getCurrencyCode());
 
@@ -246,8 +254,9 @@ public class DocumentSummaryCalculator {
 
 				VatSummaryItem discountVatSummaryItem = new VatSummaryItem(discountVatDescription, discountVatPercent, discountPart.getUnitNet(),
 						discountPart.getUnitVat());
-				if(this.useSET && vatSummaryItem.getSalesEqTax() != null) {
-					discountVatSummaryItem.setSalesEqTax(vatSummaryItem.getSalesEqTax());
+				if(this.useSET && !vatSummaryItem.getSalesEqTax().isZero()) {
+					discountVatSummaryItem.setSalesEqTax(discountPart.getTotalSalesEqTaxRounded());
+					discountVatSummaryItem.setSalesEqTaxPercent(vatSummaryItem.getSalesEqTaxPercent());
 				}
 
 				// Adjust the vat summary item by the discount part
@@ -261,7 +270,7 @@ public class DocumentSummaryCalculator {
 				retval.setTotalGross(retval.getTotalNet().add(retval.getTotalVat().add(retval.getTotalSET())));
 			} else {
 			
-			// round to full gross cents
+				// round to full gross cents
 			    retval.addToTotalGross(retval.getDiscountGross());
 			    retval.setDiscountNet(retval.getDiscountGross().subtract(discountVatValue));
 			    retval.setTotalNet(retval.getTotalGross().subtract(retval.getTotalVat()).subtract(retval.getTotalSET()));
@@ -286,7 +295,7 @@ public class DocumentSummaryCalculator {
 			if (param.getAutoVat().isSHIPPINGVATGROSS()) {
 				if (!itemsGross.isZero()) {
 					// shippingValue * itemsNet / itemsGross
-					retval.setShippingNet(shippingAmount.multiply(retval.getItemsNetDiscounted().divide(retval.getItemsGrossDiscounted().getNumber()).getNumber()));
+					retval.setShippingNet(shippingAmount.multiply(itemsNet.add(retval.getTotalSET()).divide(itemsGross.getNumber()).getNumber()));
 				} else {
 					retval.setShippingNet(shippingAmount);
 				}
@@ -300,7 +309,7 @@ public class DocumentSummaryCalculator {
 			// Use the average VAT of all the items.
 			shippingVatPercent = itemsNet.isZero() 
 					? NumberUtils.DOUBLE_ZERO 
-					: retval.getItemsGrossDiscounted().divide(retval.getItemsNetDiscounted().getNumber()).getNumber().doubleValue() - 1;
+					: itemsGross.subtract((retval.getTotalSET())).divide(itemsNet.getNumber()).getNumber().doubleValue() - 1;
 			
 			// Increase the VAT summary entries by the shipping ratio
 
@@ -333,6 +342,10 @@ public class DocumentSummaryCalculator {
 
 				VatSummaryItem shippingVatSummaryItem = new VatSummaryItem(currentVatDescription, shippingVatPercent, shippingPart.getUnitNet(),
 						shippingPart.getUnitVat());
+				if(this.useSET && !vatSummaryItem.getSalesEqTax().isZero()) {
+//					shippingVatSummaryItem.setSalesEqTax(vatSummaryItem.getSalesEqTax());
+					shippingVatSummaryItem.setSalesEqTaxPercent(vatSummaryItem.getSalesEqTaxPercent());
+				}
 
 				// Adjust the vat summary item by the shipping part
 				retval.addVatSummaryItem(shippingVatSummaryItem);
@@ -424,7 +437,7 @@ public class DocumentSummaryCalculator {
 		}
 
 		VatSummaryItem vatSummaryItem = new VatSummaryItem(StringUtils.defaultString(vatDescription, itemVat.getName()),
-				vatPercent, price.getTotalNet(), itemVatAmount);
+				vatPercent, price.getTotalNetRounded(), itemVatAmount);
 		if (itemVat != null && this.useSET && itemVat.getSalesEqualizationTax() != null) {
 			vatSummaryItem.setSalesEqTaxPercent(itemVat.getSalesEqualizationTax());
 		}

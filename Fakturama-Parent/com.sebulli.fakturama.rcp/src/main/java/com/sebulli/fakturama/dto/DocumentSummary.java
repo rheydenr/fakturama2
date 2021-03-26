@@ -57,9 +57,9 @@ hier klingt vor allem das interessant:
 	
 	// sum of items
 	private MonetaryAmount itemsNet;
-	private MonetaryAmount itemsNetDiscounted;
+//	private MonetaryAmount itemsNetDiscounted;
 	private MonetaryAmount itemsGross;
-	private MonetaryAmount itemsGrossDiscounted;
+//	private MonetaryAmount itemsGrossDiscounted;
 
 	// total sum
 	private MonetaryAmount totalNet;
@@ -69,7 +69,7 @@ hier klingt vor allem das interessant:
 	// discount values
 	private MonetaryAmount discountNet;
 	private MonetaryAmount discountGross;
-	private MonetaryAmount totalDiscount;
+//	private MonetaryAmount totalDiscount;
 
 	// shipping value
 	private MonetaryAmount shippingNet;
@@ -107,13 +107,13 @@ hier klingt vor allem das interessant:
 	private void resetValues() {
 		itemsNet = Money.zero(currencyCode);
 		itemsGross = Money.zero(currencyCode);
-		itemsNetDiscounted = Money.zero(currencyCode);
-		itemsGrossDiscounted = Money.zero(currencyCode);
+//		itemsNetDiscounted = Money.zero(currencyCode);
+//		itemsGrossDiscounted = Money.zero(currencyCode);
 		totalNet = Money.zero(currencyCode);
 		totalGross = Money.zero(currencyCode);
 		discountNet = Money.zero(currencyCode);
 		discountGross = Money.zero(currencyCode);
-		totalDiscount = Money.zero(currencyCode);
+//		totalDiscount = Money.zero(currencyCode);
 		shippingNet = Money.zero(currencyCode);
 		shippingVat = Money.zero(currencyCode);
 		shippingGross = Money.zero(currencyCode);
@@ -125,10 +125,7 @@ hier klingt vor allem das interessant:
 		if(price != null && quantity != null) {
 			addQuantity(quantity); 
 			addToItemsNet(price.getTotalNet());
-			addToItemsNetDiscounted(price.getTotalNetRounded());
-			addToItemsGross(price.getUnitNet().multiply(1+ price.getVatPercent() + price.getSalesEqTaxPercent()).multiply(quantity));
-			addToItemsGrossDiscounted(price.getTotalGross());
-			addToTotalDiscount(price.getTotalAllowance());
+			addToItemsGross(price.getTotalGrossRounded());
 		}
 	}
 
@@ -236,28 +233,30 @@ hier klingt vor allem das interessant:
 	}
 
 	public MonetaryAmount getItemsNetDiscounted() {
-        return itemsNetDiscounted;
+		return itemsNet.subtract(discountNet);
+//        return itemsNetDiscounted;
     }
-
-    public void setItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
-        this.itemsNetDiscounted = itemsNetDiscounted;
-    }
-    
-    public void addToItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
-    	this.itemsNetDiscounted = this.itemsNetDiscounted.add(itemsNetDiscounted);
-    }
+//
+//    public void setItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
+//        this.itemsNetDiscounted = itemsNetDiscounted;
+//    }
+//    
+//    public void addToItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
+//    	this.itemsNetDiscounted = this.itemsNetDiscounted.add(itemsNetDiscounted);
+//    }
 
     public MonetaryAmount getItemsGrossDiscounted() {
-        return itemsGrossDiscounted;
+    	return itemsGross.subtract(discountGross);
+//        return itemsGrossDiscounted;
     }
 
-    public void setItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
-        this.itemsGrossDiscounted = itemsGrossDiscounted;
-    }
-    
-    public void addToItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
-    	this.itemsGrossDiscounted = this.itemsGrossDiscounted.add(itemsGrossDiscounted);
-    }
+//    public void setItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
+//        this.itemsGrossDiscounted = itemsGrossDiscounted;
+//    }
+//    
+//    public void addToItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
+//    	this.itemsGrossDiscounted = this.itemsGrossDiscounted.add(itemsGrossDiscounted);
+//    }
 
     /**
 	 * Getter for the deposit
@@ -380,10 +379,10 @@ hier klingt vor allem das interessant:
 	public double getTotalQuantity() {
 		return totalQuantity;
 	}
-	
-	public MonetaryAmount getTotalDiscount() {
-        return totalDiscount;
-    }
+//	
+//	public MonetaryAmount getTotalDiscount() {
+//        return totalDiscount;
+//    }
 
     public VatSummarySet getVatSummary() {
 		return vatSummary;
@@ -400,10 +399,13 @@ hier klingt vor allem das interessant:
 
 	public void addQuantity(Double quantity) {
 		this.totalQuantity += quantity;
-		
 	}
+//
+//	public void addToTotalDiscount(MonetaryAmount totalAllowance) {
+//		this.totalDiscount = this.totalDiscount.add(totalAllowance);
+//	}
 
-	public void addToTotalDiscount(MonetaryAmount totalAllowance) {
-		this.totalDiscount = this.totalDiscount.add(totalAllowance);
+	public void addToNetDiscount(MonetaryAmount totalAllowance) {
+		this.discountNet = this.discountNet.add(totalAllowance);
 	}
 }

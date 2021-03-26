@@ -18,6 +18,7 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.javamoney.moneta.Money;
 
 import com.sebulli.fakturama.misc.DataUtils;
@@ -110,8 +111,8 @@ public class PriceBuilder {
         
         CurrencyUnit currencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
         MonetaryRounding rounding = DataUtils.getInstance().getRounding(currencyUnit);  
-        this.vatPercent = (noVat) ? Double.valueOf(0.0) : vatPercent;
-        this.discount = discount == null ? Double.valueOf(0.0) : discount;
+        this.vatPercent = (noVat) ? NumberUtils.DOUBLE_ZERO : vatPercent;
+        this.discount = discount == null ? NumberUtils.DOUBLE_ZERO : discount;
 
         price = new Price(currencyUnit, rounding, useAsGross);
         // set attributes

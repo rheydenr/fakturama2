@@ -1448,7 +1448,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Set the items sum
 		if (itemsSum != null) {
-			itemsSum.setValue(useGross ? documentSummary.getItemsGrossDiscounted() : documentSummary.getItemsNetDiscounted());
+			itemsSum.setValue(useGross ? documentSummary.getItemsGross().with(DataUtils.getInstance().getRounding()) : documentSummary.getItemsNet().with(DataUtils.getInstance().getRounding()));
 		}
 
 		// Set the shipping
