@@ -88,13 +88,12 @@ public class DocumentSummaryCalculator {
         MonetaryAmount deposit = Money.of(BooleanUtils.isTrue(dataSetDocument.getDeposit()) ? dataSetDocument.getPaidValue() : NumberUtils.DOUBLE_ZERO, getCurrencyCode());
         Shipping shipping = dataSetDocument.getShipping();
         
-        // Note: document items are always net-priced, therefore we use ROUND_NET_VALUES
 		return calculate(vatSummarySet, dataSetDocument.getItems(), 
         		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(NumberUtils.DOUBLE_ZERO), 
         		shipping != null ? shipping.getShippingVat() : null, 
                 shipping != null ? shipping.getAutoVat() : dataSetDocument.getShippingAutoVat(), 
                 Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO), noVatReference, 
-                scaleFactor, DocumentSummary.ROUND_NET_VALUES, deposit);
+                scaleFactor, dataSetDocument.getNetGross(), deposit);
     }
 
 	public DocumentSummary calculate(List<DocumentItem> items, Shipping shipping, ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, 
@@ -152,7 +151,7 @@ public class DocumentSummaryCalculator {
  
         boolean useGross;
         if (param.getNetGross() == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
+            useGross = (defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_GROSS_VALUES);
         } else { 
             useGross = (param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES);
         }
@@ -171,7 +170,7 @@ public class DocumentSummaryCalculator {
 		for (DocumentItem item : param.getDocumentItems()) {
 			
 			if(BooleanUtils.isTrue(item.getDeleted())) continue;
-			Price price = new DocumentItemDTO(item).getPrice(useSET, useGross);  // scaleFactor was always 1.0 in the old application, hence we could omit this
+			Price price = new DocumentItemDTO(item).getPrice(useSET, false);  // scaleFactor was always 1.0 in the old application, hence we could omit this
 
 			// Add the total net value of this item to the sum of net items
 			retval.addPrice(price, item.getQuantity());
@@ -188,14 +187,25 @@ public class DocumentSummaryCalculator {
 		// round to full net cents
 		if (param.getNetGross() == DocumentSummary.ROUND_NET_VALUES) {
 			retval.setItemsNet(retval.getItemsNet().with(rounding));
+			retval.setItemsNetDiscounted(retval.getItemsNetDiscounted().with(rounding));
 		} 
 
 		// Gross value is the sum of net and VAT and sales equalization tax value 
-		retval.setTotalNet(retval.getItemsNet());
-		retval.setTotalGross(retval.getItemsGross());
+		retval.setTotalNet(retval.getItemsNetDiscounted());
+//		retval.setItemsGross(retval.getItemsNet().add(retval.getTotalVat()));
+		retval.setItemsGrossDiscounted(retval.getItemsNetDiscounted().add(retval.getTotalVat()));
 		
-		MonetaryAmount itemsNet = retval.getItemsNet();
-		MonetaryAmount itemsGross = retval.getItemsGross();
+		// round to full gross cents
+		if (param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
+			retval.setItemsGrossDiscounted(retval.getItemsGrossDiscounted().with(rounding));
+			retval.setItemsNetDiscounted(retval.getItemsGrossDiscounted().subtract(retval.getTotalVat()));
+			retval.setTotalNet(retval.getItemsNetDiscounted());
+		}
+		
+		retval.setTotalGross(retval.getItemsGrossDiscounted());
+
+		MonetaryAmount itemsNet = retval.getItemsNetDiscounted();
+		MonetaryAmount itemsGross = retval.getItemsGrossDiscounted();
 
 		// *** DISCOUNT ***
 		

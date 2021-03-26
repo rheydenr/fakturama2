@@ -353,17 +353,17 @@ public class Price {
 			this.totalNet = this.unitNetDiscounted.multiply(this.quantity);
 			this.totalNetRounded = this.unitNetDiscountedRounded.multiply(this.quantity).with(getRounding());
 			this.totalGross = this.unitNetDiscounted.multiply(this.quantity).multiply(1+vatPercent + salesEqTaxPercent);
-			this.totalGrossRounded = this.unitNetDiscountedRounded.multiply(this.quantity).multiply(1+vatPercent + salesEqTaxPercent);
+			this.totalGrossRounded = this.unitGrossDiscountedRounded.multiply(this.quantity);
 		}
 
 		this.totalVat = this.unitVatDiscounted.multiply(this.quantity);
 		this.totalSalesEqTax = this.unitSalesEqTax.multiply(this.quantity * discountFactor);
 		this.totalSalesEqTaxRounded = totalSalesEqTax.with(getRounding());
-		this.totalVatRounded = totalGrossRounded.subtract(totalNetRounded).subtract(totalSalesEqTaxRounded);
-//		this.totalVatRounded = totalVat.with(getRounding());
+//		this.totalVatRounded = totalGrossRounded.subtract(totalNetRounded).subtract(totalSalesEqTaxRounded);
+		this.totalVatRounded = totalVat.with(getRounding());
 	
 		this.unitAllowance = this.unitNetDiscounted.subtract(unitNet).with(getRounding());
-		this.totalAllowance = this.unitNetDiscounted.multiply(this.discount * this.quantity).with(getRounding());
+		this.totalAllowance = this.unitAllowance.multiply(this.quantity).with(getRounding());
 	}
 
 	/**

@@ -1413,7 +1413,7 @@ public class DocumentEditor extends Editor<Document> {
         		.withShippingValue(document.getShippingValue())
         		.withNoVatRef(document.getNoVatReference())
         		.withScaleFactor(Double.valueOf(1.0))
-        		.withNetGross(DocumentSummary.ROUND_NET_VALUES)
+        		.withNetGross(netgross)
         		.withDeposit(deposit)
         		.withItemsDiscount(rebate);
         	
@@ -1431,7 +1431,7 @@ public class DocumentEditor extends Editor<Document> {
         		.withShippingVat(document.getShipping().getShippingVat())
         		.withNoVatRef(document.getNoVatReference())
         		.withScaleFactor(Double.valueOf(1.0))
-        		.withNetGross(DocumentSummary.ROUND_NET_VALUES)
+        		.withNetGross(netgross)
         		.withDeposit(deposit)
         		.withItemsDiscount(rebate);
 //			documentSummary = documentSummaryCalculator.calculate(null, docItems,
@@ -1448,7 +1448,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Set the items sum
 		if (itemsSum != null) {
-			itemsSum.setValue(useGross ? documentSummary.getItemsGross().with(DataUtils.getInstance().getRounding()) : documentSummary.getItemsNet().with(DataUtils.getInstance().getRounding()));
+			itemsSum.setValue(useGross ? documentSummary.getItemsGrossDiscounted().with(DataUtils.getInstance().getRounding()) : documentSummary.getItemsNetDiscounted().with(DataUtils.getInstance().getRounding()));
 		}
 
 		// Set the shipping
@@ -1507,7 +1507,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1;
+            useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_GROSS_VALUES;
         } else {
             useGross = netgross == DocumentSummary.ROUND_GROSS_VALUES;
         }

@@ -163,18 +163,19 @@ public class DocumentSummaryCalcTest {
 		Assert.assertEquals(3.0, summary.getTotalQuantity(), 0.0);
 		
 		// net value including shipping net value
-		Assert.assertEquals(35.6, summary.getTotalNet().getNumber().doubleValue(), 0);
-		Assert.assertEquals(39.19, summary.getTotalGross().getNumber().doubleValue(), 0.002);
-		Assert.assertEquals(3.59, summary.getTotalVat().getNumber().doubleValue(), 0.002);
-		
-		Assert.assertEquals(35.6, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
+		Assert.assertEquals(34.66, summary.getTotalNet().getNumber().doubleValue(), 0);
+		Assert.assertEquals(38.07, summary.getTotalGross().getNumber().doubleValue(), 0.002);
+		Assert.assertEquals(3.41, summary.getTotalVat().getNumber().doubleValue(), 0.002);
+		Assert.assertEquals(34.66, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
 
 		Assert.assertEquals(3, calc.getVatSummary(invoice).size());
 		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(1.97), "EUR"),
 				calc.getVatSummaryItemForTaxValue(0.1).get(0).getVatRounded());
 		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(0.5), "EUR"),
 				calc.getVatSummaryItemForTaxValue(0.05).get(0).getVatRounded());
-		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(1.12), "EUR"),
+		
+		// (shipping VAT)
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(0.94), "EUR"),
 				calc.getVatSummaryItemForTaxValue(0.19).get(0).getVatRounded());
 	}
 	
@@ -211,7 +212,7 @@ public class DocumentSummaryCalcTest {
 		// net value
 		Assert.assertEquals(35.6, summary.getTotalNet().getNumber().doubleValue(), 0);
 		Assert.assertEquals(35.6, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
-		Assert.assertEquals(-0.3, summary.getDiscountNet().getNumber().doubleValue(), 0);
+		Assert.assertEquals(-0.0, summary.getDiscountNet().getNumber().doubleValue(), 0);
 		Assert.assertEquals(39.82, summary.getTotalGross().getNumber().doubleValue(), DOUBLE_DELTA);
 		Assert.assertEquals(3.70, summary.getTotalVat().getNumber().doubleValue(), DOUBLE_DELTA);
 		Assert.assertEquals(0.52, summary.getTotalSET().getNumber().doubleValue(), DOUBLE_DELTA);
@@ -282,7 +283,8 @@ public class DocumentSummaryCalcTest {
 		testShipping.setAutoVat(ShippingVatType.SHIPPINGVATFIX);
 		testShipping.setName("A test shipping");
 		testShipping.setDescription("A test shipping description");
-		testShipping.setShippingValue(Double.valueOf(5.9));
+		// 4.96 EUR net = 5.90 EUR gross
+		testShipping.setShippingValue(Double.valueOf(5.9/1.19));
 		testShipping.setShippingVat(createVat("Test VAT " + NumberFormat.getPercentInstance().format(0.19), 0.19));
 		return testShipping;
 	}
@@ -360,13 +362,13 @@ public class DocumentSummaryCalcTest {
 		
 		Assert.assertEquals(2.2, testPrice.getUnitGross().getNumber().doubleValue(), 0);
 		Assert.assertEquals(2.13, testPrice.getUnitGrossDiscountedRounded().getNumber().doubleValue(), 0);
-//		
+		
 		Assert.assertEquals(0.14, testPrice.getUnitVatRounded().getNumber().doubleValue(), DOUBLE_DELTA);
 //		Assert.assertEquals(0.13961, testPrice.getUnitVatDiscounted().getNumber().doubleValue(), 0.00002);
 		Assert.assertEquals(0.14, testPrice.getUnitVatDiscountedRounded().getNumber().doubleValue(), 0);
 		
 		Assert.assertEquals(-0.06, testPrice.getUnitAllowance().getNumber().doubleValue(), 0);
-		Assert.assertEquals(-1.55, testPrice.getTotalAllowance().getNumber().doubleValue(), 0);
+		Assert.assertEquals(-1.5, testPrice.getTotalAllowance().getNumber().doubleValue(), 0);
 	}
 	
 	@Test
@@ -390,9 +392,9 @@ public class DocumentSummaryCalcTest {
 				.withQuantity(25.0)
 				.withVatPercent(0.07).build();
 		
-		Assert.assertEquals(51.5, testPrice.getTotalNetRounded().getNumber().doubleValue(), 0);
+		Assert.assertEquals(51.4, testPrice.getTotalNetRounded().getNumber().doubleValue(), 0);
 		Assert.assertEquals(55.0, testPrice.getTotalGrossRounded().getNumber().doubleValue(), 0);
-		Assert.assertEquals( 3.5, testPrice.getTotalVat().getNumber().doubleValue(), 0);
+		Assert.assertEquals( 3.6, testPrice.getTotalVatRounded().getNumber().doubleValue(), 0);
 	}
 	
 	@Test
@@ -405,14 +407,14 @@ public class DocumentSummaryCalcTest {
 				.withVatPercent(0.07).build();
 		
 		Assert.assertEquals(49.86, testPrice.getTotalNetRounded().getNumber().doubleValue(), 0);
-		Assert.assertEquals(55.0, testPrice.getTotalGrossRounded().getNumber().doubleValue(), 0);
-		Assert.assertEquals(3.5, testPrice.getTotalVatRounded().getNumber().doubleValue(), 0);
-		Assert.assertEquals(-1.55, testPrice.getTotalAllowance().getNumber().doubleValue(), 0);
+		Assert.assertEquals(53.35, testPrice.getTotalGrossRounded().getNumber().doubleValue(), 0);
+		Assert.assertEquals(3.49, testPrice.getTotalVatRounded().getNumber().doubleValue(), 0);
+		Assert.assertEquals(-1.5, testPrice.getTotalAllowance().getNumber().doubleValue(), 0);
 		Assert.assertEquals(-0.06, testPrice.getUnitAllowance().getNumber().doubleValue(), 0);
 		Assert.assertEquals(2.2, testPrice.getUnitGrossRounded().getNumber().doubleValue(), 0);
-		Assert.assertEquals(2.14, testPrice.getUnitGrossDiscountedRounded().getNumber().doubleValue(), 0);
-		Assert.assertEquals(2.06, testPrice.getUnitNetDiscountedRounded().getNumber().doubleValue(), 0);
-		Assert.assertEquals(2.12, testPrice.getUnitNetRounded().getNumber().doubleValue(), 0);
+		Assert.assertEquals(2.13, testPrice.getUnitGrossDiscountedRounded().getNumber().doubleValue(), 0);
+		Assert.assertEquals(1.99, testPrice.getUnitNetDiscountedRounded().getNumber().doubleValue(), 0);
+		Assert.assertEquals(2.06, testPrice.getUnitNetRounded().getNumber().doubleValue(), 0);
 		Assert.assertEquals(0.14, testPrice.getUnitVatDiscountedRounded().getNumber().doubleValue(), 0);
 	}
 

@@ -57,9 +57,9 @@ hier klingt vor allem das interessant:
 	
 	// sum of items
 	private MonetaryAmount itemsNet;
-//	private MonetaryAmount itemsNetDiscounted;
+	private MonetaryAmount itemsNetDiscounted;
 	private MonetaryAmount itemsGross;
-//	private MonetaryAmount itemsGrossDiscounted;
+	private MonetaryAmount itemsGrossDiscounted;
 
 	// total sum
 	private MonetaryAmount totalNet;
@@ -107,8 +107,8 @@ hier klingt vor allem das interessant:
 	private void resetValues() {
 		itemsNet = Money.zero(currencyCode);
 		itemsGross = Money.zero(currencyCode);
-//		itemsNetDiscounted = Money.zero(currencyCode);
-//		itemsGrossDiscounted = Money.zero(currencyCode);
+		itemsNetDiscounted = Money.zero(currencyCode);
+		itemsGrossDiscounted = Money.zero(currencyCode);
 		totalNet = Money.zero(currencyCode);
 		totalGross = Money.zero(currencyCode);
 		discountNet = Money.zero(currencyCode);
@@ -124,8 +124,10 @@ hier klingt vor allem das interessant:
 	public void addPrice(Price price, Double quantity) {
 		if(price != null && quantity != null) {
 			addQuantity(quantity); 
-			addToItemsNet(price.getTotalNet());
-			addToItemsGross(price.getTotalGrossRounded());
+			addToItemsNet(price.getUnitNetRounded().multiply(quantity));
+			addToItemsNetDiscounted(price.getTotalNet());
+//			addToItemsGross(price.getUnitGrossRounded().multiply(quantity));
+//			addToItemsGrossDiscounted(price.getTotalGrossRounded());
 		}
 	}
 
@@ -233,30 +235,30 @@ hier klingt vor allem das interessant:
 	}
 
 	public MonetaryAmount getItemsNetDiscounted() {
-		return itemsNet.subtract(discountNet);
-//        return itemsNetDiscounted;
+//		return itemsNet.subtract(discountNet);
+        return itemsNetDiscounted;
     }
-//
-//    public void setItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
-//        this.itemsNetDiscounted = itemsNetDiscounted;
-//    }
-//    
-//    public void addToItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
-//    	this.itemsNetDiscounted = this.itemsNetDiscounted.add(itemsNetDiscounted);
-//    }
+
+    public void setItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
+        this.itemsNetDiscounted = itemsNetDiscounted;
+    }
+    
+    public void addToItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
+    	this.itemsNetDiscounted = this.itemsNetDiscounted.add(itemsNetDiscounted);
+    }
 
     public MonetaryAmount getItemsGrossDiscounted() {
-    	return itemsGross.subtract(discountGross);
-//        return itemsGrossDiscounted;
+//    	return itemsGross.subtract(discountGross);
+        return itemsGrossDiscounted;
     }
 
-//    public void setItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
-//        this.itemsGrossDiscounted = itemsGrossDiscounted;
-//    }
-//    
-//    public void addToItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
-//    	this.itemsGrossDiscounted = this.itemsGrossDiscounted.add(itemsGrossDiscounted);
-//    }
+    public void setItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
+        this.itemsGrossDiscounted = itemsGrossDiscounted;
+    }
+    
+    public void addToItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
+    	this.itemsGrossDiscounted = this.itemsGrossDiscounted.add(itemsGrossDiscounted);
+    }
 
     /**
 	 * Getter for the deposit
