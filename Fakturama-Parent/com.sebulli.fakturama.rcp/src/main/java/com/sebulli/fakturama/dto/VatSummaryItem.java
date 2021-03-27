@@ -249,7 +249,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 		
 		// recalculate Sales Equalization Tax
 		if(this.net != null && salesEqTaxPercent != null) {
-			this.salesEqTax = this.net.multiply(this.salesEqTaxPercent);
+			this.salesEqTax = this.net.with(rounding).multiply(this.salesEqTaxPercent);
 		}
 	}
 

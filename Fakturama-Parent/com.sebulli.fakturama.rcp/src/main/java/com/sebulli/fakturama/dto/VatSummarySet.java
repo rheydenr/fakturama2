@@ -115,7 +115,7 @@ public class VatSummarySet extends TreeSet<VatSummaryItem> {
 	    Iterator<VatSummaryItem> iterator = this.iterator();
 		while( iterator.hasNext()) {
 			VatSummaryItem item = iterator.next();
-			retval = MonetaryFunctions.sum(retval, item.getNet());
+			retval = MonetaryFunctions.sum(retval, item.getNet().with(rounding));
 		}
 	    
 		// Round the net value

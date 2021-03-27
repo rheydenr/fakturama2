@@ -112,11 +112,11 @@ public class DocumentSummaryCalcTest {
 	public void testFullSizeDocument_001() {
 		int id = 1;
 		Invoice invoice = FakturamaModelPackage.MODELFACTORY.createInvoice();
-		invoice.addToItems(createDocumentItem(id++, Double.valueOf(25.0), Double.valueOf(2.06),
+		invoice.addToItems(createDocumentItem(id++, Double.valueOf(25.0), Double.valueOf(2.20/1.07),
 				Double.valueOf(0.07)));
-		invoice.addToItems(createDocumentItem(id++, Double.valueOf(5.0), Double.valueOf(2.34),
+		invoice.addToItems(createDocumentItem(id++, Double.valueOf(5.0), Double.valueOf(2.50/1.07),
 				Double.valueOf(0.07)));
-		invoice.addToItems(createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(8.4),
+		invoice.addToItems(createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(10/1.19),
 				Double.valueOf(0.19)));
 		invoice.setNetGross(DocumentSummary.ROUND_GROSS_VALUES);
 
