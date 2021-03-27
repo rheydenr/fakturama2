@@ -184,17 +184,20 @@ public class DocumentSummaryCalculator {
 
 		// Gross value is the sum of net and VAT and sales equalization tax value 
 		retval.setTotalNet(retval.getItemsNet());  // ...Discounted is wrong at this point
-//		retval.setItemsGross(retval.getItemsNet().add(retval.getTotalVat()));
+		
+		if(!isUseGross(param)) {
+			retval.setItemsGross(retval.getTotalNet().add(retval.getTotalVatRounded()).add(retval.getTotalSET()));
 //		retval.setItemsGrossDiscounted(retval.getTotalNet().add(retval.getTotalVat()).add(retval.getTotalSET()));
+		}
 		
 		// round to full gross cents
 		if (param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
-			retval.setItemsGrossDiscounted(retval.getItemsGrossDiscounted().with(rounding));
-			retval.setItemsNetDiscounted(retval.getItemsGrossDiscounted().subtract(retval.getTotalVat()));
+			retval.setItemsGrossDiscounted(retval.getItemsGross().with(rounding));
+			retval.setItemsNetDiscounted(retval.getItemsGrossDiscounted().subtract(retval.getTotalVatRounded()));
 			retval.setTotalNet(retval.getItemsNetDiscounted());
 		}
 		
-		retval.setTotalGross(retval.getItemsGrossDiscounted());
+		retval.setTotalGross(retval.getItemsGross());
 
 		MonetaryAmount itemsNet = retval.getItemsNetDiscounted();
 		MonetaryAmount itemsGross = retval.getItemsGrossDiscounted();
@@ -440,6 +443,20 @@ public class DocumentSummaryCalculator {
 			itemVatAmount = Money.zero(getCurrencyCode());
 		}
 		// DocumentSummary.ROUND_GROSS_VALUES: price.getUnitNetRounded().multiply(price.getQuantity())
+		boolean useGross = isUseGross(param);
+	    
+		VatSummaryItem vatSummaryItem = new VatSummaryItem(StringUtils.defaultString(vatDescription, itemVat.getName()),
+				vatPercent, useGross 
+				?  price.getUnitGrossDiscounted().subtract(price.getUnitVatDiscounted()).subtract(price.getUnitSalesEqTaxDiscounted()).multiply(price.getQuantity()) //price.getUnitNetDiscounted().multiply(price.getQuantity()) 
+				:  price.getTotalNet(), itemVatAmount); // totalNetRounded???
+		if (itemVat != null && this.useSET && itemVat.getSalesEqualizationTax() != null) {
+			double taxValue = DataUtils.getInstance().round(itemVat.getSalesEqualizationTax(), defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES) + 3);
+			vatSummaryItem.setSalesEqTaxPercent(taxValue);
+		}
+		return vatSummaryItem;
+	}
+
+	private boolean isUseGross(DocumentSummaryParam param) {
 		boolean useGross;
 		if (param.getNetGross() == DocumentSummary.ROUND_NOTSPECIFIED) {
 			useGross = defaultValuePrefs
@@ -447,14 +464,7 @@ public class DocumentSummaryCalculator {
 		} else {
 			useGross = param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES;
 		}
-	       
-		VatSummaryItem vatSummaryItem = new VatSummaryItem(StringUtils.defaultString(vatDescription, itemVat.getName()),
-				vatPercent, useGross ? price.getUnitNetDiscounted().multiply(price.getQuantity()) :  price.getTotalNet(), itemVatAmount); // totalNetRounded???
-		if (itemVat != null && this.useSET && itemVat.getSalesEqualizationTax() != null) {
-			double taxValue = DataUtils.getInstance().round(itemVat.getSalesEqualizationTax(), defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES) + 3);
-			vatSummaryItem.setSalesEqTaxPercent(taxValue);
-		}
-		return vatSummaryItem;
+		return useGross;
 	}
 
     private VAT getItemVat(DocumentItem item) {
