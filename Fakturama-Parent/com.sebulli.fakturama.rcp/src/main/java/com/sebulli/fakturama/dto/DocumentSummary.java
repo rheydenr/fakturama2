@@ -124,9 +124,9 @@ hier klingt vor allem das interessant:
 	public void addPrice(Price price, Double quantity) {
 		if(price != null && quantity != null) {
 			addQuantity(quantity); 
-			addToItemsNet(price.getUnitNetRounded().multiply(quantity));
-			addToItemsNetDiscounted(price.getTotalNet());
-//			addToItemsGross(price.getUnitGrossRounded().multiply(quantity));
+			addToItemsNet(price.getTotalNetRounded());
+			addToItemsNetDiscounted(price.getTotalNetRounded());
+			addToItemsGross(price.getTotalGrossRounded());
 //			addToItemsGrossDiscounted(price.getTotalGrossRounded());
 		}
 	}
@@ -194,6 +194,12 @@ hier klingt vor allem das interessant:
 		return this.vatSummary.parallelStream().map(v -> v.getVat()).reduce(Money.zero(currencyCode),
 				MonetaryFunctions::sum).with(rounding);
 	}
+	
+	public MonetaryAmount getTotalVatRounded() {
+		return this.vatSummary.parallelStream().map(v -> v.getVatRounded()).reduce(Money.zero(currencyCode),
+				MonetaryFunctions::sum).with(rounding);
+	}
+	
 	public MonetaryAmount getTotalVatBase() {
 		return this.vatSummary.parallelStream().map(v -> v.getNet()).reduce(Money.zero(currencyCode),
 				MonetaryFunctions::sum).with(rounding);

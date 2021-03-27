@@ -1463,7 +1463,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Set the VAT
 		if (vatValue != null) {
-			vatValue.setValue(documentSummary.getTotalVat());
+			vatValue.setValue(documentSummary.getTotalVatRounded());
 		}
 
 		// Set the total value

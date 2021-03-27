@@ -217,7 +217,7 @@ public class DocumentSummaryCalcTest {
 		Assert.assertEquals(34.66, summary.getTotalNet().getNumber().doubleValue(), 0);
 		Assert.assertEquals(34.66, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
 		Assert.assertEquals(-0.0, summary.getDiscountNet().getNumber().doubleValue(), 0);
-		Assert.assertEquals(39.82, summary.getTotalGross().getNumber().doubleValue(), DOUBLE_DELTA);
+		Assert.assertEquals(38.7, summary.getTotalGross().getNumber().doubleValue(), DOUBLE_DELTA);
 		Assert.assertEquals(3.52, summary.getTotalVat().getNumber().doubleValue(), DOUBLE_DELTA);
 		Assert.assertEquals(0.52, summary.getTotalSET().getNumber().doubleValue(), DOUBLE_DELTA);
 
@@ -253,6 +253,7 @@ public class DocumentSummaryCalcTest {
 				Double.valueOf(0.05)));
 		invoice.setNetGross(DocumentSummary.ROUND_NET_VALUES);
 		Shipping testShipping = createTestShipping();
+		testShipping.setShippingValue(5.9);
 		
 		// change shipping Auto VAT
 		testShipping.setAutoVat(ShippingVatType.SHIPPINGVATGROSS);

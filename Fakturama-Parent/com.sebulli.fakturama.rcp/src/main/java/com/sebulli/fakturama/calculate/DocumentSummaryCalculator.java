@@ -179,13 +179,13 @@ public class DocumentSummaryCalculator {
 		// round to full net cents
 		if (param.getNetGross() == DocumentSummary.ROUND_NET_VALUES) {
 			retval.setItemsNet(retval.getItemsNet().with(rounding));
-			retval.setItemsNetDiscounted(retval.getItemsNetDiscounted().with(rounding));
+//			retval.setItemsNetDiscounted(retval.getItemsNetDiscounted().with(rounding));
 		} 
 
 		// Gross value is the sum of net and VAT and sales equalization tax value 
-		retval.setTotalNet(retval.getItemsNetDiscounted());
+		retval.setTotalNet(retval.getItemsNet());  // ...Discounted is wrong at this point
 //		retval.setItemsGross(retval.getItemsNet().add(retval.getTotalVat()));
-		retval.setItemsGrossDiscounted(retval.getItemsNetDiscounted().add(retval.getTotalVat()).add(retval.getTotalSET()));
+//		retval.setItemsGrossDiscounted(retval.getTotalNet().add(retval.getTotalVat()).add(retval.getTotalSET()));
 		
 		// round to full gross cents
 		if (param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
@@ -297,7 +297,9 @@ public class DocumentSummaryCalculator {
 			if (param.getAutoVat().isSHIPPINGVATGROSS()) {
 				if (!itemsGross.isZero()) {
 					// shippingValue * itemsNet / itemsGross
-					retval.setShippingNet(shippingAmount.multiply(itemsNet.add(retval.getTotalSET()).divide(itemsGross.getNumber()).getNumber()));
+					retval.setShippingNet(shippingAmount.multiply(
+							itemsNet.getNumber())
+							.divide(itemsGross.subtract(retval.getTotalSET()).getNumber()));
 				} else {
 					retval.setShippingNet(shippingAmount);
 				}
@@ -437,9 +439,17 @@ public class DocumentSummaryCalculator {
 			vatPercent = param.getNoVatRef().getTaxValue();
 			itemVatAmount = Money.zero(getCurrencyCode());
 		}
-
+		// DocumentSummary.ROUND_GROSS_VALUES: price.getUnitNetRounded().multiply(price.getQuantity())
+		boolean useGross;
+		if (param.getNetGross() == DocumentSummary.ROUND_NOTSPECIFIED) {
+			useGross = defaultValuePrefs
+					.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES;
+		} else {
+			useGross = param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES;
+		}
+	       
 		VatSummaryItem vatSummaryItem = new VatSummaryItem(StringUtils.defaultString(vatDescription, itemVat.getName()),
-				vatPercent, price.getTotalNetRounded(), itemVatAmount);
+				vatPercent, useGross ? price.getUnitNetDiscounted().multiply(price.getQuantity()) :  price.getTotalNet(), itemVatAmount); // totalNetRounded???
 		if (itemVat != null && this.useSET && itemVat.getSalesEqualizationTax() != null) {
 			double taxValue = DataUtils.getInstance().round(itemVat.getSalesEqualizationTax(), defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES) + 3);
 			vatSummaryItem.setSalesEqTaxPercent(taxValue);

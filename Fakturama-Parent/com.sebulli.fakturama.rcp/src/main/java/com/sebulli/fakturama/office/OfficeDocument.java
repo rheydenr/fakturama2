@@ -713,7 +713,6 @@ public class OfficeDocument {
                     }
                 }
             }
-            // System.out.println();
         }
     }
 
