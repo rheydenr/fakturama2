@@ -125,7 +125,7 @@ hier klingt vor allem das interessant:
 		if(price != null && quantity != null) {
 			addQuantity(quantity); 
 			addToItemsNet(price.getTotalNetRounded());
-			addToItemsNetDiscounted(price.getTotalNetRounded());
+			addToItemsNetDiscounted(price.getTotalNet());
 			addToItemsGross(price.getTotalGrossRounded());
 //			addToItemsGrossDiscounted(price.getTotalGrossRounded());
 		}

@@ -798,14 +798,9 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.VESTINGPERIOD.END")) return dateFormatterService.getFormattedLocalizedDate(document.getVestingPeriodEnd());
 		if (key.equals("DOCUMENT.ITEMS.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getItemsGross());
 		
-		// if no discount was set then we can use discounted net value (contains a more "accurate" value)
 		if (key.equals("DOCUMENT.ITEMS.NET")) {
-			if (documentSummary.getItemsGross().isEqualTo(documentSummary.getItemsGrossDiscounted())) {
-				return numberFormatterService.formatCurrency(documentSummary.getItemsNetDiscounted());
-			} else {
-				return numberFormatterService.formatCurrency(documentSummary.getItemsNet());
-			}
-		}		
+				return numberFormatterService.formatCurrency(documentSummary.getItemsNet().add(documentSummary.getDiscountNet()));
+		}
 		
 		// FAK-432
 		if (key.equals("DOCUMENT.ITEMS.NET.DISCOUNTED")) return numberFormatterService.formatCurrency(documentSummary.getItemsNetDiscounted());

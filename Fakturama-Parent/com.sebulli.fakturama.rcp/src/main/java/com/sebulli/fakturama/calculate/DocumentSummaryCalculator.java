@@ -193,7 +193,7 @@ public class DocumentSummaryCalculator {
 		// round to full gross cents
 		if (param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
 			retval.setItemsGrossDiscounted(retval.getItemsGross().with(rounding));
-			retval.setItemsNetDiscounted(retval.getItemsGrossDiscounted().subtract(retval.getTotalVatRounded()));
+//			retval.setItemsNetDiscounted(retval.getItemsGrossDiscounted().subtract(retval.getTotalVatRounded()));
 			retval.setTotalNet(retval.getItemsNetDiscounted());
 		}
 		
