@@ -200,7 +200,7 @@ public class DocumentSummaryCalculator {
 		retval.setTotalGross(retval.getItemsGross());
 
 		MonetaryAmount itemsNet = retval.getItemsNetDiscounted();
-		MonetaryAmount itemsGross = retval.getItemsGrossDiscounted();
+		MonetaryAmount itemsGross = retval.getItemsGross();//Discounted
 
 		// *** DISCOUNT ***
 		

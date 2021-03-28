@@ -273,7 +273,7 @@ public class Price {
 		}
 		else {
 		    // ...or gross from net
-			this.unitGross = this.unitPrice.multiply(1.0 + vatPercent + Optional.ofNullable(salesEqTaxPercent).orElse(NumberUtils.DOUBLE_ZERO)).with(getRounding());
+			this.unitGross = this.unitPrice.multiply(1.0 + vatPercent + Optional.ofNullable(salesEqTaxPercent).orElse(NumberUtils.DOUBLE_ZERO));
 			this.unitNet = this.unitPrice;
 		}
 		
@@ -359,7 +359,8 @@ public class Price {
 			// Calculate the total values and use the quantity
 //			this.totalNet = this.unitNetDiscounted.multiply(this.quantity);
 			this.totalNetRounded = this.totalNet.with(getRounding());
-			this.totalGross = this.unitNetDiscounted.multiply(this.quantity).multiply(1+vatPercent + salesEqTaxPercent);
+//			this.totalGross = this.unitNetDiscounted.multiply(this.quantity).multiply(1+vatPercent + salesEqTaxPercent);
+			this.totalGross = unitGrossRounded.multiply(this.quantity);
 //			this.totalGrossRounded = this.unitGrossDiscountedRounded.multiply(this.quantity);
 		}
 

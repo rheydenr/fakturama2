@@ -804,7 +804,7 @@ public class Placeholders {
 		// discount is negative
 		if (key.equals("DOCUMENT.ITEMS.NET.DISCOUNTED")) return numberFormatterService.formatCurrency(documentSummary.getItemsNet().add(documentSummary.getDiscountNet()));
 		if (key.equals("DOCUMENT.TOTAL.NET")) return numberFormatterService.formatCurrency(documentSummary.getTotalNet());
-		if (key.equals("DOCUMENT.TOTAL.VAT")) return numberFormatterService.formatCurrency(documentSummary.getTotalVatRounded());
+		if (key.equals("DOCUMENT.TOTAL.VAT")) return numberFormatterService.formatCurrency(documentSummary.getTotalVat());
 		if (key.equals("DOCUMENT.TOTAL.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getTotalGross());
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return Double.toString(documentSummary.getTotalQuantity()); // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
