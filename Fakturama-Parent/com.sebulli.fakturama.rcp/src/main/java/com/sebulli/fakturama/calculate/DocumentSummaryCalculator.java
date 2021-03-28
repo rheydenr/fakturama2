@@ -448,7 +448,8 @@ public class DocumentSummaryCalculator {
 				vatPercent, useGross 
 				?  price.getUnitGrossDiscounted().subtract(price.getUnitVatDiscounted()).subtract(price.getUnitSalesEqTaxDiscounted()).multiply(price.getQuantity())  
 				:  price.getTotalNet(), itemVatAmount); // totalNetRounded???
-		if (itemVat != null && this.useSET && itemVat.getSalesEqualizationTax() != null) {
+
+		if (itemVat != null && this.useSET && itemVat.getSalesEqualizationTax() != null && !item.getNoVat()) {
 			double taxValue = DataUtils.getInstance().round(itemVat.getSalesEqualizationTax(), defaultValuePrefs.getInt(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES) + 3);
 			vatSummaryItem.setSalesEqTaxPercent(taxValue);
 		}

@@ -234,7 +234,7 @@ public class Price {
     public Price(Double quantity, MonetaryAmount unitPrice, Double vatPercent, Double discount, boolean noVat, boolean asGross, Double salesEqualizationTax) {
 
         // if noVat is set, the vat value is set to 0.0
-        this.vatPercent = (noVat) ? Double.valueOf(0.0) : vatPercent;
+        this.vatPercent = noVat ? Double.valueOf(0.0) : vatPercent;
 
         this.quantity = quantity != null ? quantity : Double.valueOf(0);
         this.unitPrice = unitPrice;
@@ -242,7 +242,7 @@ public class Price {
         this.asGross = asGross;
 
         if (salesEqualizationTax != null) {
-            this.salesEqTaxPercent = salesEqualizationTax;
+            this.salesEqTaxPercent =  noVat ? Double.valueOf(0.0) : salesEqualizationTax;
         }
 
         // do the calculation
