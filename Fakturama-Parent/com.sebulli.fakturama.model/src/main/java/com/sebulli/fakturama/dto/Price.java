@@ -116,10 +116,6 @@ public class Price {
 		        false, 
 		        useSET ? item.getItemVat().getSalesEqualizationTax() : null);
 	}
-	
-//    public Price(DocumentItem item, Double scaleFactor, boolean useSET) {
-//    	this(item, scaleFactor, useSET, false);
-//    }
 
 	/**
 	 * Create a price value from an item and a scale factor
@@ -313,7 +309,6 @@ public class Price {
 		this.unitGrossDiscounted = this.unitGross.multiply(discountFactor);
 		this.totalVat = this.unitVatDiscounted.multiply(this.quantity);
 		this.totalNet = this.unitNetDiscounted.multiply(this.quantity);
-//		this.totalVatRounded = totalGrossRounded.subtract(totalNetRounded).subtract(totalSalesEqTaxRounded);
 		this.totalVatRounded = totalVat.with(getRounding());
 		this.totalGross = unitGrossDiscounted.multiply(this.quantity);
 		this.totalGrossRounded = totalGross.with(getRounding());

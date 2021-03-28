@@ -265,17 +265,17 @@ public class DocumentSummaryCalcTest {
 		
 		// net value including shipping net value
 		double totalNet = summary.getTotalNet().getNumber().doubleValue();
-		Assert.assertEquals(35.6, totalNet, 0);
-		Assert.assertEquals(38.56, summary.getTotalGross().getNumber().doubleValue(), 0.002);
+		Assert.assertEquals(35.15, totalNet, 0);
+		Assert.assertEquals(38.07, summary.getTotalGross().getNumber().doubleValue(), DOUBLE_DELTA);
 		double totalVat = summary.getTotalVat().getNumber().doubleValue();
-		Assert.assertEquals(2.96, totalVat, 0.002);
+		Assert.assertEquals(2.92, totalVat, DOUBLE_DELTA);
 		
 		// has to be same as summary.getTotalNet()
-		Assert.assertEquals(totalNet, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
+		Assert.assertEquals(totalNet, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.01);
 
-		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(2.36), "EUR"),
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(2.33), "EUR"),
 				calc.getVatSummaryItemForTaxValue(0.1).get(0).getVatRounded());
-		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(0.6), "EUR"),
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(0.59), "EUR"),
 				calc.getVatSummaryItemForTaxValue(0.05).get(0).getVatRounded());
 		Assert.assertEquals(2, calc.getVatSummary(invoice).size());
 		// sum of items has to be equal to summary.getTotalVat()

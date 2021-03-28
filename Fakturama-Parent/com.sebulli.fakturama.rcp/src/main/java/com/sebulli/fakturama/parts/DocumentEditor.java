@@ -1402,8 +1402,6 @@ public class DocumentEditor extends Editor<Document> {
 		
 		DocumentSummaryManager documentSummaryManager = ContextInjectionFactory.make(DocumentSummaryManager.class, context);
 		
-//		DocumentSummaryCalculator documentSummaryCalculator;
-		
 		DocumentSummaryParam sumCalcParam;
         if(document.getShipping() == null) {
 			sumCalcParam = new DocumentSummaryParam()
@@ -1417,11 +1415,6 @@ public class DocumentEditor extends Editor<Document> {
         		.withDeposit(deposit)
         		.withItemsDiscount(rebate);
         	
-//    		documentSummary = documentSummaryCalculator.calculate(null, docItems,
-//    				document.getShippingValue()/* * sign*/,
-//                    null, 
-//                    document.getShippingAutoVat(), 
-//                    rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         } else {
 			sumCalcParam = new DocumentSummaryParam()
         		.withItems(docItems)
@@ -1434,11 +1427,6 @@ public class DocumentEditor extends Editor<Document> {
         		.withNetGross(netgross)
         		.withDeposit(deposit)
         		.withItemsDiscount(rebate);
-//			documentSummary = documentSummaryCalculator.calculate(null, docItems,
-//	                document.getShipping().getShippingValue(),
-//	                document.getShipping().getShippingVat(), 
-//	                document.getShipping().getAutoVat(), 
-//	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
         }
         	
         documentSummary = documentSummaryManager.calculate(document, sumCalcParam);
