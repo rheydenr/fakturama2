@@ -127,27 +127,16 @@ public class VoucherSummaryCalculator {
             else {
                 // Add the VAT summary item to the ... 
                 voucherSummaryItem = new VatSummaryItem(vatDescription, vatPercent, price.getTotalNet(), itemVat, "");
-
             }
 
             // .. VAT summary of the voucher ..
             voucherSummaryItems.add(voucherSummaryItem);
-
         }
 
         // Gross value is the sum of net and VAT value
         retval.setTotalGross(retval.getTotalNet().add(retval.getTotalVat()));
 
-        // Finally, round the values
-
-//        this.totalGross.round();
-//        this.totalNet.round();
-//        retval.setTotalVat(retval.getTotalGross().subtract(retval.getTotalNet()));
-
-        // Round also the Vat summaries
-        voucherSummaryItems.roundAllEntries();
-
-//        // Add the entries of the document summary set also to the global one
+        // Add the entries of the document summary set also to the global one
         if (globalVoucherSummarySet != null)
             globalVoucherSummarySet.addVatSummarySet(voucherSummaryItems); 
 

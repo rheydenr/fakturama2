@@ -16,6 +16,7 @@ package com.sebulli.fakturama.dto;
 
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 
@@ -43,10 +44,11 @@ public class VoucherSummarySetManager {
 	private VatSummarySet voucherSummarySet;
 
 	/**
-	 * Constructor Creates a new voucherSummarySet
+	 * Creates a new voucherSummarySet
 	 */
-	public VoucherSummarySetManager() {
-		voucherSummarySet = ContextInjectionFactory.make(VatSummarySet.class, ctx);;
+	@PostConstruct
+	public void init() {
+		voucherSummarySet = ContextInjectionFactory.make(VatSummarySet.class, ctx);
 	}
 
 	/**

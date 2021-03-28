@@ -37,7 +37,6 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	// Absolute Net and Vat value
 	// This can be the sum of more than one item
 	private MonetaryAmount net;
-//	private MonetaryAmount vat;
 	
 	// sales equalization tax (could be zero)
 	private MonetaryAmount salesEqTax;
@@ -89,10 +88,7 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 		this.vatName = vatName;
 		this.vatPercent = vatPercent;
 		this.net = net;
-//		this.vat = vat;
 		this.salesEqTax = Money.zero(net.getCurrency());
-//		this.netRoundingError = 0.0;
-//		this.vatRoundingError = 0.0;
 		this.description = description;
 	}
 
@@ -113,8 +109,6 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	    	vatSummaryItemCopy.setSalesEqTaxPercent(vatSummaryItem.getSalesEqTaxPercent());
 	    }
 		return vatSummaryItemCopy;
-//		this.netRoundingError = 0.0;
-//		this.vatRoundingError = 0.0;
 	}
 
 	/**
@@ -125,24 +119,8 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	 */
 	public void add(VatSummaryItem other) {
 	    this.net = this.net.add(other.net);
-//	    this.vat = this.vat.add(other.vat);
 	    this.salesEqTax = this.salesEqTax != null && other.salesEqTax != null ? this.salesEqTax.add(other.salesEqTax) : Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 	}
-//
-//	/**
-//	 * Round the net and vat value and store the rounding error in the property
-//	 * "xxRoundingError"
-//	 */
-//	public void round() {
-//
-//		// Round the net value
-//		netRoundingError = this.net.getNumber().doubleValue() - this.net.with(rounding).getNumber().doubleValue();
-//		this.net = this.net.with(rounding);
-//
-//		// Round the vat value
-//		vatRoundingError = this.vat.getNumber().doubleValue() - this.vat.with(rounding).getNumber().doubleValue();
-//		this.vat = this.vat.with(rounding);
-//	}
 
 	/**
 	 * Sets the absolute net value
@@ -153,16 +131,6 @@ public class VatSummaryItem implements Comparable<VatSummaryItem> {
 	public void setNet(MonetaryAmount value) {
 		this.net = value;
 	}
-
-//	/**
-//	 * Sets the absolute vat value
-//	 * 
-//	 * @param Vat
-//	 *            value
-//	 */
-//	public void setVat(MonetaryAmount value) {
-//		this.vat = value;
-//	}
 
 	/**
 	 * Get the absolute net value

@@ -69,7 +69,6 @@ hier klingt vor allem das interessant:
 	// discount values
 	private MonetaryAmount discountNet;
 	private MonetaryAmount discountGross;
-//	private MonetaryAmount totalDiscount;
 
 	// shipping value
 	private MonetaryAmount shippingNet;
@@ -113,7 +112,6 @@ hier klingt vor allem das interessant:
 		totalGross = Money.zero(currencyCode);
 		discountNet = Money.zero(currencyCode);
 		discountGross = Money.zero(currencyCode);
-//		totalDiscount = Money.zero(currencyCode);
 		shippingNet = Money.zero(currencyCode);
 		shippingVat = Money.zero(currencyCode);
 		shippingGross = Money.zero(currencyCode);
@@ -127,7 +125,6 @@ hier klingt vor allem das interessant:
 			addToItemsNet(price.getTotalNetRounded());
 			addToItemsNetDiscounted(price.getTotalNet());
 			addToItemsGross(price.getTotalGrossRounded());
-//			addToItemsGrossDiscounted(price.getTotalGrossRounded());
 		}
 	}
 
@@ -241,7 +238,6 @@ hier klingt vor allem das interessant:
 	}
 
 	public MonetaryAmount getItemsNetDiscounted() {
-//		return itemsNet.subtract(discountNet);
         return itemsNetDiscounted;
     }
 
@@ -254,7 +250,6 @@ hier klingt vor allem das interessant:
     }
 
     public MonetaryAmount getItemsGrossDiscounted() {
-//    	return itemsGross.subtract(discountGross);
         return itemsGrossDiscounted;
     }
 
@@ -387,10 +382,6 @@ hier klingt vor allem das interessant:
 	public double getTotalQuantity() {
 		return totalQuantity;
 	}
-//	
-//	public MonetaryAmount getTotalDiscount() {
-//        return totalDiscount;
-//    }
 
     public VatSummarySet getVatSummary() {
 		return vatSummary;
@@ -408,10 +399,6 @@ hier klingt vor allem das interessant:
 	public void addQuantity(Double quantity) {
 		this.totalQuantity += quantity;
 	}
-//
-//	public void addToTotalDiscount(MonetaryAmount totalAllowance) {
-//		this.totalDiscount = this.totalDiscount.add(totalAllowance);
-//	}
 
 	public void addToNetDiscount(MonetaryAmount totalAllowance) {
 		this.discountNet = this.discountNet.add(totalAllowance);

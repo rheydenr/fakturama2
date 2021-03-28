@@ -127,7 +127,7 @@ public class DocumentSummaryCalcTest {
 		Assert.assertEquals(77.5, summary.getTotalGross().getNumber().doubleValue(), 0);
 		Assert.assertEquals(6.02, summary.getTotalVatRounded().getNumber().doubleValue(), 0);
 		
-		Assert.assertEquals(71.48, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.0);
+		Assert.assertEquals(71.48, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.01);
 
 		Assert.assertEquals(2, calc.getVatSummary(invoice).size());
 		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(4.42), "EUR"),
