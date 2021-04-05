@@ -614,7 +614,9 @@ public class DataUtils {
 	    s = s.replace("ý", "y");
 	    s = s.replace("ñ", "n");
 	    s = s.replace("ß", "ss");
-
+	    
+	    s = s.replace("\u00a0", " ");
+	    		
         return s;
     }
 
