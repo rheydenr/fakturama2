@@ -83,6 +83,11 @@ public class PriceBuilder {
         return this;
     }
     
+    public PriceBuilder withSalesEqualizationTax(Double salesEqualizationTax) {
+    	this.salesEqualizationTax = salesEqualizationTax;
+    	return this;
+    }
+    
     /**
      * Set it to <code>true</code> if the given amount is a gross price.
      * 

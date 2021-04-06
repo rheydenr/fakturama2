@@ -13,7 +13,6 @@
     <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/pde-junit"/>
     <booleanAttribute key="default" value="false"/>
     <setAttribute key="deselected_workspace_bundles">
-        <setEntry value="com.opcoach.e4.preferences"/>
         <setEntry value="com.sebulli.fakturama.help"/>
         <setEntry value="com.sebulli.fakturama.hsqlconnector"/>
         <setEntry value="com.sebulli.fakturama.model"/>
@@ -22,7 +21,6 @@
         <setEntry value="com.sebulli.fakturama.resources"/>
         <setEntry value="com.sebulli.fakturama.resources.icons"/>
         <setEntry value="com.sebulli.fakturama.resources.templates"/>
-        <setEntry value="de.rhe.ramsch"/>
         <setEntry value="org.fakturama.e4.ui.dialogs.ext"/>
         <setEntry value="org.fakturama.export"/>
         <setEntry value="org.fakturama.exporter.zugferd"/>
@@ -42,6 +40,8 @@
     <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
     <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
     <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
     <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.sebulli.fakturama.common.i18n.LocaleUtilTest"/>
@@ -183,8 +183,20 @@
         <setEntry value="osgi.enterprise@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
+        <setEntry value="com.mysql.jdbc@default:default"/>
+        <setEntry value="com.opencsv@default:default"/>
         <setEntry value="com.sebulli.fakturama.common.tests@default:false"/>
         <setEntry value="com.sebulli.fakturama.common@default:default"/>
+        <setEntry value="com.sebulli.fakturama.rcp.test@default:false"/>
+        <setEntry value="org.apache.commons.beanutils@default:default"/>
+        <setEntry value="org.apache.commons.collections4@default:default"/>
+        <setEntry value="org.apache.commons.io@default:default"/>
+        <setEntry value="org.apache.commons.lang3@default:default"/>
+        <setEntry value="org.apache.commons.text@default:default"/>
+        <setEntry value="org.apache.commons.validator@default:default"/>
+        <setEntry value="org.apache.odftoolkit@default:default"/>
+        <setEntry value="org.apache.poi@default:default"/>
+        <setEntry value="org.hsqldb.jdbc@default:default"/>
     </setAttribute>
     <booleanAttribute key="show_selected_only" value="false"/>
     <stringAttribute key="templateConfig" value="${target_home}\configuration\config.ini"/>

@@ -125,6 +125,7 @@ hier klingt vor allem das interessant:
 			addToItemsNet(price.getTotalNetRounded());
 			addToItemsNetDiscounted(price.getTotalNet());
 			addToItemsGross(price.getTotalGrossRounded());
+			addToItemsGrossDiscounted(price.getUnitGrossDiscounted().multiply(price.getQuantity()));
 		}
 	}
 
