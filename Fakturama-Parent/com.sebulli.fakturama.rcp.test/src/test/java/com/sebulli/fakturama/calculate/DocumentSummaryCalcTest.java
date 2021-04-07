@@ -243,6 +243,31 @@ public class DocumentSummaryCalcTest {
 	}	
 	
 	@Test
+	public void testMultipleItemsWithSamePrice() {
+		int id = 1;
+		Invoice invoice = FakturamaModelPackage.MODELFACTORY.createInvoice();
+
+		for (int i = 1; i < 11; i++) {
+			invoice.addToItems(
+					createDocumentItem(id++, Double.valueOf(1.0), Double.valueOf(35.0 / 1.07), Double.valueOf(0.07)));
+		}
+		invoice.setNetGross(DocumentSummary.ROUND_NET_VALUES);
+
+		DocumentSummaryManager calc = ContextInjectionFactory.make(DocumentSummaryManager.class, ctx);
+		DocumentSummary summary = calc.calculate(invoice);
+		Assert.assertEquals(10.0, summary.getTotalQuantity(), 0.0);
+		Assert.assertEquals(327.1, summary.getTotalNet().getNumber().doubleValue(), 0);
+		Assert.assertEquals(350.0, summary.getTotalGross().getNumber().doubleValue(), 0);
+		Assert.assertEquals(22.9, summary.getTotalVatRounded().getNumber().doubleValue(), 0);
+
+		Assert.assertEquals(327.1, calc.getVatSummary(invoice).getTotalNet().getNumber().doubleValue(), 0.01);
+
+		Assert.assertEquals(1, calc.getVatSummary(invoice).size());
+		Assert.assertEquals(Money.of(MoneyUtils.getBigDecimal(22.9), "EUR"),
+				calc.getVatSummaryItemForTaxValue(0.07).get(0).getVatRounded());
+	}
+
+	@Test
 	public void testFullSizeDocumentWithAutoVATShipping() {
 		int id = 1;
 		Invoice invoice = FakturamaModelPackage.MODELFACTORY.createInvoice();
