@@ -88,7 +88,6 @@ import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.VatSummaryItem;
-import com.sebulli.fakturama.dto.VatSummarySetManager;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
@@ -219,14 +218,14 @@ public class OfficeDocument {
 
             // remove previously created images            
             cleanup();
+
+//            // Get the VAT summary of the UniDataSet document
+//            VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, context);
+//            vatSummarySetManager.add(this.document, Double.valueOf(1.0));
             
             // Recalculate the sum of the document before exporting
             DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
             documentSummary = documentSummaryCalculator.calculate(this.document);
-
-            // Get the VAT summary of the UniDataSet document
-            VatSummarySetManager vatSummarySetManager = ContextInjectionFactory.make(VatSummarySetManager.class, context);
-            vatSummarySetManager.add(this.document, Double.valueOf(1.0));
 
             /* Get the placeholders of the OpenOffice template.
              * The scanning of all placeholders to find the item and the vat table
@@ -284,7 +283,7 @@ public class OfficeDocument {
                         if(row != null) {
                             nodesMarkedForRemoving.add(row);
                         }
-                    }
+                    } 
                   // Replace all other placeholders
                     replaceText(placeholderNode);
                     break;
@@ -311,12 +310,12 @@ public class OfficeDocument {
                             fillItemTableWithData(itemDataSets, pTable, pRowTemplate);
                             break;
                         case VATLIST_TABLE:
-                            fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate,
+                            fillVatTableWithData(documentSummary, pTable, pRowTemplate,
                                     placeholderNode.getTableType(), false);
                             break;
                           
                         case SALESEQUALIZATIONTAX_TABLE:
-                            fillVatTableWithData(vatSummarySetManager, pTable, pRowTemplate, placeholderNode.getTableType(), true);
+                            fillVatTableWithData(documentSummary, pTable, pRowTemplate, placeholderNode.getTableType(), true);
                             break;
                         default:
                             break;
@@ -650,11 +649,15 @@ public class OfficeDocument {
      * @param placeholderTableType current placeholder type
      * @param skipIfEmpty skips the row creation if value of sales equalization tax is empty (only for this case!)
      */
-    private void fillVatTableWithData(VatSummarySetManager vatSummarySetManager, Table pTable, Row pRowTemplate,
+    private void fillVatTableWithData(DocumentSummary documentSummary, Table pTable, Row pRowTemplate,
             PlaceholderTableType placeholderTableType, boolean skipIfEmpty) {
         // Get all items
         int cellCount = pRowTemplate.getCellCount();
-        for (VatSummaryItem vatSummaryItem : vatSummarySetManager.getVatSummaryItems()) {
+        
+        Iterator<VatSummaryItem> it = documentSummary.getVatSummary().iterator();
+        while (it.hasNext()) {
+			VatSummaryItem vatSummaryItem = (VatSummaryItem) it.next();
+
             if(skipIfEmpty && (!this.useSET || vatSummaryItem.getSalesEqTaxPercent() == null || vatSummaryItem.getSalesEqTaxPercent().equals(Double.valueOf(0.0)))) { // skip empty rows
                 continue;
             }
@@ -710,7 +713,6 @@ public class OfficeDocument {
                     }
                 }
             }
-            // System.out.println();
         }
     }
 

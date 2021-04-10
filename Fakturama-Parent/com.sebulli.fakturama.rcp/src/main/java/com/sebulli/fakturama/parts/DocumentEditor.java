@@ -112,7 +112,6 @@ import org.javamoney.moneta.Money;
 import org.osgi.service.event.Event;
 
 import com.sebulli.fakturama.calculate.CustomerStatistics;
-import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
@@ -124,6 +123,8 @@ import com.sebulli.fakturama.dialogs.SelectTreeContactDialog;
 import com.sebulli.fakturama.dto.AddressDTO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.dto.DocumentSummaryManager;
+import com.sebulli.fakturama.dto.DocumentSummaryParam;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
@@ -1124,7 +1125,7 @@ public class DocumentEditor extends Editor<Document> {
 		    noVatName = document.getNoVatReference().getName();
 		}
 		
-		netgross = document.getNetGross() != null ? document.getNetGross() : DocumentSummary.ROUND_NET_VALUES;
+		netgross = document.getNetGross() != null ? document.getNetGross() : defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS);
 		if (dunningLevel <= 0) {
             if (document.getBillingType().isDUNNING()) {
             	dunningLevel = ((Dunning)document).getDunningLevel();
@@ -1399,28 +1400,43 @@ public class DocumentEditor extends Editor<Document> {
 			shipping = lookupDefaultShippingValue();
 		}
 		
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(
-				defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX));
+		DocumentSummaryManager documentSummaryManager = ContextInjectionFactory.make(DocumentSummaryManager.class, context);
+		
+		DocumentSummaryParam sumCalcParam;
         if(document.getShipping() == null) {
-    		documentSummary = documentSummaryCalculator.calculate(null, docItems,
-    				document.getShippingValue()/* * sign*/,
-                    null, 
-                    document.getShippingAutoVat(), 
-                    rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+			sumCalcParam = new DocumentSummaryParam()
+        		.withItems(docItems)
+        		.withAutoVat(document.getShippingAutoVat())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withShippingValue(document.getShippingValue())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withScaleFactor(Double.valueOf(1.0))
+        		.withNetGross(netgross)
+        		.withDeposit(deposit)
+        		.withItemsDiscount(rebate);
+        	
         } else {
-			documentSummary = documentSummaryCalculator.calculate(null, docItems,
-	                document.getShipping().getShippingValue(),
-	                document.getShipping().getShippingVat(), 
-	                document.getShipping().getAutoVat(), 
-	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+			sumCalcParam = new DocumentSummaryParam()
+        		.withItems(docItems)
+        		.withAutoVat(document.getShipping().getAutoVat())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withShippingValue(document.getShipping().getShippingValue())
+        		.withShippingVat(document.getShipping().getShippingVat())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withScaleFactor(Double.valueOf(1.0))
+        		.withNetGross(netgross)
+        		.withDeposit(deposit)
+        		.withItemsDiscount(rebate);
         }
+        	
+        documentSummary = documentSummaryManager.calculate(document, sumCalcParam);
 
 		// Get the total result
 		total = documentSummary.getTotalGross();
 
 		// Set the items sum
 		if (itemsSum != null) {
-			itemsSum.setValue(useGross ? documentSummary.getItemsGross() : documentSummary.getItemsNet());
+			itemsSum.setValue(useGross ? documentSummary.getItemsGross().with(DataUtils.getInstance().getRounding()) : documentSummary.getItemsNetDiscounted().with(DataUtils.getInstance().getRounding()));
 		}
 
 		// Set the shipping
@@ -1454,7 +1470,7 @@ public class DocumentEditor extends Editor<Document> {
 			        .filter(d -> d.getWeight() != null)
 					.mapToDouble(i -> i.getWeight() * i.getDocumentItem().getQuantity()).sum();
 			netWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue));
-			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
+			Double taraValue = java.util.Optional.ofNullable(document.getTara()).orElse(Double.valueOf(0.0));
 			totalWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue));
 		}
     }
@@ -1479,7 +1495,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1;
+            useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_GROSS_VALUES;
         } else {
             useGross = netgross == DocumentSummary.ROUND_GROSS_VALUES;
         }
@@ -2823,7 +2839,7 @@ public class DocumentEditor extends Editor<Document> {
             	// Recalculate, if the discount field looses the focus.
             	itemsDiscount.getControl().addFocusListener(new FocusAdapter() {
             		public void focusLost(FocusEvent e) {
-            			calculate();
+        				calculate();
             		}
             	});
     

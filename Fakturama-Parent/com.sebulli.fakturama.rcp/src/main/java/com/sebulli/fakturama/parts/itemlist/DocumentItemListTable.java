@@ -34,6 +34,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
@@ -444,21 +445,25 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                    		: (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
 	                    break;
 	                case SALESEQUALIZATIONTAX:
-	                	Double tmpVat = (Double)columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-	                	retval = tmpVat != null ? DataUtils.getInstance().round(tmpVat, 3) : Double.valueOf(0.0);
+	                    Price price = rowObject.getPrice(useSET);
+//	                	Double tmpVat = (Double)columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+//	                	retval = tmpVat != null ? DataUtils.getInstance().round(tmpVat, 3) : NumberUtils.DOUBLE_ZERO;
+	                    retval = price.getTotalSalesEqTaxRounded();
 	                	break;
 	                case UNITPRICE:
-	                    retval = container.getUseGross() 
-	                			? new Price(rowObject.getDocumentItem(), useSET).getUnitGrossRounded() 
-	                			: new Price(rowObject.getDocumentItem(), useSET).getUnitNetRounded();
+	                    price = rowObject.getPrice(useSET);
+						retval = container.getUseGross() 
+	                			? price.getUnitGrossRounded() 
+	                			: price.getUnitNetRounded();
 	                    break;
 	                case TOTALPRICE:
+	                    price = rowObject.getPrice(useSET);
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"
 	                        // Fill the cell with the total gross value of the item
-	                        retval = rowObject.getPrice(useSET).getTotalGrossRounded();
+	                        retval = price.getTotalGrossRounded();
 	                    } else { // "$ItemNetTotal"
 	                        // Fill the cell with the total net value of the item
-	                        retval = rowObject.getPrice(useSET).getTotalNetRounded();
+	                        retval = price.getTotalNetRounded();
 	                    }
 	                    break;
 	                default:
@@ -549,7 +554,14 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 case VAT:
                     // Set the VAT
                     if (newValue != null) {
+            			// Set the vat and store the vat value before and after the modification.
+            			Double oldVat = 1.0 + rowObject.getDocumentItem().getItemVat().getTaxValue();
                         rowObject.getDocumentItem().setItemVat((VAT) newValue);
+
+            			// Modify the net value that the gross value stays constant.
+            			if (container.getUseGross()) {
+            				rowObject.getDocumentItem().setPrice(oldVat / (1 + ((VAT) newValue).getTaxValue()) * rowObject.getDocumentItem().getPrice());
+            			}
                     }
                     break;
                 case UNITPRICE:
@@ -574,12 +586,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     // Set the price as gross or net value.
                     // If the editor displays gross values, calculate the net value,
                     // because only net values are stored.
+                    MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
                     if (useGross) {
-                        MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
-                        Price newPrice = new Price(amount, rowObject.getDocumentItem().getItemVat().getTaxValue(), rowObject.getDocumentItem().getNoVat(), true);
+                        Price newPrice = new Price(amount, rowObject.getDocumentItem().getItemVat().getTaxValue(), rowObject.getDocumentItem().getNoVat(), useGross);
                         rowObject.getDocumentItem().setPrice(newPrice.getUnitNet().getNumber().doubleValue());
                     } else {
-                        MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
                         rowObject.getDocumentItem().setPrice(amount.getNumber().doubleValue());
                     }
                     break;
@@ -661,7 +672,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.OPTIONAL, OPTIONAL_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.PICTURE, PICTURE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.VAT, VAT_CELL_LABEL);
-        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.SALESEQUALIZATIONTAX, PERCENT_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.SALESEQUALIZATIONTAX, MONEYVALUE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.DISCOUNT, PERCENT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.UNITPRICE, MONEYVALUE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.TOTALPRICE, TOTAL_MONEYVALUE_CELL_LABEL);

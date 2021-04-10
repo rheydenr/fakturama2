@@ -16,11 +16,16 @@ package com.sebulli.fakturama.dto;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryRounding;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
+import org.javamoney.moneta.function.MonetaryFunctions;
 
 import com.sebulli.fakturama.misc.DataUtils;
 
@@ -37,17 +42,20 @@ import com.sebulli.fakturama.misc.DataUtils;
  * @author Gerd Bartelt
  */
 public class VatSummarySet extends TreeSet<VatSummaryItem> {
+    
+    @Inject
+    private IEclipseContext ctx;
 
 	private static final long serialVersionUID = 1L;
     
     private CurrencyUnit currencyCode;
     private MonetaryRounding rounding;
 
-    public VatSummarySet() {
-        super();
-        currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
-        rounding = DataUtils.getInstance().getRounding(currencyCode);  
-
+    @PostConstruct
+    public void init() {
+        DataUtils dataUtils = ContextInjectionFactory.make(DataUtils.class, ctx);
+        currencyCode = dataUtils.getDefaultCurrencyUnit();
+        rounding = dataUtils.getRounding(currencyCode);  
     }
     
 	/**
@@ -97,148 +105,10 @@ public class VatSummarySet extends TreeSet<VatSummaryItem> {
 		}
 		return i;
 	}
-
-	/**
-	 * Round all items of the VatSummarySet
-	 */
-	public void roundAllEntries() {
-	    MonetaryAmount zero = Money.of(Double.valueOf(0.0), currencyCode);
-		MonetaryAmount netSum = Money.from(zero);
-		MonetaryAmount vatSum = Money.from(zero);
-		MonetaryAmount netSumOfRounded = Money.from(zero);
-		MonetaryAmount vatSumOfRounded = Money.from(zero);
-		MonetaryAmount netRoundedSum = Money.from(zero);
-		MonetaryAmount vatRoundedSum = Money.from(zero);
-		int missingCents = 0;
-		Double oneCent;
-		Double roundingError;
-		boolean searchForMaximum;
-
-		// First, add all values to get the sum of net and vat
-		for (Iterator<VatSummaryItem> iterator = this.iterator(); iterator.hasNext();) {
-			VatSummaryItem item = iterator.next();
-
-			//Add all values
-			netSum = netSum.add(item.getNet());
-			vatSum = vatSum.add(item.getVat());
-		}
-
-		// Round the sum
-		netRoundedSum = netSum.with(rounding);
-		vatRoundedSum = vatSum.with(rounding);
-
-		// round all items
-		for (Iterator<VatSummaryItem> iterator = this.iterator(); iterator.hasNext();) {
-			VatSummaryItem item = iterator.next();
-
-			item.round();
-
-			// calculate the sum of rounded values
-			netSumOfRounded = netSumOfRounded.add(item.getNet());
-			vatSumOfRounded = vatSumOfRounded.add(item.getVat());
-		}
-
-		// Calculate the rounding error in cent
-		roundingError = (netRoundedSum.subtract(netSumOfRounded)).getNumber().doubleValue() * 100.000001;
-		missingCents = roundingError.intValue();
-
-		// Decrease or increase the entries
-		if (missingCents >= 0) {
-			searchForMaximum = true;
-			oneCent = 0.01;
-		}
-		else {
-			searchForMaximum = false;
-			missingCents = -missingCents;
-			oneCent = -0.01;
-		}
-
-		// Dispense the missing cents to those values with the maximum
-		// rounding error.
-		for (int i = 0; i < missingCents; i++) {
-
-			Double maxRoundingError = -oneCent;
-			VatSummaryItem maxItem = null;
-
-			// Search for the item with the maximum error
-			for (Iterator<VatSummaryItem> iterator = this.iterator(); iterator.hasNext();) {
-				VatSummaryItem item = iterator.next();
-
-				// Search for maximum or minimum
-				if (searchForMaximum) {
-					if (item.getNetRoundingError() > maxRoundingError) {
-						maxRoundingError = item.getNetRoundingError();
-						maxItem = item;
-					}
-				}
-				else {
-					// If found, mark it
-					if (item.getNetRoundingError() < maxRoundingError) {
-						maxRoundingError = item.getNetRoundingError();
-						maxItem = item;
-					}
-				}
-
-			}
-
-			// Correct the item be one cent
-			if (maxItem != null) {
-			    MonetaryAmount tmpVal = Money.of(maxItem.getNet().getNumber().doubleValue() + oneCent, currencyCode);
-				maxItem.setNet(tmpVal);
-				maxItem.setNetRoundingError(maxItem.getNetRoundingError() - oneCent);
-			}
-		}
-
-		// Do the same with the vat entry
-
-		// Calculate the rounding error in cent
-		roundingError = vatRoundedSum.subtract(vatSumOfRounded).getNumber().doubleValue() * 100.000001;
-		missingCents = roundingError.intValue();
-
-		// Decrease or increase the entries
-        if (missingCents >= 0) {
-            searchForMaximum = true;
-            oneCent = 0.01;
-        } else {
-            searchForMaximum = false;
-            missingCents = -missingCents;
-            oneCent = -0.01;
-        }
-        
-		// dispense the missing cents to those values with the maximum
-		// rounding error.
-		for (int i = 0; i < missingCents; i++) {
-
-			Double maxRoundingError = -oneCent;
-			VatSummaryItem maxItem = null;
-
-			// Search for the item with the maximum error
-			for (Iterator<VatSummaryItem> iterator = this.iterator(); iterator.hasNext();) {
-				VatSummaryItem item = iterator.next();
-
-				// Search for maximum or minimum
-				if (searchForMaximum) {
-					// If found, mark it
-					if (item.getVatRoundingError() > maxRoundingError) {
-						maxRoundingError = item.getVatRoundingError();
-						maxItem = item;
-					}
-				}
-				else {
-					// If found, mark it
-					if (item.getVatRoundingError() < maxRoundingError) {
-						maxRoundingError = item.getVatRoundingError();
-						maxItem = item;
-					}
-				}
-			}
-
-			// Correct the item by one cent
-			if (maxItem != null) {
-				maxItem.setVat(Money.of(maxItem.getVat().getNumber().doubleValue() + oneCent, maxItem.getVat().getCurrency()));
-				maxItem.setVatRoundingError(maxItem.getVatRoundingError() - oneCent);
-			}
-		}
+	
+	public MonetaryAmount getTotalNet() {
+		return this.parallelStream().map(v -> v.getNet()).reduce(Money.zero(currencyCode),
+				MonetaryFunctions::sum).with(rounding);
 	}
 
 	/**
@@ -248,14 +118,7 @@ public class VatSummarySet extends TreeSet<VatSummaryItem> {
 	 *            The other VatSummarySet
 	 */
 	public void addVatSummarySet(VatSummarySet otherVatSummarySet) {
-
-		// Add all items of the other VatSummarySet
 		otherVatSummarySet.forEach(vat -> this.add(vat));
-//		for (Iterator<VatSummaryItem> iterator = otherVatSummarySet.iterator(); iterator.hasNext();) {
-//			VatSummaryItem item = iterator.next();
-//			this.add(item);
-//		}
-//
 	}
 
 }

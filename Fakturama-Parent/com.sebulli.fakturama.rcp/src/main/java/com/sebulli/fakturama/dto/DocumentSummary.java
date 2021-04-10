@@ -14,11 +14,18 @@
 
 package com.sebulli.fakturama.dto;
 
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
+import javax.money.MonetaryRounding;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.javamoney.moneta.Money;
+import org.javamoney.moneta.function.MonetaryFunctions;
+
+import com.sebulli.fakturama.misc.DataUtils;
 
 /**
  * Calculates the tax, gross and sum of one document. This is the central
@@ -56,15 +63,12 @@ hier klingt vor allem das interessant:
 
 	// total sum
 	private MonetaryAmount totalNet;
-	private MonetaryAmount totalVat;
-	private MonetaryAmount totalSET;  // Sales Equalization Tax
 	private MonetaryAmount totalGross;
 	private double   	   totalQuantity;
 
 	// discount values
 	private MonetaryAmount discountNet;
 	private MonetaryAmount discountGross;
-	private MonetaryAmount totalDiscount;
 
 	// shipping value
 	private MonetaryAmount shippingNet;
@@ -77,11 +81,22 @@ hier klingt vor allem das interessant:
 	
 	private CurrencyUnit currencyCode;
 	
+	private VatSummarySet vatSummary;
+	private MonetaryRounding rounding;
+	
 	/**
 	 * Default constructor. Resets all value to 0.
 	 */
-	public DocumentSummary(CurrencyUnit currencyCode) {
-	    this.currencyCode = currencyCode;
+	@Inject
+	public DocumentSummary(IEclipseContext ctx) {
+		DataUtils dataUtils = ContextInjectionFactory.make(DataUtils.class, ctx);
+		this.currencyCode = dataUtils.getDefaultCurrencyUnit();
+
+		// This VAT summary contains only the VAT entries of this document,
+		// whereas the the parameter vatSummaryItems is a global VAT summary
+		// and contains entries from this document and from others.
+	    this.vatSummary = ContextInjectionFactory.make(VatSummarySet.class, ctx);
+        rounding = dataUtils.getRounding();
 		resetValues();
 	}
 
@@ -94,17 +109,24 @@ hier klingt vor allem das interessant:
 		itemsNetDiscounted = Money.zero(currencyCode);
 		itemsGrossDiscounted = Money.zero(currencyCode);
 		totalNet = Money.zero(currencyCode);
-		totalVat = Money.zero(currencyCode);
-		totalSET = Money.zero(currencyCode);
 		totalGross = Money.zero(currencyCode);
 		discountNet = Money.zero(currencyCode);
 		discountGross = Money.zero(currencyCode);
-		totalDiscount = Money.zero(currencyCode);
 		shippingNet = Money.zero(currencyCode);
 		shippingVat = Money.zero(currencyCode);
 		shippingGross = Money.zero(currencyCode);
 		deposit = Money.zero(currencyCode);
 		finalPayment = Money.zero(currencyCode);
+	}
+	
+	public void addPrice(Price price, Double quantity) {
+		if(price != null && quantity != null) {
+			addQuantity(quantity); 
+			addToItemsNet(price.getTotalNetRounded());
+			addToItemsNetDiscounted(price.getTotalNet());
+			addToItemsGross(price.getTotalGrossRounded());
+			addToItemsGrossDiscounted(price.getUnitGrossDiscounted().multiply(price.getQuantity()));
+		}
 	}
 
 	/**
@@ -167,21 +189,26 @@ hier klingt vor allem das interessant:
 	 * @return Sum as MonetaryAmount
 	 */
 	public MonetaryAmount getTotalVat() {
-		return this.totalVat;
+		return this.vatSummary.parallelStream().map(v -> v.getVat()).reduce(Money.zero(currencyCode),
+				MonetaryFunctions::sum).with(rounding);
+	}
+	
+	public MonetaryAmount getTotalVatRounded() {
+		return this.vatSummary.parallelStream().map(v -> v.getVatRounded()).reduce(Money.zero(currencyCode),
+				MonetaryFunctions::sum).with(rounding);
+	}
+	
+	public MonetaryAmount getTotalVatBase() {
+		return this.vatSummary.parallelStream().map(v -> v.getNet()).reduce(Money.zero(currencyCode),
+				MonetaryFunctions::sum).with(rounding);
 	}
 
 	/**
 	 * @return the totalSET
 	 */
 	public final MonetaryAmount getTotalSET() {
-		return totalSET;
-	}
-
-	/**
-	 * @param totalSET the totalSET to set
-	 */
-	public final void setTotalSET(MonetaryAmount totalSET) {
-		this.totalSET = totalSET;
+		return this.vatSummary.parallelStream().map(v -> v.getSalesEqTax()).reduce(Money.zero(currencyCode),
+				MonetaryFunctions::sum).with(rounding);
 	}
 
 	/**
@@ -218,6 +245,10 @@ hier klingt vor allem das interessant:
     public void setItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
         this.itemsNetDiscounted = itemsNetDiscounted;
     }
+    
+    public void addToItemsNetDiscounted(MonetaryAmount itemsNetDiscounted) {
+    	this.itemsNetDiscounted = this.itemsNetDiscounted.add(itemsNetDiscounted);
+    }
 
     public MonetaryAmount getItemsGrossDiscounted() {
         return itemsGrossDiscounted;
@@ -225,6 +256,10 @@ hier klingt vor allem das interessant:
 
     public void setItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
         this.itemsGrossDiscounted = itemsGrossDiscounted;
+    }
+    
+    public void addToItemsGrossDiscounted(MonetaryAmount itemsGrossDiscounted) {
+    	this.itemsGrossDiscounted = this.itemsGrossDiscounted.add(itemsGrossDiscounted);
     }
 
     /**
@@ -251,6 +286,10 @@ hier klingt vor allem das interessant:
 	public void setItemsNet(MonetaryAmount itemsNet) {
 		this.itemsNet = itemsNet;
 	}
+	
+	public void addToItemsNet(MonetaryAmount itemsNet) {
+		this.itemsNet = this.itemsNet.add(itemsNet);
+	}
 
 	/**
 	 * @param itemsGross the itemsGross to set
@@ -259,6 +298,10 @@ hier klingt vor allem das interessant:
 		this.itemsGross = itemsGross;
 	}
 
+	public void addToItemsGross(MonetaryAmount itemsGross) {
+		this.itemsGross = this.itemsGross.add(itemsGross);
+	}
+	
 	/**
 	 * @param totalNet the totalNet to set
 	 */
@@ -266,11 +309,8 @@ hier klingt vor allem das interessant:
 		this.totalNet = totalNet;
 	}
 
-	/**
-	 * @param totalVat the totalVat to set
-	 */
-	public void setTotalVat(MonetaryAmount totalVat) {
-		this.totalVat = totalVat;
+	public void addToTotalNet(MonetaryAmount totalNet) {
+		this.totalNet = this.totalNet.add(totalNet);
 	}
 
 	/**
@@ -278,6 +318,10 @@ hier klingt vor allem das interessant:
 	 */
 	public void setTotalGross(MonetaryAmount totalGross) {
 		this.totalGross = totalGross;
+	}
+	
+	public void addToTotalGross(MonetaryAmount totalGross) {
+		this.totalGross = this.totalGross.add(totalGross);
 	}
 
 	/**
@@ -308,6 +352,10 @@ hier klingt vor allem das interessant:
 		this.shippingVat = shippingVat;
 	}
 
+	public void addToShippingVat(MonetaryAmount shippingVat) {
+		this.shippingVat = this.shippingVat.add(shippingVat);
+	}
+	
 	/**
 	 * @param shippingGross the shippingGross to set
 	 */
@@ -336,23 +384,24 @@ hier klingt vor allem das interessant:
 		return totalQuantity;
 	}
 
-	/**
-	 * @param totalQuantity the totalQuantity to set
-	 */
-	public void setTotalQuantity(double totalQuantity) {
-		this.totalQuantity = totalQuantity;
-	} 
-	
-	public MonetaryAmount getTotalDiscount() {
-        return totalDiscount;
-    }
+    public VatSummarySet getVatSummary() {
+		return vatSummary;
+	}
 
-    public void setTotalDiscount(MonetaryAmount totalDiscount) {
-        this.totalDiscount = totalDiscount;
-    }
+	public void addVatSummaryItem(VatSummaryItem vatSummaryItem) {
+		this.vatSummary.add(vatSummaryItem);
+	}
 
-    @Override
+	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
+	}
+
+	public void addQuantity(Double quantity) {
+		this.totalQuantity += quantity;
+	}
+
+	public void addToNetDiscount(MonetaryAmount totalAllowance) {
+		this.discountNet = this.discountNet.add(totalAllowance);
 	}
 }

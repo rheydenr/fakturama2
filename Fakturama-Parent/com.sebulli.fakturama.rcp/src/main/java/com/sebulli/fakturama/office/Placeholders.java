@@ -547,8 +547,7 @@ public class Placeholders {
 		}
 		
 		// Encode some special characters
-		retval = encodeEntities(retval);
-		return retval;
+		return encodeEntities(retval);
 	}
 
 	private Integer extractLengthFromParameter(String par, Integer defaultValue) {
@@ -798,8 +797,11 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.VESTINGPERIOD.START")) return dateFormatterService.getFormattedLocalizedDate(document.getVestingPeriodStart());
 		if (key.equals("DOCUMENT.VESTINGPERIOD.END")) return dateFormatterService.getFormattedLocalizedDate(document.getVestingPeriodEnd());
 		if (key.equals("DOCUMENT.ITEMS.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getItemsGross());
+		
 		if (key.equals("DOCUMENT.ITEMS.NET")) return numberFormatterService.formatCurrency(documentSummary.getItemsNet());
+		
 		// FAK-432
+		// discount is negative
 		if (key.equals("DOCUMENT.ITEMS.NET.DISCOUNTED")) return numberFormatterService.formatCurrency(documentSummary.getItemsNet().add(documentSummary.getDiscountNet()));
 		if (key.equals("DOCUMENT.TOTAL.NET")) return numberFormatterService.formatCurrency(documentSummary.getTotalNet());
 		if (key.equals("DOCUMENT.TOTAL.VAT")) return numberFormatterService.formatCurrency(documentSummary.getTotalVat());
@@ -846,8 +848,7 @@ public class Placeholders {
 			
 			if (key.equals("PAYMENT.TEXT")) {
 				// Replace the placeholders in the payment text
-				String paymenttext = createPaymentText(document, documentSummary, percent);
-				return paymenttext;
+				return createPaymentText(document, documentSummary, percent);
 			}
 		}
 
