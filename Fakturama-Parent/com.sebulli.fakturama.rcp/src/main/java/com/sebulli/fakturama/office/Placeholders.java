@@ -997,7 +997,7 @@ public class Placeholders {
         if (key.equals("ADDRESS")) return Optional.ofNullable(contactUtil.getAddressAsString(contact));
         if (key.equals("ADDRESS.GENDER")) return Optional.ofNullable(contactUtil.getGenderString(contact));
         if (key.equals("ADDRESS.GREETING")) return Optional.ofNullable(contactUtil.getGreeting(contact));
-        if (key.equals("ADDRESS.TITLE")) return Optional.ofNullable(contactUtil.getGenderString(contact));
+        if (key.equals("ADDRESS.TITLE")) return Optional.ofNullable(contact.getTitle());
         if (key.equals("ADDRESS.NAME")) return Optional.ofNullable(contactUtil.getFirstAndLastName(contact));
         if (key.equals("ADDRESS.NAMEWITHCOMPANY")) return Optional.ofNullable(contactUtil.getNameWithCompany(contact));
         if (key.equals("ADDRESS.FIRSTANDLASTNAME")) return Optional.ofNullable(contactUtil.getFirstAndLastName(contact));
