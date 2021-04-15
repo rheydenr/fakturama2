@@ -318,9 +318,10 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         final MatcherEditor<T> textMatcherEditor = createTextWidgetMatcherEditor();
         
         // Filtered list for Search text field filter
+        final FilterList<T> textFilteredIssues = new FilterList<T>(contactListData, textMatcherEditor);
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
-        treeFilteredIssues = new FilterList<T>(contactListData, textMatcherEditor);
+        treeFilteredIssues = new FilterList<T>(textFilteredIssues);
         
         //build the grid layer
         setGridLayer(new EntityGridListLayer<T>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry));
