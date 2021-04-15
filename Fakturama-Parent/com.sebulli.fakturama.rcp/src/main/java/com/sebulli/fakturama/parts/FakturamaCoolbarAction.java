@@ -26,6 +26,7 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
@@ -53,6 +54,9 @@ public class FakturamaCoolbarAction extends Action {
 
     @Inject
     private IEclipseContext ctx;
+    
+    @Inject
+    private ESelectionService selectionService;
 
     private ParameterizedCommand pCmd;
 
@@ -131,8 +135,7 @@ public class FakturamaCoolbarAction extends Action {
 
             // clear SelectionService so that following calls don't get confused (esp. CallEditor)
             // Important: Use the correct SelectionService from WorkbenchContext!
-            ctx.getParent().get(ESelectionService.class).setSelection(null);
-            ctx.get(ESelectionService.class).setSelection(null);
+            ctx.set(IServiceConstants.ACTIVE_SELECTION, null);
             handlerService.executeHandler(parameterizedCommand, staticContext);
         } else {
             MessageDialog.openInformation(toolBar.getShell(), "Action Info", "current action can't be executed!");
