@@ -84,6 +84,7 @@ import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -1998,16 +1999,11 @@ public class DocumentEditor extends Editor<Document> {
 	private void createPartControl(Composite parent) {
 		// Create the ScrolledComposite to scroll horizontally and vertically
 	    ScrolledComposite scrollcomposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+//        SashForm sashForm = new SashForm(scrollcomposite, SWT.VERTICAL);
 
 		// Create the top Composite
 		top = new Composite(scrollcomposite, SWT.SCROLLBAR_OVERLAY | SWT.NONE );  //was parent before 
 		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
-
-		scrollcomposite.setContent(top);
-// GS/ resize/scrolling (this will be set dynamically at the end of this method)
-		scrollcomposite.setExpandHorizontal(true);
-		scrollcomposite.setExpandVertical(true);
-        scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
 
 		// Create an invisible container for all hidden components
 		Composite invisible = new Composite(top, SWT.NONE);
@@ -2604,9 +2600,14 @@ public class DocumentEditor extends Editor<Document> {
 			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), itemListTable.getNatTable());
 		else
 			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtMessage);
-// GS/ resize/scrolling
+		
+		scrollcomposite.setContent(top);
+		scrollcomposite.setExpandHorizontal(true);
+		scrollcomposite.setExpandVertical(true);
+		
 		// finally calculate and set required size
 		scrollcomposite.setMinSize(top.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		GridDataFactory.fillDefaults().applyTo(scrollcomposite);
 	}
 
 	private DocumentReceiver createOrGetMainReceiver() {
