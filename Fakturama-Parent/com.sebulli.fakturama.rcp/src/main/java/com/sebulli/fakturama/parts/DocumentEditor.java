@@ -2086,7 +2086,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		PGroup headerGroup = new PGroup(upperObjects, SWT.SMOOTH);
 		headerGroup.setToggleRenderer(new TwisteToggleRenderer());
-		headerGroup.setText("allgemeine Angaben");		
+		headerGroup.setText(msg.editorDocumentCommondata);		
 		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(headerGroup);
 		GridDataFactory.fillDefaults().grab(true, false).span(4, 1).applyTo(headerGroup);
 		
