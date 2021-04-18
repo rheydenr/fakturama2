@@ -34,7 +34,6 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
@@ -144,7 +143,6 @@ import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.CellImagePainter;
 import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-//import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
 import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
 import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
@@ -258,7 +256,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 //        }
         
         super.createPartControl(parent, DocumentItemDTO.class, false, ID);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
         // Listen to double clicks (omitted at the moment, perhaps at a later time
 //        hookDoubleClickCommand(natTable, gridLayer);
         return top;
@@ -709,7 +706,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 // FIXME: Doesn't work! 
                ,gridListLayer.getViewportLayer()  */
 		 gridListLayer.getGridLayer() , false);
-        GridDataFactory.fillDefaults().grab(false, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
 
         // register a MoveCellSelectionCommandHandler with
@@ -724,7 +720,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // https://stackoverflow.com/questions/31907288/delete-rows-from-nattable
         gridListLayer.getBodyDataLayer().registerCommandHandler(
                 new DeleteRowCommandHandler<DocumentItemDTO>(gridListLayer.getBodyDataProvider().getList()));
-        
         return natTable;
     }
 
@@ -878,6 +873,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 });
 
         natTable.configure();
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
     }
     
     private void initItemsList() {
