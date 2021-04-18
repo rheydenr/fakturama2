@@ -76,11 +76,16 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.widgets.CompositeFactory;
+import org.eclipse.jface.widgets.LabelFactory;
+import org.eclipse.jface.widgets.SashFormFactory;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
+import org.eclipse.nebula.widgets.pgroup.PGroup;
+import org.eclipse.nebula.widgets.pgroup.TwisteToggleRenderer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -95,7 +100,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -330,6 +334,7 @@ public class DocumentEditor extends Editor<Document> {
 	private List<Document> pendingDeliveryMerges;
 	private Label netWeight;
 	private Label totalWeight;
+	private SashForm sashForm;
 	
 	/**
 	 * Mark this document as printed
@@ -542,13 +547,22 @@ public class DocumentEditor extends Editor<Document> {
         
         bindModel();
         
+        saveSashSettings();
+        
         // reset dirty flag
         setDirty(false);
         ((MPart)getMDirtyablePart()).getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
         return Boolean.TRUE;
 	}
     
-    private void reloadItemList() {
+    private void saveSashSettings() {
+    	IDialogSettings dialogSettings = getDialogSettings("SASH");
+		List<String> k = Arrays.stream(sashForm.getWeights()).mapToObj(i -> Integer.toString(i)).collect(Collectors.toList());
+    	dialogSettings.put("SASHWEIGHTS", k.toArray(new String[] {}));
+		sashForm.getWeights();
+	}
+
+	private void reloadItemList() {
     	
 		if (!getDocumentType().hasPrice()) {
 			return;
@@ -1988,7 +2002,6 @@ public class DocumentEditor extends Editor<Document> {
 		}
 	}
 	
-	
 	/**
 	 * Creates the SWT controls for this workbench part
 	 * 
@@ -1997,24 +2010,27 @@ public class DocumentEditor extends Editor<Document> {
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	private void createPartControl(Composite parent) {
-		// Create the ScrolledComposite to scroll horizontally and vertically
-	    ScrolledComposite scrollcomposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
-//        SashForm sashForm = new SashForm(scrollcomposite, SWT.VERTICAL);
 
-		// Create the top Composite
-		top = new Composite(scrollcomposite, SWT.SCROLLBAR_OVERLAY | SWT.NONE );  //was parent before 
-		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
+		// Use parent as top Composite
+		top = parent;
+
+	    sashForm = SashFormFactory.newSashForm(SWT.VERTICAL).create(parent);
+	    
+		// Create the ScrolledComposite to scroll horizontally and vertically
+	    ScrolledComposite scrollcomposite = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+	    Composite upperObjects = CompositeFactory.newComposite(SWT.NONE)
+	    		.layout(GridLayoutFactory.fillDefaults().numColumns(4).create())
+	    		.create(scrollcomposite);
 
 		// Create an invisible container for all hidden components
-		Composite invisible = new Composite(top, SWT.NONE);
+		Composite invisible = CompositeFactory.newComposite(SWT.NONE)
+				.layoutData(GridDataFactory.fillDefaults().hint(0, 0).span(4, 1).create()).create(upperObjects);
 		invisible.setVisible(false);
-		GridDataFactory.fillDefaults().hint(0, 0).span(4, 1).applyTo(invisible);
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, ContextHelpConstants.DOCUMENT_EDITOR);
-		
 		// Document number label
-		Label labelName = new Label(top, SWT.NONE);
+		Label labelName = LabelFactory.newLabel(SWT.NONE).create(upperObjects);
 
 		// for letters the "No." label has to be changed, see FAK-437
 		if(document.getBillingType().isLETTER()) {
@@ -2030,7 +2046,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 		
 		// Container for the document number and the date
-		Composite nrDateNetGrossComposite = new Composite(top, SWT.NONE);
+		Composite nrDateNetGrossComposite = new Composite(upperObjects, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(4).applyTo(nrDateNetGrossComposite);
 		GridDataFactory.fillDefaults().minSize(540, SWT.DEFAULT).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(nrDateNetGrossComposite);
 
@@ -2064,76 +2080,31 @@ public class DocumentEditor extends Editor<Document> {
 		}));
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(dtDate);
 		
-		// combo list to select between net or gross
-		comboNetGross = new ComboViewer(getDocumentType().hasPrice() ? nrDateNetGrossComposite : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboNetGross.getCombo().setToolTipText(msg.editorDocumentNetgrossTooltip);
-		
-		Map<Integer, String> netGrossContent = new HashMap<>();
-		// empty if nothing is selected
-		netGrossContent.put(0, "---"); 
-		//T: Text in combo box
-		netGrossContent.put(1, msg.productDataNet);
-		netGrossContent.put(2, msg.productDataGross);
-        
-		comboNetGross.setContentProvider(new HashMapContentProvider<Integer, String>());
-		comboNetGross.setLabelProvider(new NumberLabelProvider<Integer, String>(netGrossContent));
-		comboNetGross.setInput(netGrossContent);
-		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).indent(20, 0).minSize(80, SWT.DEFAULT).grab(true, false).applyTo(comboNetGross.getControl());
-		
-		comboNetGross.getCombo().addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				StructuredSelection selection = (StructuredSelection)comboNetGross.getSelection();
-				netgross = selection.isEmpty() ? netgross : (int) selection.toList().get(0);
-				// recalculate the total sum
-//				calculate();
-				updateUseGross(false);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-		});
+		createComboNetGross(invisible, nrDateNetGrossComposite);
 	
-		// The titleComposite contains the title and the document icon
-		Composite titleComposite = new Composite(top, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(2).applyTo(titleComposite);
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.BOTTOM).span(2, 1).grab(true, false).applyTo(titleComposite);
-
-		// Set the title in large letters
-		Label labelDocumentType = new Label(titleComposite, SWT.NONE);
-		String documentTypeString = msg.getMessageFromKey(getDocumentType().getSingularKey());
-		if (document.getBillingType().isDUNNING()) {
-			documentTypeString = MessageFormat.format("{0}. {1}", Integer.toString(dunningLevel), documentTypeString);
-		}
-		labelDocumentType.setText(documentTypeString);
-		makeLargeLabel(labelDocumentType);
-		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(labelDocumentType);
-
-		// Set the document icon
-		Label labelDocumentTypeIcon = new Label(titleComposite, SWT.NONE);
-		Icon icon = createDocumentIcon();
-		labelDocumentTypeIcon
-					.setImage(icon.getImage(IconSize.ToolbarIconSize));
-		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.TOP).grab(true, false).applyTo(labelDocumentTypeIcon);
-
+		createTitleAndIcon(upperObjects);
+		
+		PGroup headerGroup = new PGroup(upperObjects, SWT.SMOOTH);
+		headerGroup.setToggleRenderer(new TwisteToggleRenderer());
+		headerGroup.setText(msg.editorDocumentCommondata);		
+		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(headerGroup);
+		GridDataFactory.fillDefaults().grab(true, false).span(4, 1).applyTo(headerGroup);
+		
 		// Customer reference label
-		Label labelCustomerRef = new Label(top, SWT.NONE);
+		Label labelCustomerRef = new Label(headerGroup, SWT.NONE);
 		//T: Document Editor - Label Customer Reference
 		labelCustomerRef.setText(msg.editorDocumentFieldCustref);
 		labelCustomerRef.setToolTipText(msg.editorDocumentFieldCustrefTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCustomerRef);
 
 		// Customer reference 
-		txtCustomerRef = new Text(top, SWT.BORDER); 
+		txtCustomerRef = new Text(headerGroup, SWT.BORDER); 
 		txtCustomerRef.setToolTipText(labelCustomerRef.getToolTipText());
 	 	GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(txtCustomerRef);
 				
 		// The extra settings composite contains additional fields like
 		// the no-Vat widget or a reference to the invoice
-		Composite xtraSettingsComposite = new Composite(top, SWT.BORDER);
+		Composite xtraSettingsComposite = new Composite(headerGroup, SWT.BORDER);
 		GridLayoutFactory.fillDefaults().margins(10, 10).numColumns(2).applyTo(xtraSettingsComposite);
 		GridDataFactory.fillDefaults().span(1, 2).minSize(250, SWT.DEFAULT).align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(xtraSettingsComposite);
 		
@@ -2291,7 +2262,7 @@ public class DocumentEditor extends Editor<Document> {
 		    comboViewerNoVat.getCombo().select(0);
 		}
 
-		copyGroup = new Group(top, SWT.SHADOW_OUT);
+		copyGroup = new Group(headerGroup, SWT.SHADOW_OUT);
 		
 		//T: Document Editor
 		//T: Label Group box to create a new document based on this one.
@@ -2306,7 +2277,7 @@ public class DocumentEditor extends Editor<Document> {
         }
 		
 		// Composite that contains the address label and the address icon
-		Composite addressComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
+		Composite addressComposite = new Composite(headerGroup, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(addressComposite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addressComposite);
 
@@ -2349,11 +2320,10 @@ public class DocumentEditor extends Editor<Document> {
 		    	context.set("ADDRESS_TYPE", document.getBillingType());
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
-				    dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    } else {
 			    	context.set("CONTACT_TYPE", "DEBITOR");
-			    	dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    }
+			    dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    dlg.setDialogBoundsSettings(getDialogSettings("SelectTreeContactDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
 			    dlg.open();
 			    context.set(MPart.class, myPart);
@@ -2401,7 +2371,7 @@ public class DocumentEditor extends Editor<Document> {
 		});
 
 		// Composite that contains the addresses
-		addressAndIconComposite = new CTabFolder(top, SWT.NONE);
+		addressAndIconComposite = new CTabFolder(headerGroup, SWT.NONE);
 		addressAndIconComposite.setSimple(false);
 		// create main document receiver
 		DocumentReceiver mainReceiver = createOrGetMainReceiver();
@@ -2420,14 +2390,14 @@ public class DocumentEditor extends Editor<Document> {
 		
 		GridDataFactory.fillDefaults().minSize(100, 80).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(addressAndIconComposite);
 //		addressAndIconComposite.setSelection(0);
-
+		
 		DocumentType documentType = getDocumentType();
 /* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
 		// Add the item table, if the document is one with items.
 		if (documentType.hasItems()) {
 		    ItemListBuilder itemListBuilder = ContextInjectionFactory.make(ItemListBuilder.class, context);
 		    itemListTable = itemListBuilder
-		        .withParent(top)
+		        .withParent(upperObjects)
 		        .withDocument(document)
 		        .withNetGross(netgross)
 //		        .withUseGross(useGross)
@@ -2435,15 +2405,26 @@ public class DocumentEditor extends Editor<Document> {
 		        .build();
 		}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
+
+		// finally calculate and set required size
+		scrollcomposite.setMinSize(upperObjects.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrollcomposite.setContent(upperObjects);
+		scrollcomposite.setExpandHorizontal(true);
+		scrollcomposite.setExpandVertical(true);
 		
-		Composite taraComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? top : invisible, SWT.NONE | SWT.RIGHT);
+        ScrolledComposite sc2 = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+		Composite bottomObjects = new Composite(sc2, SWT.NONE);
+		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(bottomObjects);
+		GridDataFactory.fillDefaults().applyTo(bottomObjects);
+
+		Composite taraComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? bottomObjects : invisible, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(taraComposite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraComposite);
 		Label taraLabel = new Label(taraComposite, SWT.NONE);
 		taraLabel.setText(msg.editorDocumentFieldTara);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraLabel);
 		
-		Composite weightComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? top : invisible, SWT.NONE);
+		Composite weightComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? bottomObjects : invisible, SWT.NONE);
 		GridLayoutFactory.fillDefaults().numColumns(5).applyTo(weightComposite);
 		GridDataFactory.swtDefaults().span(3, 1).applyTo(weightComposite);
 		tara = new FormattedText(weightComposite, SWT.BORDER | SWT.RIGHT);
@@ -2469,7 +2450,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(totalWeight);
 		
 		// Container for the message label and the add button
-		Composite addMessageButtonComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
+		Composite addMessageButtonComposite = new Composite(bottomObjects, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(addMessageButtonComposite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addMessageButtonComposite);
 
@@ -2525,7 +2506,7 @@ public class DocumentEditor extends Editor<Document> {
 		int noOfMessageFields = getNumberOfMessageFields();
 		
 		// Container for 1..3 message fields
-		Composite messageFieldsComposite = new Composite(top,SWT.NONE );
+		Composite messageFieldsComposite = new Composite(bottomObjects,SWT.NONE );
 		GridLayoutFactory.fillDefaults().applyTo(messageFieldsComposite);
 		
 		// Add a multi line text field for the message.
@@ -2573,12 +2554,12 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			
 			// Create a column for the documents subtotal, shipping and total
-			createTotalComposite(documentType.hasPrice());
+			createTotalComposite(documentType.hasPrice(), bottomObjects);
 
 			// Create the "paid"-controls, only if the document type allows
 			// this.
 			if (documentType.canBePaid()) {
-				createPaidControls();
+				createPaidControls(bottomObjects);
 			}
 		}
 
@@ -2601,13 +2582,79 @@ public class DocumentEditor extends Editor<Document> {
 		else
 			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtMessage);
 		
-		scrollcomposite.setContent(top);
-		scrollcomposite.setExpandHorizontal(true);
-		scrollcomposite.setExpandVertical(true);
+		sc2.setContent(bottomObjects); 
+		sc2.setMinSize(bottomObjects.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		sc2.setExpandHorizontal(true);
+		sc2.setExpandVertical(true);
 		
-		// finally calculate and set required size
-		scrollcomposite.setMinSize(top.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		GridDataFactory.fillDefaults().applyTo(scrollcomposite);
+	    String[] sashWeights = getDialogSettings("SASH").getArray("SASHWEIGHTS");
+	    if(sashWeights != null && sashWeights.length > 0) {
+	    	int[] sashWeightsInt = Arrays.stream(sashWeights).mapToInt(Integer::parseInt).toArray();
+	    	sashForm.setWeights(sashWeightsInt);
+	    } else {
+	    	sashForm.setWeights(new int[] { 2, 1});
+	    }
+	    
+//		GridDataFactory.fillDefaults().applyTo(scrollcomposite);
+	}
+
+	private void createTitleAndIcon(Composite upperObjects) {
+		// The titleComposite contains the title and the document icon
+		Composite titleComposite = new Composite(upperObjects, SWT.NONE);
+		GridLayoutFactory.fillDefaults().numColumns(2).applyTo(titleComposite);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.BOTTOM).span(2, 1).grab(true, false).applyTo(titleComposite);
+
+		// Set the title in large letters
+		Label labelDocumentType = new Label(titleComposite, SWT.NONE);
+		String documentTypeString = msg.getMessageFromKey(getDocumentType().getSingularKey());
+		if (document.getBillingType().isDUNNING()) {
+			documentTypeString = MessageFormat.format("{0}. {1}", Integer.toString(dunningLevel), documentTypeString);
+		}
+		labelDocumentType.setText(documentTypeString);
+		makeLargeLabel(labelDocumentType);
+		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(labelDocumentType);
+
+		// Set the document icon
+		Label labelDocumentTypeIcon = new Label(titleComposite, SWT.NONE);
+		Icon icon = createDocumentIcon();
+		labelDocumentTypeIcon
+					.setImage(icon.getImage(IconSize.ToolbarIconSize));
+		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.TOP).grab(true, false).applyTo(labelDocumentTypeIcon);
+	}
+
+	private void createComboNetGross(Composite invisible, Composite nrDateNetGrossComposite) {
+		// combo list to select between net or gross
+		comboNetGross = new ComboViewer(getDocumentType().hasPrice() ? nrDateNetGrossComposite : invisible, SWT.BORDER | SWT.READ_ONLY);
+		comboNetGross.getCombo().setToolTipText(msg.editorDocumentNetgrossTooltip);
+		
+		Map<Integer, String> netGrossContent = new HashMap<>();
+		// empty if nothing is selected
+		netGrossContent.put(0, "---"); 
+		//T: Text in combo box
+		netGrossContent.put(1, msg.productDataNet);
+		netGrossContent.put(2, msg.productDataGross);
+        
+		comboNetGross.setContentProvider(new HashMapContentProvider<Integer, String>());
+		comboNetGross.setLabelProvider(new NumberLabelProvider<Integer, String>(netGrossContent));
+		comboNetGross.setInput(netGrossContent);
+		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).indent(20, 0).minSize(80, SWT.DEFAULT).grab(true, false).applyTo(comboNetGross.getControl());
+		
+		comboNetGross.getCombo().addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				StructuredSelection selection = (StructuredSelection)comboNetGross.getSelection();
+				netgross = selection.isEmpty() ? netgross : (int) selection.toList().get(0);
+				// recalculate the total sum
+//				calculate();
+				updateUseGross(false);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
 	}
 
 	private DocumentReceiver createOrGetMainReceiver() {
@@ -2751,10 +2798,11 @@ public class DocumentEditor extends Editor<Document> {
 
     /**
      * Create the "paid"-controls
+     * @param parentComposite 
      */
-    private void createPaidControls() {
+    private void createPaidControls(Composite parentComposite) {
         // The paid label
-        bPaid = new Button(top, SWT.CHECK | SWT.LEFT);
+        bPaid = new Button(parentComposite, SWT.CHECK | SWT.LEFT);
         if (BooleanUtils.toBoolean(document.getDeposit())) {
         	// deposit means that not the whole amount is paid
 //        	bPaid.setSelection(true);
@@ -2768,7 +2816,7 @@ public class DocumentEditor extends Editor<Document> {
         GridDataFactory.swtDefaults().applyTo(bPaid);
 
         // Container for the payment and the paid state
-        paidContainer = new Composite(top, SWT.NONE);
+        paidContainer = new Composite(parentComposite, SWT.NONE);
         GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(2).applyTo(paidContainer);
         GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(paidContainer);
 
@@ -2794,19 +2842,23 @@ public class DocumentEditor extends Editor<Document> {
     }
 
     /**
+     * @param parentComposite 
      * 
      */
-    private void createTotalComposite(boolean hasPrice) {
-        Composite totalComposite = new Composite(top, SWT.NONE);
-        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(totalComposite);
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).span(1, 2).applyTo(totalComposite);
+    private void createTotalComposite(boolean hasPrice, Composite parentComposite) {
+		Composite totalComposite = CompositeFactory.newComposite(SWT.NONE)
+				.layout(GridLayoutFactory.swtDefaults().numColumns(2).create())
+				.layoutData(
+						GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).span(1, 2).create())
+				.create(parentComposite);
 
         if(hasPrice) {
             // Label sub total
-            netLabel = new Label(totalComposite, SWT.NONE);
-            // Set the total text
-            netLabel.setText(getTotalText());
-            GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(netLabel);
+			netLabel = LabelFactory.newLabel(SWT.NONE)
+					// Set the total text
+					.text(getTotalText())
+					.layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).create())
+					.create(totalComposite);
     
             // Sub total
             itemsSum = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);

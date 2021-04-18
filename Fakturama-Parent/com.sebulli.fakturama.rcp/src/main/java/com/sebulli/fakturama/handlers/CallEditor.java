@@ -172,8 +172,6 @@ public class CallEditor {
             if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
                 ParameterizedCommand closeCommand = commandService.createCommand("org.eclipse.ui.file.closeAll", null);
                 handlerService.executeHandler(closeCommand);
-                
-//            	partService.getParts().forEach(part -> { if(part.getTags().contains(EPartService.REMOVE_ON_HIDE_TAG)) {partService.hidePart(part);}});
             }
             
             Map<String, String> params = new HashMap<>();

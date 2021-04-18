@@ -315,6 +315,7 @@ public class Messages {
 	public String editorDocumentCheckboxPaidTooltip;
 	public String editorDocumentCollectiveinvoiceTooltip;
 	public String editorDocumentCreateduplicate;
+	public String editorDocumentCommondata;
 	public String editorDocumentDateofpayment;
 	public String editorDocumentDateTooltip;
 	public String editorDocumentDeleteitemTooltip;
