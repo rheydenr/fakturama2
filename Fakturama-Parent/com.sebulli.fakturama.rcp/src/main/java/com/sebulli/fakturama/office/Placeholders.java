@@ -825,7 +825,14 @@ public class Placeholders {
 		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString(Constants.PREFERENCES_DEPOSIT_TEXT);
 		if (key.equals("DOCUMENT.DEPOSIT.FINALPMT_TEXT")) return  preferences.getString(Constants.PREFERENCES_FINALPAYMENT_TEXT);
 
-		if (key.equals("ITEMS.DISCOUNT.PERCENT") && Optional.ofNullable(document.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO).compareTo(NumberUtils.DOUBLE_ZERO) != 0) return numberFormatterService.DoubleToFormatedPercent(document.getItemsRebate());
+		if (key.equals("ITEMS.DISCOUNT.PERCENT") && Optional.ofNullable(document.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO).compareTo(NumberUtils.DOUBLE_ZERO) != 0) {
+			Double itemsRebate = document.getItemsRebate();
+            if(itemsRebate != null && itemsRebate < NumberUtils.DOUBLE_ZERO) {
+            	itemsRebate *= NumberUtils.DOUBLE_MINUS_ONE; // make rebate positive (see https://bugs.fakturama.info/view.php?id=937)
+            }
+
+			return numberFormatterService.DoubleToFormatedPercent(itemsRebate);
+		}
 		if (key.equals("ITEMS.DISCOUNT.NET")) return numberFormatterService.formatCurrency(documentSummary.getDiscountNet());
 		if (key.equals("ITEMS.DISCOUNT.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getDiscountGross());
 

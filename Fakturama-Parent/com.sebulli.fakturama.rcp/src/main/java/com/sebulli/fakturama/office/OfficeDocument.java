@@ -51,6 +51,7 @@ import javax.inject.Named;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -942,7 +943,11 @@ public class OfficeDocument {
 
         // Get the item discount in percent
         else if (key.equals("ITEM.DISCOUNT.PERCENT")) {
-            value = numberFormatterService.DoubleToFormatedPercent(item.getItemRebate());
+            Double itemRebate = item.getItemRebate();
+            if(itemRebate != null && itemRebate < NumberUtils.DOUBLE_ZERO) {
+            	itemRebate *= NumberUtils.DOUBLE_MINUS_ONE; // make rebate positive (see https://bugs.fakturama.info/view.php?id=937)
+            }
+			value = numberFormatterService.DoubleToFormatedPercent(itemRebate);
         }
 
         // Get the absolute item discount (gross=
