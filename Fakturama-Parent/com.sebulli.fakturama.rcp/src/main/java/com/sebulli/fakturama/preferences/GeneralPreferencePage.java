@@ -45,8 +45,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.widgets.LabelFactory;
-import org.eclipse.jface.widgets.TextFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -82,9 +80,7 @@ import com.sebulli.fakturama.parts.ShippingEditor;
  */
 public class GeneralPreferencePage extends FieldEditorPreferencePage implements IInitializablePreference {
     
-    private static final String HSQLDB_DEFAULT_URL_START = "jdbc:hsqldb:hsql://localhost:";
-
-	@Inject
+    @Inject
     @Translation
     protected Messages msg;
     
@@ -101,7 +97,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     private PreferencesInDatabase preferencesInDatabase;
 
     private ComboFieldEditor currencyLocaleCombo;
-    private Text example;
+    private Text example, dbConnectionInfo;
     private BooleanFieldEditor cashCheckbox;
     private BooleanFieldEditor thousandsSeparatorCheckbox;
     private RadioGroupFieldEditor useCurrencySymbolCheckbox;
@@ -193,7 +189,12 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         addField(generalDecimalPlaces);
 
         // Info: DB connection string
-        createDbConnectionLabel();
+        Label dbConnectionLabel = new Label(getFieldEditorParent(), SWT.NONE);
+        dbConnectionLabel.setText(msg.preferencesGeneralDatabase);
+        dbConnectionInfo = new Text(getFieldEditorParent(), SWT.BORDER);
+        dbConnectionInfo.setEditable(false);
+        dbConnectionInfo.setText(getPreferenceStore().getString(PersistenceUnitProperties.JDBC_URL));
+        GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(dbConnectionInfo);
         
         Button resetMemorizedSetting = new Button(getFieldEditorParent(), SWT.PUSH);
         resetMemorizedSetting.setText(msg.preferencesGeneralResetdialogsettings);
@@ -204,31 +205,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         });
         GridDataFactory.swtDefaults().indent(SWT.DEFAULT, 5).span(2, SWT.DEFAULT).applyTo(resetMemorizedSetting);
         
-	}
-
-	private void createDbConnectionLabel() {
-		LabelFactory.newLabel(SWT.NONE).text(msg.preferencesGeneralDatabase).create(getFieldEditorParent());
-        String currentJdbcUrl = getPreferenceStore().getString(PersistenceUnitProperties.JDBC_URL);
-		if(currentJdbcUrl.startsWith(HSQLDB_DEFAULT_URL_START)) {
-			Pattern suffixPattern = Pattern.compile(".*\\:\\d+(.*)");
-			Matcher suffixMatcher = suffixPattern.matcher(currentJdbcUrl);
-			String suffix = suffixMatcher.matches() ? suffixMatcher.group(1) : "";
-			CustomStringFieldEditor customField = new CustomStringFieldEditor(
-					Constants.PREFERENCES_HSQL_DB_PORT, 
-					currentJdbcUrl.substring(0, HSQLDB_DEFAULT_URL_START.length()), // prefix / label
-					10, // width
-					suffix, 
-					getFieldEditorParent()
-					);
-			customField.setValidRange(0, 65536);
-			addField(customField);
-		} else {
-			Text dbConnectionInfo = TextFactory.newText(SWT.BORDER)
-					.text(currentJdbcUrl)
-					.layoutData(GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).create())
-					.create(getFieldEditorParent());
-	        dbConnectionInfo.setEditable(false);
-		}
 	}
 	
 	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {
@@ -334,6 +310,16 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
             String s = matcher.group(1);
             String s2 = matcher.group(2);
             ULocale locale = new ULocale(s, s2);
+
+//            NumberFormat form;
+//            if(currencySetting == CurrencySettingEnum.NONE) {
+//            	form = NumberFormat.getNumberInstance();
+//            } else {
+//            	form = NumberFormat.getCurrencyInstance(locale);
+//            }
+//            form.setGroupingUsed(useThousandsSeparator);
+//            form.setMinimumFractionDigits(decimalPlaces != null ? decimalPlaces.getIntValue() : 2);
+//            retval = form.format(myNumber);
             
             if (locale.getCountry().equals("CH")) {
                 if(cashCheckbox != null) {
@@ -373,8 +359,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_LOCALE, write);
 		
-		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_HSQL_DB_PORT, write);
-		
 		// at the moment we have to reset the DataUtils manually
 		// TODO put it in a service!
 		DataUtils.getInstance().refresh();
@@ -409,7 +393,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         node.setDefault(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, Integer.valueOf(2));
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, IPreferenceStore.FALSE);
         node.setDefault(Constants.PREFERENCES_CURRENCY_USE_SYMBOL, CurrencySettingEnum.SYMBOL.name());
-        node.setDefault(Constants.PREFERENCES_HSQL_DB_PORT, Integer.valueOf(9002));
 
 		//Set the default currency locale from current locale
 		ULocale defaultLocale = localeUtil.getCurrencyLocale();
