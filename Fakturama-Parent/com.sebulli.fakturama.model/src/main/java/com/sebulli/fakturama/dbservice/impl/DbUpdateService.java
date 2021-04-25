@@ -50,6 +50,7 @@ import liquibase.osgi.OSGiResourceAccessor;
 public class DbUpdateService implements IDbUpdateService {
 
     private static final String PROP_HSQLFILEDB = "hsqlfiledb";
+	private static final String PROP_HSQLDBPORT = "hsqldbport";
 	private IPreferenceStore preferenceStore;
 	private IActivateDbServer currentService;
     
@@ -134,6 +135,7 @@ public class DbUpdateService implements IDbUpdateService {
 				if(allServiceReferences != null && allServiceReferences.length > 0) {
 					ServiceReference<IActivateDbServer> serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
 					prop.put(PROP_HSQLFILEDB, preferenceStore.getString(PROP_HSQLFILEDB));
+					prop.put(PROP_HSQLDBPORT, preferenceStore.getString(PROP_HSQLDBPORT));
 					prop.put("encoding", "UTF-8");
 					prop.put(Constants.GENERAL_WORKSPACE, preferenceStore.getString(Constants.GENERAL_WORKSPACE));
 					

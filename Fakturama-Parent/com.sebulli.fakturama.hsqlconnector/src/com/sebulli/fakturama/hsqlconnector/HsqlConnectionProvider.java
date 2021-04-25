@@ -32,6 +32,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 	private static final String DEFAULT_HSQL_DATABASENAME = "fakdbneu";
 	private Server server;
 	private String workspace;
+	private String hsqlPort = null;
 
 	@Override
 	public String getKey() {
@@ -55,6 +56,9 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		server = new Server();
 		HsqlProperties hsqlProps = new HsqlProperties();
 		String url = props.getProperty("url");
+		if(!props.getProperty("hsqldbport").isEmpty()) {
+			setHsqlPort(props.getProperty("hsqldbport"));
+		}
 		workspace = props.getProperty("GENERAL_WORKSPACE");
 		Pattern patt = Pattern.compile(".*?:file:(.*?);.*");
 		Matcher m = patt.matcher(url);
@@ -69,7 +73,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		}
 		hsqlProps.setProperty("server.dbname.0", DEFAULT_HSQL_DATABASENAME);
 		hsqlProps.setProperty("hsqldb.lob_compressed", "true");
-		hsqlProps.setProperty("server.port", DEFAULT_HSQL_DATABASEPORT);
+		hsqlProps.setProperty("server.port", getHsqlPort());
 		hsqlProps.setProperty("hsqldb.lob_file_scale", "1");
 		hsqlProps.setProperty("hsqldb.shutdown", "true");
 
@@ -83,7 +87,17 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		
 		return props;
 	}
+
+	private String getHsqlPort() {
+		return hsqlPort == null ? DEFAULT_HSQL_DATABASEPORT : hsqlPort;
+	}
 	
+	public void setHsqlPort(String hsqlPort) {
+		if (hsqlPort.matches("\\\\d+")) {
+			this.hsqlPort = hsqlPort;
+		}
+	}
+
 	@SuppressWarnings("unchecked")
     @Override
 	public Connection getConnection() {
@@ -92,7 +106,8 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 	    Connection connection = null;
 		try {
 			ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(
-					org.osgi.service.jdbc.DataSourceFactory.class.getName(), "(osgi.jdbc.driver.class=org.hsqldb.jdbc.JDBCDriver)");
+					org.osgi.service.jdbc.DataSourceFactory.class.getName(), 
+					String.format("(%s=org.hsqldb.jdbc.JDBCDriver)", DataSourceFactory.OSGI_JDBC_DRIVER_CLASS));
 			ServiceReference<DataSourceFactory> serviceReference;
 			if(allServiceReferences.length > 0) {
 				serviceReference = (ServiceReference<DataSourceFactory>) allServiceReferences[0];
@@ -102,7 +117,8 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 			}
 			factory = bundleContext.getService(serviceReference);
 		    Properties prop = new Properties();
-		    String url = "jdbc:hsqldb:hsql://localhost:"+DEFAULT_HSQL_DATABASEPORT+"/"+server.getDatabaseName(0, false);
+		    String url = String.format("jdbc:hsqldb:hsql://localhost:%s/%s", 
+		    		getHsqlPort(), server.getDatabaseName(0, false));
 		    prop.put(DataSourceFactory.JDBC_DATABASE_NAME, "test");
 		    prop.put(DataSourceFactory.JDBC_URL, url);
 		    prop.put(DataSourceFactory.JDBC_USER, "SA");
