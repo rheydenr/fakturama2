@@ -62,6 +62,7 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 		if(!hsqlPortProperty.isEmpty()) {
 			setHsqlPort(hsqlPortProperty);
 		}
+		
 		workspace = props.getProperty("GENERAL_WORKSPACE");
 		Pattern patt = Pattern.compile(".*?:file:(.*?);.*");
 		Matcher m = patt.matcher(url);

@@ -136,6 +136,7 @@ public class DbUpdateService implements IDbUpdateService {
 					if(StringUtils.isNumeric(sysPropPort)) {
 						prop.put(DataSourceFactory.JDBC_PORT_NUMBER, sysPropPort);
 					}
+					
 					prop.put("encoding", "UTF-8");
 					prop.put(Constants.GENERAL_WORKSPACE, preferenceStore.getString(Constants.GENERAL_WORKSPACE));
 					
