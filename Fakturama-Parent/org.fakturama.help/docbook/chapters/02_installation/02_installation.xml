@@ -39,7 +39,7 @@
 		<tip>Für die Einrichtung des MySQL-Zugriffes per SSL gibt es ein <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/src/master/Fakturama-Parent/org.fakturama.help/howto/mysql/ssl4mysql.md">kleines Tutorial</link> (in Englisch). In diesem wird beschrieben, wie eine sichere Verbindung mit der MySQL-Datenbank hergestellt werden kann.</tip>
 		<warning>Leider scheinen sich in den letzten Jahren MariaDB und MySQL auseinanderbewegt zu haben. Es kann also vorkommen, daß eine MariaDB nicht mit der aktuellen Fakturama-Version funktioniert. Dann kann momentan nur MySQL oder HSQLDB (Standard) verwendet werden.</warning>
 		<tip>Wenn Sie MySQL oder MariaDB verwenden, achten Sie bitte darauf, die Fakturama-Datenbank mit dem Encoding <computeroutput>utf8mb4</computeroutput> und der Collaction <computeroutput>utf8mb4_general_ci</computeroutput> anzulegen.</tip>
-		<para>Sofern Sie bereits eine frühere Version von Fakturama verwenden (bis 1.6.9), geben Sie bitte als Arbeitsverzeichnis ein neues an. Sie können die alten Daten automatisch übernehmen, wenn Sie möchten.</para>
+		<para>Sofern Sie bereits eine frühere Version von Fakturama verwenden (bis 1.6.9), geben Sie bitte als Arbeitsverzeichnis ein neues an. Sie können die alten Daten automatisch übernehmen, wenn Sie möchten. Bitte installieren Sie die neue Version nicht in ein altes (1.x) Arbeitsverzeichnis, da dies zu Datenverlust führen kann.</para>
 	</section>
 	<section>
 			<anchor xreflabel="" xml:id="install_install_windows"/>
@@ -53,12 +53,12 @@
 					<imagedata width="30pt" contentdepth="40%" fileref="../images/install/install_logo.png" format="PNG" scalefit="1"/>
 				</imageobject>
 			</inlinemediaobject> Fakturama-Installer von der <link xl:href="https://www.fakturama.info/downloads">Fakturama-Projektseite</link> herunter und entpacken Sie die ZIP-Datei in ein leeres Verzeichnis.</para>
+		<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf einem Windows-Betriebssystem 
+		sind für die Installation Administratorrechte notwendig.</para>
 		<para>Beim ersten Start von Fakturama wird ein Arbeitsverzeichnis angelegt. In diesem werden die Firmendatenbank sowie alle 
 		Dokumente und Vorlagen abgelegt. Das Arbeitsverzeichnis muss sich in einem Ordner befinden, der ohne Administratorrechte 
 		beschrieben werden darf. Beispiel:</para>
 		<programlisting>C:\Projekte\MeineFirma\</programlisting>		
-		<para>Starten Sie den Fakturama-Installer. Sie werden durch den Installationsprozess geführt. Auf einem Windows-Betriebssystem 
-		sind für die Installation Administratorrechte notwendig.</para>
 		<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 		</para>
 	</section>
@@ -155,7 +155,7 @@
 			<anchor xreflabel="" xml:id="install_start"/>
 		<title>Erstes Starten von Fakturama</title>
 		<para>Starten Sie Fakturama.</para>
-		<para>Sie werden zuerst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch über den Dateidialog geschehen.
+		<para>Beim ersten Start der Anwendung werden Sie zunächst aufgefordert, das Arbeitsverzeichnis auszuwählen. Falls noch keines angelegt wurde, kann dies auch über den Dateidialog geschehen.
 		Falls Sie Fakturama von einer Vorversion aktualisieren beachten Sie bitte die Hinweise in diesem <link xl:href="https://www.fakturama.info/migration-der-altdaten">Wiki-Artikel</link>. 
 		Wenn Sie eine Mehrbenutzer-Installation einrichten möchten, können Sie im Installationsdialog die Datenbank auswählen. Die zusätzlichen Eingabefelder werden über das Entfernen des Häkchens "verwende Standardeinstellungen" sichtbar.
 		Falls die Datenbank bereits existiert, warnt das Installationsprogramm entsprechend. Über den Button "Verbindung testen" kann die Datenbankverbindung mit den eingegebenen Zugangsdaten getestet werden.
@@ -172,7 +172,13 @@
 			Sollten Sie keine Datenübernahme wünschen, löschen Sie bitte den Eintrag unter "Arbeitsverzeichnis (alt)". Dann wird die Datenübernahme übersprungen.
 		</para>
 		<warning>
-		Installieren Sie auf keinen Fall die neue Version in das alte Arbeitsverzeichnis! Sie würden damit die alten Daten beschädigen.</warning>
+		Installieren Sie auf keinen Fall die neue Version 2.x in das alte Arbeitsverzeichnis einer bestehenden Version 1.x! Sie würden damit die alten Daten beschädigen.</warning>
+		<para>Beim Start der Anwendung wird im Hintergrund eine HSQL-Datenbank gestartet. Diese läuft standardmäßig auf Port 9001. 
+		Sollte dieser Port bereits belegt sein, werden die nächsthöheren Ports geprüft, bis ein freier Port gefunden wird. 
+		Die konkrete Einstellung kann im Einstellungsdialog (Allgemeines) nachgesehen werden. Sollte Fakturama nicht ordnungsgemäß beendet werden können, 
+		ist dieser Datenbankprozeß ggf. manuell zu entfernen. Sollte es zwingende Gründe geben, die Datenbank auf einem bestimmten Port laufen zu lassen, 
+		kann dies mit dem Schalter <code>hsql.database.port</code> erreicht werden. Ebenso kann der Name der Datenbank vorgegeben werden (mit dem Schalter
+		<code>hsql.database.name</code>). Beide Schalter können in die Datei <code>Fakturama.ini</code> eingetragen werden, jeweils auf einer separaten Zeile mit dem Vorsatz <code>-D</code>, z. B. <programlisting>-Dhsql.database.port=9005</programlisting></para>
 		<!-- das wurde noch nicht umgesetzt -->
 		<!-- para>Fakturama begrüßt Sie mit einem Intro. Schließen Sie dies über das <emphasis role="bold">X</emphasis> rechts neben dem Text "Willkommen"</para>
 		<informalfigure>
