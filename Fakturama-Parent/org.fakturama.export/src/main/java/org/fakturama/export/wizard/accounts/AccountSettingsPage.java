@@ -76,7 +76,7 @@ public class AccountSettingsPage extends WizardPage {
 	//Control elements
 	private CDateTime dtDate;
 	private FormattedText txtValue;
-	private MonetaryAmount value = Money.of(0.0, DataUtils.getInstance().getDefaultCurrencyUnit());
+	private MonetaryAmount value = Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 	private Label warning;
 	
 	/**
