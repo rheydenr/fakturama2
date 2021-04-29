@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Graph author="Ralf" created="Sat Jan 20 21:59:55 CET 2018" guiVersion="4.8.0" id="1516484859780" licenseCode="RegCode" name="migration_002" showComponentDetails="true">
+<?xml version="1.0" encoding="UTF-8"?><Graph author="Ralf" created="Sat Jan 20 21:59:55 CET 2018" guiVersion="3.3.0.P" id="1516484859780" licenseType="Commercial" modified="Tue Mar 02 23:40:22 CET 2021" modifiedBy="Ralf" name="migration_002" revision="1.8" showComponentDetails="true">
 <Global>
-<Metadata id="Metadata8">
+<Metadata id="Metadata8" previewAttachmentCharset="UTF-8">
 <Record fieldDelimiter=";" name="CONFIRMATION_METADATA" previewAttachmentCharset="UTF-8" recordDelimiter="\n" type="delimited">
 <Field name="CONFIRMATION_PARENT_ID" size="64" type="long"/>
 </Record>
@@ -69,48 +68,41 @@
 <Field name="FK_CATEGORY" size="20" type="long"/>
 </Record>
 </Metadata>
-<Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fktest" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fktestuser" type="JDBC" user="fktestuser"/>
-<Connection database="HSQLDB" dbURL="jdbc:hsqldb:hsql://localhost/Fakturama2" id="JDBC0" jdbcSpecific="HSQLDB" name="hsqldb" type="JDBC" user="sa"/>
-<GraphParameters>
-<GraphParameterFile fileURL="workspace.prm"/>
-</GraphParameters>
+<Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fakturama_mig" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fakturama" type="JDBC" user="fakturama"/>
+<Connection dbDriver="org.hsqldb.jdbcDriver" dbURL="jdbc:hsqldb:hsql://localhost/Fakturama2" driverLibrary="file:/D:/Javalibs/hsqldb-2.5.0/hsqldb/lib/hsqldb.jar" id="JDBC0" jdbcSpecific="GENERIC" name="hsqldb" type="JDBC" user="sa"/>
 <Dictionary/>
 </Global>
 <Phase number="1">
-<Node dbConnection="JDBC0" guiName="Confirmation" guiX="20" guiY="20" id="CONFIRMATION1" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="Confirmation" guiWidth="128" guiX="20" guiY="20" id="CONFIRMATION1" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_CONFIRMATION]]></attr>
 </Node>
-<Node dbConnection="JDBC1" dbTable="fkt_confirmation" fieldMap="$CONFIRMATION_PARENT_ID:=CONFIRMATION_PARENT_ID;" guiName="DBOutputTable" guiX="245" guiY="20" id="DBOUTPUT_TABLE" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC1" dbTable="fkt_credit" fieldMap="$CREDIT_PARENT_ID:=CREDIT_PARENT_ID;" guiName="DBOutputTable" guiX="245" guiY="132" id="DBOUTPUT_TABLE1" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC1" dbTable="fkt_dunning" fieldMap="$DUNNING_PARENT_ID:=DUNNING_PARENT_ID;$DUNNINGLEVEL:=DUNNINGLEVEL;" guiName="DBOutputTable" guiX="245" guiY="244" id="DBOUTPUT_TABLE2" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC1" dbTable="fkt_letter" fieldMap="$LETTER_PARENT_ID:=LETTER_PARENT_ID;" guiName="DBOutputTable" guiX="245" guiY="356" id="DBOUTPUT_TABLE3" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC1" dbTable="fkt_offer" fieldMap="$OFFER_PARENT_ID:=OFFER_PARENT_ID;" guiName="DBOutputTable" guiX="245" guiY="468" id="DBOUTPUT_TABLE4" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC1" dbTable="fkt_order" fieldMap="$ORDER_PARENT_ID:=ORDER_PARENT_ID;" guiName="DBOutputTable" guiX="245" guiY="580" id="DBOUTPUT_TABLE5" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC1" dbTable="fkt_proforma" fieldMap="$PROFORMA_PARENT_ID:=PROFORMA_PARENT_ID;" guiName="DBOutputTable" guiX="245" guiY="692" id="DBOUTPUT_TABLE7" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC1" dbTable="fkt_textmodule" fieldMap="$ID:=ID;$DATEADDED:=DATEADDED;$DELETED:=DELETED;$MODIFIED:=MODIFIED;$MODIFIEDBY:=MODIFIEDBY;$NAME:=NAME;$T_TEXT:=T_TEXT;$VALIDFROM:=VALIDFROM;$VALIDTO:=VALIDTO;$FK_CATEGORY:=FK_CATEGORY;" guiName="DBOutputTable" guiX="245" guiY="804" id="DBOUTPUT_TABLE8" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC1" dbTable="fkt_shipping" fieldMap="$ID:=ID;$AUTOVAT:=AUTOVAT;$CODE:=CODE;$DATEADDED:=DATEADDED;$DELETED:=DELETED;$DESCRIPTION:=DESCRIPTION;$MODIFIED:=MODIFIED;$MODIFIEDBY:=MODIFIEDBY;$NAME:=NAME;$SHIPPINGVALUE:=SHIPPINGVALUE;$VALIDFROM:=VALIDFROM;$VALIDTO:=VALIDTO;$FK_CATEGORY:=FK_CATEGORY;$FK_VAT:=FK_VAT;" guiName="DBOutputTable" guiX="245" guiY="916" id="DBOUTPUT_TABLE9" type="DB_OUTPUT_TABLE"/>
-<Node dbConnection="JDBC0" guiName="FKT_CREDIT" guiX="20" guiY="132" id="FKT_CREDIT" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC1" dbTable="fkt_confirmation" enabled="enabled" fieldMap="$CONFIRMATION_PARENT_ID:=CONFIRMATION_PARENT_ID;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="245" guiY="20" id="DBOUTPUT_TABLE" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC1" dbTable="fkt_credit" enabled="enabled" fieldMap="$CREDIT_PARENT_ID:=CREDIT_PARENT_ID;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="245" guiY="132" id="DBOUTPUT_TABLE1" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC1" dbTable="fkt_dunning" enabled="enabled" fieldMap="$DUNNING_PARENT_ID:=DUNNING_PARENT_ID;$DUNNINGLEVEL:=DUNNINGLEVEL;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="245" guiY="244" id="DBOUTPUT_TABLE2" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC1" dbTable="fkt_letter" enabled="enabled" fieldMap="$LETTER_PARENT_ID:=LETTER_PARENT_ID;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="245" guiY="356" id="DBOUTPUT_TABLE3" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC1" dbTable="fkt_offer" enabled="enabled" fieldMap="$OFFER_PARENT_ID:=OFFER_PARENT_ID;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="245" guiY="468" id="DBOUTPUT_TABLE4" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC1" dbTable="fkt_order" enabled="enabled" fieldMap="$ORDER_PARENT_ID:=ORDER_PARENT_ID;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="245" guiY="580" id="DBOUTPUT_TABLE5" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC1" dbTable="fkt_proforma" enabled="enabled" fieldMap="$PROFORMA_PARENT_ID:=PROFORMA_PARENT_ID;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="245" guiY="692" id="DBOUTPUT_TABLE7" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC1" dbTable="fkt_textmodule" enabled="enabled" fieldMap="$ID:=ID;$DATEADDED:=DATEADDED;$DELETED:=DELETED;$MODIFIED:=MODIFIED;$MODIFIEDBY:=MODIFIEDBY;$NAME:=NAME;$T_TEXT:=T_TEXT;$VALIDFROM:=VALIDFROM;$VALIDTO:=VALIDTO;$FK_CATEGORY:=FK_CATEGORY;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="245" guiY="804" id="DBOUTPUT_TABLE8" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="FKT_CREDIT" guiWidth="128" guiX="20" guiY="132" id="FKT_CREDIT" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_CREDIT]]></attr>
 </Node>
-<Node dbConnection="JDBC0" guiName="FKT_DUNNING" guiX="20" guiY="244" id="FKT_DUNNING" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="FKT_DUNNING" guiWidth="128" guiX="20" guiY="244" id="FKT_DUNNING" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_DUNNING]]></attr>
 </Node>
-<Node dbConnection="JDBC0" guiName="FKT_LETTER" guiX="20" guiY="356" id="FKT_LETTER" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="FKT_LETTER" guiWidth="128" guiX="20" guiY="356" id="FKT_LETTER" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_LETTER]]></attr>
 </Node>
-<Node dbConnection="JDBC0" guiName="FKT_OFFER" guiX="20" guiY="468" id="FKT_OFFER" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="FKT_OFFER" guiWidth="128" guiX="20" guiY="468" id="FKT_OFFER" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_OFFER]]></attr>
 </Node>
-<Node dbConnection="JDBC0" guiName="FKT_ORDER" guiX="20" guiY="580" id="FKT_ORDER" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="FKT_ORDER" guiWidth="128" guiX="20" guiY="580" id="FKT_ORDER" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_ORDER]]></attr>
 </Node>
-<Node dbConnection="JDBC0" guiName="FKT_PROFORMA" guiX="20" guiY="692" id="FKT_PROFORMA" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="FKT_PROFORMA" guiWidth="128" guiX="20" guiY="692" id="FKT_PROFORMA" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_PROFORMA]]></attr>
 </Node>
-<Node dbConnection="JDBC0" guiName="FKT_SHIPPING" guiX="20" guiY="916" id="FKT_SHIPPING" type="DB_INPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[select * from FKT_SHIPPING]]></attr>
-</Node>
-<Node dbConnection="JDBC0" guiName="FKT_TEXTMODULE" guiX="20" guiY="804" id="FKT_TEXTMODULE" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="FKT_TEXTMODULE" guiWidth="134" guiX="20" guiY="804" id="FKT_TEXTMODULE" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select * from FKT_TEXTMODULE]]></attr>
 </Node>
 <Edge fromNode="CONFIRMATION1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata8" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE:0"/>
@@ -120,7 +112,13 @@
 <Edge fromNode="FKT_OFFER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE4:0"/>
 <Edge fromNode="FKT_ORDER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" metadata="Metadata4" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE5:0"/>
 <Edge fromNode="FKT_PROFORMA:0" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata5" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE7:0"/>
-<Edge fromNode="FKT_SHIPPING:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" metadata="Metadata7" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE9:0"/>
 <Edge fromNode="FKT_TEXTMODULE:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE8:0"/>
+</Phase>
+<Phase number="2">
+<Node dbConnection="JDBC1" dbTable="fkt_shipping" enabled="enabled" fieldMap="$ID:=ID;$AUTOVAT:=AUTOVAT;$CODE:=CODE;$DATEADDED:=DATEADDED;$DELETED:=DELETED;$DESCRIPTION:=DESCRIPTION;$MODIFIED:=MODIFIED;$MODIFIEDBY:=MODIFIEDBY;$NAME:=NAME;$SHIPPINGVALUE:=SHIPPINGVALUE;$VALIDFROM:=VALIDFROM;$VALIDTO:=VALIDTO;$FK_CATEGORY:=FK_CATEGORY;$FK_VAT:=FK_VAT;" guiHeight="67" guiName="DBOutputTable" guiWidth="128" guiX="245" guiY="916" id="DBOUTPUT_TABLE9" type="DB_OUTPUT_TABLE"/>
+<Node dbConnection="JDBC0" enabled="enabled" guiHeight="67" guiName="FKT_SHIPPING" guiWidth="128" guiX="20" guiY="916" id="FKT_SHIPPING" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[select * from FKT_SHIPPING]]></attr>
+</Node>
+<Edge debugMode="false" fromNode="FKT_SHIPPING:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" metadata="Metadata7" outPort="Port 0 (out)" toNode="DBOUTPUT_TABLE9:0"/>
 </Phase>
 </Graph>

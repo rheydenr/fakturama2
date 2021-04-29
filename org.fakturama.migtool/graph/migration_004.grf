@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><Graph author="Ralf" created="Sat Jan 20 21:59:55 CET 2018" guiVersion="3.3.0.P" id="1516484859780" licenseType="Commercial" modified="Sat May 23 23:15:55 CEST 2020" modifiedBy="Ralf" name="migration_002" revision="1.4" showComponentDetails="true">
+<?xml version="1.0" encoding="UTF-8"?><Graph author="Ralf" created="Sat Jan 20 21:59:55 CET 2018" guiVersion="3.3.0.P" id="1516484859780" licenseType="Commercial" modified="Wed Mar 03 00:35:03 CET 2021" modifiedBy="Ralf" name="migration_002" revision="1.8" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata9" previewAttachmentCharset="UTF-8">
 <Record fieldDelimiter=";" name="ADDRESS_CONTACTTYPES" previewAttachmentCharset="UTF-8" recordDelimiter="\n" type="delimited">
@@ -62,8 +62,8 @@
 <Field name="FK_VAT" size="20" type="long"/>
 </Record>
 </Metadata>
-<Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fktest" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fktestuser" type="JDBC" user="fktestuser"/>
-<Connection dbDriver="org.hsqldb.jdbcDriver" dbURL="jdbc:hsqldb:hsql://localhost:9002/Fakturama2" driverLibrary="file:/D:/Javalibs/hsqldb-2.5.0/hsqldb/lib/hsqldb.jar" id="JDBC0" jdbcSpecific="GENERIC" name="hsqldb" type="JDBC" user="sa"/>
+<Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fakturama_mig" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fakturama" type="JDBC" user="fakturama"/>
+<Connection dbDriver="org.hsqldb.jdbcDriver" dbURL="jdbc:hsqldb:hsql://localhost:9001/Fakturama2" driverLibrary="file:/D:/Javalibs/hsqldb-2.5.0/hsqldb/lib/hsqldb.jar" id="JDBC0" jdbcSpecific="GENERIC" name="hsqldb" type="JDBC" user="sa"/>
 <Dictionary/>
 </Global>
 <Phase number="0">
