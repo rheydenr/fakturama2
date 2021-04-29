@@ -132,10 +132,6 @@ public class LifecycleManager {
     	splashService.setTextColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
     	splashService.setMessage("Loading Application...");
     	
-        ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
-        // launch ConfigurationManager.checkFirstStart
-        configMgr.checkAndUpdateConfiguration();
-    	
     	// There should be a better way to close the Splash
     	// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=376821
     	eventBroker.subscribe(UIEvents.UILifeCycle.ACTIVATE, new EventHandler() {
@@ -447,11 +443,16 @@ public class LifecycleManager {
     @ProcessAdditions
     void processAdditions(final IEventBroker eventBroker, MApplication app, EModelService modelService, IApplicationContext appContext,
     		@Named(E4Workbench.INSTANCE_LOCATION) Location instanceLocation, final ISplashService splashService) {
-    	
+
     	// TODO put the Login Dialog in here
         if(eclipsePrefs.getBoolean("isreinit", false)) {
         	dbUpdateService.updateDatabase();
         }
+    	
+        ConfigurationManager configMgr = ContextInjectionFactory.make(ConfigurationManager.class, context);
+        // launch ConfigurationManager.checkFirstStart
+        configMgr.checkAndUpdateConfiguration();
+        
         if (eclipsePrefs.get(ConfigurationManager.GENERAL_WORKSPACE_REQUEST, null) != null) {
             eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, 
             		new AppStartupCompleteEventHandler(context, RESTART_APPLICATION));
