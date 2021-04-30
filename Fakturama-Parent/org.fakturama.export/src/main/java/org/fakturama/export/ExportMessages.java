@@ -91,6 +91,10 @@ public class ExportMessages {
 	public String wizardExportProductsAllproductsTitle;
 	public String wizardExportProductsDescription;
 	public String wizardExportProductsDefaultfilename;
+	public String wizardExportTextHeading;
+	public String wizardExportTextCategory;
+	public String wizardExportTextDescription;
+	public String wizardExportTextFilename;
 	public String wizardExportCsvProductsDefaultfilename;
 	
 	public String wizardExportSalesUnpaidDefaultfilename;
