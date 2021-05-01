@@ -12,7 +12,7 @@
  *     The Fakturama Team - initial API and implementation
  */
  
-package com.sebulli.fakturama.views.datatable;
+package com.sebulli.fakturama.views.datatable.common;
 
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 

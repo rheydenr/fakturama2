@@ -11,7 +11,7 @@
  * Contributors: The Fakturama Team - initial API and implementation
  */
 
-package com.sebulli.fakturama.views.datatable;
+package com.sebulli.fakturama.views.datatable.layer;
 
 import java.io.Serializable;
 
@@ -32,6 +32,8 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.model.IEntity;
+import com.sebulli.fakturama.views.datatable.common.ListViewColumnHeaderDataProvider;
+import com.sebulli.fakturama.views.datatable.common.ListViewRowHeaderDataProvider;
 
 import ca.odell.glazedlists.EventList;
 

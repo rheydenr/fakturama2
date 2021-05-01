@@ -221,6 +221,7 @@
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="" documentation="The abstract base class for all kinds of contacts." name="Contact" qualifiedClassName="com.sebulli.fakturama.model.Contact" simpleClassName="Contact" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
+        <classImplements>com.sebulli.fakturama.model.ICategorizable&lt;com.sebulli.fakturama.model.ContactCategory></classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -573,8 +574,8 @@
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//DocumentReceiver"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="The receiver's information for a certain document." documentation="The receiver's information for a certain document." serializable="true">
-        <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
+        <classImplements>com.sebulli.fakturama.model.IDescribableEntity</classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -607,7 +608,7 @@
       <eClass href="Fakturama.ecore#//DocumentItem"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" description="" documentation="Holds an item of a document." name="DocumentItem" qualifiedClassName="com.sebulli.fakturama.model.DocumentItem" simpleClassName="DocumentItem" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
         <classImplements>java.io.Serializable</classImplements>
-        <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
+        <classImplements>com.sebulli.fakturama.model.IDescribableEntity</classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -668,19 +669,6 @@
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/weight"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="weight" getter="getWeight" defaultValue="null" setter="setWeight" validJavaMemberName="weight" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.11/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//DocumentItem/tara"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="tara" getter="getTara" defaultValue="null" setter="setTara" validJavaMemberName="tara" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.11/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//DocumentItem/description"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="description" getter="getDescription" defaultValue="null" setter="setDescription" validJavaMemberName="description" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.11/@eClassAnnotations.0"/>
-        <eAttributeAnnotations xsi:type="ormannotations:EAttributeORMAnnotation">
-          <basic>
-            <lob/>
-          </basic>
-        </eAttributeAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//DocumentItem/optional"/>
@@ -835,8 +823,8 @@
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//Payment"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" name="Payment" qualifiedClassName="com.sebulli.fakturama.model.Payment" simpleClassName="Payment" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
-        <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
+        <classImplements>com.sebulli.fakturama.model.IDescribableEntity</classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -845,15 +833,6 @@
           </entityListeners>
         </entity>
       </eClassAnnotations>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//Payment/description"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="description" getter="getDescription" defaultValue="null" setter="setDescription" validJavaMemberName="description" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.16/@eClassAnnotations.0"/>
-        <eAttributeAnnotations xsi:type="ormannotations:EAttributeORMAnnotation">
-          <basic>
-            <column length="8192"/>
-          </basic>
-        </eAttributeAnnotations>
-      </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//Payment/discountDays"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="discountDays" getter="getDiscountDays" defaultValue="java.lang.Integer.valueOf(0)" setter="setDiscountDays" validJavaMemberName="discountDays" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.16/@eClassAnnotations.0"/>
@@ -909,6 +888,7 @@
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" documentation="This entity represents a Product." name="Product" qualifiedClassName="com.sebulli.fakturama.model.Product" simpleClassName="Product" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
         <classImplements>java.io.Serializable</classImplements>
         <classImplements>com.sebulli.fakturama.model.IDescribableEntity</classImplements>
+        <classImplements>com.sebulli.fakturama.model.ICategorizable&lt;com.sebulli.fakturama.model.ProductCategory></classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -1150,6 +1130,7 @@
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" name="Shipping" qualifiedClassName="com.sebulli.fakturama.model.Shipping" simpleClassName="Shipping" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
         <classImplements>java.io.Serializable</classImplements>
         <classImplements>com.sebulli.fakturama.model.IDescribableEntity</classImplements>
+        <classImplements>com.sebulli.fakturama.model.ICategorizable&lt;com.sebulli.fakturama.model.ShippingCategory></classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -1207,6 +1188,7 @@
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" name="TextModule" qualifiedClassName="com.sebulli.fakturama.model.TextModule" simpleClassName="TextModule" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
         <classImplements>java.io.Serializable</classImplements>
         <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
+        <classImplements>com.sebulli.fakturama.model.ICategorizable&lt;com.sebulli.fakturama.model.TextCategory></classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -1301,8 +1283,8 @@
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="Fakturama.ecore#//VAT"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation" name="VAT" qualifiedClassName="com.sebulli.fakturama.model.VAT" simpleClassName="VAT" generateCode="true" ownerEPackageAnnotation="//@annotatedEPackages.0/@ePackageAnnotations.0" hasManyFeatures="true" hasSuperEClass="false" serializable="true" abstract="false">
-        <classImplements>com.sebulli.fakturama.model.IEntity</classImplements>
         <classImplements>java.io.Serializable</classImplements>
+        <classImplements>com.sebulli.fakturama.model.IDescribableEntity</classImplements>
       </eClassAnnotations>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
         <entity>
@@ -1311,10 +1293,6 @@
           </entityListeners>
         </entity>
       </eClassAnnotations>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
-        <eAttribute href="Fakturama.ecore#//VAT/description"/>
-        <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="description" getter="getDescription" defaultValue="null" setter="setDescription" validJavaMemberName="description" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.29/@eClassAnnotations.0"/>
-      </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
         <eAttribute href="Fakturama.ecore#//VAT/taxValue"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" name="taxValue" getter="getTaxValue" defaultValue="java.lang.Double.valueOf(0.0)" setter="setTaxValue" validJavaMemberName="taxValue" useList="false" ownerEClassAnnotation="//@annotatedEPackages.0/@annotatedEClassifiers.29/@eClassAnnotations.0"/>

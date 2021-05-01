@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package com.sebulli.fakturama.views.datatable.impl;
+package com.sebulli.fakturama.views.datatable.common;
 
 
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;

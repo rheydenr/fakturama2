@@ -36,7 +36,7 @@ final class VoucherMatcher implements Matcher<Voucher> {
 		boolean found = false;
 		if(!isRootNode) {
 		    String fullCategoryName = CommonConverter.getCategoryName(item.getAccount(), rootNodeName);
-		    found = fullCategoryName.startsWith(voucherCategoryName);
+		    found = fullCategoryName.startsWith(StringUtils.stripEnd(voucherCategoryName, "/"));
 		}
 		return isRootNode || found;
 	}

@@ -36,7 +36,7 @@ final class ItemAccountTypeMatcher implements Matcher<ItemAccountType> {
 		boolean found = false;
 		if(!isRootNode) {
 		    String fullCategoryName = CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
-			found = fullCategoryName.startsWith(accountCategoryName);
+			found = fullCategoryName.startsWith(StringUtils.stripEnd(accountCategoryName, "/"));
 		}
 		return isRootNode || found;
 	}

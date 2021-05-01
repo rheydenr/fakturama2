@@ -16,7 +16,7 @@ import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
-import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.common.MoneyDisplayConverter;
 
 class VoucherTableConfiguration extends AbstractRegistryConfiguration {
     

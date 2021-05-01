@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
-import com.sebulli.fakturama.views.datatable.CellImagePainter;
+import com.sebulli.fakturama.views.datatable.common.CellImagePainter;
 
 /**
  * This class represents an Cell editor that does nothing than
