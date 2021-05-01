@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sebulli.fakturama.views.datatable;
+package com.sebulli.fakturama.views.datatable.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

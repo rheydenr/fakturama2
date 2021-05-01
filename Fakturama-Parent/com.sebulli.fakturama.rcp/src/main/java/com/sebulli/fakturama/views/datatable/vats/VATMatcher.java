@@ -36,7 +36,7 @@ final class VATMatcher implements Matcher<VAT> {
 		boolean found = false;
 		if(!isRootNode) {
 		    String fullCategoryName =  StringUtils.appendIfMissing(CommonConverter.getCategoryName(item.getCategory(), rootNodeName), "/");
-		    found = fullCategoryName.startsWith(vatCategoryName);
+		    found = fullCategoryName.startsWith(StringUtils.stripEnd(vatCategoryName, "/"));
 		}
 		return isRootNode || found;
 	}

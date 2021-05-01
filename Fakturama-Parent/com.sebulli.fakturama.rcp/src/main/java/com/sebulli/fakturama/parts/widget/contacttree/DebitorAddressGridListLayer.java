@@ -38,7 +38,7 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
 import com.sebulli.fakturama.dao.DebitorAddress;
 import com.sebulli.fakturama.i18n.Messages;
-import com.sebulli.fakturama.views.datatable.ListViewColumnHeaderDataProvider;
+import com.sebulli.fakturama.views.datatable.common.ListViewColumnHeaderDataProvider;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TreeList;

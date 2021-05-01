@@ -11,7 +11,7 @@
  * Contributors: The Fakturama Team - initial API and implementation
  */
 
-package com.sebulli.fakturama.views.datatable;
+package com.sebulli.fakturama.views.datatable.common;
 
 import javax.inject.Inject;
 import javax.money.MonetaryAmount;

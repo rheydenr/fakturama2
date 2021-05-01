@@ -69,9 +69,10 @@ import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.TextEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
-import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.common.CommonListItemMatcher;
+import com.sebulli.fakturama.views.datatable.common.ListSelectionStyleConfiguration;
+import com.sebulli.fakturama.views.datatable.common.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.layer.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -119,7 +120,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<TextModule> treeFilteredIssues;
 
-	private TextModuleMatcher currentFilter;
+	private CommonListItemMatcher<TextModule> currentFilter;
 
 
     @PostConstruct
@@ -409,7 +410,7 @@ public class TextListTable extends AbstractViewDataTable<TextModule, TextCategor
     @Override
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Reset transaction and contact filter, set category filter
-    	currentFilter = new TextModuleMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
+    	currentFilter = new CommonListItemMatcher<TextModule>(filter, treeObjectType, createRootNodeDescriptor(filter));
 		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...
