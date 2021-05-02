@@ -145,5 +145,5 @@ Import-Package: org.apache.commons.collections4,
  org.osgi.util.xml
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: com.sebulli.fakturama.rcp
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/parcelservice.xml,OSGI-INF/splashservice.xml
