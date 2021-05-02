@@ -39,7 +39,5 @@ public class ZFDefaultValuesInitializer extends AbstractPreferenceInitializer {
         p.setInitValues(defaultValuesNode);
         
         EclipseContextFactory.getServiceContext(bundle.getBundleContext()).set(IPreferenceStore.class, defaultValuesNode);
-        
     }
-
 }

@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Fakturama Connectors
+Bundle-SymbolicName: org.fakturama.connectors;singleton:=true
+Bundle-Version: 2.1.2.qualifier
+Bundle-Vendor: Fakturama.org
+Automatic-Module-Name: org.fakturama.connectors
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-ActivationPolicy: lazy
+Import-Package: com.sebulli.fakturama.model,
+ javax.inject;version="1.0.0",
+ org.apache.commons.lang3,
+ org.eclipse.core.runtime.preferences,
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.di;version="1.7.0",
+ org.eclipse.e4.core.di.annotations;version="1.6.0",
+ org.eclipse.e4.core.services.nls,
+ org.osgi.framework;version="1.10.0",
+ org.osgi.service.component.annotations
+Service-Component: OSGI-INF/org.fakturama.connectors.mail.MailService.xml
+Bundle-Localization: OSGI-INF/l10n/mailservicemessages
+Require-Bundle: com.sebulli.fakturama.rcp,
+ com.opcoach.e4.preferences,
+ org.eclipse.jface,
+ org.eclipse.core.runtime,
+ org.eclipse.nebula.widgets.opal.checkboxgroup;bundle-version="1.0.0"
+Bundle-Activator: org.fakturama.connectors.Activator
