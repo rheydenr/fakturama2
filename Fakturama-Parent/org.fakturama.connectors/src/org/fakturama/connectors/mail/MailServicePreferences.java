@@ -70,7 +70,9 @@ public class MailServicePreferences extends FieldEditorPreferencePage implements
         
         addField(new StringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_HOST, messages.mailservicePreferencesServerHost, editorParent));
         addField(new StringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_USER, messages.mailservicePreferencesServerUser, editorParent));
-        addField(new StringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, messages.mailservicePreferencesServerPassword, editorParent));
+        StringFieldEditor mailServerPassword = new StringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, messages.mailservicePreferencesServerPassword, editorParent);
+        mailServerPassword.getTextControl(editorParent).setEchoChar('*');
+        addField(mailServerPassword);
         addField(new StringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_ADDITIONAL_DOCUMENTS_PATH, messages.mailservicePreferencesAdditionaldocpath, editorParent));
     }
 
