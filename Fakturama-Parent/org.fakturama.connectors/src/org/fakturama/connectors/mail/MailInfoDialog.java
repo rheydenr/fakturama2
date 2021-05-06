@@ -16,6 +16,7 @@ package org.fakturama.connectors.mail;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -24,64 +25,52 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.Active;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.dialogs.TrayDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.widgets.ButtonFactory;
 import org.eclipse.jface.widgets.CompositeFactory;
 import org.eclipse.jface.widgets.LabelFactory;
 import org.eclipse.jface.widgets.TextFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
  *
  */
-public class MailInfoDialog extends TrayDialog {
+public class MailInfoDialog {
     private DataBindingContext bindingContext = new DataBindingContext();
     private Text receiverTo, receiverCC, receiverBCC, subject, body;
     private ListViewer listViewer;
+    private Shell shell;
+
+    @Inject
+    private EModelService modelService;
+
+    @Inject
+    private MApplication application;
 
     @Inject
     private MailSettings settings;
 
-    @Inject
-    public MailInfoDialog(@Active Shell shell) {
-        super(shell);
-    }
+    @PostConstruct
+    protected Control createDialogArea(@Active Shell shell, Composite parent) {
+        this.shell = shell;
 
-    @Override
-    protected void configureShell(Shell parent) {
-        super.configureShell(parent);
-        parent.setText("Mail Service");
-    }
-
-    @Override
-    protected boolean isResizable() {
-        return true;
-    }
-
-    @Override
-    protected Control createDialogArea(Composite parent) {
-        super.createDialogArea(parent);
-
-        Composite top = CompositeFactory.newComposite(SWT.BORDER).layout(GridLayoutFactory.fillDefaults().numColumns(2).create())
+        Composite top = CompositeFactory.newComposite(SWT.BORDER).layout(GridLayoutFactory.fillDefaults().margins(10, 10).numColumns(2).create())
                 .layoutData(GridDataFactory.fillDefaults().create()).create(parent);
 
         LabelFactory.newLabel(SWT.NONE).text("send via").create(top);
@@ -105,20 +94,52 @@ public class MailInfoDialog extends TrayDialog {
         body = TextFactory.newText(SWT.BORDER | SWT.WRAP).layoutData(GridDataFactory.fillDefaults().span(2, 1).grab(true, true).minSize(80, 100).create())
                 .create(top);
 
-        Composite attachmentPanel = CompositeFactory.newComposite(SWT.BORDER).layoutData(GridDataFactory.fillDefaults().span(2, 1).grab(true, true).create())
+        Composite attachmentPanel = CompositeFactory.newComposite(SWT.BORDER)
+                .layoutData(GridDataFactory.fillDefaults().span(2, 1).grab(true, true).create())
                 .layout(GridLayoutFactory.fillDefaults().numColumns(2).create()).create(top);
+        
         addAttachmentListViewer(attachmentPanel);
         addButtons(attachmentPanel);
+        
+        Composite bottomPanel = CompositeFactory.newComposite(SWT.NONE)
+                .layoutData(GridDataFactory.fillDefaults().grab(true, false).span(2, 1).create())
+                .layout(GridLayoutFactory.swtDefaults().numColumns(3).equalWidth(true).create())
+                .create(top);
+        LabelFactory.newLabel(SWT.NONE)
+            .layoutData(GridDataFactory.fillDefaults().grab(true, false).create())
+            .create(bottomPanel); // invisible label
+        LabelFactory.newLabel(SWT.NONE)
+            .layoutData(GridDataFactory.fillDefaults().grab(true, false).create())
+            .create(bottomPanel); // invisible label
+        
+        Composite buttonPanel = CompositeFactory.newComposite(SWT.NONE)
+                .layoutData(GridDataFactory.fillDefaults().grab(true, false).align(SWT.END, SWT.FILL).create())
+                .layout(new FillLayout())
+                .create(bottomPanel);
+
+        new GridData(SWT.RIGHT, SWT.FILL, true, true, 1, 1);
+        ButtonFactory.newButton(SWT.PUSH)
+                .layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create())
+                .text("Send")
+                .onSelect(t -> sendMail())
+                .create(buttonPanel);
+
+        ButtonFactory.newButton(SWT.PUSH)
+                .layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create())
+                .text("Cancel")
+                .onSelect(t -> {
+                    MUIElement mailAppDialog = modelService.find("org.fakturama.connectors.mailapp", application);
+                    mailAppDialog.setVisible(false);
+                })
+                .create(buttonPanel);
 
         bindFields();
 
         return parent;
     }
 
-    @Override
-    protected void okPressed() {
-        //        sendMail()
-        super.okPressed();
+    private void sendMail() {
+        System.out.println("send mail now!");
     }
 
     private void bindFields() {
@@ -139,23 +160,21 @@ public class MailInfoDialog extends TrayDialog {
         IObservableValue<String> bodyString = PojoProperties.value(MailSettings.class, "body", String.class).observe(settings);
 
         IObservableList<String> attachmentList = listFactory.createObservable(listViewer.getControl());
-//        IObservableList<String> attachmentList = WidgetProperties.items().observe(listViewer.getControl());
         IObservableList<String> att = PojoProperties.list(MailSettings.class, "additionalDocs", String.class).observe(settings);
-        
+
         bindingContext.bindValue(rec, receiversTo);
-        //        bindingContext.bindValue(recCC, receiversCC);
-        //        bindingContext.bindValue(recBCC, receiversBCC);
+        bindingContext.bindValue(recCC, receiversCC);
+        bindingContext.bindValue(recBCC, receiversBCC);
         bindingContext.bindValue(subj, subjString);
         bindingContext.bindValue(bodyWidget, bodyString);
-        
+
         bindingContext.bindList(attachmentList, att);
 
     }
 
-    //  Vector<String> languages = new Vector<>();
-
     private void addAttachmentListViewer(Composite top) {
         listViewer = new ListViewer(top, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+
         listViewer.setContentProvider(new IStructuredContentProvider() {
             public Object[] getElements(Object inputElement) {
                 @SuppressWarnings("unchecked")
@@ -166,78 +185,40 @@ public class MailInfoDialog extends TrayDialog {
 
         listViewer.setInput(settings.getAdditionalDocs());
 
-        listViewer.setLabelProvider(new LabelProvider() {
-            public Image getImage(Object element) {
-                return null;
-            }
-
-            public String getText(Object element) {
-                return (String) element;
-            }
-        });
-
-        listViewer.setComparator(new ViewerComparator() {
-            public int compare(Viewer viewer, Object e1, Object e2) {
-                return ((String) e1).compareTo(((String) e2));
-            }
-
-        });
-
         GridDataFactory.fillDefaults().grab(true, true).applyTo(listViewer.getList());
 
     }
 
-    Button buttonAdd;
-    Button buttonRemove;
-
     private void addButtons(Composite top) {
-        Composite composite = new Composite(top, SWT.NULL);
         FillLayout fillLayout = new FillLayout(SWT.VERTICAL);
         fillLayout.spacing = 2;
 
-        composite.setLayout(fillLayout);
+        Composite composite = CompositeFactory.newComposite(SWT.NULL).layout(fillLayout).create(top);
 
-        buttonAdd = new Button(composite, SWT.PUSH);
-        buttonAdd.setText("Add");
+        ButtonFactory.newButton(SWT.PUSH).text("Add").onSelect(t -> {
+            FileDialog fileDialog = new FileDialog(shell, SWT.MULTI);
+            fileDialog.setText("Please select an attachment for the mail");
 
-        buttonRemove = new Button(composite, SWT.PUSH);
-        buttonRemove.setText("Remove");
+            fileDialog.open();
 
-        buttonAdd.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                InputDialog dlg = new InputDialog(getShell(), "title", "msg", "default", new IInputValidator() {
-
-                    @Override
-                    public String isValid(String newText) {
-                        // TODO Auto-generated method stub
-                        return null;
-                    }
-                });
-
-                dlg.open();
-
-                String text = dlg.getValue();
-                if (text != null) {
-                    settings.addToAdditionalDocs(text);
-                }
-
-                listViewer.refresh(false);
+            String[] text = fileDialog.getFileNames();
+            if (text != null) {
+                settings.addToAdditionalDocs(text);
             }
-        });
 
-        buttonRemove.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                IStructuredSelection selection = (IStructuredSelection) listViewer.getSelection();
-                String language = (String) selection.getFirstElement();
-                if (language == null) {
-                    System.out.println("Please select an item first.");
-                    return;
-                }
+            listViewer.refresh(false);
+        }).create(composite);
 
-                settings.removeFromAdditionalDocs(language);
-                listViewer.refresh(false);
+        ButtonFactory.newButton(SWT.PUSH).text("Remove").onSelect(t -> {
+            IStructuredSelection selection = (IStructuredSelection) listViewer.getSelection();
+            String language = (String) selection.getFirstElement();
+            if (language == null) {
+                MessageDialog.openInformation(shell, "Info", "Please select an item first.");
+                return;
             }
-        });
+
+            settings.removeFromAdditionalDocs(language);
+            listViewer.refresh(false);
+        }).create(composite);
     }
-
 }

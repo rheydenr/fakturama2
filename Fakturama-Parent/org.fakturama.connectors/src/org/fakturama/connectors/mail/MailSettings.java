@@ -39,7 +39,7 @@ public class MailSettings {
         this.password = pasword;
         return this;
     }
-    
+
     public MailSettings withSender(String sender) {
         this.sender = sender;
         return this;
@@ -61,12 +61,12 @@ public class MailSettings {
     }
 
     public MailSettings withReceiversCC(String... receiversCC) {
-        getReceiversCC().addAll(Arrays.asList(receiversCC));
+        this.receiversCC.addAll(Arrays.asList(receiversCC));
         return this;
     }
-    
+
     public MailSettings withReceiversBCC(String... receiversBCC) {
-        getReceiversBCC().addAll(Arrays.asList(receiversBCC));
+        this.receiversBCC.addAll(Arrays.asList(receiversBCC));
         return this;
     }
 
@@ -74,7 +74,12 @@ public class MailSettings {
         this.host = host;
         return this;
     }
- 
+
+    public MailSettings withSubject(String subject) {
+        this.subject = subject;
+        return this;
+    }
+
     public String getUser() {
         return user;
     }
@@ -94,7 +99,7 @@ public class MailSettings {
     public List<String> getAdditionalDocs() {
         return additionalDocs;
     }
-    
+
     public void addToAdditionalDocs(String... additionalDocs) {
         this.additionalDocs.addAll(Arrays.stream(additionalDocs).collect(Collectors.toList()));
     }
@@ -114,28 +119,24 @@ public class MailSettings {
     public String getReceiversTo() {
         return StringUtils.join(receiversTo, ';');
     }
-    
+
     public void setReceiversTo(String receivers) {
-        if(receivers != null) {
+        if (receivers != null) {
             receiversTo.clear();
             Arrays.stream(receivers.split(";")).forEach(r -> receiversTo.add(StringUtils.trim(r)));
         }
     }
 
-    public List<String> getReceiversCC() {
-        return receiversCC;
+    public String getReceiversCC() {
+        return StringUtils.join(receiversCC, ';');
     }
 
-    public List<String> getReceiversBCC() {
-        return receiversBCC;
+    public String getReceiversBCC() {
+        return StringUtils.join(receiversBCC, ';');
     }
 
     public String getSubject() {
         return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
     }
 
     public String getBody() {

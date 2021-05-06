@@ -6,7 +6,6 @@ package com.sebulli.fakturama.misc;
 import java.util.Locale;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 
 /**

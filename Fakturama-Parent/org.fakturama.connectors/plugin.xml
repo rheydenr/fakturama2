@@ -22,5 +22,13 @@
             class="org.fakturama.connectors.mail.MailServiceDefaultPreferencesInitializer">
       </initializer>
    </extension>
+   <extension
+         id="org.fakturama.connectors.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="mailapp.e4xmi"
+            apply="always">
+      </fragment>
+   </extension>
 
 </plugin>
