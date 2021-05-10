@@ -2,10 +2,8 @@
 <classpath>
 	<classpathentry exported="true" kind="lib" path="lib/dsn-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/imap-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jakarta.mail-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta.mail-2.0.1.jar" sourcepath="D:/Javalibs/JavaMail/jakarta.mail-2.0.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jakarta.mail-api-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/mailapi-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/pop3-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/smtp-2.0.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>

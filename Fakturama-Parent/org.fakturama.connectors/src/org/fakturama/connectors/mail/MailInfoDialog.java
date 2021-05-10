@@ -13,8 +13,13 @@
 
 package org.fakturama.connectors.mail;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -41,12 +46,25 @@ import org.eclipse.jface.widgets.LabelFactory;
 import org.eclipse.jface.widgets.TextFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import com.sebulli.fakturama.log.ILogger;
+
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 
 /**
  *
@@ -65,6 +83,9 @@ public class MailInfoDialog {
 
     @Inject
     private MailSettings settings;
+    
+    @Inject
+    private ILogger log;
 
     @PostConstruct
     protected Control createDialogArea(@Active Shell shell, Composite parent) {
@@ -117,7 +138,6 @@ public class MailInfoDialog {
                 .layout(new FillLayout())
                 .create(bottomPanel);
 
-        new GridData(SWT.RIGHT, SWT.FILL, true, true, 1, 1);
         ButtonFactory.newButton(SWT.PUSH)
                 .layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create())
                 .text("Send")
@@ -128,8 +148,9 @@ public class MailInfoDialog {
                 .layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create())
                 .text("Cancel")
                 .onSelect(t -> {
-                    MUIElement mailAppDialog = modelService.find("org.fakturama.connectors.mailapp", application);
+                    MUIElement mailAppDialog = modelService.find(MailService.MAIL_APP_MAIN_WINDOW_ID, application);
                     mailAppDialog.setVisible(false);
+                    mailAppDialog.setToBeRendered(false);
                 })
                 .create(buttonPanel);
 
@@ -139,7 +160,114 @@ public class MailInfoDialog {
     }
 
     private void sendMail() {
-        System.out.println("send mail now!");
+        // create some properties and get the default Session
+        Properties props = System.getProperties();
+        props.put("mail.smtp.host", settings.getHost());
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.port", "587");
+     
+        Authenticator authenticator = new Authenticator() {
+            final PasswordAuthentication authentication = new PasswordAuthentication(settings.getUser(), settings.getPassword());
+
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return authentication;
+            }
+        };
+        Session session = Session.getInstance(props, authenticator);
+//        session.setDebug(debug);
+        
+        try {
+            // create a message
+            MimeMessage msg = new MimeMessage(session);
+            //set From email field
+            msg.setFrom(new InternetAddress(settings.getSender()));
+            msg.setSender(new InternetAddress("ich@erde.de"));
+            
+            msg.setRecipients(Message.RecipientType.TO, settings.getReceiversTo());
+            msg.setRecipients(Message.RecipientType.CC,settings.getReceiversCC());
+            msg.setRecipients(Message.RecipientType.BCC, settings.getReceiversBCC());
+            
+            msg.setSubject(settings.getSubject());
+
+            // create and fill the first message part
+            MimeBodyPart mbp1 = new MimeBodyPart();
+            mbp1.setText(settings.getBody());
+
+            /*
+             * Use the following approach instead of the above line if
+             * you want to control the MIME type of the attached file.
+             * Normally you should never need to do this.
+             *
+            FileDataSource fds = new FileDataSource(filename) {
+            public String getContentType() {
+                return "application/octet-stream";
+            }
+            };
+            mbp2.setDataHandler(new DataHandler(fds));
+            mbp2.setFileName(fds.getName());
+             */
+
+            // create the Multipart and add its parts to it
+            Multipart mp = new MimeMultipart();
+            mp.addBodyPart(mbp1);
+            
+            // add attachments
+            settings.getAdditionalDocs().stream().map(this::createMimePart).forEach(p -> {
+                try {
+                    mp.addBodyPart(p);
+                } catch (MessagingException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            });
+
+            // add the Multipart to the message
+            msg.setContent(mp);
+
+            // set the Date: header
+            msg.setSentDate(new Date());
+
+            /*
+             * If you want to control the Content-Transfer-Encoding
+             * of the attached file, do the following. Normally you
+             * should never need to do this.
+             *
+            msg.saveChanges();
+            mbp2.setHeader("Content-Transfer-Encoding", "base64");
+             */
+         
+            CompletableFuture.runAsync(() -> {
+                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+                try {
+
+                    // send the message
+                    Transport.send(msg);
+                } catch (final MessagingException e) {
+                  log.error(e, "can't send mail");
+                }
+              }, Executors.newSingleThreadExecutor());           
+
+        } catch (MessagingException mex) {
+            log.error(mex, "can't send mail");
+            Exception ex = null;
+            if ((ex = mex.getNextException()) != null) {
+                log.error(ex, "can't send mail");
+            }
+        }
+    }
+    
+    private MimeBodyPart createMimePart(String file) {
+        // create the next message part
+        MimeBodyPart mbp3 = new MimeBodyPart();
+        try {
+            // attach the file to the message
+            mbp3.attachFile(file);
+        } catch (IOException | MessagingException ioex) {
+            ioex.printStackTrace();
+        }
+        return mbp3;
     }
 
     private void bindFields() {
@@ -203,7 +331,7 @@ public class MailInfoDialog {
 
             String[] text = fileDialog.getFileNames();
             if (text != null) {
-                settings.addToAdditionalDocs(text);
+                settings.addToAdditionalDocs(fileDialog.getFilterPath(), text);
             }
 
             listViewer.refresh(false);

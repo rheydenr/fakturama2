@@ -42,6 +42,8 @@ import com.sebulli.fakturama.office.IPdfPostProcessor;
 @Component()
 public class MailService implements IPdfPostProcessor {
 
+    public static final String MAIL_APP_MAIN_WINDOW_ID = "org.fakturama.connectors.mailapp";
+
     @Inject
     private IDocumentAddressManager addressManager;
 
@@ -76,10 +78,11 @@ public class MailService implements IPdfPostProcessor {
         ctx.set(MailSettings.class, settings);
 
         //... and open the mail dialog for examining the mail to send
-        MWindow mailAppDialog = (MWindow) modelService.find("org.fakturama.connectors.mailapp", application);
+        MWindow mailAppDialog = (MWindow) modelService.find(MAIL_APP_MAIN_WINDOW_ID, application);
 
         MPart mainPart = (MPart) mailAppDialog.getChildren().get(0);
         partService.showPart(mainPart.getElementId(), PartState.ACTIVATE);
+        mainPart.setVisible(true);
         partService.bringToTop(mainPart);
         
         mailAppDialog.setVisible(true);
@@ -93,14 +96,16 @@ public class MailService implements IPdfPostProcessor {
 
         MailSettings settings = new MailSettings()
                 .withSender(prefs.node("/" + InstanceScope.SCOPE + "/com.sebulli.fakturama.rcp").get(Constants.PREFERENCES_YOURCOMPANY_EMAIL, ""))
-                .withUser(prefs.get(MailServiceConstants.PREFERENCES_MAIL_USER, "")).withPassword(prefs.get(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, ""))
-                .withHost(prefs.get(MailServiceConstants.PREFERENCES_MAIL_HOST, "")).withReceiversTo(billingAdress.getEmail())
-                .withReceiversCC("c.c.fritz@erde.de")
-                .withReceiversBCC("b.c.c.ben@funkytown.de")
+                .withUser(prefs.get(MailServiceConstants.PREFERENCES_MAIL_USER, "a6251406eb8784"))
+                .withPassword(prefs.get(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, "f2a28eb950877f"))
+                .withHost(prefs.get(MailServiceConstants.PREFERENCES_MAIL_HOST, "smtp.mailtrap.io"))
+                .withReceiversTo(billingAdress.getEmail())
+                .withReceiversCC("rheydenr@justmail.de")
+                .withReceiversBCC("ralf.heydenreich@t-online.de")
                 .withSubject("Your invoice No. " + invoice.getName());
 
         settings.setBody("nur mal so zum Testen");
-        settings.addToAdditionalDocs("C:\\Dokumente\\meins.txt");
+        settings.addToAdditionalDocs("d:\\MeineDaten\\Dokumente\\", "Meins.txt");
         return settings;
     }
 }
