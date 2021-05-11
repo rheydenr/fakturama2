@@ -174,4 +174,8 @@ TLS:    Optional (STARTTLS on all ports)
         this.additionalDocs.remove(additionalDoc);
     }
 
+    public String getBodyHtml() {
+        return "<b>tbd</b>";
+    }
+
 }
