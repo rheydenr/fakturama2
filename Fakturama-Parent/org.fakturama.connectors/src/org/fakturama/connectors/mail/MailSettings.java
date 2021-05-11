@@ -13,6 +13,7 @@
 
 package org.fakturama.connectors.mail;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,12 +25,23 @@ import org.apache.commons.lang3.StringUtils;
  * Container class for Mail Settings
  */
 public class MailSettings {
+    private static final char SEPARATOR_CHAR = ',';
     private String user, password, host, templateText, subject, body, sender;
     private final List<String> receiversTo = new ArrayList<>();
     private final List<String> receiversCC = new ArrayList<>();
     private final List<String> receiversBCC = new ArrayList<>();
     private List<String> additionalDocs = new ArrayList<>();
+/*
+SMTP
 
+Host:    smtp.mailtrap.io
+Port:    25 or 465 or 587 or 2525
+Username:    a6251406eb8784
+Password:    f2a28eb950877f
+Auth:    PLAIN, LOGIN and CRAM-MD5
+TLS:    Optional (STARTTLS on all ports) 
+
+*/
     public MailSettings withUser(String user) {
         this.user = user;
         return this;
@@ -100,8 +112,11 @@ public class MailSettings {
         return additionalDocs;
     }
 
-    public void addToAdditionalDocs(String... additionalDocs) {
-        this.additionalDocs.addAll(Arrays.stream(additionalDocs).collect(Collectors.toList()));
+    public void addToAdditionalDocs(String filter, String... additionalDocs) {
+        this.additionalDocs.addAll(
+                Arrays.stream(additionalDocs)
+                .map(s -> !s.startsWith(filter) ? StringUtils.appendIfMissing(filter, File.separator)+s : s)
+                .collect(Collectors.toList()));
     }
 
     public void setAdditionalDocs(List<String> additionalDocs) {
@@ -117,22 +132,22 @@ public class MailSettings {
     }
 
     public String getReceiversTo() {
-        return StringUtils.join(receiversTo, ';');
+        return StringUtils.join(receiversTo, SEPARATOR_CHAR);
     }
 
     public void setReceiversTo(String receivers) {
         if (receivers != null) {
             receiversTo.clear();
-            Arrays.stream(receivers.split(";")).forEach(r -> receiversTo.add(StringUtils.trim(r)));
+            Arrays.stream(receivers.split(",")).forEach(r -> receiversTo.add(StringUtils.trim(r)));
         }
     }
 
     public String getReceiversCC() {
-        return StringUtils.join(receiversCC, ';');
+        return StringUtils.join(receiversCC, SEPARATOR_CHAR);
     }
 
     public String getReceiversBCC() {
-        return StringUtils.join(receiversBCC, ';');
+        return StringUtils.join(receiversBCC, SEPARATOR_CHAR);
     }
 
     public String getSubject() {

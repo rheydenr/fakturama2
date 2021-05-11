@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Text;
 import com.sebulli.fakturama.log.ILogger;
 
 import jakarta.mail.Authenticator;
+import jakarta.mail.BodyPart;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;
@@ -148,15 +149,19 @@ public class MailInfoDialog {
                 .layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create())
                 .text("Cancel")
                 .onSelect(t -> {
-                    MUIElement mailAppDialog = modelService.find(MailService.MAIL_APP_MAIN_WINDOW_ID, application);
-                    mailAppDialog.setVisible(false);
-                    mailAppDialog.setToBeRendered(false);
+                    closeDialog();
                 })
                 .create(buttonPanel);
 
         bindFields();
 
         return parent;
+    }
+
+    private void closeDialog() {
+        MUIElement mailAppDialog = modelService.find(MailService.MAIL_APP_MAIN_WINDOW_ID, application);
+        mailAppDialog.setVisible(false);
+        mailAppDialog.setToBeRendered(false);
     }
 
     private void sendMail() {
@@ -195,6 +200,7 @@ public class MailInfoDialog {
             MimeBodyPart mbp1 = new MimeBodyPart();
             mbp1.setText(settings.getBody());
 
+            
             /*
              * Use the following approach instead of the above line if
              * you want to control the MIME type of the attached file.
@@ -211,7 +217,18 @@ public class MailInfoDialog {
 
             // create the Multipart and add its parts to it
             Multipart mp = new MimeMultipart();
-            mp.addBodyPart(mbp1);
+//            mp.addBodyPart(mbp1);
+
+            // PLAIN TEXT
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText("Here is your plain text message");
+            mp.addBodyPart(messageBodyPart);
+
+            // HTML TEXT
+            messageBodyPart = new MimeBodyPart();
+            String htmlText = "<H1>I am the html part</H1>";
+            messageBodyPart.setContent(htmlText, "text/html");
+            mp.addBodyPart(messageBodyPart);
             
             // add attachments
             settings.getAdditionalDocs().stream().map(this::createMimePart).forEach(p -> {
@@ -255,6 +272,8 @@ public class MailInfoDialog {
             if ((ex = mex.getNextException()) != null) {
                 log.error(ex, "can't send mail");
             }
+        } finally {
+            closeDialog();
         }
     }
     
