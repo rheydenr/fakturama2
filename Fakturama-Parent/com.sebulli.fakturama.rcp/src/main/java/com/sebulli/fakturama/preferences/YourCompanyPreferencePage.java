@@ -102,8 +102,10 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
             String text = source.getText();
             if (StringUtils.isBlank(text) || EmailValidator.getInstance().isValid(text)) {
                 deco.hide();
+                setValid(true);
             } else {
                 deco.show();
+                setValid(false);
             }
         });
 			
