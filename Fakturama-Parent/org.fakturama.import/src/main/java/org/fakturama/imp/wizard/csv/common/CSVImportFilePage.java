@@ -101,18 +101,16 @@ public class CSVImportFilePage extends WizardPage {
         setMessage(importMessages.wizardImportCsvSelectfile);
 
         fileNameField = new Text(top, SWT.BORDER);
-        UpdateValueStrategy<String, String> strat = new UpdateValueStrategy<String, String>();
-        strat.setBeforeSetValidator(new IValidator<String>() {
-            public IStatus validate(String filename) {
-                if (isFilenameValid(filename)) {
-                    setPageComplete(true);
-                    return ValidationStatus.ok();
-                } else {
-                    options.setCsvFile(null);
-                    setPageComplete(false);
-                    return ValidationStatus.error(importMessages.wizardImportErrorWrongfilename);
-                }
-            };
+        UpdateValueStrategy<String, String> strat = new UpdateValueStrategy<>();
+        strat.setBeforeSetValidator(filename -> {
+            if (isFilenameValid(filename)) {
+                setPageComplete(true);
+                return ValidationStatus.ok();
+            } else {
+                options.setCsvFile(null);
+                setPageComplete(false);
+                return ValidationStatus.error(importMessages.wizardImportErrorWrongfilename);
+            }
         });
 
         DataBindingContext bindingContext = new DataBindingContext();

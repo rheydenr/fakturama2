@@ -14,21 +14,31 @@
 package org.fakturama.connectors.mail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.typed.PojoProperties;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.contexts.Active;
+import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -48,6 +58,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.sebulli.fakturama.i18n.Messages;
+
 /**
  *
  */
@@ -65,13 +77,33 @@ public class MailInfoDialog {
 
     @Inject
     private MailSettings settings;
-    
+
+    @Inject
+    @Translation
+    protected Messages msg;
+
     @Inject
     private MailService mailService;
+    private UpdateValueStrategy<String, String> emailValidationStrategy = new UpdateValueStrategy<>();
 
     @PostConstruct
     protected Control createDialogArea(@Active Shell shell, Composite parent) {
         this.shell = shell;
+        
+//        IConverter<String, String> i = IConverter.<String, String>create(e -> ValidationStatus.ok());
+//        UpdateValueStrategy.<String, String>create(i);
+        
+        
+        emailValidationStrategy.setBeforeSetValidator((String emailAddress) -> {
+            if (StringUtils.isBlank(emailAddress)) {
+                return ValidationStatus.ok();
+            }
+
+            boolean isValid = Arrays.asList(emailAddress.split(","))
+                    .stream()
+                    .allMatch(e -> StringUtils.isBlank(e) || EmailValidator.getInstance().isValid(e));
+            return (isValid) ? ValidationStatus.ok() : ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
+        });
 
         Composite top = CompositeFactory.newComposite(SWT.BORDER).layout(GridLayoutFactory.fillDefaults().margins(10, 10).numColumns(2).create())
                 .layoutData(GridDataFactory.fillDefaults().create()).create(parent);
@@ -167,14 +199,19 @@ public class MailInfoDialog {
         IObservableList<String> attachmentList = listFactory.createObservable(listViewer.getControl());
         IObservableList<String> att = PojoProperties.list(MailSettings.class, "additionalDocs", String.class).observe(settings);
 
-        bindingContext.bindValue(rec, receiversTo);
-        bindingContext.bindValue(recCC, receiversCC);
-        bindingContext.bindValue(recBCC, receiversBCC);
+        Binding recBind = bindingContext.bindValue(rec, receiversTo, emailValidationStrategy, null);
+        ControlDecorationSupport.create(recBind, SWT.TOP | SWT.LEFT);
+
+        Binding ccBind = bindingContext.bindValue(recCC, receiversCC, emailValidationStrategy, null);
+        ControlDecorationSupport.create(ccBind, SWT.TOP | SWT.LEFT);
+        
+        Binding bccBind = bindingContext.bindValue(recBCC, receiversBCC, emailValidationStrategy, null);
+        ControlDecorationSupport.create(bccBind, SWT.TOP | SWT.LEFT);
+        
         bindingContext.bindValue(subj, subjString);
         bindingContext.bindValue(bodyWidget, bodyString);
 
         bindingContext.bindList(attachmentList, att);
-
     }
 
     private void addAttachmentListViewer(Composite top) {

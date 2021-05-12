@@ -111,6 +111,7 @@ public class MailService implements IPdfPostProcessor {
             partService.showPart(mainPart.getElementId(), PartState.ACTIVATE);
             mainPart.setVisible(true);
             partService.bringToTop(mainPart);
+            mailAppDialog.setOnTop(true);
 
             mailAppDialog.setVisible(true);
             mailAppDialog.setToBeRendered(true);
