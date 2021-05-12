@@ -27,12 +27,10 @@ import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.typed.PojoProperties;
-import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -81,6 +79,10 @@ public class MailInfoDialog {
     @Inject
     @Translation
     protected Messages msg;
+    
+    @Inject
+    @Translation
+    protected MailServiceMessages mailServiceMessages;
 
     @Inject
     private MailService mailService;
@@ -89,10 +91,6 @@ public class MailInfoDialog {
     @PostConstruct
     protected Control createDialogArea(@Active Shell shell, Composite parent) {
         this.shell = shell;
-        
-//        IConverter<String, String> i = IConverter.<String, String>create(e -> ValidationStatus.ok());
-//        UpdateValueStrategy.<String, String>create(i);
-        
         
         emailValidationStrategy.setBeforeSetValidator((String emailAddress) -> {
             if (StringUtils.isBlank(emailAddress)) {
@@ -108,22 +106,22 @@ public class MailInfoDialog {
         Composite top = CompositeFactory.newComposite(SWT.BORDER).layout(GridLayoutFactory.fillDefaults().margins(10, 10).numColumns(2).create())
                 .layoutData(GridDataFactory.fillDefaults().create()).create(parent);
 
-        LabelFactory.newLabel(SWT.NONE).text("send via").create(top);
+        LabelFactory.newLabel(SWT.NONE).text(mailServiceMessages.mailserviceDialogHost).create(top);
         LabelFactory.newLabel(SWT.NONE).text(settings.getHost()).create(top);
 
-        LabelFactory.newLabel(SWT.NONE).text("send from").create(top);
+        LabelFactory.newLabel(SWT.NONE).text(mailServiceMessages.mailserviceDialogFrom).create(top);
         LabelFactory.newLabel(SWT.NONE).text(settings.getSender()).create(top);
 
-        LabelFactory.newLabel(SWT.NONE).text("to").create(top);
+        LabelFactory.newLabel(SWT.NONE).text(mailServiceMessages.mailserviceDialogTo).create(top);
         receiverTo = TextFactory.newText(SWT.BORDER).layoutData(GridDataFactory.fillDefaults().grab(true, false).create()).create(top);
 
-        LabelFactory.newLabel(SWT.NONE).text("cc").create(top);
+        LabelFactory.newLabel(SWT.NONE).text(mailServiceMessages.mailserviceDialogCc).create(top);
         receiverCC = TextFactory.newText(SWT.BORDER).layoutData(GridDataFactory.fillDefaults().grab(true, false).create()).create(top);
 
-        LabelFactory.newLabel(SWT.NONE).text("bcc").create(top);
+        LabelFactory.newLabel(SWT.NONE).text(mailServiceMessages.mailserviceDialogBcc).create(top);
         receiverBCC = TextFactory.newText(SWT.BORDER).layoutData(GridDataFactory.fillDefaults().grab(true, false).create()).create(top);
 
-        LabelFactory.newLabel(SWT.NONE).text("subject").create(top);
+        LabelFactory.newLabel(SWT.NONE).text(mailServiceMessages.mailserviceDialogSubject).create(top);
         subject = TextFactory.newText(SWT.BORDER).layoutData(GridDataFactory.fillDefaults().grab(true, false).create()).create(top);
 
         body = TextFactory.newText(SWT.BORDER | SWT.WRAP).layoutData(GridDataFactory.fillDefaults().span(2, 1).grab(true, true).minSize(80, 100).create())
@@ -154,13 +152,13 @@ public class MailInfoDialog {
 
         ButtonFactory.newButton(SWT.PUSH)
                 .layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create())
-                .text("Send")
+                .text(mailServiceMessages.mailserviceDialogSend)
                 .onSelect(t -> mailService.sendMail(settings))
                 .create(buttonPanel);
 
         ButtonFactory.newButton(SWT.PUSH)
                 .layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create())
-                .text("Cancel")
+                .text(mailServiceMessages.mailserviceDialogCancel)
                 .onSelect(t -> {
                     closeDialog();
                 })
@@ -239,7 +237,7 @@ public class MailInfoDialog {
 
         ButtonFactory.newButton(SWT.PUSH).text("Add").onSelect(t -> {
             FileDialog fileDialog = new FileDialog(shell, SWT.MULTI);
-            fileDialog.setText("Please select an attachment for the mail");
+            fileDialog.setText(mailServiceMessages.mailserviceDialogAddattachment);
 
             fileDialog.open();
 
@@ -255,7 +253,7 @@ public class MailInfoDialog {
             IStructuredSelection selection = (IStructuredSelection) listViewer.getSelection();
             String language = (String) selection.getFirstElement();
             if (language == null) {
-                MessageDialog.openInformation(shell, "Info", "Please select an item first.");
+                MessageDialog.openInformation(shell, msg.dialogMessageboxTitleInfo, mailServiceMessages.mailserviceDialogErrorNoitem);
                 return;
             }
 

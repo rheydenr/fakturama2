@@ -119,6 +119,10 @@ TLS:    Optional (STARTTLS on all ports)
                 .collect(Collectors.toList()));
     }
 
+    public void addToAdditionalDocs(String additionalDoc) {
+        this.additionalDocs.addAll(Arrays.asList(additionalDoc));
+    }
+    
     public void setAdditionalDocs(List<String> additionalDocs) {
         this.additionalDocs = additionalDocs;
     }

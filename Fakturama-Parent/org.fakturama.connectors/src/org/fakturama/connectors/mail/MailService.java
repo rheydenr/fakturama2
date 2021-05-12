@@ -33,6 +33,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 
 import com.sebulli.fakturama.log.ILogger;
@@ -124,22 +125,29 @@ public class MailService implements IPdfPostProcessor {
     private MailSettings createSettings(Invoice invoice) {
 
         DocumentReceiver billingAdress = addressManager.getBillingAdress(invoice);
+        String rcpBundleName = FrameworkUtil.getBundle(IPdfPostProcessor.class).getSymbolicName();
+        String rcpBundlePrefsNodeName = String.format("/%s/%s", InstanceScope.SCOPE, rcpBundleName);
 
         MailSettings settings = new MailSettings()
-                .withSender(prefs.node("/" + InstanceScope.SCOPE + "/com.sebulli.fakturama.rcp").get(Constants.PREFERENCES_YOURCOMPANY_EMAIL, ""))
-                .withUser(prefs.get(MailServiceConstants.PREFERENCES_MAIL_USER, "a6251406eb8784"))
-                .withPassword(prefs.get(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, "f2a28eb950877f"))
-                .withHost(prefs.get(MailServiceConstants.PREFERENCES_MAIL_HOST, "smtp.mailtrap.io"))
+                .withSender(prefs.node(rcpBundlePrefsNodeName).get(Constants.PREFERENCES_YOURCOMPANY_EMAIL, ""))
+                .withUser(prefs.get(MailServiceConstants.PREFERENCES_MAIL_USER, "")) // a6251406eb8784
+                .withPassword(prefs.get(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, "")) // f2a28eb950877f
+                .withHost(prefs.get(MailServiceConstants.PREFERENCES_MAIL_HOST, "")) // smtp.mailtrap.io
                 .withReceiversTo(billingAdress.getEmail())
-                .withReceiversCC("rheydenr@justmail.de")
-                .withReceiversBCC("ralf.heydenreich@t-online.de")
-                .withSubject("Your invoice No. " + invoice.getName());
+                .withSubject(createMailSubject(invoice));
 
-        settings.setBody("nur mal so zum Testen");
-        settings.addToAdditionalDocs("d:\\MeineDaten\\Dokumente\\", "Meins.txt");
+        settings.setBody(createBodyFromTemplate(invoice));
+        settings.addToAdditionalDocs(invoice.getPdfPath());
         return settings;
     }
-    
+
+    private String createMailSubject(Invoice invoice) {
+        return "Your invoice No. " + invoice.getName();
+    }
+
+    private String createBodyFromTemplate(Invoice invoice) {
+        return "nur mal so zum Testen";
+    }
 
     public void sendMail(MailSettings settings) {
         // create some properties and get the default Session
