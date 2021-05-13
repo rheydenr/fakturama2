@@ -16,10 +16,12 @@ package org.fakturama.connectors.mail;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 
 /**
  * Container class for Mail Settings
@@ -59,7 +61,33 @@ TLS:    Optional (STARTTLS on all ports)
      * @return <code>true</code> if all necessary settings are set
      */
     public boolean isValid() {
-        return StringUtils.isNoneEmpty(user, host, password, sender) && !receiversTo.isEmpty();
+        boolean receiversAreValid = areReceiversValid(FIELD_RECEIVERS_TO)
+                && areReceiversValid(FIELD_RECEIVERS_CC)
+                && areReceiversValid(FIELD_RECEIVERS_BCC);
+        
+        return StringUtils.isNoneEmpty(user, host, password, sender) 
+                && !receiversTo.isEmpty() && receiversAreValid;
+    }
+
+    public boolean areReceiversValid(String fieldIdentifier) {
+        List<String> receivers;
+        switch (fieldIdentifier) {
+        case FIELD_RECEIVERS_TO:
+            receivers = receiversTo;
+            break;
+        case FIELD_RECEIVERS_CC:
+            receivers = receiversCC;
+            break;
+        case FIELD_RECEIVERS_BCC:
+            receivers = receiversBCC;
+        default:
+            receivers = Collections.<String>emptyList();
+            break;
+        }
+        boolean receiversAreValid = receivers
+                .stream()
+                .allMatch(e -> StringUtils.isBlank(e) || EmailValidator.getInstance().isValid(e));
+        return receiversAreValid;
     }
     
     public MailSettings withUser(String user) {

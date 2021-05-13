@@ -33,9 +33,7 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -46,14 +44,11 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.fakturama.wizards.ExportWizardRegistry;
-import org.fakturama.wizards.IFakturamaWizardService;
 
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
@@ -450,21 +445,21 @@ public class CreateOODocumentHandler {
 			    int answer = md.open();
 			    // Attention: The return code is the *position* of a button, not the button value itself!
 			    if (md.getReturnCode() != 2) {
-			        od.setDocument(document);
-			        od.setTemplate(template);
+//			        od.setDocument(document);
+//			        od.setTemplate(template, document);
 			        if (answer == 0) {
 			            log.debug("open doc");
-			            od.createDocument(false);
+			            od.createDocument(template, document, false);
 			        } else if (answer == 1) {
 			            log.debug("create doc");
-			            od.createDocument(true);
+			            od.createDocument(template, document, true);
 			        }
 			    }
 			} else {
-			    od.setDocument(document);
-			    od.setTemplate(template);
+//			    od.setDocument(document);
+//			    od.setTemplate(template, document);
 			    log.debug("open NEW doc");
-			    od.createDocument(false);
+			    od.createDocument(template, document, false);
 			}
 		} catch (FakturamaStoringException e) {
 			log.error(e, "Document couldn't be created. Reason: " + e.getDescription());

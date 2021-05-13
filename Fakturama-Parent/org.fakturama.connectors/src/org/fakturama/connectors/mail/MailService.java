@@ -236,11 +236,13 @@ public class MailService implements IPdfPostProcessor {
             prefDescriptor = "";
             break;
         }
-        return templateProcessor.getDocumentInfo(invoice, null, prefs.get(prefDescriptor, "<no subject>"));
+        return templateProcessor.fill(invoice, Optional.empty(), 
+                prefs.get(prefDescriptor, "<no subject>"));
     }
 
     private String createBodyFromTemplate(Invoice invoice, TemplateProcessor templateProcessor) {
-        return templateProcessor.getDocumentInfo(invoice, null, "<ADDRESS.GREETING>, \nanbei erhalten Sie Ihre Rechnung Nr. <DOCUMENT.NAME>. Viele Grüße, <YOURCOMPANY.OWNER>");
+        return templateProcessor.fill(invoice, Optional.empty(), 
+                "<ADDRESS.GREETING>, \nanbei erhalten Sie Ihre Rechnung Nr. <DOCUMENT.NAME>. Viele Grüße, <YOURCOMPANY.OWNER>");
     }
 
     public void sendMail(MailSettings settings) {

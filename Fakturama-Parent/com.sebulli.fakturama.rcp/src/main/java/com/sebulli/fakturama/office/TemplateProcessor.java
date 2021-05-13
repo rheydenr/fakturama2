@@ -14,35 +14,73 @@
 
 package com.sebulli.fakturama.office;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.odftoolkit.odfdom.dom.element.table.TableCoveredTableCellElement;
+import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
+import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
+import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
+import org.odftoolkit.simple.TextDocument;
+import org.odftoolkit.simple.common.navigation.PlaceholderNavigation;
+import org.odftoolkit.simple.common.navigation.PlaceholderNode;
+import org.odftoolkit.simple.common.navigation.PlaceholderNode.PlaceholderTableType;
+import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.Row;
+import org.odftoolkit.simple.table.Table;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.ULocale;
+import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AddressDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
+import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.dto.Price;
 import com.sebulli.fakturama.dto.Transaction;
+import com.sebulli.fakturama.dto.VatSummaryItem;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.misc.DocumentType;
@@ -54,18 +92,21 @@ import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 //import com.sebulli.fakturama.model.ModelObject;
 import com.sebulli.fakturama.model.Payment;
+import com.sebulli.fakturama.model.Product;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
-
+/**
+ * This class fills an OpenOffice template and replaces all the
+ * placeholders with the document data.
+ */
 public class TemplateProcessor {
-	
-	private static final String PARAMETER_SEPARATOR = "$";
 
     public static final int COUNT_OF_LAST_SHOWN_DIGITS = 3; 
 	    
@@ -81,7 +122,13 @@ public class TemplateProcessor {
 
 	@Inject
 	private AddressDAO addressDAO;
+
+    @Inject
+    private ILogger log;
     
+    @Inject
+    private DocumentReceiverDAO documentReceiverDao;
+
     @Inject
     private IDateFormatterService dateFormatterService;
     
@@ -97,47 +144,21 @@ public class TemplateProcessor {
     @Inject
     private IDocumentAddressManager addressManager;
 
-	
+    /**
+     * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
+     */
+    private boolean useSET = false;
+
+    private List<String> allPlaceholders;
+
+    /** A list of properties that represents the placeholders of the
+     OpenOffice Writer template */
+    private Properties properties;
 	private static NumberFormat localizedNumberFormat = NumberFormat.getInstance(ULocale.getDefault());
 
     private ContactUtil contactUtil;
 
-	/**
-	 * Get a part of the telephone number
-	 * 
-	 * @param pre
-	 * 		TRUE, if the area code should be returned
-	 * @return
-	 * 		Part of the telephone number
-	 */
-	private String getTelPrePost(final String phoneNo, final boolean pre) {
-		String phoneNumber = StringUtils.defaultString(phoneNo);
-		// if phoneNo contains "/" or " " (space) then split there
-		if(phoneNumber.startsWith("+")) {
-			// phoneNo has a country dialing number, therefore we have to chain it with area code
-			phoneNumber = phoneNumber.replaceFirst(" ", "_");
-		}
-		String parts[] = phoneNumber.trim().split("[ |/]", 2);
-		
-		// Split the number
-		if (parts.length < 2) {
-			String tel = parts[0];
-			// divide the number at the 4th position
-			if (tel.length() > 4) {
-				if (pre)
-					return tel.substring(0, 4);
-				else
-					return tel.substring(4);
-			}
-			// The number is very short
-			return pre ? "" : tel;
-		}
-		// return the first or the second part
-		else {
-			String[] area = StringUtils.split(parts[0], "_");  // phone number with country code
-			return pre ? StringUtils.join(area, " ") : parts[1];
-		}
-	}
+    private final TemplateProcessorHelper templateProcessorHelper = new TemplateProcessorHelper();
 
 	/**
 	 * Replaces all line breaks by a "-"
@@ -216,10 +237,10 @@ public class TemplateProcessor {
 			if (twoStrings.length == 2) {
 				
 				//Escape sequences...
-				twoStrings[0] = encodeEntities(removeQuotationMarks(twoStrings[0]));
+				twoStrings[0] = templateProcessorHelper.encodeEntities(removeQuotationMarks(twoStrings[0]));
 			    
 				// Replace the value, if it is equal to the entry
-				if (DataUtils.getInstance().replaceAllAccentedChars(encodeEntities(value)).equalsIgnoreCase(
+				if (DataUtils.getInstance().replaceAllAccentedChars(templateProcessorHelper.encodeEntities(value)).equalsIgnoreCase(
 				        DataUtils.getInstance().replaceAllAccentedChars(twoStrings[0]))) {
 					value = removeQuotationMarks(twoStrings[1]);
 					return value;
@@ -252,27 +273,27 @@ public class TemplateProcessor {
 		if (!retval.isEmpty()) {
 			
 			// Parameter "PRE"
-			par = extractParam(placeholder,"PRE");
+			par = templateProcessorHelper.extractParam(placeholder,"PRE");
 			if (!par.isEmpty())
 					retval =  removeQuotationMarks(par) + retval;
 
 			// Parameter "POST"
-			par = extractParam(placeholder,"POST");
+			par = templateProcessorHelper.extractParam(placeholder,"POST");
 			if (!par.isEmpty())
 					retval += removeQuotationMarks(par);
 
 			// Parameter "INONELINE"
-			par = extractParam(placeholder,"INONELINE");
+			par = templateProcessorHelper.extractParam(placeholder,"INONELINE");
 			if (!par.isEmpty())
 				retval = StringInOneLine(retval, removeQuotationMarks(par));
 
 			// Parameter "REPLACE"
-			par = extractParam(placeholder,"REPLACE");
+			par = templateProcessorHelper.extractParam(placeholder,"REPLACE");
 			if (!par.isEmpty())
 				retval = replaceValues(removeQuotationMarks(par) , retval);
 
 			// Parameter "FORMAT"
-			par = extractParam(placeholder,"FORMAT");
+			par = templateProcessorHelper.extractParam(placeholder,"FORMAT");
 			if (!par.isEmpty()) {
 				try {
 					Double parsedDouble = localizedNumberFormat.parse(retval).doubleValue();
@@ -284,7 +305,7 @@ public class TemplateProcessor {
 			}
 
 			// Parameter "DFORMAT"
-			par = extractParam(placeholder, "DFORMAT");
+			par = templateProcessorHelper.extractParam(placeholder, "DFORMAT");
 			if (!par.isEmpty()) {
 				try {
 					GregorianCalendar checkDate = dateFormatterService.getCalendarFromDateString(retval);
@@ -296,9 +317,9 @@ public class TemplateProcessor {
 			}
 			
 			// extract first n characters from string
-			par = extractParam(placeholder, "FIRST");
+			par = templateProcessorHelper.extractParam(placeholder, "FIRST");
 			if (!par.isEmpty()) {
-				Integer length = extractLengthFromParameter(par, retval.length());
+				Integer length = templateProcessorHelper.extractLengthFromParameter(par, retval.length());
 				if (length.compareTo(Integer.valueOf(0)) >= 0) {
 					int len = length.compareTo(retval.length()) < 0 ? length : retval.length();
 					retval = retval.substring(0, len);
@@ -306,9 +327,9 @@ public class TemplateProcessor {
 			}
 			
 			// extract last n characters from string
-			par = extractParam(placeholder, "LAST");
+			par = templateProcessorHelper.extractParam(placeholder, "LAST");
 			if (!par.isEmpty()) {
-				Integer length = extractLengthFromParameter(par, retval.length());
+				Integer length = templateProcessorHelper.extractLengthFromParameter(par, retval.length());
 				if (length.compareTo(Integer.valueOf(0)) >= 0) {
 					int len = length.compareTo(retval.length()) < 0 ? length : retval.length();
 					retval = retval.substring(retval.length() - len);
@@ -316,13 +337,13 @@ public class TemplateProcessor {
 			}
 			
 			// extract range from n to m characters from string
-			par = extractParam(placeholder, "RANGE");
+			par = templateProcessorHelper.extractParam(placeholder, "RANGE");
 			if(!par.isEmpty()) {
 				String[] boundaries = par.split(",");
 				if(boundaries.length == 2) {
 					// for customer convenience we start counting from 1
-					Integer start = extractLengthFromParameter(boundaries[0], 0) - 1;
-					Integer end = extractLengthFromParameter(boundaries[1], retval.length());
+					Integer start = templateProcessorHelper.extractLengthFromParameter(boundaries[0], 0) - 1;
+					Integer end = templateProcessorHelper.extractLengthFromParameter(boundaries[1], retval.length());
 					if (end.compareTo(Integer.valueOf(0)) >= 0 ) {
 						int len = end.compareTo(retval.length()) < 0 ? end : retval.length();
 						retval = len == 0 ? "" : retval.substring(start, len);
@@ -331,13 +352,13 @@ public class TemplateProcessor {
 			}
 			
 			// extract without range from n to m characters from string
-			par = extractParam(placeholder, "EXRANGE");
+			par = templateProcessorHelper.extractParam(placeholder, "EXRANGE");
 			if (!par.isEmpty()) {
 				String[] boundaries = par.split(",");
 				if (boundaries.length == 2) {
 					// for customer convenience we start counting from 1
-					Integer start = extractLengthFromParameter(boundaries[0], 0) - 1;
-					Integer end = extractLengthFromParameter(boundaries[1], retval.length());
+					Integer start = templateProcessorHelper.extractLengthFromParameter(boundaries[0], 0) - 1;
+					Integer end = templateProcessorHelper.extractLengthFromParameter(boundaries[1], retval.length());
 					if (end.compareTo(Integer.valueOf(0)) >= 0) {
 						int len = end.compareTo(retval.length()) < 0 ? end : retval.length();
 						if (len == 0) {
@@ -353,23 +374,13 @@ public class TemplateProcessor {
 		}
 		else {
 			// Parameter "EMPTY"
-			par = extractParam(placeholder,"EMPTY");
+			par = templateProcessorHelper.extractParam(placeholder,"EMPTY");
 			if (!par.isEmpty())
 				retval = removeQuotationMarks(par);
 		}
 		
 		// Encode some special characters
-		return encodeEntities(retval);
-	}
-
-	private Integer extractLengthFromParameter(String par, Integer defaultValue) {
-		Integer length;
-		try {
-			length = Integer.parseInt(par);
-		} catch (NumberFormatException e) {
-			length = defaultValue;
-		}
-		return length;
+		return templateProcessorHelper.encodeEntities(retval);
 	}
 	
 	/**
@@ -382,135 +393,227 @@ public class TemplateProcessor {
 	 * @return
 	 * 		The extracted value
 	 */
-	public String getDocumentInfo(Document document, DocumentSummary documentSummary, String placeholder) {
+	public String getDocumentInfo(Document document, Optional<DocumentSummary> documentSummary, String placeholder) {
         contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
-		String value = getDocumentInfoByPlaceholder(document, documentSummary, extractPlaceholderName(placeholder));
+		String value = getDocumentInfoByPlaceholder(document, documentSummary, templateProcessorHelper.extractPlaceholderName(placeholder));
 		return interpretParameters(placeholder, value);
 	}
 	
-	public String fill(Document document, String template) {
+    
+    public String fill(Document document, Optional<DocumentSummary> documentSummary, String template) {
+        allPlaceholders = Arrays.asList(StringUtils.substringsBetween(
+                        template, PlaceholderNavigation.PLACEHOLDER_PREFIX, PlaceholderNavigation.PLACEHOLDER_SUFFIX))
+                .stream()
+                .map(s -> String.format("%s%s%s", PlaceholderNavigation.PLACEHOLDER_PREFIX, s, PlaceholderNavigation.PLACEHOLDER_SUFFIX))
+                .collect(Collectors.toList());
+        setCommonProperties(document, documentSummary);
+
+        String retval = template;
+        for (String string : allPlaceholders) {
+            retval = StringUtils.replace(retval, string, replaceText(string));
+        }
+
+        return retval;
+    }
+
+    /**
+	 * Fill a template document with values 
+	 * 
+	 * @param textdoc
+	 * @param document
+	 * @param documentSummary
+	 */
+	public void processTemplate(TextDocument textdoc, Document document, DocumentSummary documentSummary) {
 	    
-	    return "";
+        // check if we have to use sales equalization tax
+        setUseSalesEquationTaxForDocument(documentReceiverDao.isSETEnabled(document));
+	    
+        PlaceholderNavigation navi = new PlaceholderNavigation()
+                .of(textdoc)
+                .withDelimiters(true)
+                .withTableIdentifiers(
+                        PlaceholderTableType.ITEMS_TABLE, 
+                        PlaceholderTableType.VATLIST_TABLE, 
+                        PlaceholderTableType.SALESEQUALIZATIONTAX_TABLE)
+                .build();
+        List<PlaceholderNode> placeholderNodes = Collections.unmodifiableList(navi.getPlaceHolders());
+        
+        // Create a new ArrayList with all placeholders
+        // Collect all placeholders
+        allPlaceholders = placeholderNodes.stream().map(pn -> pn.getNodeText()).collect(Collectors.toList());
+        
+        //// TEST ONLY *********************************************
+        //for (PlaceholderNode placeholderNode : placeholderNodes) {
+        //    System.out.println(placeholderNode.getNodeText() + " is child of " + placeholderNode.getNode().getParentNode());
+        //}
+        
+        // Fill the property list with the placeholder values
+        setCommonProperties(document, Optional.ofNullable(documentSummary));
+        
+        // A reference to the item and vat table
+        Set<String> processedTables = new HashSet<>();
+        
+        // Get the items of the UniDataSet document
+        List<DocumentItem> itemDataSets = document.getItems().stream()
+                .sorted((i1, i2) -> {return i1.getPosNr().compareTo(i2.getPosNr());})
+                .collect(Collectors.toList());
+        Set<Node> nodesMarkedForRemoving = new HashSet<>();
+        
+        for (PlaceholderNode placeholderNode : placeholderNodes) {
+            if(!StringUtils.startsWith(placeholderNode.getNodeText(), PlaceholderNavigation.PLACEHOLDER_PREFIX)) continue;
+            switch (placeholderNode.getNodeType()) {
+            case NORMAL_NODE:
+                // Remove the discount cells, if there is no discount set
+                // Remove the Deposit & the Finalpayment Row if there is no Deposit
+                if (StringUtils.startsWith(placeholderNode.getNodeText().substring(1), PlaceholderTableType.DISCOUNT_TABLE.getKey()) 
+                        && documentSummary.getDiscountNet().isZero()
+                    || StringUtils.startsWith(placeholderNode.getNodeText().substring(1), PlaceholderTableType.DEPOSIT_TABLE.getKey())
+                        && documentSummary.getDeposit().isZero()
+                    ) {
+                    // store parent node for later removing
+                    // we have to remember the parent node since the current node is replaced (could be orphaned)
+                    TableTableRowElement row = (TableTableRowElement)placeholderNode.findParentNode(TableTableRowElement.ELEMENT_NAME.getQName(), placeholderNode.getNode());
+                    
+                    // ah, but wait: sometimes the DEPOSIT placeholder isn't placed in a table...
+                    if(row != null) {
+                        nodesMarkedForRemoving.add(row);
+                    }
+                } 
+              // Replace all other placeholders
+                replaceNodeText(placeholderNode);
+                break;
+            case TABLE_NODE:
+                // process only if that table wasn't processed
+                // but wait: a table (e.g., "ITEM" table) could occur more than once!
+                if(!processedTables.contains(placeholderNode.getNode().getUserData("TABLE_ID"))) {
+                    // get the complete row with placeholders and store it as a template
+                    Row pRowTemplate = navi.getTableRow(placeholderNode);
+                    Table pTable = pRowTemplate.getTable();
+                    // for each item from items list create a row and replace the placeholders
+                    pTable.setCellStyleInheritance(true);
+                    
+                    // which table?
+                    switch (placeholderNode.getTableType()) {
+                    case ITEMS_TABLE:
+                        // Fill the item table with the items
+                        /* Attention: Not only the current placeholderNode is replaced in this step,
+                         * but also *all* other placeholders belonging to this item table!
+                         * Therefore we have to skip all the other items placeholder in this
+                         * table template.
+                         * We distinguish the placeholders for a certain table by its user data field.
+                         */
+                        fillItemTableWithData(itemDataSets, pTable, pRowTemplate);
+                        break;
+                    case VATLIST_TABLE:
+                        fillVatTableWithData(documentSummary, pTable, pRowTemplate,
+                                placeholderNode.getTableType(), false);
+                        break;
+                      
+                    case SALESEQUALIZATIONTAX_TABLE:
+                        fillVatTableWithData(documentSummary, pTable, pRowTemplate, placeholderNode.getTableType(), true);
+                        break;
+                    default:
+                        break;
+                    }
+        
+                    // delete the template row from table
+                    pTable.removeRowsByIndex(pRowTemplate.getRowIndex(), 1);
+        
+                    // determine type of this table and store it
+                    processedTables.add((String) placeholderNode.getNode().getUserData("TABLE_ID"));
+                }
+                break;
+        
+            default:
+                break;
+            }
+        }
+        
+        for (Node removeNode : nodesMarkedForRemoving) {
+            removeNode.getParentNode().removeChild(removeNode);
+        }
+	    
 	}
-	
-	/**
-	 * Extract the value of the parameter of a placeholder
-	 * 
-	 * @param placeholder
-	 * 	The placeholder name
-	 * 
-	 * @param param
-	 * 	Name of the parameter to extract
-	 * 
-	 * @return
-	 *  The extracted value
-	 */
-	String extractParam(String placeholder, String param) {
-		String s;
-		
-		// A parameter starts with "$" and ends with ":"
-		param = PARAMETER_SEPARATOR + param + ":";
-		
-		// Return, if parameter was not in placeholder's name
-		if (!placeholder.contains(param))
-			return "";
+    
+    /**
+     * Set a property and add it to the user defined text fields in the
+     * OpenOffice Writer document.
+     * 
+     * @param key
+     *            The property key
+     * @param value
+     *            The property value
+     */
+    private void setProperty(String key, String value) {
 
-		// Extract the string after the parameter name
-		s = placeholder.substring(placeholder.indexOf(param)+param.length());
+        if (key == null || value == null)
+            return;
+        
+        // Convert CRLF to LF 
+        value = DataUtils.getInstance().convertCRLF2LF(value);
+        
+        // Set the user defined text field
+//      addUserTextField(key, value);
+        
+        // Extract parameters
+        for (String placeholder : allPlaceholders) {
+            if ( (placeholder.equals(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+ PlaceholderNavigation.PLACEHOLDER_SUFFIX)) || 
+                    placeholder.startsWith(PlaceholderNavigation.PLACEHOLDER_PREFIX + key+"$") && placeholder.endsWith(PlaceholderNavigation.PLACEHOLDER_SUFFIX) ) {
 
-		// Extract the string until the next parameter, or the end
-		int i;
-		i = s.indexOf(PARAMETER_SEPARATOR);
-		if ( i>0 )
-			s= s.substring(0, i);
-		else if (i == 0)
-			s = "";
-		
-		i = s.indexOf(">");
-		if ( i>0 )
-			s= s.substring(0, i);
-		else if (i == 0)
-			s = "";
+                // Set the placeholder
+                getProperties().setProperty(placeholder.toUpperCase(), interpretParameters(placeholder, value));
+            }
+        }
+    }
+    
+    /**
+     * Set a common property
+     * 
+     * @param key
+     *  Name of the placeholder
+     */
+    private void setCommonProperty(Placeholder placeholder, Document document, Optional<DocumentSummary> documentSummary) {
+        setProperty(placeholder.getKey(), getDocumentInfo(document, documentSummary, placeholder.getKey()) );
+    }
+    
+    /**
+     * Fill the property list with the placeholder values
+     */
+    private void setCommonProperties(Document document, Optional<DocumentSummary> documentSummary) {
+        if (document == null)
+            return;
+        
+        // Get all available placeholders and set them
+        Arrays.asList(Placeholder.values()).forEach(p -> setCommonProperty(p, document, documentSummary));
+    }
+    
+    private void replaceNodeText(final PlaceholderNode placeholderNode) {
+        // Get the placeholder's text
+        String placeholderDisplayText = placeholderNode.getNodeText().toUpperCase();
+        String text = replaceText(placeholderDisplayText);
+        placeholderNode.replaceWith(text);
+    }
 
-		// Return the value
-		return s;
-	}
-	
-	/**
-	 * Extracts the placeholder name, separated by a $
-	 * 
-	 * @param s
-	 * 		The placeholder with parameters
-	 * @return
-	 * 		The placeholder name without paramater
-	 */
-	private String extractPlaceholderName(String s) {
-		return s.split("\\$", 2)[0];
-	}
-	
-	/**
-	 * Decode the special characters
-	 * 
-	 * @param s
-	 * 	String to convert
-	 * @return
-	 *  Converted
-	 */
-	private String encodeEntities(String s) {
-		if (StringUtils.length(s) > 0) {
-			s = s.replaceAll("%LT", "<");
-			s = s.replaceAll("%GT", ">");
-			s = s.replaceAll("%NL", "\n");
-			s = s.replaceAll("%TAB", "\t");
-			s = s.replaceAll("%SPACE", " ");
-			s = s.replaceAll("%DOLLAR", Matcher.quoteReplacement(PARAMETER_SEPARATOR));
-			s = s.replaceAll("%COMMA", Matcher.quoteReplacement(","));
-			s = s.replaceAll("%EURO", Matcher.quoteReplacement("€"));
-			s = s.replaceAll("%A_GRAVE", Matcher.quoteReplacement("À"));
-			s = s.replaceAll("%A_ACUTE", Matcher.quoteReplacement("Á"));
-			s = s.replaceAll("%A_CIRC", Matcher.quoteReplacement("Â"));
-			s = s.replaceAll("%A_TILDE", Matcher.quoteReplacement("Ã"));
-			s = s.replaceAll("%A_RING", Matcher.quoteReplacement("Å"));
-			s = s.replaceAll("%C_CED", Matcher.quoteReplacement("Ç"));
-			s = s.replaceAll("%E_GRAVE", Matcher.quoteReplacement("È"));
-			s = s.replaceAll("%E_ACUTE", Matcher.quoteReplacement("É"));
-			s = s.replaceAll("%E_CIRC", Matcher.quoteReplacement("Ê"));
-			s = s.replaceAll("%I_GRAVE", Matcher.quoteReplacement("Ì"));
-			s = s.replaceAll("%I_ACUTE", Matcher.quoteReplacement("Í"));
-			s = s.replaceAll("%I_CIRC", Matcher.quoteReplacement("Î"));
-			s = s.replaceAll("%O_GRAVE", Matcher.quoteReplacement("Ò"));
-			s = s.replaceAll("%O_ACUTE", Matcher.quoteReplacement("Ó"));
-			s = s.replaceAll("%O_CIRC", Matcher.quoteReplacement("Ô"));
-			s = s.replaceAll("%O_TILDE", Matcher.quoteReplacement("Õ"));
-			s = s.replaceAll("%O_STROKE", Matcher.quoteReplacement("Ø"));
-			s = s.replaceAll("%U_GRAVE", Matcher.quoteReplacement("Ù"));
-			s = s.replaceAll("%U_ACUTE", Matcher.quoteReplacement("Ú"));
-			s = s.replaceAll("%U_CIRC", Matcher.quoteReplacement("Û"));
-			s = s.replaceAll("%a_GRAVE", Matcher.quoteReplacement("à"));
-			s = s.replaceAll("%a_ACUTE", Matcher.quoteReplacement("á"));
-			s = s.replaceAll("%a_CIRC", Matcher.quoteReplacement("â"));
-			s = s.replaceAll("%a_TILDE", Matcher.quoteReplacement("ã"));
-			s = s.replaceAll("%a_RING", Matcher.quoteReplacement("å"));
-			s = s.replaceAll("%c_CED", Matcher.quoteReplacement("ç"));
-			s = s.replaceAll("%e_GRAVE", Matcher.quoteReplacement("è"));
-			s = s.replaceAll("%e_ACUTE", Matcher.quoteReplacement("é"));
-			s = s.replaceAll("%e_CIRC", Matcher.quoteReplacement("ê"));
-			s = s.replaceAll("%i_GRAVE", Matcher.quoteReplacement("ì"));
-			s = s.replaceAll("%i_ACUTE", Matcher.quoteReplacement("í"));
-			s = s.replaceAll("%i_CIRC", Matcher.quoteReplacement("î"));
-			s = s.replaceAll("%n_TILDE", Matcher.quoteReplacement("ñ"));
-			s = s.replaceAll("%o_GRAVE", Matcher.quoteReplacement("ò"));
-			s = s.replaceAll("%o_ACUTE", Matcher.quoteReplacement("ó"));
-			s = s.replaceAll("%o_CIRC", Matcher.quoteReplacement("ô"));
-			s = s.replaceAll("%o_TILDE", Matcher.quoteReplacement("õ"));
-			s = s.replaceAll("%u_GRAVE", Matcher.quoteReplacement("ù"));
-			s = s.replaceAll("%u_ACUTE", Matcher.quoteReplacement("ú"));
-			s = s.replaceAll("%u_CIRC", Matcher.quoteReplacement("û"));
-			s = s.replaceAll("%%", Matcher.quoteReplacement("%"));
-		}
-		return s;
-	}	
-
+    /**
+     * Replace a placeholder with the content of the property in the property
+     * list.
+     * 
+     * @param placeholder
+     *            The placeholder and the name of the key in the property list
+     */
+    private String replaceText(final String placeholderDisplayText) {
+        
+        // Get the value of the Property list.
+        String text = getProperties().getProperty(placeholderDisplayText);
+        
+        // If the String is non empty, replace the OS new line with the OpenOffice new line
+        if(StringUtils.isNotBlank(text)){
+            text = text.replaceAll("\n", "\r");
+        }
+        // Replace the placeholder with the value of the property list.
+        log.debug(String.format("trying to replace %s with [%s]", placeholderDisplayText, text));
+        return text;
+    }
 	
 	/**
 	 * Get Information from document.
@@ -524,9 +627,8 @@ public class TemplateProcessor {
 	 * @return
 	 *  The extracted result
 	 */
-	private String getDocumentInfoByPlaceholder(Document document, DocumentSummary documentSummary, String key) {
-		
-		// Get the company information from the preferences
+	private String getDocumentInfoByPlaceholder(Document document, Optional<DocumentSummary> documentSummary, String key) {
+	    // Get the company information from the preferences
 		if (key.startsWith("YOURCOMPANY")) {
 			if (key.equals("YOURCOMPANY.COMPANY")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME);
 
@@ -545,12 +647,12 @@ public class TemplateProcessor {
 			if (key.equals("YOURCOMPANY.COUNTRY")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COUNTRY);
 			if (key.equals("YOURCOMPANY.EMAIL")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_EMAIL);
 			if (key.equals("YOURCOMPANY.PHONE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL);
-			if (key.equals("YOURCOMPANY.PHONE.PRE")) return  getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), true);
-			if (key.equals("YOURCOMPANY.PHONE.POST")) return  getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), false);
+			if (key.equals("YOURCOMPANY.PHONE.PRE")) return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), true);
+			if (key.equals("YOURCOMPANY.PHONE.POST")) return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), false);
 			if (key.equals("YOURCOMPANY.MOBILE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_MOBILE);
 			if (key.equals("YOURCOMPANY.FAX")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX);
-			if (key.equals("YOURCOMPANY.FAX.PRE")) return  getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), true);
-			if (key.equals("YOURCOMPANY.FAX.POST")) return  getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), false);
+			if (key.equals("YOURCOMPANY.FAX.PRE")) return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), true);
+			if (key.equals("YOURCOMPANY.FAX.POST")) return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), false);
 			if (key.equals("YOURCOMPANY.WEBSITE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_WEBSITE);
 			if (key.equals("YOURCOMPANY.VATNR")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR);
 			if (key.equals("YOURCOMPANY.TAXNR")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXNR);
@@ -612,17 +714,17 @@ public class TemplateProcessor {
 		if (key.equals("DOCUMENT.ORDER.DATE")) return dateFormatterService.getFormattedLocalizedDate(document.getOrderDate());
 		if (key.equals("DOCUMENT.VESTINGPERIOD.START")) return dateFormatterService.getFormattedLocalizedDate(document.getVestingPeriodStart());
 		if (key.equals("DOCUMENT.VESTINGPERIOD.END")) return dateFormatterService.getFormattedLocalizedDate(document.getVestingPeriodEnd());
-		if (key.equals("DOCUMENT.ITEMS.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getItemsGross());
+		if (key.equals("DOCUMENT.ITEMS.GROSS")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getItemsGross()) : "";
 		
-		if (key.equals("DOCUMENT.ITEMS.NET")) return numberFormatterService.formatCurrency(documentSummary.getItemsNet());
+		if (key.equals("DOCUMENT.ITEMS.NET")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getItemsNet()) : "";
 		
 		// FAK-432
 		// discount is negative
-		if (key.equals("DOCUMENT.ITEMS.NET.DISCOUNTED")) return numberFormatterService.formatCurrency(documentSummary.getItemsNet().add(documentSummary.getDiscountNet()));
-		if (key.equals("DOCUMENT.TOTAL.NET")) return numberFormatterService.formatCurrency(documentSummary.getTotalNet());
-		if (key.equals("DOCUMENT.TOTAL.VAT")) return numberFormatterService.formatCurrency(documentSummary.getTotalVat());
-		if (key.equals("DOCUMENT.TOTAL.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getTotalGross());
-		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return Double.toString(documentSummary.getTotalQuantity()); // FAK-410
+		if (key.equals("DOCUMENT.ITEMS.NET.DISCOUNTED")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getItemsNet().add(documentSummary.get().getDiscountNet())) : "";
+		if (key.equals("DOCUMENT.TOTAL.NET")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalNet()) : "";
+		if (key.equals("DOCUMENT.TOTAL.VAT")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalVat()) : "";
+		if (key.equals("DOCUMENT.TOTAL.GROSS")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalGross()) : "";
+		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return documentSummary.isPresent() ? Double.toString(documentSummary.get().getTotalQuantity()) : ""; // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
 
 		if (key.startsWith("DOCUMENT.WEIGHT")) {
@@ -636,8 +738,8 @@ public class TemplateProcessor {
 				return numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue);
 		}		
 		
-		if (key.equals("DOCUMENT.DEPOSIT.DEPOSIT")) return numberFormatterService.formatCurrency(documentSummary.getDeposit());
-		if (key.equals("DOCUMENT.DEPOSIT.FINALPAYMENT")) return numberFormatterService.formatCurrency(documentSummary.getFinalPayment());
+		if (key.equals("DOCUMENT.DEPOSIT.DEPOSIT")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getDeposit()) : "";
+		if (key.equals("DOCUMENT.DEPOSIT.FINALPAYMENT")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getFinalPayment()) : "";
 		if (key.equals("DOCUMENT.DEPOSIT.DEP_TEXT")) return  preferences.getString(Constants.PREFERENCES_DEPOSIT_TEXT);
 		if (key.equals("DOCUMENT.DEPOSIT.FINALPMT_TEXT")) return  preferences.getString(Constants.PREFERENCES_FINALPAYMENT_TEXT);
 
@@ -649,8 +751,8 @@ public class TemplateProcessor {
 
 			return numberFormatterService.DoubleToFormatedPercent(itemsRebate);
 		}
-		if (key.equals("ITEMS.DISCOUNT.NET")) return numberFormatterService.formatCurrency(documentSummary.getDiscountNet());
-		if (key.equals("ITEMS.DISCOUNT.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getDiscountGross());
+		if (key.equals("ITEMS.DISCOUNT.NET")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getDiscountNet()) : "";
+		if (key.equals("ITEMS.DISCOUNT.GROSS")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getDiscountGross()) : "";
 
 		if(document.getPayment() != null) {
 			if (key.equals("ITEMS.DISCOUNT.DAYS")) return document.getPayment().getDiscountDays().toString();
@@ -660,13 +762,13 @@ public class TemplateProcessor {
 			double percent = document.getPayment().getDiscountValue();
 			if (key.equals("ITEMS.DISCOUNT.DISCOUNTPERCENT")) return numberFormatterService.DoubleToFormatedPercent(percent);
 			if (key.equals("ITEMS.DISCOUNT.VALUE")) {
-				return numberFormatterService.formatCurrency(documentSummary.getTotalGross().multiply(1 - percent));
+				return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalGross().multiply(1 - percent)) : "";
 			}
 			if (key.equals("ITEMS.DISCOUNT.NETVALUE")) {
-				return numberFormatterService.formatCurrency(documentSummary.getTotalNet().multiply(1 - percent));
+				return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalNet().multiply(1 - percent)) : "";
 			}
 			if (key.equals("ITEMS.DISCOUNT.TARAVALUE")) {
-				return numberFormatterService.formatCurrency(documentSummary.getTotalVat().multiply(1 - percent));
+				return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalVat().multiply(1 - percent)) : "";
 			}
 			
 			if (key.equals("PAYMENT.TEXT")) {
@@ -676,9 +778,9 @@ public class TemplateProcessor {
 			}
 		}
 
-		if (key.equals("SHIPPING.NET")) return numberFormatterService.formatCurrency(documentSummary.getShippingNet());
-		if (key.equals("SHIPPING.VAT")) return numberFormatterService.formatCurrency(documentSummary.getShippingVat());
-		if (key.equals("SHIPPING.GROSS")) return numberFormatterService.formatCurrency(documentSummary.getShippingGross());
+		if (key.equals("SHIPPING.NET")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getShippingNet()) : "";
+		if (key.equals("SHIPPING.VAT")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getShippingVat()) : "";
+		if (key.equals("SHIPPING.GROSS")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getShippingGross()) : "";
 		if (key.equals("SHIPPING.NAME")) return document.getShipping() != null ? document.getShipping().getName() : "";
 		if (key.equals("SHIPPING.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getDescription() : document.getAdditionalInfo().getShippingDescription();
 		if (key.equals("SHIPPING.VAT.DESCRIPTION")) return document.getShipping() != null ? document.getShipping().getShippingVat().getDescription() : "";
@@ -882,14 +984,14 @@ public class TemplateProcessor {
         }
         if (key.equals("ADDRESS.NR")) return Optional.ofNullable(contact.getCustomerNumber());
         if (key.equals("ADDRESS.PHONE")) return Optional.ofNullable(contact.getPhone());
-        if (key.equals("ADDRESS.PHONE.PRE")) return Optional.ofNullable(getTelPrePost(contact.getPhone(), true));
-        if (key.equals("ADDRESS.PHONE.POST")) return Optional.ofNullable(getTelPrePost(contact.getPhone(), false));
+        if (key.equals("ADDRESS.PHONE.PRE")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getPhone(), true));
+        if (key.equals("ADDRESS.PHONE.POST")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getPhone(), false));
         if (key.equals("ADDRESS.FAX")) return Optional.ofNullable(contact.getFax());
-        if (key.equals("ADDRESS.FAX.PRE")) return Optional.ofNullable(getTelPrePost(contact.getFax(), true));
-        if (key.equals("ADDRESS.FAX.POST")) return Optional.ofNullable(getTelPrePost(contact.getFax(), false));
+        if (key.equals("ADDRESS.FAX.PRE")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getFax(), true));
+        if (key.equals("ADDRESS.FAX.POST")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getFax(), false));
         if (key.equals("ADDRESS.MOBILE")) return Optional.ofNullable(contact.getMobile());
-        if (key.equals("ADDRESS.MOBILE.PRE")) return Optional.ofNullable(getTelPrePost(contact.getMobile(), true));
-        if (key.equals("ADDRESS.MOBILE.POST")) return Optional.ofNullable(getTelPrePost(contact.getMobile(), false));
+        if (key.equals("ADDRESS.MOBILE.PRE")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getMobile(), true));
+        if (key.equals("ADDRESS.MOBILE.POST")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getMobile(), false));
         if (key.equals("ADDRESS.SUPPLIER.NUMBER")) return Optional.ofNullable(contact.getSupplierNumber());
         if (key.equals("ADDRESS.EMAIL")) return Optional.ofNullable(contact.getEmail());
         
@@ -905,7 +1007,7 @@ public class TemplateProcessor {
      * @param percent the discount, if any
      * @return fully formatted {@link Payment} text
      */
-    public String createPaymentText(Document document, DocumentSummary documentSummary, double percent) {
+    public String createPaymentText(Document document, Optional<DocumentSummary> documentSummary, double percent) {
 	    // String paymenttext = document.getPayment().getPaidText();
 	    String paymenttext = document.getAdditionalInfo().getPaymentText();
 	    if(paymenttext == null && document.getPayment() != null) {
@@ -922,7 +1024,7 @@ public class TemplateProcessor {
 	    
 	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.PERCENT>", numberFormatterService.DoubleToFormatedPercent(document.getPayment().getDiscountValue()));
 	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.DAYS>", document.getPayment().getDiscountDays().toString());
-	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.VALUE>", numberFormatterService.formatCurrency(documentSummary.getTotalGross().multiply(1 - percent)));
+	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.VALUE>", documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalGross().multiply(1 - percent)) : "");
 	    paymenttext = StringUtils.replace(paymenttext, "<DUE.DISCOUNT.DATE>", getDiscountDueDate(document));
 
 // FIXME doesn't exist!	    paymenttext = StringUtils.replace(paymenttext, "<BANK.ACCOUNT.HOLDER>", preferences.getString("BANK_ACCOUNT_HOLDER"));
@@ -967,7 +1069,7 @@ public class TemplateProcessor {
 	    }
 	    
 	    // placeholder for total sum
-	    paymenttext = StringUtils.replace(paymenttext, "<DOCUMENT.TOTAL>", numberFormatterService.formatCurrency(documentSummary.getTotalGross()));
+	    paymenttext = StringUtils.replace(paymenttext, "<DOCUMENT.TOTAL>", documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalGross()) : "");
 	    paymenttext = StringUtils.replace(paymenttext, "<DOCUMENT.NAME>", document.getName());
 	    return paymenttext;
     }
@@ -992,40 +1094,599 @@ public class TemplateProcessor {
 		}
 		return retval;
 	}
-	
-	public static void main(String[] args) {
-		
-	    TemplateProcessor ph = new TemplateProcessor();	    
-//	    ph.extractPlaceholderName("$INONELINE:,$DOCUMENT.ADDRESS");
-//	    ph.interpretParameters("$INONELINE:,$DOCUMENT.ADDRESS", "Erdrich\nTester\nFakestreet 22");
-	    
-//	    System.out.println("is 'DOCUMENT.ADDRESS' placeholder? " + ph.isPlaceholder("DOCUMENT.ADDRESS"));
-//	    System.out.println("is 'NO.PLACEHOLDER' placeholder? " + ph.isPlaceholder("NO.PLACEHOLDER"));
-//	    
-//	    System.out.println("mit null: " + ph.censorAccountNumber(null));
-//	    System.out.println("mit 12: " + ph.censorAccountNumber("12"));
-//	    System.out.println("mit 123: " + ph.censorAccountNumber("123"));
-//	    System.out.println("mit 123456789: " + ph.censorAccountNumber("123456789"));
-//	    System.out.println("mit 9999999999999999999999999999999999: " + ph.censorAccountNumber("9999999999999999999999999999999999"));
-	    
-	    // test phone numbers
-	    String[] testphones = new String[]{
-	    		"02031/4775864",
-	    		"+49 (0)2031/4775864",
-	    		"020315 75864",
-	    		"020315/75864",
-	    		"+49 (0)20315 75864",
-	    		"02031 4775864",
-	    		"030/44775864",
-	    		"030 44775864",
-	    		"+49 (0)30 44775864",
-	    		"03726 2824",
-	    		"03726 781-0",
-	    		"03726 781",
-	    };
-	    for (String phone : testphones) {
-	    	System.out.println(String.format("PHONE: [%s]; PRE: [%s]; POST: [%s]", phone, ph.getTelPrePost(phone, true), ph.getTelPrePost(phone, false)));
-		}
+    
+    /**
+     * Fill vat table with data.
+     *
+     * @param vatSummarySetManager the vat summary set manager
+     * @param pTable the p table
+     * @param pRowTemplate the p row template
+     * @param placeholderTableType current placeholder type
+     * @param skipIfEmpty skips the row creation if value of sales equalization tax is empty (only for this case!)
+     */
+    private void fillVatTableWithData(DocumentSummary documentSummary, Table pTable, Row pRowTemplate,
+            PlaceholderTableType placeholderTableType, boolean skipIfEmpty) {
+        // Get all items
+        int cellCount = pRowTemplate.getCellCount();
+        
+        Iterator<VatSummaryItem> it = documentSummary.getVatSummary().iterator();
+        while (it.hasNext()) {
+            VatSummaryItem vatSummaryItem = (VatSummaryItem) it.next();
+
+            if(skipIfEmpty && (!this.useSET || vatSummaryItem.getSalesEqTaxPercent() == null || vatSummaryItem.getSalesEqTaxPercent().equals(Double.valueOf(0.0)))) { // skip empty rows
+                continue;
+            }
+            
+            // clone one row from template
+            TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
+            // we always insert only ONE row to the table
+            Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+//          Row tmpRow = pTable.appendRow();  // don't know yet why the row was appended instead of inserted...
+            pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
+            Row newRow = Row.getInstance(newRowElement);
+            // find all placeholders within row
+            for (int j = 0; j < cellCount; j++) {
+                // System.out.print(".");
+                // a template cell
+                Cell currentCell;
+                
+                // temp index for columns
+                int tmpIdx = j;
+                do {
+                    // Attention: Skip covered (spanned) cells!
+                    currentCell = newRow.getCellByIndex(tmpIdx++);
+                } while(currentCell.getOdfElement() instanceof TableCoveredTableCellElement);
+                // correct for later use
+                tmpIdx--;
+                
+                // make a copy of the template cell
+                Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
+
+                // find all placeholders in a cell
+                NodeList cellPlaceholders = cellNode
+                        .getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+
+                /*
+                 * The appended row only has default cells (without styles
+                 * etc.). Therefore we have to take the template cell and
+                 * replace the current cell (the real cell!) with it.
+                 */
+                newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(tmpIdx).getOdfElement());
+                // replace placeholders in this cell with current content
+                int countOfPlaceholders = cellPlaceholders.getLength();
+                for (int k = 0; k < countOfPlaceholders; k++) {
+                    Node item = cellPlaceholders.item(0);
+                    PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
+                    switch (placeholderTableType) {
+                    case VATLIST_TABLE:
+                        fillVatTableWithData(vatSummaryItem, cellPlaceholder);
+                        break;
+                    case SALESEQUALIZATIONTAX_TABLE:
+                        fillSalesEqualizationTaxTableWithData(vatSummaryItem, cellPlaceholder);
+                    default:
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Fill the cell of the VAT table with the VAT data
+     * 
+     * @param placeholderDisplayText
+     *            Column header
+     * @param key
+     *            VAT key (VAT description)
+     * @param value
+     *            VAT value
+     * @param iText
+     *            The Text that is set
+     * @param index
+     *            Index of the VAT entry
+     * @param cellText
+     *            The cell's text.
+     * @return 
+     */
+    private Node fillVatTableWithData(VatSummaryItem vatSummaryItem, PlaceholderNode cellPlaceholder) {
+        
+        String placeholderDisplayText = cellPlaceholder.getNodeText().toUpperCase();
+        String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
+        
+        String key = vatSummaryItem.getVatName();
+        String value = numberFormatterService.formatCurrency(vatSummaryItem.getVat());
+        // Get the text of the column. This is to determine, if it is the column
+        // with the VAT description or with the VAT value
+        String textValue = "";
+    
+        // It's the VAT description
+        if (placeholder.equals("VATLIST.DESCRIPTIONS")) {
+            textValue = key;
+        }
+        // It's the VAT value
+        else if (placeholder.equals("VATLIST.VALUES")) {
+            textValue = value;
+        }
+        else if (placeholder.equals("VATLIST.PERCENT")) {
+            textValue = numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getVatPercent());
+        }
+        else if (placeholder.equals("VATLIST.VATSUBTOTAL")) {
+            textValue = numberFormatterService.formatCurrency(vatSummaryItem.getNet());
+        }
+        else {
+            return null;
+        }
+
+        // Set the text
+        return cellPlaceholder.replaceWith(textValue);//Matcher.quoteReplacement(textValue)
+
+        // And also add it to the user defined text fields in the OpenOffice
+        // Writer document.
+//      addUserTextField(textKey, textValue, index);
+
+    }
+    
+
+    private Node fillSalesEqualizationTaxTableWithData(VatSummaryItem vatSummaryItem, PlaceholderNode cellPlaceholder) {
+
+        String placeholderDisplayText = cellPlaceholder.getNodeText().toUpperCase();
+        String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
+
+        // Get the text of the column. This is to determine, if it is the column
+        // with the VAT description or with the VAT value
+        String textValue = "";
+
+        if (this.useSET && vatSummaryItem.getSalesEqTax() != null) {
+            if (placeholder.equals("SALESEQUALIZATIONTAX.VALUES")) {
+                textValue = numberFormatterService.formatCurrency(vatSummaryItem.getSalesEqTax());
+            } else if (placeholder.equals("SALESEQUALIZATIONTAX.PERCENT")) {
+                textValue = numberFormatterService.DoubleToFormatedPercent(vatSummaryItem.getSalesEqTaxPercent());
+            } else if (placeholder.equals("SALESEQUALIZATIONTAX.SUBTOTAL")) {
+                textValue = numberFormatterService.formatCurrency(vatSummaryItem.getNet());
+            } else {
+                return null;
+            }
+        }
+
+        // Set the text
+        return cellPlaceholder.replaceWith(textValue);  //Matcher.quoteReplacement(textValue)
+    }
+
+    /**
+     * Fill all cells of the item table with the item data
+     * 
+     * @param column
+     *            The index of the column
+     * @param itemDataSets
+     *            Item data
+     * @param itemsTable
+     *            The item table
+     * @param lastTemplateRow
+     *            Counts the last row of the table
+     * @param cellText
+     *            The cell's text.
+     */
+    private void fillItemTableWithData(List<DocumentItem> itemDataSets, Table pTable, Row pRowTemplate) {
+        // Get all items
+        for (int row = 0; row < itemDataSets.size(); row++) {
+//               clone one row from template
+            TableTableRowElement newRowElement = (TableTableRowElement) pRowTemplate.getOdfElement().cloneNode(true);
+            // we always insert only ONE row to the table
+            Row tmpRow = pTable.insertRowsBefore(pRowTemplate.getRowIndex(), 1).get(0);
+            pTable.getOdfElement().replaceChild(newRowElement, tmpRow.getOdfElement());
+            Row newRow = Row.getInstance(newRowElement);
+            // find all placeholders within row
+            int cellCount = newRowElement.getChildNodes().getLength();
+            for (int j = 0; j < cellCount; j++) {
+                // a template cell
+                Cell currentCell = newRow.getCellByIndex(j);
+                
+                // skip unnecessary cells
+                if(currentCell.getOdfElement() instanceof TableCoveredTableCellElement) continue;
+                
+                // make a copy of the template cell
+                Element cellNode = (TableTableCellElementBase) currentCell.getOdfElement().cloneNode(true);
+
+                // find all placeholders in a cell
+                NodeList cellPlaceholders = cellNode.getElementsByTagName(TextPlaceholderElement.ELEMENT_NAME.getQName());
+
+                /*
+                 * The appended row only has default cells (without styles etc.). Therefore we have to take
+                 * the template cell and replace the current cell with it.
+                 */
+                newRow.getOdfElement().replaceChild(cellNode, newRow.getCellByIndex(j).getOdfElement());
+                // replace placeholders in this cell with current content
+                int countOfPlaceholders = cellPlaceholders.getLength();
+                for (int k = 0; k < countOfPlaceholders; k++) {
+                  Node item = cellPlaceholders.item(0);
+                  PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
+                  cellPlaceholder.setOwnerDocument(pTable.getOwnerDocument());
+                  fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Fill the cell of the item table with the item data
+     * 
+     * @param item
+     * @param index
+     *            Index of the item entry
+     * @param cellPlaceholder
+     *            The cell's placeholder.
+     * @return 
+     */
+    private Node fillItemTableWithData(DocumentItem item, PlaceholderNode cellPlaceholder) {
+
+        String value = "";
+        
+        String placeholderDisplayText = cellPlaceholder.getNodeText().toUpperCase();
+        String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
+        String key = placeholder.split("\\$")[0];
+
+        Price price = new Price(item, useSET);
+        boolean isReplaceOptionalPrice = item.getOptional() && preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE);
+
+        // Get the item quantity
+        if (key.equals("ITEM.QUANTITY")) {
+            NumberFormat numberInstance = NumberFormat.getNumberInstance(localeUtil.getDefaultLocale());
+            numberInstance.setMaximumFractionDigits(10);
+            value = numberInstance.format(item.getQuantity());
+        }
+
+        // The position
+        else if (key.equals("ITEM.POS")) {
+            value = item.getPosNr().toString();
+        }
+
+        // The text for optional items
+        else if (key.equals("ITEM.OPTIONAL.TEXT")) {
+            if (item.getOptional()) {
+                value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_OPTIONALITEM_TEXT);
+                value = value.replaceAll("<br>", "\n");
+            }
+        }
+        
+        // Get the item name
+        else if (key.equals("ITEM.NAME")) {
+            value = item.getName();
+        }
+
+        // Get the item number
+        else if (key.equals("ITEM.NR")) {
+            value = item.getItemNumber();
+        }
+        
+        // Get the item number
+        else if (key.equals("ITEM.SUPPLIERNUMBER")) {
+            value = item.getSupplierItemNumber();
+        }
+
+        // Get the quanity unit
+        else if (key.equals("ITEM.QUANTITYUNIT")) {
+            value = item.getQuantityUnit();
+        }
+
+        // Get the item weight
+        else if (key.equals("ITEM.WEIGHT")) {
+            value = item.getWeight() != null ? item.getWeight().toString() : "";
+        }
+        
+        // Get the item weight
+        else if (key.equals("ITEM.GTIN")) {
+            value = item.getGtin() != null ? item.getGtin().toString() : "";
+        }
+        
+        // vesting period
+        else if (key.equals("ITEM.VESTINGPERIOD.START")) {
+            value = item.getVestingPeriodStart() != null ? dateFormatterService.getFormattedLocalizedDate(item.getVestingPeriodStart()) : "";
+        }
+        else if (key.equals("ITEM.VESTINGPERIOD.END")) {
+            value = item.getVestingPeriodEnd() != null ? dateFormatterService.getFormattedLocalizedDate(item.getVestingPeriodEnd()) : "";
+        }
+
+        // Get the item description
+        else if (key.equals("ITEM.DESCRIPTION")) {
+            value = item.getDescription();
+            // Remove pre linebreak if description is empty to avoid empty lines
+            if( StringUtils.defaultString(value).isEmpty() ) {
+                placeholderDisplayText = placeholderDisplayText.replaceFirst("\n<ITEM.DESCRIPTION>", "<ITEM.DESCRIPTION>");
+            }
+        }
+
+        // Get the item discount in percent
+        else if (key.equals("ITEM.DISCOUNT.PERCENT")) {
+            Double itemRebate = item.getItemRebate();
+            if(itemRebate != null && itemRebate < NumberUtils.DOUBLE_ZERO) {
+                itemRebate *= NumberUtils.DOUBLE_MINUS_ONE; // make rebate positive (see https://bugs.fakturama.info/view.php?id=937)
+            }
+            value = numberFormatterService.DoubleToFormatedPercent(itemRebate);
+        }
+
+        // Get the absolute item discount (gross=
+        else if (key.equals("ITEM.GROSS.DISCOUNT.VALUE")) {
+            value = numberFormatterService.formatCurrency(price.getUnitGrossDiscountedRounded());
+        }
+        
+        else if (key.equals("ITEM.SALESEQUALIZATIONTAX.PERCENT") && this.useSET) {
+            value = numberFormatterService.DoubleToFormatedPercent(item.getItemVat().getSalesEqualizationTax());
+        }
+        
+
+        // Get the item's VAT name
+        else if (key.equals("ITEM.VAT.NAME")) {
+            value = item.getItemVat().getName();
+        }
+
+        // Get the item's VAT description
+        else if (key.equals("ITEM.VAT.DESCRIPTION")) {
+            value = item.getItemVat().getDescription();
+        }
+        
+        // Get the item net value
+        else if (key.equals("ITEM.UNIT.NET")) {
+            value = numberFormatterService.formatCurrency(price.getUnitNetRounded());
+        }
+
+        // Get the item VAT
+        else if (key.equals("ITEM.UNIT.VAT")) {
+            value = numberFormatterService.formatCurrency(price.getUnitVatRounded());
+        }
+
+        // Get the item gross value
+        else if (key.equals("ITEM.UNIT.GROSS")) {
+            value = numberFormatterService.formatCurrency(price.getUnitGrossRounded());
+        }
+
+        // Get the discounted item net value
+        else if (key.equals("ITEM.UNIT.NET.DISCOUNTED")) {
+            value = numberFormatterService.formatCurrency(price.getUnitNetDiscountedRounded());
+        }
+
+        // Get the discounted item VAT
+        else if (key.equals("ITEM.UNIT.VAT.DISCOUNTED")) {
+            value = numberFormatterService.formatCurrency(price.getUnitVatDiscountedRounded());
+        }
+
+        // Get the discounted item gross value
+        else if (key.equals("ITEM.UNIT.GROSS.DISCOUNTED")) {
+            value = numberFormatterService.formatCurrency(price.getUnitGrossDiscountedRounded());
+        }
+
+        // Get the total net value
+        else if (key.equals("ITEM.TOTAL.NET")) {
+            if (isReplaceOptionalPrice ) {
+                value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+                if(value.contains("{}")) {
+                    value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitNetDiscounted().multiply(item.getQuantity())));
+                }
+            } else {
+                value = numberFormatterService.formatCurrency(price.getTotalNetRounded());
+            }
+        }
+
+        // Get the total VAT
+        else if (key.equals("ITEM.TOTAL.VAT")) {
+            if (isReplaceOptionalPrice) {
+                value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+                if(value.contains("{}")) {
+                    value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitVatDiscounted().multiply(item.getQuantity())));
+                }
+            } else {
+                value = numberFormatterService.formatCurrency(price.getTotalVatRounded());
+            }
+        }
+
+        // Get the total gross value
+        else if (key.equals("ITEM.TOTAL.GROSS")) {
+            if (isReplaceOptionalPrice) {
+                value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+                if(value.contains("{}")) {
+                    value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitGrossDiscounted().multiply(item.getQuantity())));
+                }
+            } else {
+                value = numberFormatterService.formatCurrency(price.getTotalGrossRounded());
+            }
+        }
+        
+        // Get the absolute item discount (net)
+        else if (key.equals("ITEM.NET.DISCOUNT.VALUE")) {
+            if (isReplaceOptionalPrice) {
+                value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+                if(value.contains("{}")) {
+                    value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted())));
+                }
+            } else {
+                value = numberFormatterService.formatCurrency(price.getUnitNet().subtract(price.getUnitNetDiscounted()));
+            }
+        }
+        
+        // Get the absolute item discount (gross)
+        else if (key.equals("ITEM.GROSS.DISCOUNT.VALUE")) {
+            if (isReplaceOptionalPrice) {
+                value = preferences.getString(Constants.PREFERENCES_OPTIONALITEMS_PRICE_REPLACEMENT);
+                if(value.contains("{}")) {
+                    value = value.replaceAll("\\{\\}", numberFormatterService.formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded())));
+                }
+            } else {
+                value = numberFormatterService.formatCurrency(price.getUnitGross().subtract(price.getUnitGrossDiscountedRounded()));
+            }
+        }
+        
+        // Get the item's VAT
+        else if (key.equals("ITEM.VAT.PERCENT")) {
+            value = numberFormatterService.DoubleToFormatedPercent(item.getItemVat().getTaxValue());
+        }
+    
+        // Get product picture
+        else if (key.startsWith("ITEM.PICTURE")){
+            
+            String width_s = templateProcessorHelper.extractParam(placeholder,"WIDTH");
+            String height_s = templateProcessorHelper.extractParam(placeholder,"HEIGHT");
+
+            if (item.getPicture() != null) {
+                // Default height and with
+                int pixelWidth = 0;
+                int pixelHeight = 0;
+
+                // Use the parameter values
+                try {
+                    pixelWidth = Integer.parseInt(width_s);
+                    pixelHeight = Integer.parseInt(height_s);
+                }
+                catch (NumberFormatException e) {
+                }
+                
+                // Use default values
+                if (pixelWidth < 1)
+                    pixelWidth = 150;
+                if (pixelHeight < 1)
+                    pixelHeight = 100;
+
+                int pictureHeight = 100;
+                int pictureWidth = 100;
+                double pictureRatio = 1.0;
+                double pixelRatio = 1.0;
+                Path workDir = null;
+
+                // Read the image a first time to get width and height
+                try (ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());) {
+                    
+                    BufferedImage image = ImageIO.read(imgStream);
+                    pictureHeight = image.getHeight();
+                    pictureWidth = image.getWidth();
+
+                    // Calculate the ratio of the original image
+                    if (pictureHeight > 0) {
+                        pictureRatio = (double)pictureWidth/(double)pictureHeight;
+                    }
+                    
+                    // Calculate the ratio of the placeholder
+                    if (pixelHeight > 0) {
+                        pixelRatio = (double)pixelWidth/(double)pixelHeight;
+                    }
+                    
+                    // Correct the height and width of the placeholder 
+                    // to match the original image
+                    if ((pictureRatio > pixelRatio) &&  (pictureRatio != 0.0)) {
+                        pixelHeight = (int) Math.round(((double)pixelWidth / pictureRatio));
+                    }
+                    if ((pictureRatio < pixelRatio) &&  (pictureRatio != 0.0)) {
+                        pixelWidth = (int) Math.round(((double)pixelHeight * pictureRatio));
+                    }
+                    
+                    // Generate the image
+                    String imageName = "tmpImage"+RandomStringUtils.randomAlphanumeric(8);
+                
+                    /*
+                     * Workaround: As long as the ODF toolkit can't handle images from a ByteStream
+                     * we have to convert it to a temporary image and insert that into the document.
+                     */
+                    workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), imageName);
+                    
+                    // FIXME Scaling doesn't work! :-(
+                    // Therefore we "scale" the image manually by setting width and height inside result document
+                    
+//                  java.awt.Image scaledInstance = image.getScaledInstance(pixelWidth, pixelHeight, 0);
+//                  BufferedImage bi = new BufferedImage(scaledInstance.getWidth(null),
+//                          scaledInstance.getHeight(null),
+//                          BufferedImage.TYPE_4BYTE_ABGR);
+//
+//                  Graphics2D grph = (Graphics2D) bi.getGraphics();
+//                  grph.scale(pictureRatio, pictureRatio);
+//
+//                  // everything drawn with grph from now on will get scaled.
+//                  grph.drawImage(image, 0, 0, null);
+//                  grph.dispose();
+                    // ============================================
+
+                    String formatName = "jpg"; // fallback
+                    ImageInputStream iis = ImageIO.createImageInputStream(new ByteArrayInputStream(item.getPicture()));
+                    if (iis != null) {
+                        Iterator<ImageReader> iter = ImageIO.getImageReaders(iis);
+                        if (!iter.hasNext()) {
+                            throw new IOException("cannot determine image format");
+                        }
+                        // get the first reader
+                        ImageReader reader = iter.next();
+                        formatName = reader.getFormatName();
+                        reader.dispose();
+                        iis.close();
+                    }
+
+                    ImageIO.write(image, formatName, workDir.toFile());
+                    
+                    // with NoaLibre:
+//                  GraphicInfo graphicInfo = null;
+//                  graphicInfo = new GraphicInfo(new FileInputStream(imagePath),
+//                          pixelWidth,
+//                          true,
+//                          pixelHeight,
+//                          true,
+//                          VertOrientation.TOP,
+//                          HoriOrientation.LEFT,
+//                          TextContentAnchorType.AT_PARAGRAPH);
+//
+//                  ITextContentService textContentService = textDocument.getTextService().getTextContentService();
+//                  ITextDocumentImage textDocumentImage = textContentService.constructNewImage(graphicInfo);
+//                  textContentService.insertTextContent(iText.getTextCursorService().getTextCursor().getEnd(), textDocumentImage);
+
+                    // replace the placeholder
+                    return cellPlaceholder.replaceWith(workDir.toUri(), pixelWidth, pixelHeight);
+
+                }
+                catch (IOException e) {
+                    log.error("Can't create temporary image file. Reason: " + e);
+                }
+            }
+            
+            value = "";
+        }
+        
+        else if (item.getProduct() != null) {
+            Product product = item.getProduct();
+            // Get the item's category
+            if(key.equals("ITEM.UNIT.CATEGORY")) {
+                value = CommonConverter.getCategoryName(product.getCategories(), "/");
+            } else if(key.equals("ITEM.UNIT.UDF01")) {
+                value = product.getCdf01();
+            } else if(key.equals("ITEM.UNIT.UDF02")) {
+                value = product.getCdf02();
+            } else if(key.equals("ITEM.UNIT.UDF03")) {
+                value = product.getCdf03();
+            } else if(key.equals("ITEM.UNIT.COSTPRICE")) {
+                value = numberFormatterService.DoubleToFormatedPriceRound(Optional.ofNullable(product.getCostPrice()).orElse(Double.valueOf(0.0)));
+            } else {
+                value = "";
+            }
+        } else {
+            value = "";
+        }
+
+        // Interpret all parameters
+        value = interpretParameters(placeholder,value);
+        
+        // Convert CRLF to LF 
+        value = DataUtils.getInstance().convertCRLF2LF(value);
+
+        // If iText's string is not empty, use that string instead of the template
+//      String iTextString = iText.getText();
+//      if (!iTextString.isEmpty()) {
+//          cellText = iTextString;
+//      }
+        
+        // Set the text of the cell
+//      placeholderDisplayText = Matcher.quoteReplacement(placeholderDisplayText).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}");
+        return cellPlaceholder.replaceWith(value); // Matcher.quoteReplacement(value) ???
+
+        // And also add it to the user defined text fields in the OpenOffice
+        // Writer document.
+//      addUserTextField(key, value, index);
+    }
+
+    private void setUseSalesEquationTaxForDocument(boolean isSET) {
+        this.useSET = isSET;
     }
 
 	/**
@@ -1049,10 +1710,17 @@ public class TemplateProcessor {
 	 * 		TRUE, if the placeholder is in the list
 	 */
 	public boolean isPlaceholder(String testPlaceholder) {
-		String placeholderName = extractPlaceholderName(testPlaceholder);
+		String placeholderName = templateProcessorHelper.extractPlaceholderName(testPlaceholder);
 		
 		// Test all placeholders
 		return Arrays.stream(Placeholder.values()).anyMatch(p -> placeholderName.equals(p.getKey()));
 	}
+
+    private Properties getProperties() {
+        if(properties == null) {
+            properties = new Properties();
+        }
+        return properties;
+    }
 }
 

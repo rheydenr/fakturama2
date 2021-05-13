@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -229,7 +230,7 @@ public class ParcelServiceFormFiller {
 
 			    	// It is a placeholder
 			    	if (placeholders.isPlaceholder(value)) {
-						fillFormField(key, placeholders.getDocumentInfo(document, documentSummary, value));
+						fillFormField(key, placeholders.getDocumentInfo(document, Optional.ofNullable(documentSummary), value));
 			    	}
 			    	// It is a constant String
 			    	else if (value.startsWith("\"") && value.endsWith("\"")) {

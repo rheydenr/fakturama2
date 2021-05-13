@@ -609,7 +609,7 @@ public class ZUGFeRD extends AbstractEInvoice {
         
         Date out = Date.from(dueDate.atZone(ZoneId.systemDefault()).toInstant());
         
-        Optional<String> paymentText = Optional.ofNullable(placeholders.createPaymentText(invoice, documentSummary, percent));
+        Optional<String> paymentText = Optional.ofNullable(placeholders.createPaymentText(invoice, Optional.ofNullable(documentSummary), percent));
         TradePaymentTermsType tradePaymentTerms = factory.createTradePaymentTermsType()
             .withDescription(createText(paymentText.orElse("unknown")))
             .withDueDateDateTime(createDateTime(out));
