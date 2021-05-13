@@ -41,4 +41,6 @@ public class MailServiceMessages {
     public String mailservicePreferencesServerPort;
     public String mailservicePreferencesServerTitle;
     public String mailservicePreferencesServerUser;
+    public String mailservicePreferencesSubjectLabel;
+    public String mailserviceSettingsInvalid;
 }

@@ -23,6 +23,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.BooleanPropertyAction;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -32,13 +34,16 @@ import org.eclipse.nebula.widgets.opal.checkboxgroup.CheckBoxGroup;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 
+import com.sebulli.fakturama.i18n.Messages;
+import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.preferences.IInitializablePreference;
 import com.sebulli.fakturama.preferences.PreferencesInDatabase;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
  * Preferences for the Mail Service
@@ -50,7 +55,10 @@ public class MailServicePreferences extends FieldEditorPreferencePage implements
     
     @Inject @Optional
     private PreferencesInDatabase preferencesInDatabase;
-    private Composite editorParent;
+    
+    @Inject
+    @Translation
+    protected Messages msg;
 
     private ExtendedStringFieldEditor mailServerPassword;
     private ExtendedStringFieldEditor mailUser;
@@ -59,6 +67,8 @@ public class MailServicePreferences extends FieldEditorPreferencePage implements
     private BooleanPropertyAction booleanPropertyAction;
 
     private List<ExtendedStringFieldEditor> settingFields;
+
+    private Group subjectGroup;
     
     public MailServicePreferences() {
         super(GRID);
@@ -68,7 +78,6 @@ public class MailServicePreferences extends FieldEditorPreferencePage implements
     protected void createFieldEditors() {
         final CheckBoxGroup group = new CheckBoxGroup(getFieldEditorParent(), SWT.NONE);
         group.setText(messages.mailservicePreferencesActive);
-        group.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 
         booleanPropertyAction = new BooleanPropertyAction("useMail", getPreferenceStore(), MailServiceConstants.PREFERENCES_MAIL_ACTIVE) {
 
@@ -97,24 +106,54 @@ public class MailServicePreferences extends FieldEditorPreferencePage implements
                 super.widgetSelected(e);
             }
         });
-        editorParent = group.getContent();
         
-        mailHost = new ExtendedStringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_HOST, messages.mailservicePreferencesServerHost, editorParent);
-        mailHost.getTextControl(editorParent).addVerifyListener(i-> {
-            System.out.println("boo!");
-        });
+        mailHost = new ExtendedStringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_HOST, messages.mailservicePreferencesServerHost, group.getContent());
         addField(mailHost);
-        mailUser = new ExtendedStringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_USER, messages.mailservicePreferencesServerUser, editorParent);
+        mailUser = new ExtendedStringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_USER, messages.mailservicePreferencesServerUser, group.getContent());
         addField(mailUser);
 
-        mailServerPassword = new ExtendedStringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, messages.mailservicePreferencesServerPassword, editorParent);
-        mailServerPassword.getTextControl(editorParent).setEchoChar('*');
+        mailServerPassword = new ExtendedStringFieldEditor(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, messages.mailservicePreferencesServerPassword, group.getContent());
+        mailServerPassword.getTextControl(group.getContent()).setEchoChar('*');
         addField(mailServerPassword);
         
-        addField(new DirectoryFieldEditor(MailServiceConstants.PREFERENCES_MAIL_ADDITIONAL_DOCUMENTS_PATH, messages.mailservicePreferencesAdditionaldocpath, editorParent));
+        addField(new DirectoryFieldEditor(MailServiceConstants.PREFERENCES_MAIL_ADDITIONAL_DOCUMENTS_PATH, messages.mailservicePreferencesAdditionaldocpath, group.getContent()));
+
+        boolean isMailActive = getPreferenceStore().getBoolean(MailServiceConstants.PREFERENCES_MAIL_ACTIVE);
+        group.setSelection(isMailActive);
+        group.setLayoutData(GridDataFactory.swtDefaults().span(3, 1).create());
         
         settingFields = Arrays.asList(mailServerPassword, mailHost, mailUser);
         setEmptyStringAllowed(!group.getSelection());
+
+        subjectGroup = new Group(getFieldEditorParent(), SWT.NONE);
+        subjectGroup.setText(messages.mailservicePreferencesSubjectLabel);
+        
+        // subject fields
+        createSubjectField(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_INVOICE, BillingType.INVOICE);
+        createSubjectField(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_DELIVERY, BillingType.DELIVERY);
+        createSubjectField(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_OFFER, BillingType.OFFER);
+        createSubjectField(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_ORDER, BillingType.ORDER);
+        createSubjectField(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_DUNNING, BillingType.DUNNING);
+        createSubjectField(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_CONFIRMATION, BillingType.CONFIRMATION);
+        createSubjectField(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_CREDIT, BillingType.CREDIT);
+        createSubjectField(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_PROFORMA, BillingType.PROFORMA);
+        subjectGroup.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).create());
+        subjectGroup.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).span(2, 1).create());
+    }
+    
+    private void createSubjectField(String pref, BillingType billingType) {
+        StringFieldEditor subjectEntry = new StringFieldEditor(pref, 
+                msg.getMessageFromKey(DocumentTypeUtil.findByBillingType(billingType).getSingularKey()), 
+                subjectGroup) {
+            
+            @Override
+            protected void adjustForNumColumns(int numColumns) {
+                // ignore adjusting of columns
+            }
+            
+        };
+        
+        addField(subjectEntry);
     }
 
     /**
@@ -130,6 +169,15 @@ public class MailServicePreferences extends FieldEditorPreferencePage implements
         preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_ADDITIONAL_DOCUMENTS_PATH, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_TEMPLATE_PATH, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_ACTIVE, write);
+        
+        preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_INVOICE, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_DELIVERY, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_OFFER, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_ORDER, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_DUNNING, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_CONFIRMATION, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_CREDIT, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(MailServiceConstants.PREFERENCES_MAIL_SUBJECT_PROFORMA, write);
     }
 
     @Override
@@ -149,9 +197,9 @@ public class MailServicePreferences extends FieldEditorPreferencePage implements
         
         settingFields.forEach(f -> f.setEmptyStringAllowed(isAllowed));
         if (!isAllowed) {
-            settingFields.forEach(f -> f.refreshState());
+            settingFields.forEach(ExtendedStringFieldEditor::refreshState);
     
-            boolean isValid = settingFields.stream().allMatch(f -> !f.isValid());
+            boolean isValid = settingFields.stream().allMatch(ExtendedStringFieldEditor::isValid);
             setValid(isValid);
         }
     }

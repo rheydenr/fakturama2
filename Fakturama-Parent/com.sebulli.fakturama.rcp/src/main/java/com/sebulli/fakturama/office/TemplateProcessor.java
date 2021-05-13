@@ -65,7 +65,9 @@ import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 public class TemplateProcessor {
 	
-	public static final int COUNT_OF_LAST_SHOWN_DIGITS = 3; 
+	private static final String PARAMETER_SEPARATOR = "$";
+
+    public static final int COUNT_OF_LAST_SHOWN_DIGITS = 3; 
 	    
     @Inject
     @Translation
@@ -95,196 +97,6 @@ public class TemplateProcessor {
     @Inject
     private IDocumentAddressManager addressManager;
 
-	// all placeholders
-	private static String placeholders[] = {
-			"YOURCOMPANY.COMPANY",
-			"YOURCOMPANY.OWNER",
-			"YOURCOMPANY.OWNER.FIRSTNAME",
-			"YOURCOMPANY.OWNER.LASTNAME",
-			"YOURCOMPANY.STREET",
-			"YOURCOMPANY.STREETNAME",
-			"YOURCOMPANY.STREETNO",
-			"YOURCOMPANY.ZIP",
-			"YOURCOMPANY.CITY",
-			"YOURCOMPANY.COUNTRY",
-			"YOURCOMPANY.EMAIL",
-			"YOURCOMPANY.MOBILE",
-			"YOURCOMPANY.PHONE",
-			"YOURCOMPANY.PHONE.PRE",
-			"YOURCOMPANY.PHONE.POST",
-			"YOURCOMPANY.FAX",
-			"YOURCOMPANY.FAX.PRE",
-			"YOURCOMPANY.FAX.POST",
-			"YOURCOMPANY.WEBSITE",
-			"YOURCOMPANY.VATNR",
-			"YOURCOMPANY.TAXNR",
-			"YOURCOMPANY.TAXOFFICE",
-			"YOURCOMPANY.BANKACCOUNTNR",
-			"YOURCOMPANY.BANK",
-			"YOURCOMPANY.BANKCODE",
-			"YOURCOMPANY.IBAN",
-			"YOURCOMPANY.BIC",
-			"YOURCOMPANY.CREDITORID",
-			
-			"DOCUMENT.DATE",
-			"DOCUMENT.ADDRESSES.EQUAL",
-			"DOCUMENT.ADDRESS",
-			"DOCUMENT.DELIVERYADDRESS",
-			"DOCUMENT.DIFFERENT.ADDRESS",
-			"DOCUMENT.DIFFERENT.DELIVERYADDRESS",
-			"DOCUMENT.TYPE",
-			"DOCUMENT.NAME",
-			"DOCUMENT.CUSTOMERREF",
-			"DOCUMENT.CONSULTANT",
-			"DOCUMENT.SERVICEDATE",
-			"DOCUMENT.MESSAGE",
-			"DOCUMENT.MESSAGE1",
-			"DOCUMENT.MESSAGE2",
-			"DOCUMENT.MESSAGE3",
-			"DOCUMENT.TRANSACTION",
-			"DOCUMENT.INVOICE",
-			"DOCUMENT.WEBSHOP.ID",
-			"DOCUMENT.WEBSHOP.DATE",
-			"DOCUMENT.ORDER.DATE",
-			"DOCUMENT.VESTINGPERIOD.START",
-			"DOCUMENT.VESTINGPERIOD.END",
-			"DOCUMENT.DUNNING.LEVEL",
-			
-			"DOCUMENT.ITEMS.GROSS",
-			"DOCUMENT.ITEMS.NET",
-			"DOCUMENT.ITEMS.NET.DISCOUNTED",
-			"DOCUMENT.ITEMS.COUNT",
-			
-			"DOCUMENT.TOTAL.QUANTITY",
-			"DOCUMENT.TOTAL.NET",
-			"DOCUMENT.TOTAL.VAT",
-			"DOCUMENT.TOTAL.GROSS",
-			
-			"DOCUMENT.WEIGHT.TARA",
-			"DOCUMENT.WEIGHT.NET",
-			"DOCUMENT.WEIGHT.TOTAL",
-			
-			"DOCUMENT.DEPOSIT.DEPOSIT",
-			"DOCUMENT.DEPOSIT.FINALPAYMENT",
-			"DOCUMENT.DEPOSIT.DEP_TEXT",
-			"DOCUMENT.DEPOSIT.FINALPMT_TEXT",
-			
-			"DOCUMENT.REFERENCE.OFFER",
-			"DOCUMENT.REFERENCE.ORDER",
-			"DOCUMENT.REFERENCE.CONFIRMATION",
-			"DOCUMENT.REFERENCE.INVOICE",
-			"DOCUMENT.REFERENCE.INVOICE.DATE",
-			"DOCUMENT.REFERENCE.DELIVERY",
-			"DOCUMENT.REFERENCE.CREDIT",
-			"DOCUMENT.REFERENCE.DUNNING",
-			"DOCUMENT.REFERENCE.PROFORMA",
-			/* Hint: The "discounted" flag for Vouchers isn't persisted, so we can't 
-			 * create a placeholder for it. */
-			
-			"ITEMS.DISCOUNT.PERCENT",
-			"ITEMS.DISCOUNT.NET",
-			"ITEMS.DISCOUNT.GROSS",
-			"ITEMS.DISCOUNT.VALUE",
-			"ITEMS.DISCOUNT.NETVALUE",
-			"ITEMS.DISCOUNT.TARAVALUE",
-			"ITEMS.DISCOUNT.DISCOUNTPERCENT",
-			"ITEMS.DISCOUNT.DAYS",
-			"ITEMS.DISCOUNT.DUEDATE",
-
-			"SHIPPING.NET",
-			"SHIPPING.VAT",
-			"SHIPPING.GROSS",
-			"SHIPPING.DESCRIPTION",
-			"SHIPPING.VAT.DESCRIPTION",
-			
-			"PAYMENT.TEXT",
-			"PAYMENT.DESCRIPTION",
-			"PAYMENT.PAID.VALUE",
-			"PAYMENT.PAID.DATE",
-			"PAYMENT.DUE.DAYS",
-			"PAYMENT.DUE.DATE",
-			"PAYMENT.PAID",
-			
-			"ADDRESS.FIRSTLINE",
-			"ADDRESS",
-			"ADDRESS.ADDRESSADDON",
-			"ADDRESS.GENDER",
-			"ADDRESS.GREETING",
-			"ADDRESS.TITLE",
-			"ADDRESS.NAME",
-			"ADDRESS.NAMESUFFIX",
-			"ADDRESS.NAMEWITHCOMPANY",
-			"ADDRESS.FIRSTANDLASTNAME",
-			"ADDRESS.FIRSTNAME",
-			"ADDRESS.LASTNAME",
-			"ADDRESS.COMPANY",
-			"ADDRESS.STREET",
-			"ADDRESS.STREETNAME",
-			"ADDRESS.STREETNO",
-			"ADDRESS.ZIP",
-			"ADDRESS.CITY",
-			"ADDRESS.CITYADDON",
-			"ADDRESS.COUNTRY",
-			"ADDRESS.COUNTRY.CODE2",
-			"ADDRESS.COUNTRY.CODE3",
-			"ADDRESS.BIRTHDAY",
-			
-			"ADDRESS.BANK.ACCOUNT.HOLDER",
-			"ADDRESS.BANK.ACCOUNT",
-			"ADDRESS.BANK.CODE",
-			"ADDRESS.BANK.NAME",
-			"ADDRESS.BANK.IBAN",
-			"ADDRESS.BANK.BIC",
-			"ADDRESS.DISCOUNT",
-			"ADDRESS.EMAIL",
-			"ADDRESS.FAX",
-			"ADDRESS.FAX.PRE",
-			"ADDRESS.FAX.POST",
-			"ADDRESS.GLN",
-			"ADDRESS.MANDATEREFERENCE",
-			"ADDRESS.MOBILE",
-			"ADDRESS.MOBILE.PRE",
-			"ADDRESS.MOBILE.POST",
-			"ADDRESS.NR",
-			"ADDRESS.NOTE",
-			"ADDRESS.PHONE",
-			"ADDRESS.PHONE.PRE",
-			"ADDRESS.PHONE.POST",
-			"ADDRESS.PHONE2",
-			"ADDRESS.SUPPLIER.NUMBER",
-			"ADDRESS.VATNR",
-			"ADDRESS.WEBSITE",
-			"ADDRESS.ALIAS",
-			"ADDRESS.REGISTERNUMBER",
-			
-			"DELIVERY.ADDRESS.FIRSTLINE",
-			"DELIVERY.ADDRESS",
-			"DELIVERY.ADDRESS.GENDER",
-			"DELIVERY.ADDRESS.GREETING",
-			"DELIVERY.ADDRESS.TITLE",
-			"DELIVERY.ADDRESS.NAME",
-			"DELIVERY.ADDRESS.BIRTHDAY",
-			"DELIVERY.ADDRESS.NAMEWITHCOMPANY",
-			"DELIVERY.ADDRESS.FIRSTNAME",
-			"DELIVERY.ADDRESS.LASTNAME",
-			"DELIVERY.ADDRESS.COMPANY",
-			"DELIVERY.ADDRESS.STREET",
-			"DELIVERY.ADDRESS.STREETNAME",
-			"DELIVERY.ADDRESS.STREETNO",
-			"DELIVERY.ADDRESS.ZIP",
-			"DELIVERY.ADDRESS.CITY",
-			"DELIVERY.ADDRESS.COUNTRY",
-			"DELIVERY.ADDRESS.COUNTRY.CODE2",
-			"DELIVERY.ADDRESS.COUNTRY.CODE3",
-			
-			"DEBITOR.MANDATREF"
-
-			/* only for completeness (not used / unnecessary placeholders)
-			 * - VOUCHER.DONTBOOK
-			 * - ADDRESS.RELIABILITY
-			 */
-			
-	};
 	
 	private static NumberFormat localizedNumberFormat = NumberFormat.getInstance(ULocale.getDefault());
 
@@ -426,7 +238,7 @@ public class TemplateProcessor {
 	 * @param value
 	 * 		The value
 	 * @return
-	 * 		The value mofified by the parameters
+	 * 		The value modified by the parameters
 	 */
 	String interpretParameters(final String placeholder, final String pValue) {
 		String par;
@@ -576,6 +388,10 @@ public class TemplateProcessor {
 		return interpretParameters(placeholder, value);
 	}
 	
+	public String fill(Document document, String template) {
+	    
+	    return "";
+	}
 	
 	/**
 	 * Extract the value of the parameter of a placeholder
@@ -593,7 +409,7 @@ public class TemplateProcessor {
 		String s;
 		
 		// A parameter starts with "$" and ends with ":"
-		param = "$" + param + ":";
+		param = PARAMETER_SEPARATOR + param + ":";
 		
 		// Return, if parameter was not in placeholder's name
 		if (!placeholder.contains(param))
@@ -604,7 +420,7 @@ public class TemplateProcessor {
 
 		// Extract the string until the next parameter, or the end
 		int i;
-		i = s.indexOf("$");
+		i = s.indexOf(PARAMETER_SEPARATOR);
 		if ( i>0 )
 			s= s.substring(0, i);
 		else if (i == 0)
@@ -647,7 +463,7 @@ public class TemplateProcessor {
 			s = s.replaceAll("%NL", "\n");
 			s = s.replaceAll("%TAB", "\t");
 			s = s.replaceAll("%SPACE", " ");
-			s = s.replaceAll("%DOLLAR", Matcher.quoteReplacement("$"));
+			s = s.replaceAll("%DOLLAR", Matcher.quoteReplacement(PARAMETER_SEPARATOR));
 			s = s.replaceAll("%COMMA", Matcher.quoteReplacement(","));
 			s = s.replaceAll("%EURO", Matcher.quoteReplacement("€"));
 			s = s.replaceAll("%A_GRAVE", Matcher.quoteReplacement("À"));
@@ -1223,15 +1039,6 @@ public class TemplateProcessor {
 		// have to write "DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(...))" here 
 		return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
 	}
-
-	/**
-	 * Getter for all placeholders
-	 * @return
-	 * 	String array with all placeholders
-	 */
-	protected String[] getPlaceholders() {
-		return placeholders;
-	}
 	
 	/**
 	 * Test, if the name is in the list of all placeholders
@@ -1245,7 +1052,7 @@ public class TemplateProcessor {
 		String placeholderName = extractPlaceholderName(testPlaceholder);
 		
 		// Test all placeholders
-		return Arrays.stream(placeholders).anyMatch(p -> placeholderName.equals(p));
+		return Arrays.stream(Placeholder.values()).anyMatch(p -> placeholderName.equals(p.getKey()));
 	}
 }
 

@@ -25,12 +25,22 @@ import org.apache.commons.lang3.StringUtils;
  * Container class for Mail Settings
  */
 public class MailSettings {
-    private static final char SEPARATOR_CHAR = ',';
+    public static final String ADDRESS_SEPARATOR_CHAR = ",";
     private String user, password, host, templateText, subject, body, sender;
     private final List<String> receiversTo = new ArrayList<>();
     private final List<String> receiversCC = new ArrayList<>();
     private final List<String> receiversBCC = new ArrayList<>();
     private List<String> additionalDocs = new ArrayList<>();
+    
+    // field list
+    public static final String FIELD_RECEIVERS_TO = "receiversTo";
+    public static final String FIELD_RECEIVERS_CC = "receiversCC";
+    public static final String FIELD_RECEIVERS_BCC = "receiversBCC";
+    public static final String FIELD_RECEIVERS_SUBJECT = "subject";
+    public static final String FIELD_RECEIVERS_BODY = "body";
+    public static final String FIELD_RECEIVERS_ADDITIONALDOCS = "additionalDocs";
+    
+    
 /*
 SMTP
 
@@ -42,6 +52,16 @@ Auth:    PLAIN, LOGIN and CRAM-MD5
 TLS:    Optional (STARTTLS on all ports) 
 
 */
+    
+    /**
+     * Checks if the mandatory fields are set
+     * 
+     * @return <code>true</code> if all necessary settings are set
+     */
+    public boolean isValid() {
+        return StringUtils.isNoneEmpty(user, host, password, sender) && !receiversTo.isEmpty();
+    }
+    
     public MailSettings withUser(String user) {
         this.user = user;
         return this;
@@ -119,8 +139,8 @@ TLS:    Optional (STARTTLS on all ports)
                 .collect(Collectors.toList()));
     }
 
-    public void addToAdditionalDocs(String additionalDoc) {
-        this.additionalDocs.addAll(Arrays.asList(additionalDoc));
+    public void addToAdditionalDocs(List<String> additionalDocs) {
+        this.additionalDocs.addAll(additionalDocs);
     }
     
     public void setAdditionalDocs(List<String> additionalDocs) {
@@ -136,22 +156,22 @@ TLS:    Optional (STARTTLS on all ports)
     }
 
     public String getReceiversTo() {
-        return StringUtils.join(receiversTo, SEPARATOR_CHAR);
+        return String.join(ADDRESS_SEPARATOR_CHAR, receiversTo);
     }
 
     public void setReceiversTo(String receivers) {
         if (receivers != null) {
             receiversTo.clear();
-            Arrays.stream(receivers.split(",")).forEach(r -> receiversTo.add(StringUtils.trim(r)));
+            Arrays.stream(receivers.split(ADDRESS_SEPARATOR_CHAR)).forEach(r -> receiversTo.add(StringUtils.trim(r)));
         }
     }
 
     public String getReceiversCC() {
-        return StringUtils.join(receiversCC, SEPARATOR_CHAR);
+        return StringUtils.join(receiversCC, ADDRESS_SEPARATOR_CHAR);
     }
 
     public String getReceiversBCC() {
-        return StringUtils.join(receiversBCC, SEPARATOR_CHAR);
+        return StringUtils.join(receiversBCC, ADDRESS_SEPARATOR_CHAR);
     }
 
     public String getSubject() {

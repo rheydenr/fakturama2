@@ -30,6 +30,7 @@ Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.fakturama.connectors
 Import-Package: com.sebulli.fakturama.misc,
  com.sebulli.fakturama.model,
+ com.sebulli.fakturama.util,
  javax.annotation;version="1.0.0";resolution:=optional,
  javax.inject;version="1.0.0",
  org.apache.commons.lang3,

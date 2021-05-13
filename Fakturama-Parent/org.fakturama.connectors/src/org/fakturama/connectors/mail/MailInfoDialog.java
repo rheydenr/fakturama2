@@ -50,6 +50,7 @@ import org.eclipse.jface.widgets.LabelFactory;
 import org.eclipse.jface.widgets.TextFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
@@ -97,7 +98,7 @@ public class MailInfoDialog {
                 return ValidationStatus.ok();
             }
 
-            boolean isValid = Arrays.asList(emailAddress.split(","))
+            boolean isValid = Arrays.asList(emailAddress.split(MailSettings.ADDRESS_SEPARATOR_CHAR))
                     .stream()
                     .allMatch(e -> StringUtils.isBlank(e) || EmailValidator.getInstance().isValid(e));
             return (isValid) ? ValidationStatus.ok() : ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
@@ -150,7 +151,7 @@ public class MailInfoDialog {
                 .layout(new FillLayout())
                 .create(bottomPanel);
 
-        ButtonFactory.newButton(SWT.PUSH)
+        Button sendButton = ButtonFactory.newButton(SWT.PUSH)
                 .layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create())
                 .text(mailServiceMessages.mailserviceDialogSend)
                 .onSelect(t -> mailService.sendMail(settings))
@@ -166,11 +167,12 @@ public class MailInfoDialog {
 
         bindFields();
 
+        shell.setDefaultButton(sendButton);
         return parent;
     }
 
     private void closeDialog() {
-        Optional<MUIElement> mailAppDialog = Optional.ofNullable(modelService.find(MailService.MAIL_APP_MAIN_WINDOW_ID, application));
+        Optional<MUIElement> mailAppDialog = Optional.ofNullable(modelService.find(MailServiceConstants.MAIL_APP_MAIN_WINDOW_ID, application));
         mailAppDialog.ifPresent(m -> {
             m.setVisible(false);
             m.setToBeRendered(false);
@@ -180,22 +182,22 @@ public class MailInfoDialog {
     private void bindFields() {
         IObservableFactory<Control, IObservableList<String>> listFactory = WidgetProperties.items().listFactory();
         IObservableValue<String> rec = WidgetProperties.text(SWT.FocusOut).observe(receiverTo);
-        IObservableValue<String> receiversTo = PojoProperties.value(MailSettings.class, "receiversTo", String.class).observe(settings);
+        IObservableValue<String> receiversTo = PojoProperties.value(MailSettings.class, MailSettings.FIELD_RECEIVERS_TO, String.class).observe(settings);
 
         IObservableValue<String> recCC = WidgetProperties.text(SWT.FocusOut).observe(receiverCC);
-        IObservableValue<String> receiversCC = PojoProperties.value(MailSettings.class, "receiversCC", String.class).observe(settings);
+        IObservableValue<String> receiversCC = PojoProperties.value(MailSettings.class, MailSettings.FIELD_RECEIVERS_CC, String.class).observe(settings);
 
         IObservableValue<String> recBCC = WidgetProperties.text(SWT.FocusOut).observe(receiverBCC);
-        IObservableValue<String> receiversBCC = PojoProperties.value(MailSettings.class, "receiversBCC", String.class).observe(settings);
+        IObservableValue<String> receiversBCC = PojoProperties.value(MailSettings.class, MailSettings.FIELD_RECEIVERS_BCC, String.class).observe(settings);
 
         IObservableValue<String> subj = WidgetProperties.text(SWT.FocusOut).observe(subject);
-        IObservableValue<String> subjString = PojoProperties.value(MailSettings.class, "subject", String.class).observe(settings);
+        IObservableValue<String> subjString = PojoProperties.value(MailSettings.class, MailSettings.FIELD_RECEIVERS_SUBJECT, String.class).observe(settings);
 
         IObservableValue<String> bodyWidget = WidgetProperties.text(SWT.FocusOut).observe(body);
-        IObservableValue<String> bodyString = PojoProperties.value(MailSettings.class, "body", String.class).observe(settings);
+        IObservableValue<String> bodyString = PojoProperties.value(MailSettings.class, MailSettings.FIELD_RECEIVERS_BODY, String.class).observe(settings);
 
         IObservableList<String> attachmentList = listFactory.createObservable(listViewer.getControl());
-        IObservableList<String> att = PojoProperties.list(MailSettings.class, "additionalDocs", String.class).observe(settings);
+        IObservableList<String> att = PojoProperties.list(MailSettings.class, MailSettings.FIELD_RECEIVERS_ADDITIONALDOCS, String.class).observe(settings);
 
         Binding recBind = bindingContext.bindValue(rec, receiversTo, emailValidationStrategy, null);
         ControlDecorationSupport.create(recBind, SWT.TOP | SWT.LEFT);
@@ -235,7 +237,7 @@ public class MailInfoDialog {
 
         Composite composite = CompositeFactory.newComposite(SWT.NULL).layout(fillLayout).create(top);
 
-        ButtonFactory.newButton(SWT.PUSH).text("Add").onSelect(t -> {
+        ButtonFactory.newButton(SWT.PUSH).text(mailServiceMessages.mailserviceDialogAdd).onSelect(t -> {
             FileDialog fileDialog = new FileDialog(shell, SWT.MULTI);
             fileDialog.setText(mailServiceMessages.mailserviceDialogAddattachment);
 
@@ -249,7 +251,7 @@ public class MailInfoDialog {
             listViewer.refresh(false);
         }).create(composite);
 
-        ButtonFactory.newButton(SWT.PUSH).text("Remove").onSelect(t -> {
+        ButtonFactory.newButton(SWT.PUSH).text(mailServiceMessages.mailserviceDialogRemove).onSelect(t -> {
             IStructuredSelection selection = (IStructuredSelection) listViewer.getSelection();
             String language = (String) selection.getFirstElement();
             if (language == null) {
