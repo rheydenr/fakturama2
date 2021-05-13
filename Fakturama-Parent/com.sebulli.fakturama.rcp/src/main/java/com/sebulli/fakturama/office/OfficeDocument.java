@@ -159,7 +159,7 @@ public class OfficeDocument {
     
     private List<String> allPlaceholders;
     private DocumentSummary documentSummary;
-    private Placeholders placeholders;
+    private TemplateProcessor placeholders;
     private FileOrganizer fo;
     private Shell shell;
     
@@ -185,7 +185,7 @@ public class OfficeDocument {
     @PostConstruct
     public void init(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
         fo = ContextInjectionFactory.make(FileOrganizer.class, context);
-        placeholders = ContextInjectionFactory.make(Placeholders.class, context);
+        placeholders = ContextInjectionFactory.make(TemplateProcessor.class, context);
         this.shell = shell;
     }
     

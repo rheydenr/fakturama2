@@ -63,7 +63,7 @@ import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 
-public class Placeholders {
+public class TemplateProcessor {
 	
 	public static final int COUNT_OF_LAST_SHOWN_DIGITS = 3; 
 	    
@@ -854,6 +854,7 @@ public class Placeholders {
 			}
 			
 			if (key.equals("PAYMENT.TEXT")) {
+			    
 				// Replace the placeholders in the payment text
 				return createPaymentText(document, documentSummary, percent);
 			}
@@ -1178,7 +1179,7 @@ public class Placeholders {
 	
 	public static void main(String[] args) {
 		
-	    Placeholders ph = new Placeholders();	    
+	    TemplateProcessor ph = new TemplateProcessor();	    
 //	    ph.extractPlaceholderName("$INONELINE:,$DOCUMENT.ADDRESS");
 //	    ph.interpretParameters("$INONELINE:,$DOCUMENT.ADDRESS", "Erdrich\nTester\nFakestreet 22");
 	    

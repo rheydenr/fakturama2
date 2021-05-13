@@ -43,7 +43,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.IParcelService;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.office.Placeholders;
+import com.sebulli.fakturama.office.TemplateProcessor;
 
 /**
  * Fills the form of the parcel service
@@ -217,7 +217,7 @@ public class ParcelServiceFormFiller {
 			filled = true;
 
 			// get all entries
-			Placeholders placeholders = ContextInjectionFactory.make(Placeholders.class, context);
+			TemplateProcessor placeholders = ContextInjectionFactory.make(TemplateProcessor.class, context);
 			DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
 			DocumentSummary documentSummary = documentSummaryCalculator.calculate(document);
 			

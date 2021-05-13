@@ -106,7 +106,7 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.VAT;
-import com.sebulli.fakturama.office.Placeholders;
+import com.sebulli.fakturama.office.TemplateProcessor;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
@@ -752,7 +752,7 @@ public class XRechnung extends AbstractEInvoice {
     private TradePaymentTermsType createTradePaymentTerms(Document invoice, DocumentSummary documentSummary) {
         LocalDateTime dueDate = 
                 DataUtils.getInstance().addToDate(invoice.getDocumentDate(), invoice.getDueDays());
-        Placeholders placeholders = ContextInjectionFactory.make(Placeholders.class, eclipseContext);
+        TemplateProcessor placeholders = ContextInjectionFactory.make(TemplateProcessor.class, eclipseContext);
         double percent = invoice.getPayment().getDiscountValue();
         
         Date out = Date.from(dueDate.atZone(ZoneId.systemDefault()).toInstant());
