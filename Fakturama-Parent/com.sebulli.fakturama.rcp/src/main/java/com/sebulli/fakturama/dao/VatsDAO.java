@@ -73,7 +73,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	    }
 	    // if tax value is not set we create an irregular value to compare
 	    // (force creating a new object)
-        restrictions.add(cb.equal(vat.get(VAT_.taxValue), object.getTaxValue() != null ? object.getTaxValue() : Double.valueOf(-10.0)));
+        restrictions.add(cb.equal(vat.get(VAT_.taxValue), object.getTaxValue() != null ? object.getTaxValue() : Double.valueOf(0.0)));
 	    return restrictions;
 	}
 
