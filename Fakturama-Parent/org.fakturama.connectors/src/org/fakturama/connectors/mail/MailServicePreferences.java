@@ -120,7 +120,7 @@ public class MailServicePreferences extends FieldEditorPreferencePage implements
 
         boolean isMailActive = getPreferenceStore().getBoolean(MailServiceConstants.PREFERENCES_MAIL_ACTIVE);
         group.setSelection(isMailActive);
-        group.setLayoutData(GridDataFactory.swtDefaults().span(3, 1).create());
+        group.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).span(3, 1).create());
         
         settingFields = Arrays.asList(mailServerPassword, mailHost, mailUser);
         setEmptyStringAllowed(!group.getSelection());

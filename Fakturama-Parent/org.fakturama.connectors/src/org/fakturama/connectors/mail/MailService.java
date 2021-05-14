@@ -50,9 +50,7 @@ import org.osgi.service.component.annotations.Component;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
@@ -60,6 +58,7 @@ import com.sebulli.fakturama.office.IPdfPostProcessor;
 import com.sebulli.fakturama.office.TemplateFinder;
 import com.sebulli.fakturama.office.TemplateProcessor;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
+import com.sun.mail.util.MailConnectException;
 
 import jakarta.mail.Authenticator;
 import jakarta.mail.BodyPart;
@@ -264,7 +263,7 @@ public class MailService implements IPdfPostProcessor {
         return templateProcessor.fill(invoice, Optional.empty(), templateString);
     }
 
-    public void sendMail(MailSettings settings) {
+    public void sendMail(final MailSettings settings) {
         // create some properties and get the default Session
         Properties props = System.getProperties();
         props.put(MailServiceConstants.MAIL_SMTP_HOST, settings.getHost());
@@ -359,6 +358,8 @@ public class MailService implements IPdfPostProcessor {
 
                     // send the message
                     Transport.send(msg);
+                } catch (final MailConnectException e) {
+                  log.error(e, "can't connect to mail server ("+settings.getHost()+")");
                 } catch (final MessagingException e) {
                   log.error(e, "can't send mail");
                 }

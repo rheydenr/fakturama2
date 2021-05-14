@@ -29,7 +29,7 @@ public class MoneyDisplayConverter extends DisplayConverter {
 	
     /**
      * Constructor.
-     * @param numberFormatterService2 
+     * @param numberFormatterService 
      * 
      */
  	@Inject
