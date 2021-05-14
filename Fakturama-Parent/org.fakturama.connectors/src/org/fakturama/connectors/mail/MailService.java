@@ -295,28 +295,10 @@ public class MailService implements IPdfPostProcessor {
             
             msg.setSubject(settings.getSubject());
 
-            // create and fill the first message part
-            MimeBodyPart mbp1 = new MimeBodyPart();
-            mbp1.setText(settings.getBody());
-            
-            /*
-             * Use the following approach instead of the above line if
-             * you want to control the MIME type of the attached file.
-             * Normally you should never need to do this.
-             *
-            FileDataSource fds = new FileDataSource(filename) {
-            public String getContentType() {
-                return "application/octet-stream";
-            }
-            };
-            mbp2.setDataHandler(new DataHandler(fds));
-            mbp2.setFileName(fds.getName());
-             */
-
             // create the Multipart and add its parts to it
             Multipart mp = new MimeMultipart();
-//            mp.addBodyPart(mbp1);
 
+            // create and fill the first message part
             // PLAIN TEXT
             BodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setText(settings.getBody());
@@ -343,15 +325,6 @@ public class MailService implements IPdfPostProcessor {
             // set the Date: header
             msg.setSentDate(new Date());
 
-            /*
-             * If you want to control the Content-Transfer-Encoding
-             * of the attached file, do the following. Normally you
-             * should never need to do this.
-             *
-            msg.saveChanges();
-            mbp2.setHeader("Content-Transfer-Encoding", "base64");
-             */
-         
             CompletableFuture.runAsync(() -> {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                 try {
@@ -395,5 +368,4 @@ public class MailService implements IPdfPostProcessor {
         }
         return mbp3;
     }
-
 }
