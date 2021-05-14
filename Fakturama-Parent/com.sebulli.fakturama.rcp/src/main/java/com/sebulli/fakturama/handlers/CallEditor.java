@@ -14,6 +14,7 @@
 
 package com.sebulli.fakturama.handlers;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +29,11 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -38,6 +41,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.descriptor.basic.MPartDescriptor;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
@@ -49,6 +53,7 @@ import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.parts.ContactEditor;
@@ -64,6 +69,7 @@ import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.parts.TextEditor;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
+import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.lists.ItemAccountTypeListTable;
@@ -146,6 +152,18 @@ public class CallEditor {
     
     @Inject
     private ILogger log;
+    
+    @CanExecute
+    public boolean canExecute(@Active MPart activePart, EPartService partService, @Optional MMenuItem menuItem) {
+        boolean retval = true;
+        // only check for a certain popup menu action; the action is nearly always executable
+        if (menuItem != null && menuItem.getElementId().equals("com.sebulli.fakturama.document.popup.opendoc")) {
+            @SuppressWarnings("unchecked")
+            List<Document> selectedObjects = (List<Document>) selectionService.getSelection(activePart.getElementId());
+            retval = selectedObjects != null && selectedObjects.size() == 1;
+        }
+        return retval;
+    }
 
 	/**
 	 * Execute the command

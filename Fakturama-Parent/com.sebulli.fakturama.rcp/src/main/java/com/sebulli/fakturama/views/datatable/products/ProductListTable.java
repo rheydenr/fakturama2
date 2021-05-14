@@ -286,7 +286,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     @Override
                     public void run(NatTable natTable, MouseEvent event) {
                         int rowPosition = natTable.getRowPositionByY(event.y);
-                        System.err.println("products clicked!");
+//                        System.err.println("products clicked!");
                         if(!gridListLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
                             selectRowAction.run(natTable, event);
                         }                   

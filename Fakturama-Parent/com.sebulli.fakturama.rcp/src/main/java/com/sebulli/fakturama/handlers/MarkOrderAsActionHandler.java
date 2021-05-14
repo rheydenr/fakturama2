@@ -106,7 +106,7 @@ public class MarkOrderAsActionHandler {
         	DocumentEditor editor = (DocumentEditor)activePart.getObject();
         	selectedObjects = new Document[]{editor.getDocument()};
         }
-        retval = selectedObjects != null && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType().isORDER());
+        retval = selectedObjects != null && selectedObjects.length > 0 && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType().isORDER());
         return retval;
     }
 
