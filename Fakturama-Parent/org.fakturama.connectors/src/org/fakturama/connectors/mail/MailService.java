@@ -50,12 +50,16 @@ import org.osgi.service.component.annotations.Component;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.office.IPdfPostProcessor;
+import com.sebulli.fakturama.office.TemplateFinder;
 import com.sebulli.fakturama.office.TemplateProcessor;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 import jakarta.mail.Authenticator;
 import jakarta.mail.BodyPart;
@@ -240,9 +244,24 @@ public class MailService implements IPdfPostProcessor {
                 prefs.get(prefDescriptor, "<no subject>"));
     }
 
-    private String createBodyFromTemplate(Invoice invoice, TemplateProcessor templateProcessor) {
-        return templateProcessor.fill(invoice, Optional.empty(), 
-                "<ADDRESS.GREETING>, \nanbei erhalten Sie Ihre Rechnung Nr. <DOCUMENT.NAME>. Viele Grüße, <YOURCOMPANY.OWNER>");
+    private String createBodyFromTemplate(Document invoice, TemplateProcessor templateProcessor) {
+        String templateString = "";
+        TemplateFinder templateFinder = ContextInjectionFactory.make(TemplateFinder.class, ctx);
+        List<Path> templates = templateFinder.collectTemplates(DocumentTypeUtil.findByBillingType(invoice.getBillingType()),
+                TemplateFinder.TXT_TEMPLATE_FILEEXTENSION);
+
+        if (templates != null && !templates.isEmpty()) {
+            Path mailTemplatePath = templates.get(0);
+            if (Files.exists(mailTemplatePath)) {
+                try {
+                    templateString = Files.readString(mailTemplatePath);
+                } catch (IOException e) {
+                    log.error(e, "mail template can't be processed: " + mailTemplatePath.getFileName());
+                }
+            }
+        }
+
+        return templateProcessor.fill(invoice, Optional.empty(), templateString);
     }
 
     public void sendMail(MailSettings settings) {

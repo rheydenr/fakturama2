@@ -26,7 +26,7 @@
          id="org.fakturama.connectors.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            uri="mailapp.e4xmi"
+            uri="MailServiceApp.e4xmi"
             apply="always">
       </fragment>
    </extension>
