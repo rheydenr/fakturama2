@@ -15,14 +15,11 @@
 package com.sebulli.fakturama.handlers;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +53,6 @@ import com.sebulli.fakturama.exporter.IContactExporter;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
-import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
 import com.sebulli.fakturama.model.Contact;
 import com.sebulli.fakturama.model.Document;
@@ -64,6 +60,7 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.FakturamaModelFactory;
 import com.sebulli.fakturama.model.FakturamaModelPackage;
 import com.sebulli.fakturama.office.OfficeDocument;
+import com.sebulli.fakturama.office.TemplateFinder;
 import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 
@@ -74,8 +71,6 @@ import com.sebulli.fakturama.parts.DocumentEditor;
  * @author Gerd Bartelt
  */
 public class CreateOODocumentHandler {
-
-    public static final String OO_TEMPLATE_FILEEXTENSION = ".ott";
 
     @Inject
     @Translation
@@ -119,45 +114,6 @@ public class CreateOODocumentHandler {
                         || activePart.getElementId().contentEquals(DebitorEditor.ID));
     }
 
-    /**
-     * Scans the template path for all templates. If a template exists, add it
-     * to the list of available templates
-     * 
-     * @param templatePath
-     *            path which is scanned
-     */
-    private List<Path> scanPathForTemplates(Path templatePath) {
-		List<Path> templates = new ArrayList<>();
-        try {
-            if(Files.exists(templatePath)) {
-                templates = Files.list(templatePath).filter(f -> f.getFileName().toString().toLowerCase().endsWith(OO_TEMPLATE_FILEEXTENSION))
-                        .sorted(Comparator.comparing((Path p) -> p.getFileName().toString().toLowerCase()))
-                        .collect(Collectors.toList());
-            }
-        } catch (IOException e) {
-            log.error(e, "Error while scanning the templates directory: " + templatePath.toString());
-        }
-        return templates;
-    }
-    
-    /**
-     * Collects all templates for a given {@link DocumentType}.
-     * @return List of template paths
-     */
-    public List<Path> collectTemplates(DocumentType documentType) {
-			String workspace = preferences.getString(Constants.GENERAL_WORKSPACE);
-			Path templatePath1 = Paths.get(workspace, getRelativeFolder(documentType));
-			Path templatePath2 = Paths.get(workspace, getLocalizedRelativeFolder(documentType));
-
-			// If the name of the localized folder is equal to "Templates",
-			// don't search 2 times.
-			List<Path> templates = scanPathForTemplates(templatePath1);
-			if (!templatePath1.equals(templatePath2))
-				templates.addAll(scanPathForTemplates(templatePath2));
-			
-    	return templates;
-    }
-
 	/**
 	 * <p>Run the action Search for all available templates. If there is more than
 	 * one, display a menu to select one template. The content of the editor is
@@ -173,6 +129,7 @@ public class CreateOODocumentHandler {
 			@Optional @Named(PARAM_TEMPLATEPATH) String templatePathString,
 			@Optional @Named(PARAM_SILENTMODE) String silentModeString) throws InvocationTargetException, InterruptedException {
 		Path template;
+		TemplateFinder templateFinder = ContextInjectionFactory.make(TemplateFinder.class, context);
 		boolean silentMode = BooleanUtils.toBoolean(silentModeString);
 		if(silentMode) {
 			if (docId == null || templatePathString == null) {
@@ -195,7 +152,7 @@ public class CreateOODocumentHandler {
             	DocumentEditor documentEditor = (DocumentEditor) activePart.getObject();
             	
             	if(documentEditor != null) {
-            		List<Path> templates = collectTemplates(documentEditor.getDocumentType());
+            		List<Path> templates = templateFinder.collectTemplates(documentEditor.getDocumentType());
             		final List<DocumentItem> olditemsList = new ArrayList<>();
             		
             		// new documents need to be saved first, we don't have an id yet
@@ -215,7 +172,7 @@ public class CreateOODocumentHandler {
             				template = templates.get(i);
             				MenuItem item = new MenuItem(menu, SWT.PUSH);
             				item.setText(StringUtils.substringBeforeLast(template.getFileName().toString(),
-            						OO_TEMPLATE_FILEEXTENSION));
+            				        TemplateFinder.OO_TEMPLATE_FILEEXTENSION));
             				item.setData(template);
             				item.addListener(SWT.Selection, (Event e) -> {
             						// save the document and open the exporter
@@ -244,7 +201,7 @@ public class CreateOODocumentHandler {
             		} else {
             			// Show an information dialog if no template was found
             			MessageDialog.openWarning(shell, msg.dialogMessageboxTitleInfo,
-            					MessageFormat.format(msg.dialogPrintooNotemplate, StringUtils.join(getLocalizedRelativeFolder(documentEditor.getDocumentType()), File.separatorChar)));
+            					MessageFormat.format(msg.dialogPrintooNotemplate, StringUtils.join(templateFinder.getLocalizedRelativeFolder(documentEditor.getDocumentType()), File.separatorChar)));
             		}
             	} else {
             		MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.dialogPrintooErrorNoactivepart);
@@ -406,28 +363,6 @@ public class CreateOODocumentHandler {
 
 		tmpDocItems.put(itemToAdd.hashCode(), itemToAdd);
 	}
-
-	/**
-     * Get the relative path of the template
-     * 
-     * @param doctype
-     *            The doctype defines the path
-     * @return The path as string
-     */
-    public String[] getRelativeFolder(DocumentType doctype) {
-        return new String[]{"/Templates", StringUtils.capitalize(doctype.getTypeAsString().toLowerCase())};
-    }
-
-    /**
-     * Get the localized relative path of the template
-     * 
-     * @param doctype
-     *            The doctype defines the path
-     * @return The path as string
-     */
-    public String[] getLocalizedRelativeFolder(DocumentType doctype) {
-        return new String[]{msg.configWorkspaceTemplatesName, msg.getMessageFromKey(DocumentType.getString(doctype))};
-    }
 
     private void openOODocument(final Document document, final Path template, Shell shell, boolean silentMode) {
         OfficeDocument od = ContextInjectionFactory.make(OfficeDocument.class, context);
