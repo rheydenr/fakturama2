@@ -303,12 +303,12 @@ public class MailService implements IPdfPostProcessor {
             BodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setText(settings.getBody());
             mp.addBodyPart(messageBodyPart);
-
-            // HTML TEXT
-            messageBodyPart = new MimeBodyPart();
-            String htmlText = settings.getBodyHtml();
-            messageBodyPart.setContent(htmlText, "text/html");
-            mp.addBodyPart(messageBodyPart);
+//
+//            // HTML TEXT ==> future feature!
+//            messageBodyPart = new MimeBodyPart();
+//            String htmlText = settings.getBodyHtml();
+//            messageBodyPart.setContent(htmlText, "text/html");
+//            mp.addBodyPart(messageBodyPart);
             
             // add attachments
             settings.getAdditionalDocs().stream().map(this::createMimePart).forEach(p -> {

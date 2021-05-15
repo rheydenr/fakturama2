@@ -1323,6 +1323,7 @@ id="04_openoffice_libreoffice">
 		</section>
 		
     	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="zugferd_export.xml"/>
+    	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="mailservice.xml"/>
 
 	</chapter>
 	

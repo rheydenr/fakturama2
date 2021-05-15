@@ -1574,7 +1574,7 @@
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="editor_editor_browser"/><title>Webbrowser</title>
-		<para>Öffnet die Fakturama-<link xl:href="http://www.fakturama.info/">Projektseite</link> in einem Browserfenster.
+		<para>Öffnet die Fakturama-<link xl:href="https://www.fakturama.info">Projektseite</link> in einem Browserfenster.
 		<informalfigure>
 			<mediaobject>
 				<imageobject role="html">
@@ -1659,6 +1659,7 @@
 			</informalfigure>
 			<para>Art dieses Dokumentes incl. Icon. Beispiel: Rechnung, Auftrag, Brief etc.</para>
 		</section>
+		<tip>Die folgenden Felder können zur besseren Übersichtlichkeit des Dialogs eingeklappt werden, in dem man auf die Schaltleiste "allgemeine Angaben" klickt.</tip>
 		<section>
 			<subtitle>Kundenreferenz</subtitle>
 			<para>Referenznummer des Kunden. Bei einem Import aus dem Webshop wird hier die Webshop-Bestellnummer verwendet.</para>
@@ -2169,7 +2170,7 @@
 		</section>
 		<section>
 			<subtitle>Zusätzliche Kontaktdaten</subtitle>
-			<para>Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN, Aliasname und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
+			<para>Hierzu zählen Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN, Aliasname und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
 			<para>Das Eingabefeld für die Webseite ist interaktiv. Hat man hier eine gültige URL eingegeben (beginnend mit "http://" oder "https://"), kann man per <keycombo>
        <keycap>STRG</keycap><mousebutton>Mausklick</mousebutton></keycombo>
 			auf das Feld die Seite direkt im Browser aufrufen. Das gilt auch für das E-Mail-Feld. Hier wird die Standard-E-Mail-Anwendung des Systems verwendet und ein
@@ -2702,6 +2703,7 @@
 		</section>
 		<section>
 			<subtitle>Summe der unbezahlten Rechnungen</subtitle>
+			<para>Fährt man mit der Maus über den Eintrag "Rechnungen" oder einen der Untereinträge, wird die Summe aller unbezahlten bzw. bezahlten Rechnungen angezeigt.</para>
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
@@ -2712,9 +2714,8 @@
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
-			<para>Fährt man mit der Maus über den Eintrag "Rechnungen" oder einen der Untereinträge, wird die Summe aller unbezahlten bzw. bezahlten Rechnungen angezeigt.</para>
 		</section>
-		<sect2>
+		<section>
 			<subtitle>Weitere Bearbeitungssymbole</subtitle>
 			<variablelist>
 				<varlistentry>
@@ -2766,7 +2767,6 @@
 				</varlistentry>
 				<varlistentry>
 					<term>
-
 						<inlinemediaobject>
 							<imageobject role="html">
 								<imagedata fileref="../images/application/plus_16.png" format="PNG" scalefit="1"/>
@@ -2781,7 +2781,8 @@
 					</listitem>
 				</varlistentry>
 			</variablelist>
-		</sect2>
+			<para>Über das Kontextmenü (rechte Maustaste) können in allen Übersichtsfenstern zusätzliche Aktionen ausgeführt werden. Dabei ist auch die Selektion und Bearbeitung  mehrerer Einträge möglich. Kann eine Aktion nicht ausgeführt werden (wenn z. B. kein Eintrag selektiert wurde, der für die Ausführung der Aktion notwendig wäre), wird sie im Kontextmenü inaktiv dargestellt.</para>
+		</section>
 		<section>
 			<subtitle>Suchfeld</subtitle>
 			<informalfigure>

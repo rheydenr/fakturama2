@@ -193,6 +193,20 @@ TLS:    Optional (STARTTLS on all ports)
             Arrays.stream(receivers.split(ADDRESS_SEPARATOR_CHAR)).forEach(r -> receiversTo.add(StringUtils.trim(r)));
         }
     }
+    
+    public void setReceiversCC(String receivers) {
+        if (receivers != null) {
+            receiversCC.clear();
+            Arrays.stream(receivers.split(ADDRESS_SEPARATOR_CHAR)).forEach(r -> receiversCC.add(StringUtils.trim(r)));
+        }
+    }
+    
+    public void setReceiversBCC(String receivers) {
+        if (receivers != null) {
+            receiversBCC.clear();
+            Arrays.stream(receivers.split(ADDRESS_SEPARATOR_CHAR)).forEach(r -> receiversBCC.add(StringUtils.trim(r)));
+        }
+    }
 
     public String getReceiversCC() {
         return StringUtils.join(receiversCC, ADDRESS_SEPARATOR_CHAR);
