@@ -63,11 +63,23 @@ public class QRKExportHandler {
 	@Inject
 	private INumberFormatterService numberFormatter;
 
-	@Execute
-	public void execute(Shell shell, EPartService partService) {
+	@CanExecute
+	public boolean canExecute(EPartService partService) {
 		String qrkImportDirectory = preferences.getString(Constants.PREFERENCES_QRK_EXPORT_PATH);
 		Path qrkImportPath = Paths.get(qrkImportDirectory);
-		if(qrkImportPath == null || !Files.isDirectory(qrkImportPath) || !Files.isWritable(qrkImportPath)) {
+		if(qrkImportDirectory.isEmpty() || qrkImportPath == null || !Files.isDirectory(qrkImportPath) || !Files.isWritable(qrkImportPath)) {
+			return false;
+		}
+
+		MPart activePart = partService.getActivePart();
+		return activePart != null && activePart.getObject() != null
+				&& (activePart.getObject() instanceof DocumentEditor)
+				&& ((DocumentEditor) activePart.getObject()).getDocument().getBillingType().isINVOICE();
+	}
+
+	@Execute
+	public void execute(Shell shell, EPartService partService) {
+		if(!canExecute(partService)) {
 			MessageDialog.openError(shell, msg.dialogMessageboxTitleError, msg.preferencesQrkExportMissingfolder);
 			return;
 		}
@@ -78,6 +90,7 @@ public class QRKExportHandler {
 				&& ((DocumentEditor) activePart.getObject()).getDocument().getBillingType().isINVOICE()) {
             JAXBContext jc;
 			try {
+				String qrkImportDirectory = preferences.getString(Constants.PREFERENCES_QRK_EXPORT_PATH);
 				Map<String, Object> properties = new HashMap<>();
 				properties.put(MarshallerProperties.MEDIA_TYPE, "application/json");
 				jc = JAXBContextFactory.createContext(new Class[]{Receipt2Bon.class, ObjectFactory.class}, properties);
@@ -122,14 +135,6 @@ public class QRKExportHandler {
 	private void logAndShowError(Shell shell, String message) {
 		log.error(message);
 		MessageDialog.openError(shell, msg.dialogMessageboxTitleError, message);
-	}
-
-	@CanExecute
-	public boolean canExecute(EPartService partService) {
-		MPart activePart = partService.getActivePart();
-		return activePart != null && activePart.getObject() != null
-				&& (activePart.getObject() instanceof DocumentEditor)
-				&& ((DocumentEditor) activePart.getObject()).getDocument().getBillingType().isINVOICE();
 	}
 
 }
