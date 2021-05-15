@@ -27,7 +27,7 @@
     <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-14"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true -Dfakturama.use.dbserver=TRUE -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:name=Fakturama -Djaxp.debug=false -Dosgi.nl=de_DE"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true -Dfakturama.use.dbserver=FALSE -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:name=Fakturama -Djaxp.debug=false -Dosgi.nl=de_DE"/>
     <stringAttribute key="pde.version" value="3.3"/>
     <stringAttribute key="product" value="com.sebulli.fakturama.rcp.product"/>
     <stringAttribute key="productFile" value="\com.sebulli.fakturama.site\com.sebulli.fakturama.product"/>
@@ -500,7 +500,6 @@
         <setEntry value="org.javamoney.osgi@default:default"/>
         <setEntry value="org.sat4j.core@default:default"/>
         <setEntry value="org.sat4j.pb@default:default"/>
-        <setEntry value="org.slf4j.api*1.7.2.v20121108-1250@default:default"/>
         <setEntry value="org.slf4j.api*1.7.30.v20200204-2150@default:default"/>
         <setEntry value="org.slf4j.jul@default:default"/>
         <setEntry value="org.tukaani.xz@default:default"/>

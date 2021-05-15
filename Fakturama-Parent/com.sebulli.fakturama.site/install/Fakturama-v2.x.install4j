@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.9" transformSequenceNumber="8">
   <directoryPresets config="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
-  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.1" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="8" jdkName="JDK 1.8 x64">
+  <application name="Fakturama" applicationId="5777-4828-1295-4178" mediaDir="./install" lzmaCompression="true" shortName="${compiler:sys.fullName}" publisher="Fakturama.org" publisherWeb="www.Fakturama.info" version="2.1.2-beta" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macVolumeId="e83f8980f4b76458" javaMinVersion="11" jdkName="JDK 1.8 x64">
     <languages skipLanguageSelection="true">
       <principalLanguage id="de" />
       <additionalLanguages>
@@ -24,6 +24,7 @@
       <variable name="sys.ext.rpmSummary" value="A tool for creating invoices and manage your products and customers." />
     </variables>
     <codeSigning windowsEnabled="true" windowsPkcs12File="../../../../../Documents/Zertifikat/Fakturama.org.p12" />
+    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk15/jdk-15.0.2+7" />
   </application>
   <files keepModificationTimes="true" globalExcludeSuffixes=".svn,.git">
     <filesets>
@@ -684,6 +685,7 @@ return console.askYesNo(message, true);
         <entry filesetId="49" />
         <entry filesetId="54" />
       </exclude>
+      <jreBundle usePack200="false" jreBundleSource="generated" />
     </windows>
     <unixInstaller name="Unix Installer (Linux 64bit)" id="59" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2">
       <excludedLaunchers>
@@ -695,6 +697,7 @@ return console.askYesNo(message, true);
         <entry filesetId="41" />
         <entry filesetId="49" />
       </exclude>
+      <jreBundle usePack200="false" jreBundleSource="generated" />
     </unixInstaller>
     <linuxRPM name="Linux RPM" id="119" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" arch="x86_64">
       <excludedLaunchers>
@@ -705,6 +708,7 @@ return console.askYesNo(message, true);
         <entry filesetId="32" />
         <entry filesetId="41" />
       </exclude>
+      <jreBundle jreBundleSource="generated" />
       <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
 sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxRPM>
@@ -717,15 +721,15 @@ sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
         <entry filesetId="32" />
         <entry filesetId="41" />
       </exclude>
+      <jreBundle jreBundleSource="generated" />
       <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
 sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxDeb>
+    <macosFolderArchive name="macOS Folder Archive" id="611">
+      <jreBundle jreBundleSource="generated" />
+    </macosFolderArchive>
   </mediaSets>
   <buildIds>
-    <mediaSet refId="45" />
-    <mediaSet refId="59" />
-    <mediaSet refId="119" />
     <mediaSet refId="120" />
   </buildIds>
-  <buildOptions disableJreBundling="true" />
 </install4j>
