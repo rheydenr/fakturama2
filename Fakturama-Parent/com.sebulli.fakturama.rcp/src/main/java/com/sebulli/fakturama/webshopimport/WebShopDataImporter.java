@@ -77,6 +77,8 @@ import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.dto.Price;
+import com.sebulli.fakturama.dto.PriceBuilder;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
@@ -688,6 +690,10 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 
 			// Calculate the net value of the price
 			MonetaryAmount priceGross = FastMoney.of(itemType.getGross(), currencyCode);
+			Price p = new PriceBuilder().withUnitPrice(priceGross)
+			                    .withGrossPrices(true)
+			                    .withVatPercent(vatPercent).build();
+			        
 			MonetaryAmount priceNet = priceGross.divide(1 + vatPercent);
 
             // Add the VAT value to the data base, if it is a new one

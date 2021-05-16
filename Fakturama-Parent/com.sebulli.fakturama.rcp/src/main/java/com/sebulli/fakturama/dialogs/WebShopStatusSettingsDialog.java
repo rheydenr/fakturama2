@@ -10,35 +10,37 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.widgets.ButtonFactory;
+import org.eclipse.jface.widgets.CompositeFactory;
+import org.eclipse.jface.widgets.LabelFactory;
+import org.eclipse.jface.widgets.TextFactory;
 import org.eclipse.nebula.widgets.treemapper.ISemanticTreeMapperSupport;
 import org.eclipse.nebula.widgets.treemapper.TreeMapper;
 import org.eclipse.nebula.widgets.treemapper.TreeMapperUIConfigProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -86,25 +88,17 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
     @Inject
     private ILogger log;
     
-	private Control top;
-
 	private Text connectorVersion, shopInfoString;
 
 	private TreeMapper<WebshopOrderStateMapping, WebshopOrderState, OrderState> treeMapper;
 	private List<WebshopOrderStateMapping> mappings;
-
+	
 	@Inject
-	public WebShopStatusSettingsDialog(Shell shell, @Translation Messages msg) {
+	public WebShopStatusSettingsDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		super(shell);
 		setShellStyle(SWT.RESIZE | SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
-		this.msg = msg;
 	}
 
-	@PostConstruct
-	public void initialize(Shell shell) {
-		this.top = (Control) context.get(Composite.class);
-	}
-	
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		// Set the title
@@ -112,66 +106,66 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 		parent.getShell().setText(msg.preferencesWebshopSettings);
 		// setTitle(msg.preferencesWebshopSettings);
 		Composite area = (Composite) super.createDialogArea(parent);
-		Composite container = new Composite(area, SWT.NONE);
-		GridLayout gl_container = new GridLayout(2, false);
-		gl_container.horizontalSpacing = 2;
-		container.setLayout(gl_container);
-		container.setLayoutData(new GridData(GridData.FILL_BOTH));
+		Composite container = CompositeFactory.newComposite(SWT.NONE)
+		        .layout(GridLayoutFactory.swtDefaults().equalWidth(true).spacing(2, SWT.DEFAULT).numColumns(2).create())
+		        .layoutData(GridDataFactory.fillDefaults().create())
+		        .create(area);
 
 		setMessage(msg.preferencesWebshopSettingsDescription, IMessageProvider.INFORMATION);
 
-		Button stateBtn = new Button(container, SWT.PUSH);
-		stateBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 2, 1));
+		ButtonFactory.newButton(SWT.PUSH)
+		        .layoutData(GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.TOP).span(2, 1).create())
+		        .text(msg.preferencesWebshopSettingsGetallstates)
+		        .onSelect(e -> {
+		            Webshopexport wsExport = execute(parent.getShell());
+		            if (wsExport != null) {
+		                // set the values from web shop
+		                shopInfoString.setText(String.format("%s (%s: %s)", wsExport.getWebshop().getShop(),
+		                        msg.helpAboutfeaturesdialogVersion,
+		                        StringUtils.defaultIfBlank(wsExport.getCompleteVersion(), "unknown")));
+		                connectorVersion.setText(wsExport.getVersion());
 
-		stateBtn.setText(msg.preferencesWebshopSettingsGetallstates);
-		stateBtn.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-			Webshopexport wsExport = execute(parent.getShell());
-			if (wsExport != null) {
-				// set the values from web shop
-				shopInfoString.setText(String.format("%s (%s: %s)", wsExport.getWebshop().getShop(),
-						msg.helpAboutfeaturesdialogVersion,
-						StringUtils.defaultIfBlank(wsExport.getCompleteVersion(), "unknown")));
-				connectorVersion.setText(wsExport.getVersion());
-				// isMappingChanged = true;
+		                // fill WebshopStateTreeMapper
+		                if (wsExport.getStatusList() == null || wsExport.getStatusList().getStatus().isEmpty()) {
+		                    log.error("can't get status list from web shop, status list is empty!");
+		                    MessageDialog.openError(getParentShell(), msg.dialogMessageboxTitleError,
+		                            msg.preferencesWebshopSettingsStateError);
+		                } else {
+		                    StatusType statusList = wsExport.getStatusList();
+		                    List<WebshopOrderState> leftTreeInput = new ArrayList<>(statusList.getStatus().size());
+		                    // TODO perhaps a naming confusion?
+		                    // statusList is a container for several statuses, getStatus() returns a list of
+		                    // statuses
+		                    for (Status st : statusList.getStatus()) {
+		                        WebshopOrderState webshopOrderState = new WebshopOrderState(st.getId(), st.getName());
+		                        leftTreeInput.add(webshopOrderState);
+		                    }
+		                    // throw away all mappings
+		                    mappings.clear();
+		                    // and create a new one
+		                    setInputAndActivateTreeMapperWidget(leftTreeInput, true);
+		                }
+		            }
+		        })
+		        .create(container);
 
-				// fill WebshopStateTreeMapper
-				if (wsExport.getStatusList() == null || wsExport.getStatusList().getStatus().isEmpty()) {
-					log.error("can't get status list from web shop, status list is empty!");
-					MessageDialog.openError(getParentShell(), msg.dialogMessageboxTitleError,
-							msg.preferencesWebshopSettingsStateError);
-				} else {
-					StatusType statusList = wsExport.getStatusList();
-					List<WebshopOrderState> leftTreeInput = new ArrayList<>(statusList.getStatus().size());
-					// TODO perhaps a naming confusion?
-					// statusList is a container for several statuses, getStatus() returns a list of
-					// statuses
-					for (Status st : statusList.getStatus()) {
-						WebshopOrderState webshopOrderState = new WebshopOrderState(st.getId(), st.getName());
-						leftTreeInput.add(webshopOrderState);
-					}
-					// throw away all mappings
-					mappings.clear();
-					// and create a new one
-					setInputAndActivateTreeMapperWidget(leftTreeInput, true);
-				}
-			}
-		}));
+		LabelFactory.newLabel(SWT.READ_ONLY)
+	        .text(msg.preferencesWebshopSettingsShopinfo)
+	        .create(container);
+		shopInfoString = TextFactory.newText(SWT.READ_ONLY)
+	        .layoutData(GridDataFactory.fillDefaults().grab(true, false).create())
+		    .create(container);
 
-		Label lblShopInfo = new Label(container, SWT.READ_ONLY);
-		lblShopInfo.setText(msg.preferencesWebshopSettingsShopinfo);
-		shopInfoString = new Text(container, SWT.READ_ONLY);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(shopInfoString);
-
-		Label lblConnectorVersion = new Label(container, SWT.READ_ONLY);
-		lblConnectorVersion.setText(msg.preferencesWebshopSettingsVersion);
-		connectorVersion = new Text(container, SWT.READ_ONLY);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(connectorVersion);
+		LabelFactory.newLabel(SWT.READ_ONLY)
+		    .text(msg.preferencesWebshopSettingsVersion)
+		    .create(container);
+		connectorVersion = TextFactory.newText(SWT.READ_ONLY)
+	        .layoutData(GridDataFactory.fillDefaults().grab(true, false).create())
+	        .create(container);
 
 		// WebshopStateTreeMapper -> disabled if no web shop states are available! 
 		createTreeMapperWidget(container);
 
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
-		
 		return area;
 	}
 	
