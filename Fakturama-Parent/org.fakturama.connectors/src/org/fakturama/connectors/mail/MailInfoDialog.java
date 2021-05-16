@@ -202,7 +202,19 @@ public class MailInfoDialog {
         IObservableList<String> attachmentList = listFactory.createObservable(listViewer.getControl());
         IObservableList<String> att = PojoProperties.list(MailSettings.class, MailSettings.FIELD_RECEIVERS_ADDITIONALDOCS, String.class).observe(settings);
 
-        Binding recBind = bindingContext.bindValue(rec, receiversTo, emailValidationStrategy, null);
+        UpdateValueStrategy<String, String> recStr = new UpdateValueStrategy<>(); 
+        recStr.setBeforeSetValidator((String emailAddress) -> {
+            // E-Mail for recipient should be not empty
+            boolean isValid = Arrays.asList(emailAddress.split(MailSettings.ADDRESS_SEPARATOR_CHAR))
+                    .stream()
+                    .allMatch(e -> EmailValidator.getInstance().isValid(e));
+
+            sendButton.setEnabled(isValid);
+            return isValid ? ValidationStatus.ok() : ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
+        });
+        
+        
+        Binding recBind = bindingContext.bindValue(rec, receiversTo, recStr, null);
         ControlDecorationSupport.create(recBind, SWT.TOP | SWT.LEFT);
 
         Binding ccBind = bindingContext.bindValue(recCC, receiversCC, emailValidationStrategy, null);
