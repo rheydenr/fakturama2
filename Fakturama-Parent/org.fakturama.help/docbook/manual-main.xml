@@ -223,7 +223,8 @@ xattr -d com.apple.quarantine Fakturama2.app
        Anschließend im Finder mit gedrückter CTRL-Taste das Fakturama-Icon anklicken und in dem aufklappenden Menü "Öffnen" wählen. Dann muss man nur noch die Netzwerkverbindung zulassen. 
        Die nachfolgenden Aufrufe funktionieren dann auch ohne CTRL-Taste. </para><para>Seit Version 2.1 ist die Anwendung signiert, da Problem sollte damit nicht mehr auftreten.
 	</para></answer>
-	</qandaentry>	
+	</qandaentry><question><para>Die Menüleiste kann nicht aktiviert (angeklickt) werden</para></question>
+	<answer><para>Dazu kurz zu einem beliebigen anderen Programm (oder zum Desktop) wechseln und dann wieder zurück zu Fakturama.</para></answer>
 	</qandadiv>
 	
       <qandadiv>

@@ -1660,6 +1660,16 @@
 			<para>Art dieses Dokumentes incl. Icon. Beispiel: Rechnung, Auftrag, Brief etc.</para>
 		</section>
 		<tip>Die folgenden Felder können zur besseren Übersichtlichkeit des Dialogs eingeklappt werden, in dem man auf die Schaltleiste "allgemeine Angaben" klickt.</tip>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/blue_bar.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="60%" fileref="../images/editor/blue_bar.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
 		<section>
 			<subtitle>Kundenreferenz</subtitle>
 			<para>Referenznummer des Kunden. Bei einem Import aus dem Webshop wird hier die Webshop-Bestellnummer verwendet.</para>
@@ -1888,6 +1898,19 @@
 				</para>
 			</tip>
 		</section>
+		<section><subtitle>Eingabe Gewicht</subtitle>
+		<para>Wurde in den Einstellungen die Option "Gewicht verwenden" aktiviert (siehe <link linkend="preferences_use_weight_and_vat">Einstellung "MwSt. auswählbar und Gewicht benutzen"</link>), erscheint unter der Artikelliste ein Eingabefeld für das Verpackungsgewicht (Tara) der Sendung. Brutto- und Nettogewicht werden zur Information mit dargestellt.</para>
+		<informalfigure>
+			<inlinemediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/weight_tara.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="50%" fileref="../images/editor/weight_tara.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</inlinemediaobject>
+		</informalfigure>
+		</section>
 		<section>
 			<subtitle>Bemerkung</subtitle>
 			<para>Feld für eine zusätzliche Bemerkung, die auf Rechnung oder Lieferschein gedruckt wird.
@@ -2024,7 +2047,7 @@
 						<imagedata fileref="../images/editor/editor_product_qunit_plural.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata width="60%" fileref="../images/editor/editor_product_qunit_plural.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="80%" fileref="../images/editor/editor_product_qunit_plural.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>

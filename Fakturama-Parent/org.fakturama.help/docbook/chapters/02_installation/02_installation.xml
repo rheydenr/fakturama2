@@ -205,7 +205,7 @@
 		</para>
 	</section>
 	<section>
-			<anchor xreflabel="" xml:id="install_startparameter"/>
+		<anchor xreflabel="" xml:id="install_startparameter"/>
 		<subtitle>Zusätzliche Programmparameter beim Programmaufruf</subtitle>
 		<para>Sie können Fakturama mit zusätzlichen Parametern starten, um bestimmte Einstellungen zu überschreiben bzw. neu zu setzen (z. B. Sprache oder Arbeitsverzeichnis). </para>
 		<sect2>
@@ -299,5 +299,15 @@
 			</itemizedlist>
 		</sect2>
 		<tip>Unter dem MacOS-Betriebssystem kann die Sprache auch direkt im Kontrollzentrum eingestellt werden (über "Sprache &amp; Region").</tip>
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/install/localize_macos.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="180%" fileref="../images/install/localize_macos.png" format="PNG" scalefit="0"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
 	</section>
 </chapter>

@@ -41,6 +41,10 @@
             <para>Es ist möglich, nur ein Symbol wie '€' zu verwenden, aber auch einen ISO-Code wie 'EUR' oder gar kein Währungskennzeichen. Im Beispielfeld kann man sehen, wie Beträge mit den ausgewählten Einstellungen angezeigt werden würden. Zu beachten ist, dass sich abhängig vom gewählten Land auch die Darstellung der Betragszahl ändert, da hier die unterschiedlichen länderspezifischen Einstellungen greifen.</para>
 			<para>Wählt man als Währungsland <emphasis role="bold">Schweiz</emphasis> aus, kann man das Feld "Bar-Rundung" anklicken. Dies sorgt dafür, dass alle berechneten Beträge auf volle 0.05 Rappen gerundet werden.</para>
 		</section>
+        <section>
+            <subtitle>Zahlen mit Tausenderpunkt darstellen</subtitle>
+            <para>Ist diese Option gesetzt, werden alle Zahlen mit Tausenderpunkt dargestellt, z. B. "1.000,00 €".</para>
+        </section>
 		<section><subtitle>Anzahl der Nachkommastellen (Währung)</subtitle>
 			<para>Die Anzahl der Nachkommastellen legt fest, wie viele Nachkommastellen bei Beträgen angezeigt und gedruckt werden sollen. Die maximale Anzahl ist derzeit 5.</para>
         </section>
@@ -48,8 +52,12 @@
 			<para>Die Anzahl der Nachkommastellen legt fest, wie viele Nachkommastellen bei allen Zahlen angezeigt und gedruckt werden sollen, die keine Währung darstellen (Mengen, Gewichte usw.). Die maximale Anzahl ist derzeit 5.</para>
         </section>
         <section>
-            <subtitle>Zahlen mit Tausenderpunkt darstellen</subtitle>
-            <para>Ist diese Option gesetzt, werden alle Zahlen mit Tausenderpunkt dargestellt, z. B. 1.000,00 €.</para>
+            <subtitle>Datenbank-Verbindung</subtitle>
+            <para>Dieses Feld dient nur zur Information über die verwendete Datenbank-Verbindung. Es kann nicht geändert werden (das wird beim Einrichten der Anwendung festgelegt).</para>
+        </section>
+        <section>
+            <subtitle>Button "Alle gemerkten Entscheidungen zurücksetzen"</subtitle>
+            <para>Mit dieser Schaltfläche kann man sämtliche Dialoge, die man mit "Entscheidung merken" markiert hat, wieder sichtbar machen.</para>
         </section>
     </section>
     <section>
@@ -284,7 +292,7 @@
         <title>Firmendaten</title>
         <section>
             <subtitle>Adresse und zusätzliche Daten Ihrer Firma</subtitle>
-            <para>Die Adresse wird benutzt, um beispielsweise beim Exportieren der Umsätze in einer Tabelle diese mit den Firmendaten zu füllen oder auch zum Ausfüllen der Formulardaten des Paketdienstes.</para>
+            <para>Die Adresse wird benutzt, um beispielsweise beim Exportieren der Umsätze in einer Tabelle diese mit den Firmendaten zu füllen oder auch zum Ausfüllen der Formulardaten des Paketdienstes. Darüberhinaus wird die E-Mail-Adresse als Absendeadresse für den Mailservice (<link linkend="using_mailservice">Verwendung des Mailservice</link>) verwendet. Bei Verwendung deser Funktion sollte das Feld entsprechend gesetzt sein.</para>
             <informalfigure>
                 <mediaobject>
                     <imageobject role="html">
@@ -349,7 +357,7 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_address.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="120%" fileref="../images/preferences/../editor/editor_contact_address.png" format="PNG" scalefit="1" width="120%"/>
+                        <imagedata contentdepth="200%" fileref="../images/preferences/../editor/editor_contact_address.png" format="PNG" scalefit="1"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -363,7 +371,7 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="120%" fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1" width="120%"/>
+                        <imagedata contentdepth="220%" fileref="../images/preferences/../editor/editor_contact_bank.png" format="PNG" scalefit="1"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -377,7 +385,7 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="120%" fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1" width="120%"/>
+                        <imagedata contentdepth="220%" fileref="../images/preferences/../editor/editor_contact_misc.png" format="PNG" scalefit="1"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -391,7 +399,7 @@
                         <imagedata fileref="../images/preferences/../editor/editor_contact_notes.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="60%" fileref="../images/preferences/../editor/editor_contact_notes.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="60%" fileref="../images/preferences/../editor/editor_contact_notes.png" format="PNG" scalefit="1"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
@@ -423,11 +431,13 @@
                         <imagedata fileref="../images/preferences/use_sales_equalizationtax.png" format="PNG" scalefit="1"/>
                     </imageobject>
                     <imageobject role="fo">
-                        <imagedata contentdepth="100%" fileref="../images/preferences/use_sales_equalizationtax.png" format="PNG" scalefit="1" width="100%"/>
+                        <imagedata contentdepth="80%" fileref="../images/preferences/use_sales_equalizationtax.png" format="PNG" scalefit="1" width="100%"/>
                     </imageobject>
                 </mediaobject>
             </informalfigure>
 		</section>
+		<section><subtitle>Prüfung auf fortlaufende Nummernvergabe deaktivieren</subtitle>
+		<para>Normalerweise wird beim Anlegen eines Kontaktes geprüft, ob die Kontakt-Nr. die nächste freie gemäß dem Nummernschema ist. Ist das nicht der Fall, gibt es einen entsprechenden Fehlerhinweis. Dieser Schalter deaktiviert die Nummernprüfung beim Erstellen neuer Kontakte.</para></section>
     </section>
     <section>
         <anchor xreflabel="" xml:id="preferences_contactformat"/>
@@ -516,46 +526,32 @@
     <section>
         <anchor xreflabel="" xml:id="preferences_mailservice"/>
         <title>Einstellungen Mailservice</title>
-       <!-- informalfigure>
+       <informalfigure>
             <mediaobject>
                 <imageobject role="html">
-                    <imagedata fileref="../images/preferences/mailservice.png" format="PNG" scalefit="1"/>
+                    <imagedata fileref="../images/preferences/mailservice_prefs.png" format="PNG" scalefit="1"/>
                 </imageobject>
                 <imageobject role="fo">
-                    <imagedata contentdepth="70%" fileref="../images/preferences/mailservice.png" format="PNG" scalefit="1" width="100%"/>
+                    <imagedata contentdepth="50%" fileref="../images/preferences/mailservice_prefs.png" format="PNG" scalefit="1" width="60%"/>
                 </imageobject>
             </mediaobject>
-        </informalfigure -->
-		<para>Werden Rechnungen als PDF erstellt (Siehe auch <link linkend="preferences_openoffice">Einstellungen Dokumente</link>), kann man sie anschließend mit Fakturama als Mail versenden. Dazu müssen in diesem Dialog die Einstellungen vorgenommen werden.</para>
+        </informalfigure>
+		<para>Werden Rechnungen als PDF erstellt (siehe auch <link linkend="preferences_openoffice">Einstellungen Dokumente</link>), kann man sie anschließend mit Fakturama als E-Mail versenden. Dazu müssen in diesem Dialog die Einstellungen vorgenommen werden.</para>
 		<section>
             <subtitle>Mailservice aktivieren</subtitle>
-			<para>Damit schaltet man den Mailservice ein oder aus. Wird der Service aktiviert, so wird nach dem erfogreichen Erstellen eines PDFs ein Dialog angezeigt, in dem man die zu sendende Mail nochmals prüfen kann.</para>
+			<para>Damit schaltet man den Mailservice ein oder aus. Wird der Service aktiviert, so wird nach dem erfogreichen Erstellen eines PDFs ein Dialog angezeigt, in dem man die zu sendende E-Mail nochmals prüfen kann.</para>
 			<para>Folgende Einstellungen können gesetzt werden:</para>
-            <itemizedlist>
-                <listitem>
-                    <para>
-                        <emphasis role="bold">Host</emphasis> Mailserver, der für den Versand genutzt werden soll</para>
-                </listitem>
-                <listitem>
-                    <para>
-                        <emphasis role="bold">Benutzer</emphasis> Benutzername, mit dem man sich am Mailserver anmelden muss
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-                        <emphasis role="bold">Passwort</emphasis> Passwort für die Anmeldung am Mailserver
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-                        <emphasis role="bold">Pfad für zusätzliche Dokumente</emphasis> Hier kann ein (absoluter) Pfad angegeben werden, in dem weitere Dokumente liegen, die stets an jede Mail mit angefügt werden.
-                    </para>
-                </listitem>
-			</itemizedlist>
+            <segmentedlist>
+                <segtitle>Host</segtitle><seg>Mailserver, der für den Versand genutzt werden soll</seg>
+                <segtitle>Benutzer</segtitle><seg>Benutzername, mit dem man sich am Mailserver anmelden muss</seg>
+                <segtitle>Passwort</segtitle><seg>Passwort für die Anmeldung am Mailserver</seg>
+                <segtitle>Pfad für zusätzliche Dokumente</segtitle><seg>Hier kann ein (absoluter) Pfad angegeben werden, in dem weitere Dokumente liegen, die stets an jede E-Mail mit angefügt werden.</seg>
+			</segmentedlist>
 			<section>
 				<subtitle>Betreffzeile für&#x2026;</subtitle>
 				<para>Hier kann für jede Dokumentart ein eigener Betreff angegeben werden. Dabei können auch Platzhalter eingesetzt werden (siehe <link linkend="openoffice_placeholders_common">Allgemeine Platzhalter</link>).</para>
 			</section>
+			<section>Die Konfiguration des Mailtextes erfolgt über eine separate Vorlagendatei (siehe <link linkend="using_mailservice">Verwendung des Mailservices</link>).</section>
 		</section>
 	</section>
     <section>
@@ -887,7 +883,7 @@
             </informalfigure>
         </section>
         <section>
-                <anchor xreflabel="" xml:id="preferences_product_netgross"/>
+            <anchor xreflabel="" xml:id="preferences_product_netgross"/>
             <subtitle>Preise als Netto und Brutto eingeben</subtitle>
             <para>Es ist möglich, den Preis sowohl als Netto- als auch als Bruttowert darstellen zu lassen.</para>
             <informalfigure>
@@ -916,6 +912,7 @@
             </informalfigure>
         </section>
         <section>
+			<anchor xreflabel="foo" xml:id="preferences_use_weight_and_vat"/>
             <subtitle>MwSt. auswählbar und Gewicht benutzen</subtitle>
             <para>Falls die Produkte immer mit dem gleichen (Standard-) Steuersatz ausgezeichnet werden, kann das Feld 'Mehrwertsteuer' ausgeblendet werden.</para>
 			<para>Falls die Produkte ohne Gewichtsangabe angelegt werden, kann das Feld 'Gewicht' ausgeblendet werden.</para>

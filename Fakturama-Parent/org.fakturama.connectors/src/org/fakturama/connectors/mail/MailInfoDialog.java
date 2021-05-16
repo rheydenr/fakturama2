@@ -95,13 +95,18 @@ public class MailInfoDialog {
         this.shell = shell;
         
         emailValidationStrategy.setBeforeSetValidator((String emailAddress) -> {
-            if (StringUtils.isBlank(emailAddress)) {
+            // either To, CC or BCC has to have at least one entry
+            boolean isValid;
+            if (StringUtils.isBlank(emailAddress)
+                   && (!receiverTo.getText().isBlank() || !receiverCC.getText().isBlank() || !receiverBCC.getText().isBlank())) {
                 return ValidationStatus.ok();
             }
 
-            boolean isValid = Arrays.asList(emailAddress.split(MailSettings.ADDRESS_SEPARATOR_CHAR))
+            isValid = Arrays.asList(emailAddress.split(MailSettings.ADDRESS_SEPARATOR_CHAR))
                     .stream()
-                    .allMatch(e -> StringUtils.isBlank(e) || EmailValidator.getInstance().isValid(e));
+                    .allMatch(e -> StringUtils.isBlank(e)
+                                && (!receiverTo.getText().isBlank() || !receiverCC.getText().isBlank() || !receiverBCC.getText().isBlank()) 
+                                || EmailValidator.getInstance().isValid(e));
 
             sendButton.setEnabled(isValid);
             return isValid ? ValidationStatus.ok() : ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
@@ -201,20 +206,8 @@ public class MailInfoDialog {
 
         IObservableList<String> attachmentList = listFactory.createObservable(listViewer.getControl());
         IObservableList<String> att = PojoProperties.list(MailSettings.class, MailSettings.FIELD_RECEIVERS_ADDITIONALDOCS, String.class).observe(settings);
-
-        UpdateValueStrategy<String, String> recStr = new UpdateValueStrategy<>(); 
-        recStr.setBeforeSetValidator((String emailAddress) -> {
-            // E-Mail for recipient should be not empty
-            boolean isValid = Arrays.asList(emailAddress.split(MailSettings.ADDRESS_SEPARATOR_CHAR))
-                    .stream()
-                    .allMatch(e -> EmailValidator.getInstance().isValid(e));
-
-            sendButton.setEnabled(isValid);
-            return isValid ? ValidationStatus.ok() : ValidationStatus.error(msg.editorContactFieldEmailValidationerror);
-        });
         
-        
-        Binding recBind = bindingContext.bindValue(rec, receiversTo, recStr, null);
+        Binding recBind = bindingContext.bindValue(rec, receiversTo, emailValidationStrategy, null);
         ControlDecorationSupport.create(recBind, SWT.TOP | SWT.LEFT);
 
         Binding ccBind = bindingContext.bindValue(recCC, receiversCC, emailValidationStrategy, null);
