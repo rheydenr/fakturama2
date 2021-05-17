@@ -42,19 +42,6 @@ public class MailSettings {
     public static final String FIELD_RECEIVERS_BODY = "body";
     public static final String FIELD_RECEIVERS_ADDITIONALDOCS = "additionalDocs";
     
-    
-/*
-SMTP
-
-Host:    smtp.mailtrap.io
-Port:    25 or 465 or 587 or 2525
-Username:    a6251406eb8784
-Password:    f2a28eb950877f
-Auth:    PLAIN, LOGIN and CRAM-MD5
-TLS:    Optional (STARTTLS on all ports) 
-
-*/
-    
     /**
      * Checks if the mandatory fields are set
      * 
