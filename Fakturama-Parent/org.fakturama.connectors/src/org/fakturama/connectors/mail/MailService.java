@@ -160,9 +160,9 @@ public class MailService implements IPdfPostProcessor {
 
         MailSettings settings = new MailSettings()
                 .withSender(prefs.node(rcpBundlePrefsNodeName).get(Constants.PREFERENCES_YOURCOMPANY_EMAIL, ""))
-                .withUser(prefs.get(MailServiceConstants.PREFERENCES_MAIL_USER, "")) // a6251406eb8784
-                .withPassword(prefs.get(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, "")) // f2a28eb950877f
-                .withHost(prefs.get(MailServiceConstants.PREFERENCES_MAIL_HOST, "")) // smtp.mailtrap.io
+                .withUser(prefs.get(MailServiceConstants.PREFERENCES_MAIL_USER, "")) 
+                .withPassword(prefs.get(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, "")) 
+                .withHost(prefs.get(MailServiceConstants.PREFERENCES_MAIL_HOST, ""))
                 .withReceiversTo(billingAdress.getEmail())
                 .withSubject(createMailSubject(invoice, templateProcessor));
 
