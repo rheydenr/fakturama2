@@ -573,4 +573,6 @@ public class Constants {
 	public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
 
     public static final String DISPLAY_SUCCESSFUL_PRINTING = "DISPLAY_SUCCESSFUL_PRINTING";
+
+    public static final String CURRENT_PROGRAM_VERSION = "CURRENT_PROGRAM_VERSION";
 }

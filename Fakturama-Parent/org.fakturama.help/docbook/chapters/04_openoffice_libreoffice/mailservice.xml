@@ -6,7 +6,7 @@
   <title>Verwendung des Mailservice</title>
   <anchor xreflabel="" xml:id="using_mailservice"/>
   <para>Wurde der Mailservice aktiviert (siehe <link linkend="preferences_mailservice">Einstellungen Mailservice</link>), wird nach dem erfolgreichen Erstellen eines PDFs ein Dialog für den Mailversand angezeigt. Hier können noch die Angaben zu den Empfängern, der Betreff der E-Mail, der eigentliche Mailtext und auch die Anhänge geändert werden. Sämtliche Felder sind bereits anhand des soeben gedruckten Dokumentes vorausgefüllt (außer CC und BCC).</para>
-  <warning>Es ist darauf zu achten, dass in den Einstellungen zur eigenen Firma eine korrekte E-Mail-Adresse hinterlegt ist. Des weiteren müssen die Felder für Hist, Benutzer und Passwort korrekt ausgefüllt sein. Mindestens eins der Felder für Empfänger, CC oder BCC muss ebenfalls gefüllt sein. Das Programm zeigt ansonsten eine entsprechende Fehlermeldung an.</warning>
+  <warning>Es ist darauf zu achten, dass in den Einstellungen zur eigenen Firma eine korrekte E-Mail-Adresse hinterlegt ist. Des weiteren müssen die Felder für Host, Benutzer und Passwort korrekt ausgefüllt sein. Mindestens eins der Felder für Empfänger, CC oder BCC muss ebenfalls gefüllt sein. Das Programm zeigt ansonsten eine entsprechende Fehlermeldung an.</warning>
    <informalfigure>
 		<mediaobject>
 			<imageobject role="html">
