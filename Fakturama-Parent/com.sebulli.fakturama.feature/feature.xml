@@ -4,11 +4,7 @@
       label="Fakturama Core Feature"
       version="2.1.2.qualifier"
       provider-name="Fakturama.org"
-      plugin="com.sebulli.fakturama.rcp"
-      os="linux,macosx,win32"
-      ws="cocoa,gtk,win32"
-      nl="ar,ar_LY,de,de_AT,de_CH,de_DE,de_LI,el,en,es_ES,eu,fr,hu,it,pl,ro,ru,sk,sv,tr,uk"
-      arch="x86_64">
+      plugin="com.sebulli.fakturama.rcp">
 
    <description url="https://www.fakturama.info">
       Fakturama - Free Invoicing Software
