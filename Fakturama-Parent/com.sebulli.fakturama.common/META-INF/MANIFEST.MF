@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Common
+Bundle-Name: Fakturama Common
 Bundle-SymbolicName: com.sebulli.fakturama.common
 Bundle-Version: 2.1.2.qualifier
 Export-Package: com.sebulli.fakturama.common,
@@ -53,3 +53,4 @@ Service-Component: OSGI-INF/logservice.xml,OSGI-INF/monetary_amount_format_provi
  OSGI-INF/numberformatter.xml
 Eclipse-BuddyPolicy: registered
 Automatic-Module-Name: com.sebulli.fakturama.common
+Bundle-Vendor: Fakturama.org

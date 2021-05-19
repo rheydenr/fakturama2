@@ -51,7 +51,8 @@ public class StringToEntityConverter<T extends IEntity> extends Converter<String
         // TODO Look for a better approach! ==> ComboBoxLabelProvider??
         Optional<T> firstFound;
         if(!isDescribable) {
-            firstFound = categories.stream().filter(cat -> StringUtils.equalsIgnoreCase(cat.getName(), fromObject)).findFirst();
+            firstFound = categories.stream()
+                    .filter(cat -> StringUtils.equalsAny(fromObject, cat.getName(), ((IDescribableEntity)cat).getDescription())).findFirst();
 //        for (T category : categories) {
 //            if(category.getName().equals(searchString)) {
 //                return category;

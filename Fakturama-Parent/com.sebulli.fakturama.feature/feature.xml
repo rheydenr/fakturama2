@@ -14,12 +14,13 @@ or OpenOffice.
 Connect your web shop with Fakturama and get all
 your orders, products and customers in sync. Futher, you can
 fill out online forms from various parcel services automatically.
-Last - but not least - you can create ZUGFeRD invoices without
-additional effort.
+Last - but not least - you can create ZUGFeRD or XRechnung invoices
+without additional effort. Furthermore, you can send your invoices
+via e-mail.
    </description>
 
    <copyright url="https://www.fakturama.info">
-      Copyright (C) 2020 Fakturama Team
+      Copyright (C) 2021 Fakturama Team
    </copyright>
 
    <license url="http://www.eclipse.org/legal/epl-v10.html">
@@ -270,6 +271,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
          install-size="0"
          version="0.0.0"
          fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.fakturama.connectors"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>

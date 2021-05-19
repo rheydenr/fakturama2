@@ -76,7 +76,7 @@ public class MarkDocumentAsPaidHandler {
             @SuppressWarnings("rawtypes")
             AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
             Document[] selectedObjects = (Document[]) currentListtable.getSelectedObjects();
-            retval = selectedObjects != null && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType().isINVOICE() || doc.getBillingType().isCREDIT());
+            retval = selectedObjects != null  && selectedObjects.length > 0 && Arrays.stream(selectedObjects).allMatch(doc -> doc.getBillingType().isINVOICE() || doc.getBillingType().isCREDIT());
         }
         return retval;
     }

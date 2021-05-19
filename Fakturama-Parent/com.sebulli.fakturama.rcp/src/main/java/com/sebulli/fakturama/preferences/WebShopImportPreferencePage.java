@@ -29,6 +29,7 @@ import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Shell;
 
 import com.sebulli.fakturama.dialogs.WebShopStatusSettingsDialog;
 import com.sebulli.fakturama.i18n.Messages;
@@ -95,7 +96,7 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
 		Button b = new Button(getFieldEditorParent(), SWT.PUSH);
 		b.setText(msg.pageWebshopsettings);
 		b.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-				context.set(Messages.class, msg);
+				context.set(Messages.class, msg);context.get("activeShell");
 				WebShopStatusSettingsDialog dialog = ContextInjectionFactory.make(WebShopStatusSettingsDialog.class, context);
 				dialog.open();				
 		}));

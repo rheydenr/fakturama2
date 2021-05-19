@@ -1,5 +1,5 @@
 @REM aktuelle Fakturama-Version
-set VERSION=2.1.1
+set VERSION=2.1.2
 
 @REM Pfad setzen
 set PATH=d:\Javalibs\fop-1.1\;%PATH%;d:\Programme\Java\jdk1.8\bin;

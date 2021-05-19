@@ -822,8 +822,10 @@ public class DocumentEditor extends Editor<Document> {
 		ComboViewer comboViewerPayment;
         comboViewerPayment = new ComboViewer(comboPayment);
         comboViewerPayment.setContentProvider(new EntityComboProvider());
+        
+ //       getCtx().getBindings()
         comboViewerPayment.setLabelProvider(new EntityLabelProvider());
-        GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(comboPayment);
+        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(comboPayment);
 
         // If a new payment is selected ...
         comboViewerPayment.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -1661,8 +1663,8 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Create the new paid container
 		paidDataContainer = new Composite(paidContainer, SWT.NONE);
-		GridLayoutFactory.swtDefaults().margins(0, 5).numColumns(6).applyTo(paidDataContainer);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.BOTTOM).applyTo(paidDataContainer);
+		GridLayoutFactory.fillDefaults().margins(0, 5).numColumns(6).applyTo(paidDataContainer);
+		GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BOTTOM).applyTo(paidDataContainer);
 
 		// Should this container have the widgets for the state "paid" ?
 		if (paid) {
@@ -1698,7 +1700,7 @@ public class DocumentEditor extends Editor<Document> {
 			spDueDays.setIncrement(1);
 			spDueDays.setPageIncrement(10);
 			spDueDays.setToolTipText(dueDaysLabel.getToolTipText());
-			GridDataFactory.swtDefaults().hint(90, SWT.DEFAULT).applyTo(spDueDays);
+			//GridDataFactory.swtDefaults().hint(90, SWT.DEFAULT).applyTo(spDueDays);
 
 			// If the spinner's value changes, add the due days to the
 			// day of today.
@@ -1726,7 +1728,7 @@ public class DocumentEditor extends Editor<Document> {
 			dtIssueDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 			dtIssueDate.setToolTipText(issueDateLabel.getToolTipText());
 			dtIssueDate.setFormat(CDT.DATE_MEDIUM);
-			GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
+			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
 			dtIssueDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				// Calculate the difference between the date of the
 				// issue date widget and the documents date,
@@ -1780,7 +1782,7 @@ public class DocumentEditor extends Editor<Document> {
 		paidDateLabel.setText(msg.editorDocumentPaidat);
 		paidDateLabel.setToolTipText(msg.editorDocumentDateofpayment);
 
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(paidDateLabel);
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).applyTo(paidDateLabel);
 
 		dtPaidDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 		dtPaidDate.setToolTipText(paidDateLabel.getToolTipText());
@@ -1827,7 +1829,7 @@ public class DocumentEditor extends Editor<Document> {
     			}
     		}
     	});
-		GridDataFactory.swtDefaults().hint(60, SWT.DEFAULT).applyTo(txtPayValue.getControl());
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtPayValue.getControl());
 
 		// If it's the first time that this document is marked as paid
 		// (if the value is 0.0), then also set the date to "today"

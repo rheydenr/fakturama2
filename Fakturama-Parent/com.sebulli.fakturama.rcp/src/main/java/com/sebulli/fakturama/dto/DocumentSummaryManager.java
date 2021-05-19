@@ -15,7 +15,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
-import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.dao.DocumentReceiverDAO;
 import com.sebulli.fakturama.model.Document;
 
 /**
@@ -24,6 +24,9 @@ import com.sebulli.fakturama.model.Document;
  *
  */
 public class DocumentSummaryManager {
+    
+    @Inject
+    private DocumentReceiverDAO documentReceiverDAO;
 
 	private DocumentSummaryCalculator calculator;
 
@@ -34,8 +37,6 @@ public class DocumentSummaryManager {
 	public DocumentSummaryManager(IEclipseContext context, IPreferenceStore defaultValuePrefs) {
 		this.calculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
 		this.defaultValuePrefs = defaultValuePrefs;
-		calculator
-				.setUseSET(this.defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX));
 	}
 	
 	public DocumentSummary calculate(Document document) {
@@ -45,6 +46,10 @@ public class DocumentSummaryManager {
 	}
 
 	public DocumentSummary calculate(Document document, DocumentSummaryParam param) {
+		
+		boolean useSETPreference = documentReceiverDAO.isSETEnabled(document);
+	    
+        calculator.setUseSET(useSETPreference);
 		DocumentSummary summary = calculator.calculate(param);
 		summaryMap.put(document, summary);
 		return summary;

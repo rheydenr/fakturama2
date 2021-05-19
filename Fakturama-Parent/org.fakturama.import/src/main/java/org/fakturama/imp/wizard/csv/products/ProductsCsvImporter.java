@@ -92,7 +92,7 @@ public class ProductsCsvImporter {
 
 	// Defines all columns that are used and imported
 	private String[] requiredHeaders = { "itemnr", "name", "category", "description", "price1", "price2", "price3",
-			"price4", "price5", "block1", "block2", "block3", "block4", "block5", "vat", "options", "weight", "unit",
+			"price4", "price5", "block1", "block2", "block3", "block4", "block5", "vat", "vatname","options", "weight", "unit",
 			"date_added", "picturename", "quantity", "webshopid", "qunit", "costprice", "note" };
 
 	// The result string
@@ -249,7 +249,7 @@ public class ProductsCsvImporter {
 					
 					product.setNote(prop.getProperty("note"));
 
-					String vatName = prop.getProperty("item vat");
+					String vatName = prop.getProperty("vatname");
 					Double vatValue = DataUtils.getInstance().StringToDouble(prop.getProperty("vat"));
 					VAT prodVat = modelFactory.createVAT();
 					prodVat.setName(vatName);

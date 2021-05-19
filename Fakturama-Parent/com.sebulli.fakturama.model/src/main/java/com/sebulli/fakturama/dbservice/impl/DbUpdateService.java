@@ -61,8 +61,6 @@ public class DbUpdateService implements IDbUpdateService {
 		boolean retval = true;
 		
 		// get the preferences for this application
-//        EclipseContextFactory.getServiceContext(context).set(IPreferenceStore.class, preferenceStore);
-        
 		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
         ServiceReference<IPreferenceStoreProvider> serviceReference = context.getServiceReference(IPreferenceStoreProvider.class);
         preferenceStore = context.getService(serviceReference).getPreferenceStore();
@@ -104,6 +102,7 @@ public class DbUpdateService implements IDbUpdateService {
 					String.format("(%s=%s)", DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,
 							preferenceStore.getString(PersistenceUnitProperties.JDBC_DRIVER)));
 			ServiceReference<DataSourceFactory> serviceReference;
+
 			if(allServiceReferences != null && allServiceReferences.length > 0) {
 				serviceReference = (ServiceReference<DataSourceFactory>) allServiceReferences[0];
 			} else {
@@ -130,7 +129,13 @@ public class DbUpdateService implements IDbUpdateService {
 				allServiceReferences = context.getAllServiceReferences(IActivateDbServer.class.getName(), null);
 				if(allServiceReferences != null && allServiceReferences.length > 0) {
 					ServiceReference<IActivateDbServer> serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
-					prop.put(DataSourceFactory.JDBC_DATASOURCE_NAME, preferenceStore.getString(DataSourceFactory.JDBC_DATASOURCE_NAME));
+					String dataSourceName = preferenceStore.getString(DataSourceFactory.JDBC_DATASOURCE_NAME);
+					
+					// check old setting (before v2.1.2)
+					if(StringUtils.isBlank(dataSourceName)) {
+					    dataSourceName = preferenceStore.getString("hsqlfiledb");
+					}
+                    prop.put(DataSourceFactory.JDBC_DATASOURCE_NAME, dataSourceName);
 					
 					String sysPropPort = System.getProperty(SYS_PROP_DATABASE_PORT, preferenceStore.getString(DataSourceFactory.JDBC_PORT_NUMBER));
 					if(StringUtils.isNumeric(sysPropPort)) {
@@ -144,11 +149,14 @@ public class DbUpdateService implements IDbUpdateService {
                     if (!isDbAlive()) {
                         Properties activateProps = currentService.activateServer(prop);
                         preferenceStore.putValue(PersistenceUnitProperties.JDBC_URL,
-                                String.format("jdbc:hsqldb:hsql://localhost:%s/%s", activateProps.get(DataSourceFactory.JDBC_PORT_NUMBER), activateProps.get(DataSourceFactory.JDBC_DATABASE_NAME)));
+                                String.format("jdbc:hsqldb:hsql://localhost:%s/%s", 
+                                        activateProps.get(DataSourceFactory.JDBC_PORT_NUMBER), 
+                                        activateProps.get(DataSourceFactory.JDBC_DATABASE_NAME)));
                         prop.put(DataSourceFactory.JDBC_URL, preferenceStore.getString(PersistenceUnitProperties.JDBC_URL));
-                        preferenceStore.putValue(DataSourceFactory.JDBC_DATASOURCE_NAME, (String) activateProps.get(DataSourceFactory.JDBC_DATASOURCE_NAME));
+                        preferenceStore.putValue(DataSourceFactory.JDBC_DATASOURCE_NAME, 
+                                (String) activateProps.get(DataSourceFactory.JDBC_DATASOURCE_NAME));
                     } else {
-                        System.err.println("DB was already started");
+                        System.err.println("database was already started");
                     }
                     ServiceReference<IDbConnection> serviceDbRef2 = (ServiceReference<IDbConnection>) allServiceReferences[0];
                     IDbConnection dbConn = context.getService(serviceDbRef2);

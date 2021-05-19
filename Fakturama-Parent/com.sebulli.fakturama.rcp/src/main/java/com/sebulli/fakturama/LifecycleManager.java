@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -63,6 +64,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import com.sebulli.fakturama.dao.ItemAccountTypeDAO;
 import com.sebulli.fakturama.dao.ItemListTypeCategoriesDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
+import com.sebulli.fakturama.dao.PropertiesDAO;
 import com.sebulli.fakturama.dao.ShippingsDAO;
 import com.sebulli.fakturama.dao.UnCefactCodeDAO;
 import com.sebulli.fakturama.dao.VatsDAO;
@@ -80,6 +82,7 @@ import com.sebulli.fakturama.model.ItemListTypeCategory;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
+import com.sebulli.fakturama.model.UserProperty;
 import com.sebulli.fakturama.model.VAT;
 import com.sebulli.fakturama.preferences.PreferencesInDatabase;
 import com.sebulli.fakturama.resources.core.TemplateResourceManager;
@@ -168,12 +171,15 @@ public class LifecycleManager {
                 protected IStatus run(IProgressMonitor monitor) {
                     log.debug("start DAOs - begin");
                     try {
+                        // these DAOs are needed in a later stage of initialization
+                        // (see fillWithInitialData)
                         context.set(VatsDAO.class, ContextInjectionFactory.make(VatsDAO.class, context));
                         context.set(ShippingsDAO.class, ContextInjectionFactory.make(ShippingsDAO.class, context));
                         context.set(PaymentsDAO.class, ContextInjectionFactory.make(PaymentsDAO.class, context));
                         context.set(UnCefactCodeDAO.class, ContextInjectionFactory.make(UnCefactCodeDAO.class, context));
                         context.set(ItemListTypeCategoriesDAO.class, ContextInjectionFactory.make(ItemListTypeCategoriesDAO.class, context));
                         context.set(ItemAccountTypeDAO.class, ContextInjectionFactory.make(ItemAccountTypeDAO.class, context));
+                        context.set(PropertiesDAO.class, ContextInjectionFactory.make(PropertiesDAO.class, context));
                         log.debug("start DAOs - end");
                         return Status.OK_STATUS;
                     } catch (PersistenceException e) {
@@ -247,6 +253,7 @@ public class LifecycleManager {
         UnCefactCodeDAO unCefactCodeDAO = context.get(UnCefactCodeDAO.class);
         ItemListTypeCategoriesDAO itemListTypeCategoriesDAO = context.get(ItemListTypeCategoriesDAO.class);
         ItemAccountTypeDAO itemAccountTypeDAO = context.get(ItemAccountTypeDAO.class);
+        PropertiesDAO propertiesDao = context.get(PropertiesDAO.class);
         
         // Fill some default data
         // see old sources: com.sebulli.fakturama.data.Data#fillWithInitialData()
@@ -296,7 +303,13 @@ public class LifecycleManager {
 //            defaultValuesNode.setValue(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
             eclipsePrefs.putLong(Constants.DEFAULT_PAYMENT, defaultPayment.getId());
         }
-        
+    	
+        // store current program version
+        UserProperty userProp = new UserProperty();
+        userProp.setName(Constants.CURRENT_PROGRAM_VERSION);
+        userProp.setValue(Platform.getProduct().getDefiningBundle().getVersion().toString());
+        propertiesDao.insertOrUpdate(userProp);
+
     	splashService.worked(1);
        // init UN/CEFACT codes
         if(eclipsePrefs.getBoolean("isreinit", false) || Long.valueOf(0L).compareTo(unCefactCodeDAO.getCount()) == 0) {

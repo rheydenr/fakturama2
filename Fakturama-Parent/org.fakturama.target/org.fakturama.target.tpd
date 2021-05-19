@@ -26,14 +26,14 @@ location "http://download.eclipse.org/nebula/incubation/snapshot" {
 }
 
 location "http://download.eclipse.org/rt/eclipselink/updates" {
-	org.eclipse.persistence.sdk.feature.group [2.7.3,2.7.4)
+	org.eclipse.persistence.sdk.feature.group [2.7.5,2.7.9)
 }
 
 //location "https://dl.bintray.com/testng-team/testng-eclipse-release/updatesites/6.10.0.201612030230" {
 //	org.testng.eclipse.feature.group
 //}
 
-location "http://download.eclipse.org/releases/2019-12" {
+location "http://download.eclipse.org/releases/2021-03" {
 	org.eclipse.draw2d.feature.group
 	org.eclipse.e4.core.tools.feature.feature.group
 	org.eclipse.e4.core.tools.feature.source.feature.group
@@ -53,7 +53,7 @@ location "http://download.eclipse.org/releases/2019-12" {
 	org.eclipse.platform.feature.group
 }
 
-location "https://download.eclipse.org/tools/orbit/downloads/drops/R20190827152740/repository" {
+location "https://download.eclipse.org/tools/orbit/downloads/drops/R20201130205003/repository" {
 	ca.odell.glazedlists
 	ca.odell.glazedlists.source
 	ch.qos.logback.classic
@@ -78,7 +78,7 @@ location "https://download.eclipse.org/tools/orbit/downloads/drops/R201908271527
 	org.yaml.snakeyaml
 }
 
-location "https://download.eclipse.org/technology/babel/update-site/R0.17.0/2019-06" {
+location "https://download.eclipse.org/technology/babel/update-site/R0.18.1/2020-09" {
 	org.eclipse.babel.nls_eclipse_ar.feature.group
 	org.eclipse.babel.nls_eclipse_de.feature.group
 	org.eclipse.babel.nls_eclipse_el.feature.group
@@ -103,7 +103,7 @@ location "http://download.eclipse.org/nattable/releases/1.6.0/repository" {
 		org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group
 }
 
-location "http://p2.fakturama.info/2.1.0" {
+location "http://p2.fakturama.info/2.1.1" {
 		com.mysql.jdbc.feature.feature.group
 		com.opcoach.e4.preference.feature.feature.group
 		com.opencsv.feature.feature.group
@@ -118,5 +118,9 @@ location "http://download.eclipse.org/nebula/releases/latest" {
 		org.eclipse.nebula.widgets.cdatetime.feature.feature.group
 		org.eclipse.nebula.widgets.opal.commons.feature.feature.group
 		org.eclipse.nebula.widgets.opal.multichoice.feature.feature.group
+		org.eclipse.nebula.widgets.opal.dialog.feature.feature.group
+		org.eclipse.nebula.widgets.opal.checkboxgroup.feature.feature.group
+		org.eclipse.nebula.widgets.opal.duallist.feature.feature.group
+		org.eclipse.nebula.widgets.passwordrevealer.feature.feature.group
 		org.eclipse.nebula.widgets.pgroup.feature.feature.group
 }

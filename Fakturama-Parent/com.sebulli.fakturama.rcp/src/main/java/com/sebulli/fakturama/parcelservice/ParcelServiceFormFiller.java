@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -43,7 +44,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.IParcelService;
 import com.sebulli.fakturama.model.Document;
-import com.sebulli.fakturama.office.Placeholders;
+import com.sebulli.fakturama.office.TemplateProcessor;
 
 /**
  * Fills the form of the parcel service
@@ -217,7 +218,7 @@ public class ParcelServiceFormFiller {
 			filled = true;
 
 			// get all entries
-			Placeholders placeholders = ContextInjectionFactory.make(Placeholders.class, context);
+			TemplateProcessor placeholders = ContextInjectionFactory.make(TemplateProcessor.class, context);
 			DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
 			DocumentSummary documentSummary = documentSummaryCalculator.calculate(document);
 			
@@ -229,7 +230,7 @@ public class ParcelServiceFormFiller {
 
 			    	// It is a placeholder
 			    	if (placeholders.isPlaceholder(value)) {
-						fillFormField(key, placeholders.getDocumentInfo(document, documentSummary, value));
+						fillFormField(key, placeholders.getDocumentInfo(document, Optional.ofNullable(documentSummary), value));
 			    	}
 			    	// It is a constant String
 			    	else if (value.startsWith("\"") && value.endsWith("\"")) {

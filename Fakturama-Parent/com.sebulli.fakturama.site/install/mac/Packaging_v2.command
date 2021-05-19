@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# remove before comitting!
-DEVELOPER_PASSWORD="trkr-kgxh-mxvh-onae"
+# DEVELOPER_PASSWORD is set in .bash_profile
 
 # by Andy Maloney
 # http://asmaloney.com/2013/07/howto/packaging-a-mac-os-x-application-using-a-dmg/
@@ -17,8 +16,6 @@ wait_while_in_progress()
 		sleep 60 ;\
 	done
 }
-
-
 
 
 export PLUGIN_ROOT=/Users/rheydenr/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site
@@ -178,23 +175,23 @@ rm -rf "${APP_NAME}.app"
 
 
 echo 'signing application...'
-xcrun codesign --force --verbose --options runtime --entitlements entitlement.xml --timestamp --sign "Developer ID" ../install/${INSTALLER_NAME}.dmg
+xcrun codesign --force --verbose --options runtime --entitlements entitlement.xml --timestamp --sign "Developer ID" ../install/${DMG_FINAL}
 
 echo 'notarize application...'
-xcrun altool --notarize-app  --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --file ../install/${INSTALLER_NAME}.dmg
+xcrun altool --notarize-app --verbose --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --file ../install/${DMG_FINAL}
 
 
 # alternative method to check the success of notarization:
 # no --verbose output
-# xcrun altool --notarize-app  --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --file ../install/${INSTALLER_NAME}.dmg --output-format xml > ${UPLOAD_INFO_PLIST}
+# xcrun altool --notarize-app  --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --file ../install/${DMG_FINAL} --output-format xml > ${UPLOAD_INFO_PLIST}
 # xcrun altool --notarization-info `/usr/libexec/PlistBuddy -c "Print :notarization-upload:RequestUUID" ${UPLOAD_INFO_PLIST}` -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --output-format xml > ${REQUEST_INFO_PLIST}
 # wait_while_in_progress
 
 
 
-# xcrun altool --notarization-info "57de96e1-2e78-45dd-87be-06cb61287f25" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} 
-# xcrun stapler staple ../install/${INSTALLER_NAME}.dmg
-# spctl --assess --type open --context context:primary-signature --verbose "../install/${INSTALLER_NAME}.dmg"
+# xcrun altool --notarization-info "ea58c470-ae3e-4cad-9871-10603579a5aa" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} 
+# xcrun stapler staple ../install/${DMG_FINAL}
+# spctl --assess --type open --context context:primary-signature --verbose "../install/${DMG_FINAL}"
 
 echo 'moving installer (tar.gz) to installer directory'
 mv ${PLUGIN_ROOT}/target/products/Fakturama.ID-linux.gtk.x86_64.tar.gz ../install/Installer_Fakturama_linux_x64_${VERSION}.tar.gz

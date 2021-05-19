@@ -247,7 +247,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         this.container = container;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
-        this.useSET = document != null && documentReceiverDao.isSETEnabled(document);
+        this.useSET = documentReceiverDao.isSETEnabled(document);
 //        // Get some settings from the preference store
 //        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
 //            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
