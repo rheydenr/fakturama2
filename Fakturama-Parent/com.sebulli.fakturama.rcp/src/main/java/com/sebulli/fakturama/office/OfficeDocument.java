@@ -436,21 +436,27 @@ public class OfficeDocument {
                     pdfFilename = Files.move(tmpPdf, pdfFilename, StandardCopyOption.REPLACE_EXISTING);
                 }
             } else {
-                if(!silentMode){
-                    MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Can't create PDF!");
-                } else {
-                    log.warn("Can't create PDF! Did you set the right OpenOffice path?");
-                }
+                showError();
             }
         } catch (FileSystemException e) {
+            pdfFilename = null;
             throw new FakturamaStoringException("kann PDF nicht schreiben. Ist die Datei evtl. geöffnet?", e);
         } catch (IOException e) {
+            pdfFilename = null;
+            showError();
             log.error(e, "Error moving the PDF document");
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // from ProcessBuilder
+            log.error(e, "InterruptedException");            
         }
         return pdfFilename;
+    }
+
+    private void showError() {
+        if(!silentMode){
+            MessageDialog.openError(shell, msg.dialogMessageboxTitleError, "Can't create PDF!");
+        }
+        log.warn("Can't create PDF! Did you set the right OpenOffice path?");
     }
     
     private void createOutputDirectory(Path directory) {
