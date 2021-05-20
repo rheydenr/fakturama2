@@ -397,6 +397,10 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		//Set the default currency locale from current locale
 		ULocale defaultLocale = localeUtil.getCurrencyLocale();
 		String currencyLocaleString = defaultLocale.getLanguage() + "/" + defaultLocale.getCountry();
+		
+		// Quick hack: numberFormatterService has to be re-initialized since the scale is 0 
+		numberFormatterService.update();
+		
 		node.setDefault(Constants.PREFERENCE_CURRENCY_LOCALE, currencyLocaleString);
 		CurrencySettingEnum currencySetting = CurrencySettingEnum.valueOf(node.getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL));
         String exampleFormat = calculateExampleCurrencyFormatString(currencyLocaleString, 

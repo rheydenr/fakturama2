@@ -13,6 +13,7 @@
  */
 package com.sebulli.fakturama.misc;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Objects;
 
@@ -122,7 +123,7 @@ public class NumberFormatterService implements INumberFormatterService {
     @Override
 	public String doubleToFormattedPrice(Double value) {
         CurrencyUnit currUnit = getCurrencyUnit(getLocaleUtil().getCurrencyLocale());
-        MonetaryAmount rounded = RoundedMoney.of(value, currUnit);
+        MonetaryAmount rounded = RoundedMoney.of(BigDecimal.valueOf(value), currUnit);
         return formatCurrency(rounded);
     }
 
@@ -280,7 +281,7 @@ public class NumberFormatterService implements INumberFormatterService {
     @Override
 	public String formatCurrency(double myNumber, ULocale locale, CurrencySettingEnum useCurrencySymbol, boolean cashRounding, boolean useSeparator) {
         CurrencyUnit usd = getCurrencyUnit(locale);
-        MonetaryAmount rounded = RoundedMoney.of(myNumber, usd);
+        MonetaryAmount rounded = RoundedMoney.of(BigDecimal.valueOf(myNumber), usd);
         return formatCurrency(rounded, locale, useCurrencySymbol, cashRounding, useSeparator);
     }
 
