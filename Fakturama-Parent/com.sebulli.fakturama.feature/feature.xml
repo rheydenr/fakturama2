@@ -140,13 +140,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
          unpack="false"/>
 
    <plugin
-         id="org.hsqldb.jdbc"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.sebulli.fakturama.common"
          download-size="0"
          install-size="0"
@@ -275,6 +268,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="org.fakturama.connectors"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="wrapped.org.hsqldb.hsqldb"
          download-size="0"
          install-size="0"
          version="0.0.0"
