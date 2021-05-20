@@ -171,7 +171,7 @@
 	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
 		<groupId>org.liquibase</groupId>
 		<artifactId>liquibase-core</artifactId>
-		<version>4.0.0</version>
+		<version>4.3.5</version>
 		<type>jar</type>
 	</location>
 	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">

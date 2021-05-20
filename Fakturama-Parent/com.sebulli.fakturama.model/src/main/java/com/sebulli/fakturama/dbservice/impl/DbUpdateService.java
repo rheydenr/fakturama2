@@ -77,6 +77,8 @@ public class DbUpdateService implements IDbUpdateService {
  * Annoying Feature: Liquibase Hub.
  * https://docs.liquibase.com/tools-integrations/liquibase-hub/operations.html?Highlight=liquibase%20hub
  * you can set the level of data specifying SET JAVA_OPTS="-DLiquibaseHubMode=[all|meta|off]"
+ * Alternatively, you can pass your API key as a runtime argument and run your commands as usual or you 
+ * can specify it in your JAVA_OPTS as -Dliquibase.hub.apiKey. 
  */
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
             liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
