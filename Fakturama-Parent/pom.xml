@@ -6,8 +6,8 @@
 	<version>2.1.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<tycho.version>2.2.0</tycho.version>
-		<tycho-extras.version>2.2.0</tycho-extras.version>
+		<tycho.version>2.3.0</tycho.version>
+		<tycho-extras.version>2.3.0</tycho-extras.version>
 	<!-- 	<maven.compiler.release>8</maven.compiler.release> -->
 		<maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
 		<buildTimestamp>${maven.build.timestamp}</buildTimestamp>
@@ -122,6 +122,7 @@
 							<version>${project.version}</version>
 						</artifact>
 					</target>
+          			<pomDependencies>wrapAsBundle</pomDependencies>
 				</configuration>
 			</plugin>
 

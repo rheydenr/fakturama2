@@ -133,6 +133,54 @@
 		<repository location="https://www.opcoach.com/repository/2019-12"/>
 		<unit id="com.opcoach.e4.preferences.feature.feature.group" version="1.3.0.202002270010"/>
 	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.bouncycastle</groupId>
+		<artifactId>bcpkix-jdk15on</artifactId>
+		<version>1.67</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>jakarta.mail</groupId>
+		<artifactId>jakarta.mail-api</artifactId>
+		<version>2.0.1</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>com.sun.mail</groupId>
+		<artifactId>jakarta.mail</artifactId>
+		<version>2.0.1</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>com.sun.mail</groupId>
+		<artifactId>smtp</artifactId>
+		<version>2.0.1</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>com.sun.mail</groupId>
+		<artifactId>imap</artifactId>
+		<version>2.0.1</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>com.sun.mail</groupId>
+		<artifactId>dsn</artifactId>
+		<version>2.0.1</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.liquibase</groupId>
+		<artifactId>liquibase-core</artifactId>
+		<version>3.9.0</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.hsqldb</groupId>
+		<artifactId>hsqldb</artifactId>
+		<version>2.6.0</version>
+		<type>jar</type>
+	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
 </target>
