@@ -692,6 +692,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 			MonetaryAmount priceGross = FastMoney.of(itemType.getGross(), currencyCode);
 			Price p = new PriceBuilder().withUnitPrice(priceGross)
 			                    .withGrossPrices(true)
+			                    .withQuantity(Double.valueOf(1.0))
 			                    .withVatPercent(vatPercent).build();
 			        
 			MonetaryAmount priceNet = priceGross.divide(1 + vatPercent);
