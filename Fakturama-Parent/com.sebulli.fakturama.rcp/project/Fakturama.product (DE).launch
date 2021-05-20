@@ -41,6 +41,7 @@
         <setEntry value="com.mysql.jdbc@2:true"/>
         <setEntry value="com.opcoach.e4.preferences@default:default"/>
         <setEntry value="com.opencsv@default:default"/>
+        <setEntry value="com.sun.activation.jakarta.activation*1.2.1@default:default"/>
         <setEntry value="com.sun.jna.platform@default:default"/>
         <setEntry value="com.sun.jna@default:default"/>
         <setEntry value="com.sun.mail.dsn@default:default"/>
@@ -53,8 +54,7 @@
         <setEntry value="jakarta.persistence@default:default"/>
         <setEntry value="jakarta.xml.bind-api@default:default"/>
         <setEntry value="jakarta.xml.bind@default:default"/>
-        <setEntry value="javax.activation*1.2.2.v20201119-1642@default:default"/>
-        <setEntry value="javax.activation*2.0.0.v20201118-1818@default:default"/>
+        <setEntry value="javax.activation@default:default"/>
         <setEntry value="javax.annotation@default:default"/>
         <setEntry value="javax.inject@default:default"/>
         <setEntry value="javax.servlet@default:default"/>
