@@ -18,28 +18,45 @@
 				<configuration>
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
-                    <includeAllDependencies>true</includeAllDependencies>
-         <!-- example 2: remove all providers of the package javax.persistence -->
-         <filter>
-            <type>java-package</type>
-            <id>javax.persistence</id>
-            <removeAll />
-         </filter>
-
+                    <!-- includePackedArtifacts/ -->
+					<filters>
+         <!-- remove all providers of the package javax.persistence -->
+				         <!--
+				         cannot be removed because of ancient Gemini plugin
+				         <filter>
+				            <type>eclipse-plugin</type>
+				            <id>javax.persistence</id>
+				            <removeAll />
+				         </filter>
+				          don't remove until ODF toolkit is upgraded! -->
+				         <!-- filter>
+				            <type>eclipse-plugin</type>
+				            <id>javax.xml</id>
+				            <removeAll />
+				         </filter>
+				         cannot be removed because of ancient org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group
+				         <filter>
+				            <type>eclipse-plugin</type>
+				            <id>ca.odell.glazedlists</id>
+				            <restrictTo>
+								<versionRange>[1.11.0,1.11.9)</versionRange> 
+							</restrictTo>
+				         </filter -->
+					</filters>
 					<environments>
-						<environment>
+						<!-- environment>
 							<os>linux</os>
 							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment -->
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
 							<arch>x86_64</arch>
 						</environment>
 						<environment>
 							<os>win32</os>
 							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
 							<arch>x86_64</arch>
 						</environment>
 					</environments>

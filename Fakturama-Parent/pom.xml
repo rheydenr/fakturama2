@@ -186,9 +186,9 @@
 	
 	<repositories>
 		<repository>
-			<id>eclipse-2020</id>
+			<id>eclipse-2021</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/2020-12</url>
+			<url>http://download.eclipse.org/releases/2021-03</url>
 		</repository>
 	</repositories>
 
@@ -207,7 +207,7 @@
 	</issueManagement>
 	<scm>
 		<url>https://bitbucket.org/fakturamadev/fakturama-2</url>
-		<developerConnection>Ralf Heydenreich; Oliver Groth</developerConnection>
+		<developerConnection>Ralf Heydenreich; Oliver Groth, Gerd Schrick</developerConnection>
 	</scm>
 	<description>The program is for creating invoices, delivery papers, order documents and such stuff. Furthermore, you can connect to your webshop and administer your web shop orders. And you can create labels for various parcel services online.
 </description>

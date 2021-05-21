@@ -42,11 +42,9 @@
 		<repository location="http://p2.fakturama.info/2.1.1"/>
 		<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.48"/>
 		<unit id="com.opencsv.feature.feature.group" version="5.2.0"/>
-		<unit id="org.apache.commons.feature.feature.group" version="3.4.2"/>
 		<unit id="org.apache.odftoolkit.feature.feature.group" version="0.9.0"/>
 		<unit id="org.apache.poi.feature.feature.group" version="4.1.2.202009301237"/>
 		<unit id="org.javamoney.feature.feature.group" version="1.0.2"/>
-		<unit id="org.slf4j.osgi.feature.feature.group" version="1.7.30"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/nebula/releases/2.4.3"/>
@@ -118,9 +116,7 @@
 		<unit id="javax.transaction" version="1.1.1.v201105210645"/>
 		<unit id="org.apache.commons.cli" version="1.4.0.v20200417-1444"/>
 		<unit id="org.apache.commons.codec" version="1.14.0.v20200818-1422"/>
-		<unit id="org.apache.commons.collections4" version="4.4.0.v20200420-1700"/>
 		<unit id="org.apache.commons.compress" version="1.19.0.v20200106-2343"/>
-		<unit id="org.apache.commons.io" version="2.6.0.v20190123-2029"/>
 		<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
 		<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
 		<unit id="org.apache.commons.math3" version="3.6.1.v20200817-1830"/>
@@ -132,6 +128,9 @@
 		<unit id="org.mockito" version="2.23.0.v20200310-1642"/>
 		<unit id="org.slf4j.apis.log4j" version="1.7.30.v20200204-2150"/>
 		<unit id="org.yaml.snakeyaml" version="1.27.0.v20201111-1638"/>
+		<unit id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
+		<unit id="org.slf4j.ext" version="1.7.30.v20200204-2150"/>
+		<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
 	</location>
 	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
 		<groupId>org.bouncycastle</groupId>
@@ -179,6 +178,42 @@
 		<groupId>org.hsqldb</groupId>
 		<artifactId>hsqldb</artifactId>
 		<version>2.6.0</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>commons-io</groupId>
+		<artifactId>commons-io</artifactId>
+		<version>2.8.0</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-lang3</artifactId>
+		<version>3.12.0</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-collections4</artifactId>
+		<version>4.4</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-text</artifactId>
+		<version>1.9</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>commons-beanutils</groupId>
+		<artifactId>commons-beanutils</artifactId>
+		<version>1.9.4</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>commons-validator</groupId>
+		<artifactId>commons-validator</artifactId>
+		<version>1.7</version>
 		<type>jar</type>
 	</location>
 </locations>
