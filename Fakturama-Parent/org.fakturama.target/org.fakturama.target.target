@@ -41,9 +41,7 @@
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://p2.fakturama.info/2.1.1"/>
 		<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.48"/>
-		<unit id="com.opencsv.feature.feature.group" version="5.2.0"/>
 		<unit id="org.apache.odftoolkit.feature.feature.group" version="0.9.0"/>
-		<unit id="org.apache.poi.feature.feature.group" version="4.1.2.202009301237"/>
 		<unit id="org.javamoney.feature.feature.group" version="1.0.2"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
@@ -214,6 +212,18 @@
 		<groupId>commons-validator</groupId>
 		<artifactId>commons-validator</artifactId>
 		<version>1.7</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>com.opencsv</groupId>
+		<artifactId>opencsv</artifactId>
+		<version>5.4</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi</artifactId>
+		<version>4.1.2</version>
 		<type>jar</type>
 	</location>
 </locations>

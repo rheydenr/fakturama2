@@ -269,9 +269,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_el"/>
       <feature id="org.eclipse.babel.nls_eclipse_sv"/>
       <feature id="org.eclipse.persistence.moxy"/>
-      <feature id="com.opencsv.feature"/>
       <feature id="org.eclipse.persistence.jpa" installMode="root"/>
-      <feature id="org.apache.commons.feature"/>
    </features>
 
    <configurations>
