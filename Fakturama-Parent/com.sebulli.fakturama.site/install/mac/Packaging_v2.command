@@ -7,13 +7,27 @@
 
 wait_while_in_progress() 
 {
-	while true; do \
-		/usr/bin/xcrun altool --notarization-info `/usr/libexec/PlistBuddy -c "Print :notarization-upload:RequestUUID" $(UPLOAD_INFO_PLIST)` -u "apple-dev@fakturama.net" -p $(DEVELOPER_PASSWORD) --output-format xml > $(REQUEST_INFO_PLIST) ;\
-		if [ `/usr/libexec/PlistBuddy -c "Print :notarization-info:Status" $(REQUEST_INFO_PLIST)` != "in progress" ]; then \
-			break ;\
-		fi ;\
-		/usr/bin/osascript -e 'display notification "Zzz…" with title "Notarization"' ;\
-		sleep 60 ;\
+	uuid=`cat tmp | grep -Eo '\w{8}-(\w{4}-){3}\w{12}$'`
+	while true; do
+	    echo "checking for notarization..."
+	 
+	    xcrun altool --notarization-info "$uuid" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} &> tmp
+	    r=`cat tmp`
+	    t=`echo "$r" | grep "success"`
+	    f=`echo "$r" | grep "invalid"`
+	    if [[ "$t" != "" ]]; then
+	        echo "notarization done!"
+#	        xcrun stapler staple "APP_NAME.app"
+	        xcrun stapler staple ../install/${DMG_FINAL}
+	        echo "stapler done!"
+	        break
+	    fi
+	    if [[ "$f" != "" ]]; then
+	        echo "$r"
+	        return 1
+	    fi
+	    echo "not finish yet, sleep 2m then check again..."
+	    sleep 120
 	done
 }
 
@@ -27,17 +41,10 @@ if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-export VERSION=2.1.2-BETA
-# prepare the correct directory structure
-cp -R ${PLUGIN_ROOT}/target/products/Fakturama.ID/macosx/cocoa/x86_64/Fakturama2.app .
-
-# enable some L10N (specific to MacOS)
-cd Fakturama2.app/Contents/Resources
-mkdir -v de.lproj it.lproj sv.lproj sk.lproj el.lproj es.lproj ar_LY.lproj pl.lproj fr.lproj de_CH.lproj de_LI.lproj de_AT.lproj eu.lproj hu.lproj ro.lproj ru.lproj tr.lproj uk.lproj
-cd -
-
 # set up your app name, version number, and background image file name
 APP_NAME="Fakturama2"
+
+export VERSION=2.1.2-BETA
 
 DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
 
@@ -73,8 +80,20 @@ mkdir -p "${STAGING_DIR}"
 
 echo "staging dir created: ${STAGING_DIR}"
 
-cp -rpf "${APP_NAME}.app" "${STAGING_DIR}"
+# prepare the correct directory structure
+cp -rpf ${PLUGIN_ROOT}/target/products/Fakturama.ID/macosx/cocoa/x86_64/"${APP_NAME}".app "${STAGING_DIR}"
 # ... cp anything else you want in the DMG - documentation, etc.
+
+# copy current JRE into the product
+echo "copy JRE 15 into product..."
+mkdir "${STAGING_DIR}"/${APP_NAME}.app/jre
+cp -R /Library/Java/JavaVirtualMachines/adoptopenjdk-15.jre/* "${STAGING_DIR}"/${APP_NAME}.app/jre/Contents
+
+# enable some L10N (specific to MacOS)
+cd "${STAGING_DIR}"/${APP_NAME}.app/Contents/Resources
+echo "creating L10N directories..."
+mkdir -v de.lproj it.lproj sv.lproj sk.lproj el.lproj es.lproj ar_LY.lproj pl.lproj fr.lproj de_CH.lproj de_LI.lproj de_AT.lproj eu.lproj hu.lproj ro.lproj ru.lproj tr.lproj uk.lproj
+cd -
 
 # cp DS_Store ${STAGING_DIR}/.DS_Store
 
@@ -173,23 +192,21 @@ rm -rf "${DMG_TMP}"
 rm -rf "${STAGING_DIR}"
 rm -rf "${APP_NAME}.app"
 
-
 echo 'signing application...'
 xcrun codesign --force --verbose --options runtime --entitlements entitlement.xml --timestamp --sign "Developer ID" ../install/${DMG_FINAL}
 
 echo 'notarize application...'
 xcrun altool --notarize-app --verbose --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --file ../install/${DMG_FINAL}
 
-
-# alternative method to check the success of notarization:
+########## alternative method to check the success of notarization: ########################
 # no --verbose output
-# xcrun altool --notarize-app  --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --file ../install/${DMG_FINAL} --output-format xml > ${UPLOAD_INFO_PLIST}
-# xcrun altool --notarization-info `/usr/libexec/PlistBuddy -c "Print :notarization-upload:RequestUUID" ${UPLOAD_INFO_PLIST}` -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --output-format xml > ${REQUEST_INFO_PLIST}
+# xcrun altool --notarize-app  --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --file ../install/${DMG_FINAL} --output-format xml &> tmp
+# xcrun altool --notarization-info `/usr/libexec/PlistBuddy -c "Print :notarization-upload:RequestUUID" ${UPLOAD_INFO_PLIST}` -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --output-format xml > $(REQUEST_INFO_PLIST)
 # wait_while_in_progress
+#############################################################################################
 
 
-
-# xcrun altool --notarization-info "ea58c470-ae3e-4cad-9871-10603579a5aa" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} 
+# xcrun altool --notarization-info "97ded686-b617-47bd-a815-27e56f721725" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} 
 # xcrun stapler staple ../install/${DMG_FINAL}
 # spctl --assess --type open --context context:primary-signature --verbose "../install/${DMG_FINAL}"
 
@@ -202,7 +219,6 @@ zip -m -o -v -j ../install/Installer_Fakturama_windows_x64_${VERSION}.zip ../ins
 echo 'Done.'
 
 echo 'NOTE: You have to check the notarization success manually!'
-
 
 # exit
 
