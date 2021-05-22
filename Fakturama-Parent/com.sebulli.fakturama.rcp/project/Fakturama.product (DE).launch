@@ -66,13 +66,18 @@
         <setEntry value="org.apache.batik.util@default:default"/>
         <setEntry value="org.apache.commons.cli*1.4.0.v20200417-1444@default:default"/>
         <setEntry value="org.apache.commons.codec*1.14.0.v20200818-1422@default:default"/>
+        <setEntry value="org.apache.commons.collections@default:default"/>
+        <setEntry value="org.apache.commons.commons-beanutils@default:default"/>
+        <setEntry value="org.apache.commons.commons-collections4@default:default"/>
         <setEntry value="org.apache.commons.commons-io@default:default"/>
+        <setEntry value="org.apache.commons.commons-text@default:default"/>
+        <setEntry value="org.apache.commons.commons-validator@default:default"/>
         <setEntry value="org.apache.commons.compress@default:default"/>
+        <setEntry value="org.apache.commons.digester@default:default"/>
         <setEntry value="org.apache.commons.jxpath@default:default"/>
         <setEntry value="org.apache.commons.lang3*3.12.0@default:default"/>
         <setEntry value="org.apache.commons.logging*1.2.0.v20180409-1502@default:default"/>
         <setEntry value="org.apache.commons.math3*3.6.1.v20200817-1830@default:default"/>
-        <setEntry value="org.apache.commons.math3*3.6.1@default:default"/>
         <setEntry value="org.apache.commons.validator@default:default"/>
         <setEntry value="org.apache.derby@default:default"/>
         <setEntry value="org.apache.felix.gogo.command@default:default"/>
@@ -247,6 +252,7 @@
         <setEntry value="org.w3c.dom.svg@default:default"/>
         <setEntry value="org.yaml.snakeyaml*1.27.0.v20201111-1638@default:default"/>
         <setEntry value="osgi.enterprise@default:default"/>
+        <setEntry value="wrapped.org.apache.poi.poi@default:default"/>
         <setEntry value="wrapped.org.hsqldb.hsqldb@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
