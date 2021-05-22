@@ -54,6 +54,12 @@
 							<ws>cocoa</ws>
 							<arch>x86_64</arch>
 						</environment>
+						<!-- works only with a native MacOS -->
+<!-- 						<environment> -->
+<!-- 							<os>macosx</os> -->
+<!-- 							<ws>cocoa</ws> -->
+<!-- 							<arch>aarch64</arch> -->
+<!-- 						</environment> -->
 						<environment>
 							<os>win32</os>
 							<ws>win32</ws>
