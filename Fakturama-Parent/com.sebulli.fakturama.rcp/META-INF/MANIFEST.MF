@@ -57,14 +57,13 @@ Require-Bundle: javax.inject,
  org.eclipse.equinox.p2.engine,
  org.eclipse.equinox.p2.operations,
  org.eclipse.equinox.p2.metadata.repository,
- ca.odell.glazedlists,
+ ca.odell.glazedlists;bundle-version="1.11.0",
  com.opcoach.e4.preferences,
  com.opencsv,
  org.apache.commons.cli,
  org.apache.commons.codec,
  org.apache.commons.validator,
  org.apache.commons.logging,
- org.apache.commons.text,
  org.eclipse.emf.common,
  org.javamoney.osgi,
  org.eclipse.osgi,
@@ -78,9 +77,10 @@ Require-Bundle: javax.inject,
  org.eclipse.nebula.widgets.nattable.extension.nebula,
  org.eclipse.update.configurator,
  org.eclipse.persistence.moxy,
- org.apache.poi,
  jakarta.xml.bind;bundle-version="2.3.3",
- jakarta.xml.bind-api;bundle-version="2.3.2"
+ jakarta.xml.bind-api;bundle-version="2.3.2",
+ org.apache.commons.commons-text;bundle-version="1.9.0",
+ wrapped.org.apache.poi.poi;bundle-version="4.1.2"
 Import-Package: org.apache.commons.collections4,
  org.apache.commons.collections4.bag,
  org.apache.commons.collections4.bidimap,
@@ -142,7 +142,8 @@ Import-Package: org.apache.commons.collections4,
  org.osgi.service.log,
  org.osgi.service.prefs,
  org.osgi.util.tracker,
- org.osgi.util.xml
+ org.osgi.util.xml,
+ org.slf4j;version="1.7.30"
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: com.sebulli.fakturama.rcp
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

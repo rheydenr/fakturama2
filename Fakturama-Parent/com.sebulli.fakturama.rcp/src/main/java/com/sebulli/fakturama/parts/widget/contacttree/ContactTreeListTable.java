@@ -539,7 +539,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 				}, false);
 		bodyLayerStack.getSelectionLayer().setSelectionModel(selectionModel);
 		// Select complete rows
-		bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration<K>());
+		bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration());
 		return natTable;
 	}
 

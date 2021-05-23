@@ -397,16 +397,18 @@ public class TemplateProcessor {
 	
     
     public String fill(Document document, Optional<DocumentSummary> documentSummary, String template) {
-        allPlaceholders = Arrays.asList(StringUtils.substringsBetween(
-                        template, PlaceholderNavigation.PLACEHOLDER_PREFIX, PlaceholderNavigation.PLACEHOLDER_SUFFIX))
-                .stream()
-                .map(s -> String.format("%s%s%s", PlaceholderNavigation.PLACEHOLDER_PREFIX, s, PlaceholderNavigation.PLACEHOLDER_SUFFIX))
-                .collect(Collectors.toList());
-        setCommonProperties(document, documentSummary);
-
         String retval = template;
-        for (String string : allPlaceholders) {
-            retval = StringUtils.replace(retval, string, replaceText(string));
+        if(StringUtils.containsAny(template, PlaceholderNavigation.PLACEHOLDER_PREFIX, PlaceholderNavigation.PLACEHOLDER_SUFFIX)) {
+            allPlaceholders = Arrays.asList(StringUtils.substringsBetween(
+                            template, PlaceholderNavigation.PLACEHOLDER_PREFIX, PlaceholderNavigation.PLACEHOLDER_SUFFIX))
+                    .stream()
+                    .map(s -> String.format("%s%s%s", PlaceholderNavigation.PLACEHOLDER_PREFIX, s, PlaceholderNavigation.PLACEHOLDER_SUFFIX))
+                    .collect(Collectors.toList());
+            setCommonProperties(document, documentSummary);
+    
+            for (String string : allPlaceholders) {
+                retval = StringUtils.replace(retval, string, replaceText(string));
+            }
         }
 
         return retval;

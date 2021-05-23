@@ -762,10 +762,18 @@ sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
       <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
 sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </linuxDeb>
-    <macosFolderArchive name="macOS Folder Archive" id="611" />
+    <macosFolderArchive name="macOS Folder Archive" id="611">
+      <excludedLaunchers>
+        <launcher id="44" />
+        <launcher id="58" />
+      </excludedLaunchers>
+      <exclude>
+        <entry filesetId="41" />
+        <entry filesetId="54" />
+      </exclude>
+    </macosFolderArchive>
   </mediaSets>
-  <buildIds>
-    <mediaSet refId="120" />
+  <buildIds buildAll="false">
+    <mediaSet refId="611" />
   </buildIds>
-  <buildOptions faster="true" />
 </install4j>

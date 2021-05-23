@@ -41,7 +41,6 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.ValidationFailedException;
-import liquibase.osgi.OSGiResourceAccessor;
 
 /**
  * Implementation of {@link IDbUpdateService}.
@@ -56,38 +55,53 @@ public class DbUpdateService implements IDbUpdateService {
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.dbservice.IDbUpdateService#updateDatabase()
 	 */
-	@Override
-	public boolean updateDatabase() {
-		boolean retval = true;
-		
-		// get the preferences for this application
-		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+    @Override
+    public boolean updateDatabase() {
+        boolean retval = true;
+
+        // get the preferences for this application
+        BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
         ServiceReference<IPreferenceStoreProvider> serviceReference = context.getServiceReference(IPreferenceStoreProvider.class);
         preferenceStore = context.getService(serviceReference).getPreferenceStore();
-		try (java.sql.Connection connection = openConnection(context);) {
-			if(connection == null) {
-				throw new SQLException("can't create database connection!");
-			}
-		
-    		// emergency switch: turn off this feature with NODBUPDATE=true
-    		if(Boolean.getBoolean("NODBUPDATE")) {
-    			return retval;
-    		}
-    		
-			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
-					new OSGiResourceAccessor(context.getBundle()), database);
+        Liquibase liquibase = null;
+        try (java.sql.Connection connection = openConnection(context);) {
+            if (connection == null) {
+                throw new SQLException("can't create database connection!");
+            }
 
-			liquibase.update(new Contexts(), new LabelExpression());
-		} catch (ValidationFailedException exc) {
-    		System.err.println("Database has not the correct version! " + exc.getMessage());
-			retval = false;
-		} catch (LiquibaseException | SQLException | NullPointerException ex) {
-			System.err.println("Failed to create the database connection: " + ex);
-			retval = false;
-		}
-		return retval;
-	}
+            // emergency switch: turn off this feature with NODBUPDATE=true
+            if (Boolean.getBoolean("NODBUPDATE")) {
+                return retval;
+            }
+/*
+ * Annoying Feature: Liquibase Hub.
+ * https://docs.liquibase.com/tools-integrations/liquibase-hub/operations.html?Highlight=liquibase%20hub
+ * you can set the level of data specifying SET JAVA_OPTS="-DLiquibaseHubMode=[all|meta|off]"
+ * Alternatively, you can pass your API key as a runtime argument and run your commands as usual or you 
+ * can specify it in your JAVA_OPTS as -Dliquibase.hub.apiKey. 
+ */
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+            liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
+                    new liquibase.resource.OSGiResourceAccessor(context.getBundle()), database);
+
+            liquibase.update(new Contexts(), new LabelExpression());
+        } catch (ValidationFailedException exc) {
+            System.err.println("Database has not the correct version! " + exc.getMessage());
+            retval = false;
+        } catch (LiquibaseException | SQLException | NullPointerException ex) {
+            System.err.println("Failed to create the database connection: " + ex);
+            retval = false;
+        } finally {
+            if (liquibase != null) {
+                try {
+                    liquibase.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+        }
+        return retval;
+    }
 
 	/**
 	 * @param context 

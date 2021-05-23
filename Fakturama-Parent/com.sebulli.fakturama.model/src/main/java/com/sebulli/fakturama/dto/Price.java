@@ -41,7 +41,7 @@ import com.sebulli.fakturama.model.VoucherItem;
  */
 public class Price {
 	
-	private Double quantity;
+	private Optional<Double> quantity;
 	private Double vatPercent;
 	private Double salesEqTaxPercent;
 	private Double discount;
@@ -232,10 +232,10 @@ public class Price {
         // if noVat is set, the vat value is set to 0.0
         this.vatPercent = noVat ? Double.valueOf(0.0) : vatPercent;
 
-        this.quantity = quantity != null ? quantity : Double.valueOf(0);
         this.unitPrice = unitPrice;
+        this.quantity = Optional.ofNullable(quantity);
         this.discount = discount == null ? Double.valueOf(0.0) : discount;
-        this.asGross = asGross;
+         this.asGross = asGross;
 
         if (salesEqualizationTax != null) {
             this.salesEqTaxPercent =  noVat ? Double.valueOf(0.0) : salesEqualizationTax;
@@ -309,10 +309,10 @@ public class Price {
 		this.unitGrossDiscounted = this.unitGross.multiply(discountFactor);
 
 		// Calculate the total values and use the quantity
-		this.totalVat = this.unitVatDiscounted.multiply(this.quantity);
-		this.totalNet = this.unitNetDiscounted.multiply(this.quantity);
+		this.totalVat = this.unitVatDiscounted.multiply(this.quantity.orElse(Double.valueOf(0.0)));
+		this.totalNet = this.unitNetDiscounted.multiply(this.quantity.orElse(Double.valueOf(0.0)));
 		this.totalVatRounded = totalVat.with(getRounding());
-		this.totalGross = unitGrossDiscounted.multiply(this.quantity);
+		this.totalGross = unitGrossDiscounted.multiply(this.quantity.orElse(Double.valueOf(0.0)));
 		this.totalGrossRounded = totalGross.with(getRounding());
 		this.unitSalesEqTaxRounded = unitSalesEqTax.with(getRounding());
 		this.unitSalesEqTaxDiscounted = this.unitSalesEqTax.multiply(discountFactor);
@@ -328,11 +328,11 @@ public class Price {
 			this.totalNetRounded = this.totalNet.with(getRounding());
 		}
 
-		this.totalSalesEqTax = this.unitSalesEqTax.multiply(this.quantity * discountFactor);
+		this.totalSalesEqTax = this.unitSalesEqTax.multiply(this.quantity.orElse(Double.valueOf(0.0)) * discountFactor);
 		this.totalSalesEqTaxRounded = totalSalesEqTax.with(getRounding());
 	
 		this.unitAllowance = this.unitNetDiscounted.subtract(unitNet).with(getRounding());
-		this.totalAllowance = this.unitAllowance.multiply(this.quantity).with(getRounding());
+		this.totalAllowance = this.unitAllowance.multiply(this.quantity.orElse(Double.valueOf(0.0))).with(getRounding());
 	}
 
 	/**
@@ -650,11 +650,11 @@ public class Price {
     }
 
     public Double getQuantity() {
-        return quantity;
+        return this.quantity.orElse(Double.valueOf(0.0));
     }
 
     protected void setQuantity(Double quantity) {
-        this.quantity = quantity;
+        this.quantity = Optional.ofNullable(quantity);
     }
 
     protected Double getDiscount() {

@@ -17,13 +17,6 @@
 <repository location="http://download.eclipse.org/nebula/incubation/snapshot"/>
 </location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/nattable/releases/1.6.0/repository/"/>
-		<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.6.0.201909181823"/>
-		<unit id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group" version="1.2.0.201909181823"/>
-		<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.6.0.201909181823"/>
-		<unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="1.2.0.201909181823"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://p2.fakturama.info/gemini-di"/>
 		<unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.1.3.201912201220"/>
 	</location>
@@ -41,80 +34,8 @@
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://p2.fakturama.info/2.1.1"/>
 		<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.48"/>
-		<unit id="com.opencsv.feature.feature.group" version="5.2.0"/>
-		<unit id="org.apache.commons.feature.feature.group" version="3.4.2"/>
 		<unit id="org.apache.odftoolkit.feature.feature.group" version="0.9.0"/>
-		<unit id="org.apache.poi.feature.feature.group" version="4.1.2.202009301237"/>
-		<unit id="org.hsql.jdbc.feature.feature.group" version="2.5.1"/>
 		<unit id="org.javamoney.feature.feature.group" version="1.0.2"/>
-		<unit id="org.slf4j.osgi.feature.feature.group" version="1.7.30"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/releases/2020-09"/>
-		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
-		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.17.0.v20200828-0909"/>
-		<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.17.0.v20200828-0909"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.17.0.v20200831-1002"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.17.0.v20200831-1002"/>
-		<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.700.v20200812-2314"/>
-		<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.500.v20200812-2314"/>
-		<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.1400.v20200812-2314"/>
-		<unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.600.v20200816-1842"/>
-		<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.400.v20200812-2314"/>
-		<unit id="org.eclipse.emf.common.feature.group" version="2.20.0.v20200822-0801"/>
-		<unit id="org.eclipse.emf.feature.group" version="2.23.0.v20200822-0801"/>
-		<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.12.0.v20200828-1034"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.900.v20200819-0940"/>
-		<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.700.v20200813-0739"/>
-		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.20.300.v20200828-1034"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.17.0.v20200902-1800"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20201130205003/repository"/>
-		<unit id="ca.odell.glazedlists" version="1.11.0.v20190926-1838"/>
-		<unit id="ca.odell.glazedlists.source" version="1.11.0.v20190926-1838"/>
-		<unit id="ch.qos.logback.classic" version="1.2.3.v20200428-2012"/>
-		<unit id="ch.qos.logback.core" version="1.2.3.v20200428-2012"/>
-		<unit id="ch.qos.logback.slf4j" version="1.2.3.v20200428-2012"/>
-		<unit id="jakarta.xml.bind" version="2.3.3.v20201118-1818"/>
-		<unit id="javax.activation" version="1.2.2.v20201119-1642"/>
-		<unit id="javax.annotation" version="1.3.5.v20200909-1856"/>
-		<unit id="org.apache.commons.cli" version="1.4.0.v20200417-1444"/>
-		<unit id="org.apache.commons.codec" version="1.14.0.v20200818-1422"/>
-		<unit id="org.apache.commons.collections4" version="4.4.0.v20200420-1700"/>
-		<unit id="org.apache.commons.compress" version="1.19.0.v20200106-2343"/>
-		<unit id="org.apache.commons.io" version="2.6.0.v20190123-2029"/>
-		<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
-		<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
-		<unit id="org.apache.commons.math3" version="3.6.1.v20200817-1830"/>
-		<unit id="org.apache.xerces" version="2.9.0.v201101211617"/>
-		<unit id="org.apache.xmlbeans" version="3.1.0.v20200922-1359"/>
-		<unit id="org.dom4j" version="2.1.1.v20190321-1528"/>
-		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
-		<unit id="org.junit" version="4.13.0.v20200204-1500"/>
-		<unit id="org.mockito" version="2.23.0.v20200310-1642"/>
-		<unit id="org.slf4j.apis.log4j" version="1.7.30.v20200204-2150"/>
-		<unit id="org.yaml.snakeyaml" version="1.27.0.v20201111-1638"/>
-		<unit id="javax.transaction" version="1.1.1.v201105210645"/>
-		<unit id="jakarta.activation" version="2.0.0.v20201118-1818"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.18.1/2020-09"/>
-		<unit id="org.eclipse.babel.nls_eclipse_ar.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_el.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_sv.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.17.0.v20201010020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.17.0.v20201010020001"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/nebula/releases/2.4.3"/>
@@ -130,8 +51,175 @@
 		<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.202011020719"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://www.opcoach.com/repository/2019-12"/>
-		<unit id="com.opcoach.e4.preferences.feature.feature.group" version="1.3.0.202002270010"/>
+		<repository location="http://download.eclipse.org/releases/2021-03"/>
+		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
+		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.19.0.v20210210-1828"/>
+		<unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.19.0.v20210210-1828"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.19.0.v20210302-1107"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.19.0.v20210302-1107"/>
+		<unit id="org.eclipse.ecf.core.feature.feature.group" version="1.5.701.v20201027-0550"/>
+		<unit id="org.eclipse.ecf.core.ssl.feature.feature.group" version="1.1.500.v20200812-2314"/>
+		<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.1702.v20201025-2315"/>
+		<unit id="org.eclipse.ecf.filetransfer.httpclient45.feature.feature.group" version="1.0.702.v20201025-2303"/>
+		<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group" version="1.1.400.v20200812-2314"/>
+		<unit id="org.eclipse.emf.common.feature.group" version="2.22.0.v20210114-1734"/>
+		<unit id="org.eclipse.emf.feature.group" version="2.25.0.v20210114-1734"/>
+		<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.13.100.v20210226-1447"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1100.v20210209-1541"/>
+		<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.6.900.v20210227-0235"/>
+		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.22.0.v20210227-0235"/>
+		<unit id="org.eclipse.platform.ide" version="4.19.0.I20210303-1800"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.18.3/2021-03"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ar.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_el.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_eu.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_hu.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pl.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ro.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_ru.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_sk.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_sv.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.19.0.v20210327020002"/>
+		<unit id="org.eclipse.babel.nls_eclipse_uk.feature.group" version="4.19.0.v20210327020002"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://www.opcoach.com/repository/2021-03/"/>
+		<unit id="com.opcoach.e4.preferences.feature.feature.group" version="1.3.0.202103211754"/>
+		<unit id="com.opcoach.e4.preferences.feature.source.feature.group" version="1.3.0.202103211754"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20210223232630/repository"/>
+		<unit id="ca.odell.glazedlists" version="1.11.0.v20190926-1838"/>
+		<unit id="ca.odell.glazedlists.source" version="1.11.0.v20190926-1838"/>
+		<unit id="ch.qos.logback.classic" version="1.2.3.v20200428-2012"/>
+		<unit id="ch.qos.logback.core" version="1.2.3.v20200428-2012"/>
+		<unit id="ch.qos.logback.slf4j" version="1.2.3.v20200428-2012"/>
+		<unit id="jakarta.activation" version="2.0.0.v20201118-1818"/>
+		<unit id="jakarta.xml.bind" version="2.3.3.v20201118-1818"/>
+		<unit id="javax.activation" version="2.0.0.v20201118-1818"/>
+		<unit id="javax.annotation" version="1.3.5.v20200909-1856"/>
+		<unit id="javax.transaction" version="1.1.1.v201105210645"/>
+		<unit id="org.apache.commons.cli" version="1.4.0.v20200417-1444"/>
+		<unit id="org.apache.commons.codec" version="1.14.0.v20200818-1422"/>
+		<unit id="org.apache.commons.compress" version="1.19.0.v20200106-2343"/>
+		<unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
+		<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
+		<unit id="org.apache.commons.math3" version="3.6.1.v20200817-1830"/>
+		<unit id="org.apache.xerces" version="2.9.0.v201101211617"/>
+		<unit id="org.apache.xmlbeans" version="3.1.0.v20200922-1359"/>
+		<unit id="org.dom4j" version="2.1.1.v20190321-1528"/>
+		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
+		<unit id="org.junit" version="4.13.0.v20200204-1500"/>
+		<unit id="org.mockito" version="2.23.0.v20200310-1642"/>
+		<unit id="org.slf4j.apis.log4j" version="1.7.30.v20200204-2150"/>
+		<unit id="org.yaml.snakeyaml" version="1.27.0.v20201111-1638"/>
+		<unit id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
+		<unit id="org.slf4j.ext" version="1.7.30.v20200204-2150"/>
+		<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="http://p2.fakturama.info/nattable-interim"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="2.0.1.202105232058"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group" version="2.0.1.202105232058"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="2.0.1.202105232058"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="2.0.1.202105232058"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="2.0.1.202105232058"/>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.bouncycastle</groupId>
+		<artifactId>bcpkix-jdk15on</artifactId>
+		<version>1.67</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>jakarta.mail</groupId>
+		<artifactId>jakarta.mail-api</artifactId>
+		<version>2.0.1</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.liquibase</groupId>
+		<artifactId>liquibase-core</artifactId>
+		<version>4.3.5</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.hsqldb</groupId>
+		<artifactId>hsqldb</artifactId>
+		<version>2.6.0</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>commons-io</groupId>
+		<artifactId>commons-io</artifactId>
+		<version>2.8.0</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-lang3</artifactId>
+		<version>3.12.0</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-collections4</artifactId>
+		<version>4.4</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-text</artifactId>
+		<version>1.9</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>commons-beanutils</groupId>
+		<artifactId>commons-beanutils</artifactId>
+		<version>1.9.4</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>commons-validator</groupId>
+		<artifactId>commons-validator</artifactId>
+		<version>1.7</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>com.opencsv</groupId>
+		<artifactId>opencsv</artifactId>
+		<version>5.4</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi</artifactId>
+		<version>4.1.2</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.pdfbox</groupId>
+		<artifactId>pdfbox</artifactId>
+		<version>2.0.23</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.pdfbox</groupId>
+		<artifactId>fontbox</artifactId>
+		<version>2.0.23</version>
+		<type>jar</type>
+	</location>
+	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>org.apache.pdfbox</groupId>
+		<artifactId>xmpbox</artifactId>
+		<version>2.0.23</version>
+		<type>jar</type>
 	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>

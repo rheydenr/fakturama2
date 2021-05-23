@@ -711,7 +711,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // register a MoveCellSelectionCommandHandler with
         // TABLE_CYCLE_TRAVERSAL_STRATEGY for horizontal traversal
         // and AXIS_CYCLE_TRAVERSAL_STRATEGY for vertical traversal
-        gridListLayer.getBodyLayerStack().getViewportLayer().registerCommandHandler(
+        gridListLayer.getGridLayer().registerCommandHandler(
                 new MoveCellSelectionCommandHandler(gridListLayer.getSelectionLayer(),
                         new EditTraversalStrategy(ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY, natTable),
                         new EditTraversalStrategy(ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY, natTable)));
