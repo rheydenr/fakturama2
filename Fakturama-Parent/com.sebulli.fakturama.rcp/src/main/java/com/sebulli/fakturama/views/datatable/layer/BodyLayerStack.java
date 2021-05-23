@@ -79,7 +79,7 @@ public class BodyLayerStack<T extends IEntity> extends AbstractIndexLayerTransfo
         RowSelectionModel<T> selectionModel = new RowSelectionModel<>(selectionLayer, bodyDataProvider, rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
         // Select complete rows
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<T>());
+        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration());
         
         viewportLayer = new ViewportLayer(selectionLayer);
         setUnderlyingLayer(selectionLayer);

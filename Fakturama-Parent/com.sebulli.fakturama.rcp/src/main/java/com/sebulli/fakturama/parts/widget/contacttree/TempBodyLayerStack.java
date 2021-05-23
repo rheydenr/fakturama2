@@ -88,7 +88,7 @@ public class TempBodyLayerStack<T extends DebitorAddress> extends AbstractIndexL
         RowSelectionModel<T> selectionModel = new RowSelectionModel<T>(selectionLayer, bodyDataProvider, rowIdAccessor, false);
         selectionLayer.setSelectionModel(selectionModel);
         // Select complete rows
-        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration<T>());
+        selectionLayer.addConfiguration(new RowOnlySelectionConfiguration());
         
 //        this.treeLayer = new TreeLayer(this.selectionLayer, treeRowModel);
 //        treeLayer.setRegionName(GridRegion.BODY);
