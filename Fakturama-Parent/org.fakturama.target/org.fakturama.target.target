@@ -124,12 +124,12 @@
 		<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/nattable/releases/2.0.0/repository/"/>
-		<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="2.0.0.202012161455"/>
-		<unit id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group" version="2.0.0.202012161455"/>
-		<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="2.0.0.202012161455"/>
-		<unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="2.0.0.202012161455"/>
-		<unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="2.0.0.202012161455"/>
+		<repository location="http://p2.fakturama.info/nattable-interim"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="2.0.1.202105232058"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group" version="2.0.1.202105232058"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="2.0.1.202105232058"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="2.0.1.202105232058"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="2.0.1.202105232058"/>
 	</location>
 	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
 		<groupId>org.bouncycastle</groupId>
