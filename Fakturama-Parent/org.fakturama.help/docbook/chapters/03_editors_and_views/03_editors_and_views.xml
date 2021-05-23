@@ -2160,6 +2160,8 @@
 			diese Auswahl wird in den kommenden Versionen von Fakturama vervollständigt). Lässt man
 			die Auswahl leer, kann die Adresse für beliebige Arten von Dokumenten verwendet werden. Ansonsten werden die Adressen
 			des Kontaktes bei der Adressauswahl über den Dokumentendialog gefiltert.</para>
+			<tip>In der Länderliste kann man durch Eingabe der Anfangsbuchstaben des gewünschten Landes schnell zum entsprechenden Eintrag springen. 
+			Die Übernahme des Wertes erfolgt dann durch Drücken von ENTER oder Mausklick.</tip>
 			<para>Siehe dazu auch <link linkend="editor_editor_document_address">Adressauswahl im Dokumenteneditor</link>.</para>
 		</section>
 		<section>
