@@ -85,9 +85,9 @@ cp -rpf ${PLUGIN_ROOT}/target/products/Fakturama.ID/macosx/cocoa/x86_64/"${APP_N
 # ... cp anything else you want in the DMG - documentation, etc.
 
 # copy current JRE into the product
-echo "copy JRE 15 into product..."
-mkdir "${STAGING_DIR}"/${APP_NAME}.app/jre
-cp -R /Library/Java/JavaVirtualMachines/adoptopenjdk-15.jre/* "${STAGING_DIR}"/${APP_NAME}.app/jre/Contents
+# echo "copy JRE 15 into product..."
+# mkdir "${STAGING_DIR}"/${APP_NAME}.app/jre
+# cp -R /Library/Java/JavaVirtualMachines/adoptopenjdk-15.jre/* "${STAGING_DIR}"/${APP_NAME}.app/jre/Contents
 
 # enable some L10N (specific to MacOS)
 cd "${STAGING_DIR}"/${APP_NAME}.app/Contents/Resources
@@ -206,7 +206,7 @@ xcrun altool --notarize-app --verbose --primary-bundle-id org.fakturama.Fakturam
 #############################################################################################
 
 
-# xcrun altool --notarization-info "97ded686-b617-47bd-a815-27e56f721725" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} 
+# xcrun altool --notarization-info "694126fa-f554-486c-882c-586acd86e4bb" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} 
 # xcrun stapler staple ../install/${DMG_FINAL}
 # spctl --assess --type open --context context:primary-signature --verbose "../install/${DMG_FINAL}"
 
