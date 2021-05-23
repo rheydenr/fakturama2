@@ -59,8 +59,10 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -74,6 +76,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -1248,14 +1252,47 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 		//T: Tool Tip Text
 		labelCountry.setToolTipText(msg.editorContactHintSethomecountry);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCountry);
-
+		
+		final Map<String, String> localeCountryMap = localeUtil.getLocaleCountryMap();
 		ComboViewer comboCountry = new ComboViewer(useCountry ? addressGroup : invisible, SWT.BORDER | SWT.READ_ONLY);
 		comboCountry.getCombo().setToolTipText(labelCountry.getToolTipText());
 		comboCountry.setContentProvider(new StringHashMapContentProvider());
-		comboCountry.setInput(localeUtil.getLocaleCountryMap());
+        comboCountry.setInput(localeCountryMap);
 		StringComboBoxLabelProvider stringComboBoxLabelProvider = ContextInjectionFactory.make(StringComboBoxLabelProvider.class, context);
-		stringComboBoxLabelProvider.setCountryNames(localeUtil.getLocaleCountryMap());
+		stringComboBoxLabelProvider.setCountryNames(localeCountryMap);
 		comboCountry.setLabelProvider(stringComboBoxLabelProvider);
+		
+		// thanks to https://blog.jayway.com/2012/03/25/retrofitting-type-ahead-to-eclipse-swt-combo/
+		comboCountry.getCombo().addKeyListener(new KeyAdapter(){
+		    private long sequenceTimeOut = 0;
+		    private String keySequence;
+
+		    @Override
+		    public void keyPressed(KeyEvent keyEvent){
+		       if (!Character.isLetterOrDigit(keyEvent.character)){
+		          return;
+		       }
+		       long now = System.currentTimeMillis();
+		       if (now > sequenceTimeOut){
+		          keySequence = "";
+		       }
+		       keySequence += Character.toLowerCase(keyEvent.character);
+		       sequenceTimeOut = now + 1000;
+		       int index = 0;
+		       for (String item : localeCountryMap.values()){
+		          if (item.toLowerCase().startsWith(keySequence)){
+		             // Prevent the ordinary search
+		             keyEvent.doit = false;
+		             comboCountry.setSelection(new StructuredSelection(item));
+		             comboCountry.getCombo().select(index);
+		             return;
+		          }
+		          index++;
+		       }
+		       keySequence = "";
+		    }
+		 });		
+		
 		addressTabWidget.setCountryCombo(comboCountry);
 		GridDataFactory.fillDefaults().hint(80, SWT.DEFAULT).grab(false, false).applyTo(comboCountry.getCombo());
         
