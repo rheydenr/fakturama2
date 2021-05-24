@@ -139,7 +139,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	 */
 	public List<VAT> findNoVATEntries() {
         //T: Name of a VAT entry that indicates that VAT is not 0%
-        VAT dummyVat = new VAT();
+        VAT dummyVat = FakturamaModelPackage.MODELFACTORY.createVAT();
         dummyVat.setName(msg.widgetNovatproviderWithvatLabel);
         dummyVat.setTaxValue(Double.valueOf(0.0));
 	    VATCategory vATCategory = vatCategoriesDAO.findCategoryByName(msg.dataVatSalestax);
