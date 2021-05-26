@@ -829,8 +829,9 @@ public class TemplateProcessor {
 		String key2;
 		String addressField;
 		
-		if (key.startsWith("DELIVERY.")) {
-			key2 = key.substring(9);
+		String deliveryPrefix = "DELIVERY.";
+        if (key.startsWith(deliveryPrefix)) {
+			key2 = key.substring(deliveryPrefix.length());
             addressField = deliveryAdress != null 
             		? contactUtil.getAddressAsString(deliveryAdress) 
             		: contactUtil.getAddressAsString(billingAdress);
@@ -840,13 +841,13 @@ public class TemplateProcessor {
 			addressField = contactUtil.getAddressAsString(billingAdress);
 		}
 
-		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_ADDRESSFIRSTLINE);
+        if (key2.equals("ADDRESS.FIRSTLINE")) return document.getAddressFirstLine();
 		
 		// Get the contact of the UniDataSet document
 	
 		DocumentReceiver contact = billingAdress;
 		// There is a reference to a contact. Use this (but only if it's a valid contact!)
-		if (contact != null && (key.startsWith("ADDRESS") || key.startsWith("DELIVERY"))) {
+		if (contact != null && (key.startsWith("ADDRESS") || key.startsWith(deliveryPrefix))) {
 		    Optional<String> checked = checkAddressPlaceholders(contact, key, ContactType.BILLING);
 		    if(checked.isPresent()) {
 		        return checked.get();
@@ -864,8 +865,7 @@ public class TemplateProcessor {
   		}
 		// There is no reference - Try to get the information from the address field
 		else {
-			if (key2.equals("ADDRESS.GENDER")) return "";
-			if (key2.equals("ADDRESS.TITLE")) return "";
+    		if (key2.equals("ADDRESS.FIRSTLINE")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_ADDRESSFIRSTLINE);
 			if (key2.equals("ADDRESS.NAME")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_NAME);
 			if (key2.equals("ADDRESS.FIRSTNAME")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_FIRSTNAME);
 			if (key2.equals("ADDRESS.LASTNAME")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_LASTNAME);
@@ -877,12 +877,13 @@ public class TemplateProcessor {
 			if (key2.equals("ADDRESS.CITY")) return contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_CITY);
 			String country = contactUtil.getDataFromAddressField(addressField, ContactUtil.KEY_COUNTY);
 			if (key2.equals("ADDRESS.COUNTRY")) return country;
+			
             Optional<ULocale> locale = localeUtil.findLocaleByDisplayCountry(country);
 			if (key2.equals("ADDRESS.COUNTRY.CODE2")) {
-				return locale.isPresent() ? locale.get().getCountry() : localeUtil.getDefaultLocale().getCountry();
+				return locale.orElseGet(() -> localeUtil.getDefaultLocale()).getCountry();
 			}
 			if (key2.equals("ADDRESS.COUNTRY.CODE3")) {
-				return locale.isPresent() ? locale.get().getISO3Country() : localeUtil.getDefaultLocale().getISO3Country();
+				return locale.orElseGet(() -> localeUtil.getDefaultLocale()).getISO3Country();
 			}
 
 			if (key2.equals("ADDRESS.GREETING")) return contactUtil.getCommonGreeting();
@@ -908,6 +909,8 @@ public class TemplateProcessor {
                 || key.equals("ADDRESS.WEBSITE")
                 || key.equals("ADDRESS.VATNR")
                 || key.equals("ADDRESS.NOTE")
+                || key.equals("ADDRESS.GENDER")
+                || key.equals("ADDRESS.TITLE")
                 || key.equals("ADDRESS.DISCOUNT")) return "";
 		}
 
@@ -950,49 +953,102 @@ public class TemplateProcessor {
                 return Optional.ofNullable(originContact.getRegisterNumber());
             case "ADDRESS.WEBSITE":
                 return Optional.ofNullable(originContact.getWebsite());
+            case "ADDRESS.WEBSHOPUSER":
+                return Optional.ofNullable(originContact.getWebshopName());
             case "ADDRESS.VATNR":
                 return Optional.ofNullable(originContact.getVatNumber());
             case "ADDRESS.NOTE":
                 return Optional.ofNullable(originContact.getNote());
-                
+            case "ADDRESS.RELIABLILITY":
+                return Optional.ofNullable(contactUtil.getReliabilityString(originContact.getReliability()));
+            case "ADDRESS.PAYMENT":
+                return originContact.getPayment() != null ? Optional.ofNullable(originContact.getPayment().getName()) : Optional.empty();
+            case "ADDRESS.HASSALESEQTAX":
+                return Optional.ofNullable(BooleanUtils.toStringTrueFalse(originContact.getUseSalesEqualizationTax()));
+  
             // to be continued...
             default:
                 break;
             }
             if (key.equals("ADDRESS.BIRTHDAY")) return Optional.ofNullable(originContact.getBirthday() == null ? "" : dateFormatterService.getFormattedLocalizedDate(originContact.getBirthday()));
-            if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(Optional.ofNullable(originContact.getDiscount()).orElse(Double.valueOf(0)).toString());
+            
+            if (key.equals("ADDRESS.DISCOUNT")) return Optional.ofNullable(numberFormatterService.DoubleToFormatedPercent(Optional.ofNullable(originContact.getDiscount()).orElse(Double.valueOf(0))));
             if (key.equals("ADDRESS.MANDATEREFERENCE")) return Optional.ofNullable(originContact.getMandateReference());
 
-            if(contact.getOriginAddressId() != null) {
+            if (contact.getOriginAddressId() != null) {
                 Address address = addressDAO.findById(contact.getOriginAddressId());
-                if (key.equals("ADDRESS.NAMESUFFIX")) return Optional.ofNullable(address == null ? "" : address.getName());
-                if (key.equals("ADDRESS.CITYADDON")) return Optional.ofNullable(address == null ? "" : address.getCityAddon());
-                if (key.equals("ADDRESS.ADDRESSADDON")) return Optional.ofNullable(address == null ? "" : address.getAddressAddon());
-                if (key.equals("ADDRESS.PHONE2")) return Optional.ofNullable(address == null ? "" : address.getAdditionalPhone());
+                if (address != null) {
+                    switch (key) {
+                    case "ADDRESS.NAMESUFFIX":
+                    case "ADDRESS.NAMEADDON":
+                        return Optional.ofNullable(address.getName());
+                    case "ADDRESS.CITYADDON":
+                        return Optional.ofNullable(address.getCityAddon());
+                    case "ADDRESS.ADDRESSADDON":
+                        return Optional.ofNullable(address.getAddressAddon());
+                    case "ADDRESS.PHONE2":
+                        return Optional.ofNullable(address.getAdditionalPhone());
+                    case "ADDRESS.LOCALCONSULTANT":
+                        return Optional.ofNullable(address.getLocalConsultant());
+                    case "ADDRESS.EMAIL":
+                        return Optional.ofNullable(address.getEmail());
+                    case "ADDRESS.PHONE":
+                        return Optional.ofNullable(address.getPhone());
+                    case "ADDRESS.PHONE.PRE":
+                        return Optional.ofNullable(templateProcessorHelper.getTelPrePost(address.getPhone(), true));
+                    case "ADDRESS.PHONE.POST":
+                        return Optional.ofNullable(templateProcessorHelper.getTelPrePost(address.getPhone(), false));
+                    case "ADDRESS.FAX": 
+                        return Optional.ofNullable(address.getFax());
+                    case "ADDRESS.FAX.PRE":
+                        return Optional.ofNullable(templateProcessorHelper.getTelPrePost(address.getFax(), true));
+                    case "ADDRESS.FAX.POST":
+                        return Optional.ofNullable(templateProcessorHelper.getTelPrePost(address.getFax(), false));
+                    case "ADDRESS.MOBILE":
+                        return Optional.ofNullable(address.getMobile());
+                    case "ADDRESS.MOBILE.PRE":
+                        return Optional.ofNullable(templateProcessorHelper.getTelPrePost(address.getMobile(), true));
+                    case "ADDRESS.MOBILE.POST":
+                        return Optional.ofNullable(templateProcessorHelper.getTelPrePost(address.getMobile(), false));
+                    default:
+                        break;
+                    }
+                }
+            } else {
+                // use OLD contact fields (deprecated!)
+                if (key.equals("ADDRESS.PHONE")) return Optional.ofNullable(contact.getPhone());
+                if (key.equals("ADDRESS.PHONE.PRE")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getPhone(), true));
+                if (key.equals("ADDRESS.PHONE.POST")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getPhone(), false));
+                if (key.equals("ADDRESS.FAX")) return Optional.ofNullable(contact.getFax());
+                if (key.equals("ADDRESS.FAX.PRE")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getFax(), true));
+                if (key.equals("ADDRESS.FAX.POST")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getFax(), false));
+                if (key.equals("ADDRESS.MOBILE")) return Optional.ofNullable(contact.getMobile());
+                if (key.equals("ADDRESS.MOBILE.PRE")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getMobile(), true));
+                if (key.equals("ADDRESS.MOBILE.POST")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getMobile(), false));
+                if (key.equals("ADDRESS.EMAIL")) return Optional.ofNullable(contact.getEmail());
             }
             BankAccount bankAccount = originContact.getBankAccount();
             if(bankAccount != null) {
-                if (key.equals("ADDRESS.BANK.ACCOUNT.HOLDER")) return Optional.ofNullable(bankAccount.getAccountHolder());
-                if (key.equals("ADDRESS.BANK.ACCOUNT")) return Optional.ofNullable(bankAccount.getName());
-                if (key.equals("ADDRESS.BANK.CODE")) return Optional.ofNullable(Optional.ofNullable(bankAccount.getBankCode()).orElse(Integer.valueOf(0)).toString());
-                if (key.equals("ADDRESS.BANK.NAME")) return Optional.ofNullable(bankAccount.getBankName());
-                if (key.equals("ADDRESS.BANK.IBAN")) return Optional.ofNullable(bankAccount.getIban());
-                if (key.equals("ADDRESS.BANK.BIC")) return Optional.ofNullable(bankAccount.getBic());
+                switch (key) {
+                case "ADDRESS.BANK.ACCOUNT.HOLDER":
+                    return Optional.ofNullable(bankAccount.getAccountHolder());
+                case "ADDRESS.BANK.ACCOUNT":
+                    return Optional.ofNullable(bankAccount.getName());
+                case "ADDRESS.BANK.CODE":
+                    return Optional.ofNullable(Optional.ofNullable(bankAccount.getBankCode()).orElse(Integer.valueOf(0)).toString());
+                case "ADDRESS.BANK.NAME":
+                    return Optional.ofNullable(bankAccount.getBankName());
+                case "ADDRESS.BANK.IBAN":
+                    return Optional.ofNullable(bankAccount.getIban());
+                case "ADDRESS.BANK.BIC":
+                    return Optional.ofNullable(bankAccount.getBic());
+                default:
+                    break;
+                }
             }
         }
         if (key.equals("ADDRESS.NR")) return Optional.ofNullable(contact.getCustomerNumber());
-        if (key.equals("ADDRESS.PHONE")) return Optional.ofNullable(contact.getPhone());
-        if (key.equals("ADDRESS.PHONE.PRE")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getPhone(), true));
-        if (key.equals("ADDRESS.PHONE.POST")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getPhone(), false));
-        if (key.equals("ADDRESS.FAX")) return Optional.ofNullable(contact.getFax());
-        if (key.equals("ADDRESS.FAX.PRE")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getFax(), true));
-        if (key.equals("ADDRESS.FAX.POST")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getFax(), false));
-        if (key.equals("ADDRESS.MOBILE")) return Optional.ofNullable(contact.getMobile());
-        if (key.equals("ADDRESS.MOBILE.PRE")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getMobile(), true));
-        if (key.equals("ADDRESS.MOBILE.POST")) return Optional.ofNullable(templateProcessorHelper.getTelPrePost(contact.getMobile(), false));
         if (key.equals("ADDRESS.SUPPLIER.NUMBER")) return Optional.ofNullable(contact.getSupplierNumber());
-        if (key.equals("ADDRESS.EMAIL")) return Optional.ofNullable(contact.getEmail());
-        
         if (key.equals("ADDRESS.GLN")) return Optional.ofNullable(Optional.ofNullable(contact.getGln()).orElse(Long.valueOf(0)).toString());
         return Optional.empty();
     }

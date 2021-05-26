@@ -398,7 +398,7 @@ id="04_openoffice_libreoffice">
 						<entry>Vor- und Nachname (Rechnungsadresse)</entry>
 					</row>
 					<row>
-						<entry>ADDRESS.NAMESUFFIX</entry>
+						<entry>ADDRESS.NAMESUFFIX oder ADDRESS.NAMEADDON</entry>
 						<entry>Namenszusatz</entry>
 					</row>
 					<row>
@@ -408,6 +408,10 @@ id="04_openoffice_libreoffice">
 					<row>
 						<entry>ADDRESS.ALIAS</entry>
 						<entry>Alias des Kunden</entry>
+					</row>
+					<row>
+						<entry>ADDRESS.LOCALCONSULTANT</entry>
+						<entry>Ansprechpartner des Kunden</entry>
 					</row>
 					<row>
 						<entry>ADDRESS.REGISTERNUMBER</entry>
@@ -618,7 +622,11 @@ id="04_openoffice_libreoffice">
 					</row>
 					<row>
 						<entry>ADDRESS.VATNR</entry>
-						<entry>USt.-IdNr</entry>
+						<entry>USt.-Id.</entry>
+					</row>
+					<row>
+						<entry>ADDRESS.RELIABLILITY</entry>
+						<entry>Bonität des Kunden</entry>
 					</row>
 					<row>
 						<entry>ADDRESS.NOTE</entry>
