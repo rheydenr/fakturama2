@@ -390,7 +390,6 @@ public class TemplateProcessor {
 	 * 		The extracted value
 	 */
 	public String getDocumentInfo(Document document, Optional<DocumentSummary> documentSummary, String placeholder) {
-        contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 		String value = getDocumentInfoByPlaceholder(document, documentSummary, templateProcessorHelper.extractPlaceholderName(placeholder));
 		return interpretParameters(placeholder, value);
 	}
@@ -422,7 +421,8 @@ public class TemplateProcessor {
 	 * @param documentSummary
 	 */
 	public void processTemplate(TextDocument textdoc, Document document, DocumentSummary documentSummary) {
-	    
+        contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+
         // check if we have to use sales equalization tax
         setUseSalesEquationTaxForDocument(documentReceiverDao.isSETEnabled(document));
 	    
