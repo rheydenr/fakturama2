@@ -1193,7 +1193,8 @@ public class DocumentEditor extends Editor<Document> {
      * @return a copy of the source document
      */
 	private Document copyFromSourceDocument(Document parentDoc, BillingType pTargetType) {
-		DocumentType documentType = DocumentTypeUtil.findByBillingType(pTargetType);
+
+	    DocumentType documentType = DocumentTypeUtil.findByBillingType(pTargetType);
 		
 		// TODO Check if parentDoc is equal to field "document"
 		Document retval = DocumentTypeUtil.createDocumentByBillingType(pTargetType);
@@ -1231,7 +1232,9 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		retval.setCustomerRef(parentDoc.getCustomerRef());
-		retval.setServiceDate(parentDoc.getServiceDate());
+		
+		// set current date as a default for service date
+	    retval.setServiceDate(Calendar.getInstance().getTime());
 		retval.setOrderDate(parentDoc.getOrderDate());
 		if(parentDoc.getBillingType().isINVOICE()) {
 			retval.setInvoiceReference((Invoice) parentDoc);

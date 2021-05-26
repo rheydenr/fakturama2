@@ -9,6 +9,8 @@ import org.eclipse.emf.texo.model.ModelObject;
 import org.eclipse.emf.texo.model.ModelResolver;
 import org.eclipse.emf.texo.model.ModelResolver.ModelDescriptor;
 
+import com.ibm.icu.util.Calendar;
+
 /**
  * Helper class for duplicating model objects. Since not all references have to
  * be duplicated (e.g., VAT or Shipping objects), the duplicating process has to
@@ -46,7 +48,7 @@ public class ObjectDuplicator {
 			clonedDocument = (T) objectCopier.copy(document);
 
 			/*
-			 * Modify some references. Note, that VAT, Payment and the like are entities
+			 * Modify some references. Note that VAT, Payment and the like are entities
 			 * which are always referenced only. But entities like DocumentReceiver or
 			 * DocumentItem have to be created newly for each copy of a document. Therefore
 			 * we iterate through all relevant entity collections and set their item's id to
@@ -66,6 +68,16 @@ public class ObjectDuplicator {
 
 				// set DocumentItems to new
 				clonedDocument.getItems().forEach(r -> r.setId(0));
+				
+				// set date to actual date
+				clonedDocument.setDocumentDate(Calendar.getInstance().getTime());
+				clonedDocument.setServiceDate(Calendar.getInstance().getTime());
+				clonedDocument.setOrderDate(Calendar.getInstance().getTime());
+				
+				// reset paid values, if any
+				clonedDocument.setPaid(Boolean.FALSE);
+				clonedDocument.setPayDate(null);
+				clonedDocument.setPaidValue(null);
 
 				// make the new object really "new" :-)
 				clonedDocument.setId(0);

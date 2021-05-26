@@ -1050,7 +1050,7 @@
 			</inlinemediaobject> Auftrag</subtitle>
 			<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster. Mit gedrückter <keycap>STRG</keycap>-Taste (bzw. <keycap>CMD</keycap>-Taste bei MacOS) 
 			wird der aktive Auftrag dupliziert und in einem neuen Editor dargestellt (ggf. muss man dazu zunächst den Fokus direkt auf den 
-			aktiven Editor setzen).</para>
+			aktiven Editor setzen). Beim Duplizieren werden die Felder für das Dokumentdatum, das Bestelldatum, das Bezahldatum und das Leistungsdatum zurückgesetzt. Sämtliche Rechnungsbezüge werden ebenfalls entfernt.</para>
 			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
 			</para>
 		</section>
