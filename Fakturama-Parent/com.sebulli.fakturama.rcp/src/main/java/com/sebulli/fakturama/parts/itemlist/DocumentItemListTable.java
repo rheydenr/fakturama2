@@ -1045,6 +1045,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     public void addNewItem(DocumentItemDTO newItem) {
     	newItem.getDocumentItem().setPosNr(documentItemsListData.size() + 1);
     	documentItemsListData.add(newItem);
+    	natTable.doCommand(new SelectRowsCommand(getGridLayer().getSelectionLayer(), 0, documentItemsListData.size()-1, false, false));
         getContainer().setDirty(true);
     }
 
