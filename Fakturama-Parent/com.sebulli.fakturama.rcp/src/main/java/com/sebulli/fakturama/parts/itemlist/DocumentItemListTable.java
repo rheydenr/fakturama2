@@ -657,9 +657,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         );
          
         // add some edit configuration
-        gridListLayer.getViewportLayer().addConfiguration(new DefaultEditBindings());
-        gridListLayer.getViewportLayer().addConfiguration(new DefaultEditConfiguration());
-        gridListLayer.getViewportLayer().addConfiguration(new DocumentItemTableConfiguration());
+        gridListLayer.getGridLayer().addConfiguration(new DefaultEditBindings());
+        gridListLayer.getGridLayer().addConfiguration(new DefaultEditConfiguration());
+        gridListLayer.getGridLayer().addConfiguration(new DocumentItemTableConfiguration());
         
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently.
