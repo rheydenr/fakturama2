@@ -81,8 +81,8 @@ public class BodyLayerStack<T extends IEntity> extends AbstractIndexLayerTransfo
         // Select complete rows
         selectionLayer.addConfiguration(new RowOnlySelectionConfiguration());
         
-        viewportLayer = new ViewportLayer(selectionLayer);
-        setUnderlyingLayer(selectionLayer);
+        viewportLayer = new ViewportLayer(this.selectionLayer);
+        setUnderlyingLayer(viewportLayer);
 
         registerCommandHandler(new CopyDataCommandHandler(this.selectionLayer));
     }
