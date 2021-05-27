@@ -151,7 +151,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new VATTableConfiguration());
         natTable.addConfiguration(new ListSelectionStyleConfiguration());
-    natTable.setBackground(GUIHelper.COLOR_WHITE);
+        natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //		natTable.addConfiguration(new HeaderMenuConfiguration(n6));
         gridListLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);
