@@ -629,6 +629,18 @@ id="04_openoffice_libreoffice">
 						<entry>Bonität des Kunden</entry>
 					</row>
 					<row>
+						<entry>ADDRESS.PAYMENT</entry>
+						<entry>bevorzugte Zahlungsart des Kunden</entry>
+					</row>
+					<row>
+						<entry>ADDRESS.HASSALESEQTAX</entry>
+						<entry>Kennzeichen, das angibt, ob Ausgleichsteuer gezahlt werden muss</entry>
+					</row>
+					<row>
+						<entry>ADDRESS.WEBSHOPUSER</entry>
+						<entry>Nutzername im Webshop</entry>
+					</row>
+					<row>
 						<entry>ADDRESS.NOTE</entry>
 						<entry>Text der Notiz über diesen Kunden/Lieferanten. Vorsicht bei der Benutzung! Dieser Text sollte nicht immer auf einem Dokument erscheinen.</entry>
 					</row>
