@@ -139,6 +139,7 @@ import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.DocumentItemUtil;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.common.CellImagePainter;
@@ -723,6 +724,19 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         return natTable;
     }
 
+
+    public void reloadItemList() {
+        DocumentType documentType = DocumentTypeUtil.findByBillingType(document.getBillingType());
+        
+        if (!documentType.hasPrice()) {
+            return;
+        }
+        
+        getDocumentItemsListData().clear();
+        
+        List<DocumentItemDTO> documentItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
+        getDocumentItemsListData().addAll(documentItems);
+    }
 
 	private BidiMap<Integer, DocumentItemListDescriptor> createColumns() {
 		// Create the table columns 
