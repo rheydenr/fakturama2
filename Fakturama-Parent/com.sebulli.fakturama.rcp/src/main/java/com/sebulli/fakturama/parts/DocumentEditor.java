@@ -297,7 +297,7 @@ public class DocumentEditor extends Editor<Document> {
 	private boolean useGross;
 
 	private boolean noVat;
-	private String noVatName;
+	private VAT noVatObject;
 	private Shipping shipping = null;
 	private MonetaryAmount total =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 	private MonetaryAmount deposit =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
@@ -644,7 +644,7 @@ public class DocumentEditor extends Editor<Document> {
 		    public IStatus validate(Date vestingPeriodStart) {
 		    	if(vestingPeriodStart == null || dtVestingPeriodEnd.getSelection() == null) return ValidationStatus.ok();
 		        if(vestingPeriodStart.after(dtVestingPeriodEnd.getSelection())) {
-		        	return ValidationStatus.error("Startdatum liegt nach dem Endedatum!");
+		        	return ValidationStatus.error(msg.editorDocumentErrorStartdateafterenddate);
 		        } else {
 		        	return ValidationStatus.ok();
 		        }
@@ -1139,7 +1139,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		noVat = document.getNoVatReference() != null;
 		if(noVat) {
-		    noVatName = document.getNoVatReference().getName();
+		    noVatObject = document.getNoVatReference();
 		}
 		
 		netgross = document.getNetGross() != null ? document.getNetGross() : defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS);
@@ -2229,12 +2229,12 @@ public class DocumentEditor extends Editor<Document> {
 					// get the "no-VAT" values
 					if (dataSetVat.getId() > 0) {
 						noVat = true;
-						noVatName = dataSetVat.getName();
+						noVatObject = dataSetVat;
 //						noVatDescription = dataSetVat.getDescription();
 					}
 					else {
 						noVat = false;
-						noVatName = "";
+						noVatObject = null;
 						/* because later on we have to
 						 * to decide if noVAT is set based on null or not null 
 						 */
@@ -2259,7 +2259,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Selects the no VAT entry
 		comboViewerNoVat.setInput(vatDao.findNoVATEntries());
 		if (noVat) {
-			comboViewerNoVat.getCombo().setText(noVatName);
+			comboViewerNoVat.getCombo().setText(noVatObject.getDescription());
 		} else {
 		    comboViewerNoVat.getCombo().select(0);
 		}
