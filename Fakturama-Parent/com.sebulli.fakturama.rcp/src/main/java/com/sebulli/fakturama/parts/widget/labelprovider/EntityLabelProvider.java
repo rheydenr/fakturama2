@@ -38,10 +38,8 @@ public class EntityLabelProvider extends LabelProvider {
         String retval = "";
         if (element != null) {
             if(element instanceof IDescribableEntity) {
-                retval = ((IDescribableEntity)element).getDescription();
-            } 
-
-            if (element instanceof IEntity || StringUtils.isBlank(retval)) {
+                retval = StringUtils.defaultString(((IDescribableEntity)element).getDescription(), ((IEntity)element).getName());
+            } else if (element instanceof IEntity) {
                 retval = ((IEntity)element).getName();
             }
         }

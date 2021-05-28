@@ -23,7 +23,12 @@ public final class CategoryComparator<T extends AbstractCategory> implements Com
 	public int compare(T cat1, T cat2) {
 		// oh no... the names could be equal in different branches,
 		// therefore we have to compare with an another attribute
-	    
-	    return Comparator.comparing(AbstractCategory::getName).thenComparing(c -> CommonConverter.getCategoryName(c, "")).compare(cat1, cat2);
+	        int result = cat1.getName().compareTo(cat2.getName());
+	         if(result == 0) {
+	             result = CommonConverter.getCategoryName(cat1, "").compareTo(CommonConverter.getCategoryName(cat2, ""));
+	         }
+	         return result;
+    
+//	    return Comparator.comparing(AbstractCategory::getName).thenComparing(c -> CommonConverter.getCategoryName(c, "")).compare(cat1, cat2);
 	}
 }

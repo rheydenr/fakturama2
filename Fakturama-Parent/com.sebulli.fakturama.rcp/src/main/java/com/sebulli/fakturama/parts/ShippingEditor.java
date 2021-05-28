@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
@@ -62,6 +63,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DataUtils;
 import com.sebulli.fakturama.model.CategoryComparator;
+import com.sebulli.fakturama.model.IDescribableEntity;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingCategory;
 import com.sebulli.fakturama.model.ShippingVatType;
@@ -561,7 +563,8 @@ public class ShippingEditor extends Editor<Shipping> {
         editorShipping.setShippingVat(tmpShippingVat);
         
         UpdateValueStrategy<VAT, String> vatModel2Target = UpdateValueStrategy.create(new EntityConverter<VAT>(VAT.class));
-        UpdateValueStrategy<String, VAT> target2VatModel = UpdateValueStrategy.create(new StringToEntityConverter<VAT>(allVATs, VAT.class));
+        boolean isDescribable = Arrays.stream(VAT.class.getInterfaces()).anyMatch(i -> i == IDescribableEntity.class);
+        UpdateValueStrategy<String, VAT> target2VatModel = UpdateValueStrategy.create(new StringToEntityConverter<VAT>(allVATs, VAT.class, isDescribable));
         bindModelValue(editorShipping, comboVat, Shipping_.shippingVat.getName(),
                 target2VatModel, vatModel2Target);
 	}

@@ -139,6 +139,7 @@ import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.DocumentItemUtil;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.common.CellImagePainter;
@@ -657,9 +658,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         );
          
         // add some edit configuration
-        gridListLayer.getViewportLayer().addConfiguration(new DefaultEditBindings());
-        gridListLayer.getViewportLayer().addConfiguration(new DefaultEditConfiguration());
-        gridListLayer.getViewportLayer().addConfiguration(new DocumentItemTableConfiguration());
+        gridListLayer.getGridLayer().addConfiguration(new DefaultEditBindings());
+        gridListLayer.getGridLayer().addConfiguration(new DefaultEditConfiguration());
+        gridListLayer.getGridLayer().addConfiguration(new DocumentItemTableConfiguration());
         
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently.
@@ -723,6 +724,19 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         return natTable;
     }
 
+
+    public void reloadItemList() {
+        DocumentType documentType = DocumentTypeUtil.findByBillingType(document.getBillingType());
+        
+        if (!documentType.hasPrice()) {
+            return;
+        }
+        
+        getDocumentItemsListData().clear();
+        
+        List<DocumentItemDTO> documentItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
+        getDocumentItemsListData().addAll(documentItems);
+    }
 
 	private BidiMap<Integer, DocumentItemListDescriptor> createColumns() {
 		// Create the table columns 
@@ -1045,6 +1059,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     public void addNewItem(DocumentItemDTO newItem) {
     	newItem.getDocumentItem().setPosNr(documentItemsListData.size() + 1);
     	documentItemsListData.add(newItem);
+    	natTable.doCommand(new SelectRowsCommand(getGridLayer().getSelectionLayer(), 0, documentItemsListData.size()-1, false, false));
         getContainer().setDirty(true);
     }
 

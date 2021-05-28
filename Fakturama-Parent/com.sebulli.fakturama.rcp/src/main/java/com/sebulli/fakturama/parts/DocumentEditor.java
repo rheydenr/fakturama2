@@ -115,6 +115,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.javamoney.moneta.Money;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.sebulli.fakturama.calculate.CustomerStatistics;
 import com.sebulli.fakturama.dao.DocumentsDAO;
@@ -187,7 +188,8 @@ import com.sebulli.fakturama.views.datatable.texts.TextListTable;
  */
 public class DocumentEditor extends Editor<Document> {
 
-	private static final String ADDRESS_TAB_BILLINGTYPE = "ADDRESS_FOR_BILLING_TAB";
+	private static final String ITEM_CHANGED_EVENT_PATH = "/itemChanged";
+    private static final String ADDRESS_TAB_BILLINGTYPE = "ADDRESS_FOR_BILLING_TAB";
 	public static final String DOCUMENT_RECALCULATE = "DOCUMENT.RECALCULATE";
 	public static final String PARAM_SILENT_MODE = "org.fakturama.documenteditor.silentmode";
 	
@@ -297,7 +299,7 @@ public class DocumentEditor extends Editor<Document> {
 	private boolean useGross;
 
 	private boolean noVat;
-	private String noVatName;
+	private VAT noVatObject;
 	private Shipping shipping = null;
 	private MonetaryAmount total =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 	private MonetaryAmount deposit =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
@@ -336,6 +338,32 @@ public class DocumentEditor extends Editor<Document> {
 	private Label totalWeight;
 	private SashForm sashForm;
 	
+     /**
+     * This method is for setting the dirty state to <code>true</code>. This
+     * happens if e.g. the items list has changed. (could be sent from
+     * DocumentListTable)
+     */
+       //@UIEventTopic(EDITOR_ID + "/itemChanged")
+	private EventHandler itemListChangedHandler =(Event event) -> {
+        if (event != null) {
+            // the event has already all given params in it since we created them as Map
+            String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
+            // at first we have to check if the message is for us
+            if (!StringUtils.equals(targetDocumentName, document.getName())) {
+                // if not, silently ignore this event
+                return;
+            }
+            // (re)calculate summary
+            // TODO check if this has to be done in a synchronous or asynchronous call
+            // within UISynchronize
+            if ((Boolean) event.getProperty(DOCUMENT_RECALCULATE)) {
+                calculate(true);
+            }
+            setDirty(true);
+        }
+    };   
+
+	
 	/**
 	 * Mark this document as printed
 	 */
@@ -369,6 +397,10 @@ public class DocumentEditor extends Editor<Document> {
 		 */
     	
 		boolean wasDirty = getMDirtyablePart().isDirty();
+        evtBroker.unsubscribe(itemListChangedHandler);
+		
+		// set items table silent
+		itemListTable.getNatTable().commitAndCloseActiveCellEditor();
 		
 		// set focus outside of address tab
 		txtCustomerRef.setFocus();
@@ -495,7 +527,7 @@ public class DocumentEditor extends Editor<Document> {
 		if (newDocument) {
 		    try {
                 document = documentsDAO.save(document);
-                reloadItemList();
+                itemListTable.reloadItemList();
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }
@@ -526,7 +558,7 @@ public class DocumentEditor extends Editor<Document> {
 		
         try {
             document = documentsDAO.save(document);
-            reloadItemList();
+            itemListTable.reloadItemList();
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
@@ -552,6 +584,8 @@ public class DocumentEditor extends Editor<Document> {
         // reset dirty flag
         setDirty(false);
         ((MPart)getMDirtyablePart()).getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
+        evtBroker.subscribe(EDITOR_ID + ITEM_CHANGED_EVENT_PATH, itemListChangedHandler);
+
         return Boolean.TRUE;
 	}
     
@@ -561,18 +595,6 @@ public class DocumentEditor extends Editor<Document> {
     	dialogSettings.put("SASHWEIGHTS", k.toArray(new String[] {}));
 		sashForm.getWeights();
 	}
-
-	private void reloadItemList() {
-    	
-		if (!getDocumentType().hasPrice()) {
-			return;
-		}
-		
-        itemListTable.getDocumentItemsListData().clear();
-        
-        List<DocumentItemDTO> documentItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
-        itemListTable.getDocumentItemsListData().addAll(documentItems);
-    }
 
     private void reassignDocumentReceiver() {
 		document.getReceiver().clear();
@@ -644,7 +666,7 @@ public class DocumentEditor extends Editor<Document> {
 		    public IStatus validate(Date vestingPeriodStart) {
 		    	if(vestingPeriodStart == null || dtVestingPeriodEnd.getSelection() == null) return ValidationStatus.ok();
 		        if(vestingPeriodStart.after(dtVestingPeriodEnd.getSelection())) {
-		        	return ValidationStatus.error("Startdatum liegt nach dem Endedatum!");
+		        	return ValidationStatus.error(msg.editorDocumentErrorStartdateafterenddate);
 		        } else {
 		        	return ValidationStatus.ok();
 		        }
@@ -1139,7 +1161,7 @@ public class DocumentEditor extends Editor<Document> {
 
 		noVat = document.getNoVatReference() != null;
 		if(noVat) {
-		    noVatName = document.getNoVatReference().getName();
+		    noVatObject = document.getNoVatReference();
 		}
 		
 		netgross = document.getNetGross() != null ? document.getNetGross() : defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS);
@@ -1176,6 +1198,9 @@ public class DocumentEditor extends Editor<Document> {
         } else {
         	createPartControl(parent);
         }
+        
+        // activate Event Broker for items list
+        evtBroker.subscribe(EDITOR_ID + ITEM_CHANGED_EVENT_PATH, itemListChangedHandler);
 	}
 
     /**
@@ -2229,12 +2254,12 @@ public class DocumentEditor extends Editor<Document> {
 					// get the "no-VAT" values
 					if (dataSetVat.getId() > 0) {
 						noVat = true;
-						noVatName = dataSetVat.getName();
+						noVatObject = dataSetVat;
 //						noVatDescription = dataSetVat.getDescription();
 					}
 					else {
 						noVat = false;
-						noVatName = "";
+						noVatObject = null;
 						/* because later on we have to
 						 * to decide if noVAT is set based on null or not null 
 						 */
@@ -2259,7 +2284,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Selects the no VAT entry
 		comboViewerNoVat.setInput(vatDao.findNoVATEntries());
 		if (noVat) {
-			comboViewerNoVat.getCombo().setText(noVatName);
+			comboViewerNoVat.getCombo().setText(noVatObject.getDescription());
 		} else {
 		    comboViewerNoVat.getCombo().select(0);
 		}
@@ -3390,32 +3415,6 @@ public class DocumentEditor extends Editor<Document> {
     public void setDirty(boolean isDirty) {
     	getMDirtyablePart().setDirty(isDirty);
     }
-
-    /**
-     * This method is for setting the dirty state to <code>true</code>. This
-     * happens if e.g. the items list has changed. (could be sent from
-     * DocumentListTable)
-     */
-    @Inject
-    @org.eclipse.e4.core.di.annotations.Optional
-    protected void handleItemChanged(@UIEventTopic(EDITOR_ID + "/itemChanged") Event event) {
-        if (event != null) {
-            // the event has already all given params in it since we created them as Map
-            String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
-            // at first we have to check if the message is for us
-            if (!StringUtils.equals(targetDocumentName, document.getName())) {
-                // if not, silently ignore this event
-                return;
-            }
-            // (re)calculate summary
-            // TODO check if this has to be done in a synchronous or asynchronous call
-            // within UISynchronize
-            if ((Boolean) event.getProperty(DOCUMENT_RECALCULATE)) {
-                calculate(true);
-            }
-            setDirty(true);
-        }
-    }    
     
     /**
      * If an entity is deleted via list view we have to close a possibly open
