@@ -38,19 +38,6 @@
 		<unit id="org.javamoney.feature.feature.group" version="1.0.2"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/nebula/releases/2.4.3"/>
-		<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="1.1.0.202011020719"/>
-		<unit id="org.eclipse.nebula.widgets.cdatetime.css.feature.feature.group" version="1.4.0.202011020719"/>
-		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.5.0.202011020719"/>
-		<unit id="org.eclipse.nebula.widgets.opal.checkboxgroup.feature.feature.group" version="1.0.0.202011020719"/>
-		<unit id="org.eclipse.nebula.widgets.opal.commons.feature.feature.group" version="1.0.0.202011020719"/>
-		<unit id="org.eclipse.nebula.widgets.opal.dialog.feature.feature.group" version="1.0.0.202011020719"/>
-		<unit id="org.eclipse.nebula.widgets.opal.duallist.feature.feature.group" version="1.0.0.202011020719"/>
-		<unit id="org.eclipse.nebula.widgets.opal.multichoice.feature.feature.group" version="1.0.0.202011020719"/>
-		<unit id="org.eclipse.nebula.widgets.passwordrevealer.feature.feature.group" version="1.0.0.202011020719"/>
-		<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.202011020719"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/releases/2021-03"/>
 		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
 		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.19.0.v20210210-1828"/>
@@ -130,6 +117,18 @@
 		<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="2.0.1.202105232058"/>
 		<unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="2.0.1.202105232058"/>
 		<unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="2.0.1.202105232058"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="http://download.eclipse.org/nebula/snapshot"/>
+		<unit id="org.eclipse.nebula.cwt.feature.feature.group" version="1.1.0.202106031230"/>
+		<unit id="org.eclipse.nebula.widgets.cdatetime.css.feature.feature.group" version="1.4.0.202106031230"/>
+		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.5.0.202106031230"/>
+		<unit id="org.eclipse.nebula.widgets.opal.checkboxgroup.feature.feature.group" version="1.0.0.202106031230"/>
+		<unit id="org.eclipse.nebula.widgets.opal.commons.feature.feature.group" version="1.0.0.202106031230"/>
+		<unit id="org.eclipse.nebula.widgets.opal.duallist.feature.feature.group" version="1.0.0.202106031230"/>
+		<unit id="org.eclipse.nebula.widgets.opal.multichoice.feature.feature.group" version="1.0.0.202106031230"/>
+		<unit id="org.eclipse.nebula.widgets.passwordrevealer.feature.feature.group" version="1.0.0.202106031230"/>
+		<unit id="org.eclipse.nebula.widgets.pgroup.feature.feature.group" version="1.0.0.202106031230"/>
 	</location>
 	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
 		<groupId>org.bouncycastle</groupId>

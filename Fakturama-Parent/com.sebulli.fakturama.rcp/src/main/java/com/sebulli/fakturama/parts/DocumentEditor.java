@@ -69,6 +69,8 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.JFaceColors;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -99,6 +101,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -2468,11 +2471,15 @@ public class DocumentEditor extends Editor<Document> {
 		netWeightLabel.setText(msg.editorDocumentFieldNetweight);
 		netWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
 		netWeight.setAlignment(SWT.RIGHT);
+		netWeight.setBackground(JFaceColors.getInformationViewerBackgroundColor(top.getDisplay()));
+		netWeight.setEnabled(false);
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(netWeight);
 		
 		Label totalWeightLabel = new Label(weightComposite, SWT.NONE);
 		totalWeightLabel.setText(msg.editorDocumentFieldTotalweight);
 		totalWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
+		totalWeight.setBackground(JFaceColors.getInformationViewerBackgroundColor(top.getDisplay()));
+		totalWeight.setEnabled(false);
 		totalWeight.setAlignment(SWT.RIGHT);
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(totalWeight);
 		
@@ -2874,9 +2881,9 @@ public class DocumentEditor extends Editor<Document> {
      */
     private void createTotalComposite(boolean hasPrice, Composite parentComposite) {
 		Composite totalComposite = CompositeFactory.newComposite(SWT.NONE)
-				.layout(GridLayoutFactory.swtDefaults().numColumns(2).create())
+				.layout(GridLayoutFactory.swtDefaults().numColumns(3).equalWidth(false).create())
 				.layoutData(
-						GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).span(1, 2).create())
+						GridDataFactory.fillDefaults().grab(true, false).span(1, 2).create())
 				.create(parentComposite);
 
         if(hasPrice) {
@@ -2884,17 +2891,18 @@ public class DocumentEditor extends Editor<Document> {
 			netLabel = LabelFactory.newLabel(SWT.NONE)
 					// Set the total text
 					.text(getTotalText())
-					.layoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).create())
+					.layoutData(GridDataFactory.swtDefaults().span(2, 1).align(SWT.END, SWT.CENTER).create())
 					.create(totalComposite);
     
             // Sub total
-            itemsSum = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
+            itemsSum = new FormattedText(totalComposite, SWT.BORDER | SWT.SHADOW_IN | SWT.RIGHT);
             context.set(ILocaleService.class, localeUtil);
     		MoneyFormatter formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
             itemsSum.setFormatter(formatter);
+            itemsSum.getControl().setBackground(JFaceColors.getInformationViewerBackgroundColor(totalComposite.getDisplay()));
             itemsSum.getControl().setEnabled(false);
     //			itemsSum.setText("---");
-            GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsSum.getControl());
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(itemsSum.getControl());
     
             if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) ||
             		!DataUtils.getInstance().DoublesAreEqual(document.getItemsRebate(), 0.0)) {
@@ -2904,14 +2912,14 @@ public class DocumentEditor extends Editor<Document> {
             	//T: Document Editor - Label discount 
             	discountLabel.setText(msg.commonFieldDiscount);
             	discountLabel.setToolTipText(msg.editorDocumentDiscountTooltip);
-            	GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(discountLabel);
+            	GridDataFactory.swtDefaults().span(2, 1).align(SWT.END, SWT.CENTER).applyTo(discountLabel);
             	
             	// Discount field
             	itemsDiscount = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
             	itemsDiscount.setFormatter(new PercentFormatter());
             	itemsDiscount.setValue(document.getItemsRebate());
             	itemsDiscount.getControl().setToolTipText(discountLabel.getToolTipText());
-            	GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsDiscount.getControl());
+                GridDataFactory.fillDefaults().grab(true, false).applyTo(itemsDiscount.getControl());
     
             	// Set the tab order
             	setTabOrder(txtMessage, itemsDiscount.getControl());
@@ -2939,47 +2947,50 @@ public class DocumentEditor extends Editor<Document> {
             Label vatLabel = new Label(totalComposite, SWT.NONE);
             //T: Document Editor - Label VAT 
             vatLabel.setText(msg.commonFieldVat);
-            GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(vatLabel);
+            GridDataFactory.swtDefaults().span(2, 1).align(SWT.END, SWT.CENTER).applyTo(vatLabel);
     
             // VAT value
-            vatValue = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
+            vatValue = new FormattedText(totalComposite, SWT.BORDER | SWT.SHADOW_IN | SWT.RIGHT);
             vatValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
-            vatValue.getControl().setEditable(false);
+            vatValue.getControl().setBackground(JFaceColors.getInformationViewerBackgroundColor(totalComposite.getDisplay()));
+            vatValue.getControl().setEnabled(false);
     //			vatValue.setText("---");
 // TODO ???            bindModelValue(documentSummary, vatValue.getControl(), "totalVat", 30);
-            GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(vatValue.getControl());
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(vatValue.getControl());
         }
 
         // Total label
         Label totalLabel = new Label(totalComposite, SWT.NONE);
         //T: Document Editor - Total sum of this document 
         totalLabel.setText(msg.commonFieldTotal);
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(totalLabel);
+        GridDataFactory.swtDefaults().span(2, 1).align(SWT.END, SWT.CENTER).applyTo(totalLabel);
 
         // Total value
-        totalValue = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
+        totalValue = new FormattedText(totalComposite, SWT.BORDER | SWT.SHADOW_IN | SWT.RIGHT);
         totalValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
-        totalValue.getControl().setEditable(false);
-        GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(totalValue.getControl());
+        totalValue.getControl().setBackground(JFaceColors.getInformationViewerBackgroundColor(totalComposite.getDisplay()));
+        totalValue.getControl().setEnabled(false);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(totalValue.getControl());
     }
 
 	private void createShippingInfoFields(Composite totalComposite) {
-        // Shipping composite contains label and combo.
-        Composite shippingComposite = new Composite(totalComposite, SWT.NONE);
-        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(3).applyTo(shippingComposite);
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).applyTo(shippingComposite);
 
 		// Shipping label
-		Label shippingLabel = new Label(shippingComposite, SWT.NONE);
+		Label shippingLabel = new Label(totalComposite, SWT.NONE);
 		//T: Document Editor - Label shipping 
 		shippingLabel.setText(msg.editorDocumentFieldShipping);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(shippingLabel);
 		shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
+		
+//        // Shipping composite contains label and combo.
+//        Composite shippingComposite = new Composite(totalComposite, SWT.NONE);
+//        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(2).equalWidth(false).applyTo(shippingComposite);
+//        GridDataFactory.fillDefaults().grab(true, false).applyTo(shippingComposite);
    
 		// Shipping combo		
-		comboShipping = new Combo(shippingComposite, SWT.BORDER);
+		comboShipping = new Combo(totalComposite, SWT.BORDER);
 		comboShipping.setToolTipText(msg.editorDocumentFieldShippingTooltip);
-		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboShipping);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboShipping);
    
 		// Shipping value field
 		shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
@@ -2990,7 +3001,7 @@ public class DocumentEditor extends Editor<Document> {
 		// since the shipping value can be changed also by comboNetGross we have to store
 		// the shipping value "manually"
 //            bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
-		GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(shippingValue.getControl());
    
 		// Recalculate, if the shipping field looses the focus.
 		/*
