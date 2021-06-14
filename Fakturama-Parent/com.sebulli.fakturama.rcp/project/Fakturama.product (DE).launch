@@ -38,7 +38,8 @@
         <setEntry value="ch.qos.logback.core@2:default"/>
         <setEntry value="ch.qos.logback.slf4j@default:false"/>
         <setEntry value="com.ibm.icu@default:default"/>
-        <setEntry value="com.mysql.jdbc@2:true"/>
+        <setEntry value="com.mysql.jdbc*1.2.0@2:true"/>
+        <setEntry value="com.mysql.jdbc*5.1.48@2:true"/>
         <setEntry value="com.opcoach.e4.preferences@default:default"/>
         <setEntry value="com.opencsv@default:default"/>
         <setEntry value="com.sun.activation.jakarta.activation@default:default"/>
@@ -71,7 +72,8 @@
         <setEntry value="org.apache.commons.compress@default:default"/>
         <setEntry value="org.apache.commons.digester@default:default"/>
         <setEntry value="org.apache.commons.jxpath@default:default"/>
-        <setEntry value="org.apache.commons.lang3@default:default"/>
+        <setEntry value="org.apache.commons.lang3*3.11.0@default:default"/>
+        <setEntry value="org.apache.commons.lang3*3.12.0@default:default"/>
         <setEntry value="org.apache.commons.logging*1.2.0.v20180409-1502@default:default"/>
         <setEntry value="org.apache.commons.math3*3.6.1.v20200817-1830@default:default"/>
         <setEntry value="org.apache.commons.validator@default:default"/>
