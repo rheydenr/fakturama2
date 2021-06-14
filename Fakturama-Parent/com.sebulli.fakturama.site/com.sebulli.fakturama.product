@@ -266,11 +266,11 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_sv"/>
       <feature id="org.eclipse.persistence.moxy"/>
       <feature id="org.eclipse.persistence.jpa" installMode="root"/>
-      <feature id="org.eclipse.gemini.dbaccess.feature" installMode="root"/>
-      <feature id="org.eclipse.gemini.dbaccess.mysql.feature" installMode="root"/>
-      <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" installMode="root"/>
-      <feature id="org.eclipse.gemini.jpa.feature" installMode="root"/>
-      <feature id="org.eclipse.gemini.dbaccess.derby.feature" installMode="root"/>
+      <feature id="org.eclipse.gemini.dbaccess.feature"/>
+      <feature id="org.eclipse.gemini.dbaccess.mysql.feature"/>
+      <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature"/>
+      <feature id="org.eclipse.gemini.jpa.feature"/>
+      <feature id="org.eclipse.gemini.dbaccess.derby.feature"/>
    </features>
 
    <configurations>
@@ -285,12 +285,12 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <plugin id="org.eclipse.gemini.dbaccess.mysql" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="3" />
       <property name="org.eclipse.update.reconcile" value="false" />
-      <property name="eclipse.p2.data.area" value="@config.dir/../p2" />
-      <property name="eclipse.p2.profile" value="profile" />
       <property name="osgi.instance.area" value="@user.home/.fakturama2" />
+      <property name="eclipse.p2.profile" value="profile" />
+      <property name="org.eclipse.swt.browser.IEVersion" value="12001" os="win32" />
       <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
       <property name="osgi.splashPath" value="file:plugins/com.sebulli.fakturama.rcp" />
-      <property name="org.eclipse.swt.browser.IEVersion" value="12001" os="win32" />
+      <property name="eclipse.p2.data.area" value="@config.dir/../p2" />
    </configurations>
 
    <repositories>

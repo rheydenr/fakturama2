@@ -82,7 +82,6 @@
         <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@2:true"/>
-        <setEntry value="org.apache.odftoolkit@default:default"/>
         <setEntry value="org.apache.xerces@default:default"/>
         <setEntry value="org.apache.xml.resolver@default:default"/>
         <setEntry value="org.apache.xml.serializer@default:default"/>
@@ -238,6 +237,7 @@
         <setEntry value="org.eclipse.urischeme.nl_de@default:false"/>
         <setEntry value="org.eclipse.urischeme@default:default"/>
         <setEntry value="org.javamoney.osgi@default:default"/>
+        <setEntry value="org.json@default:default"/>
         <setEntry value="org.liquibase.core@default:default"/>
         <setEntry value="org.sat4j.core@default:default"/>
         <setEntry value="org.sat4j.pb@default:default"/>
@@ -262,6 +262,7 @@
         <setEntry value="com.sebulli.fakturama.resources.icons@default:false"/>
         <setEntry value="com.sebulli.fakturama.resources.templates@default:false"/>
         <setEntry value="com.sebulli.fakturama.resources@default:default"/>
+        <setEntry value="org.apache.odftoolkit@default:default"/>
         <setEntry value="org.fakturama.connectors@default:default"/>
         <setEntry value="org.fakturama.e4.ui.dialogs.ext@default:default"/>
         <setEntry value="org.fakturama.export@default:default"/>

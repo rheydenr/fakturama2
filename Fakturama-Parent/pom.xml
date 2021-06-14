@@ -129,22 +129,6 @@
 							<version>${project.version}</version>
 						</artifact>
 					</target>
-					<filters>
-         <!-- remove all providers of the package javax.persistence -->
-				         <!--
-				         cannot be removed because of ancient Gemini plugin
-				         <filter>
-				            <type>eclipse-plugin</type>
-				            <id>javax.persistence</id>
-				            <removeAll />
-				         </filter>
-				          don't remove until ODF toolkit is upgraded! -->
-				         <!-- filter>
-				            <type>eclipse-plugin</type>
-				            <id>javax.xml</id>
-				            <removeAll />
-				         </filter>-->
-					</filters>
           			<pomDependencies>wrapAsBundle</pomDependencies>
 				</configuration>
 			</plugin>
