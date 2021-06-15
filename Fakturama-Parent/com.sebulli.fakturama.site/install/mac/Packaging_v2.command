@@ -206,7 +206,7 @@ xcrun altool --notarize-app --verbose --primary-bundle-id org.fakturama.Fakturam
 #############################################################################################
 
 
-# xcrun altool --notarization-info "694126fa-f554-486c-882c-586acd86e4bb" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} 
+# xcrun altool --notarization-info "39e1af56-578b-4d19-9169-62936e5d8010" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} 
 # xcrun stapler staple ../install/${DMG_FINAL}
 # spctl --assess --type open --context context:primary-signature --verbose "../install/${DMG_FINAL}"
 
