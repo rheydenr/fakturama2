@@ -17,10 +17,6 @@
 		<unit id="org.eclipse.persistence.sdk.feature.group" version="2.7.7.v20200504-69f2c2b80d"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://p2.fakturama.info/2.1.1"/>
-		<unit id="org.javamoney.feature.feature.group" version="1.0.2"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/releases/2021-03"/>
 		<unit id="org.eclipse.draw2d.feature.group" version="3.10.100.201606061308"/>
 		<unit id="org.eclipse.e4.core.tools.feature.feature.group" version="4.19.0.v20210210-1828"/>
@@ -129,6 +125,14 @@
 		<repository location="http://p2.fakturama.info/gemini-di/1.2.0"/>
 		<unit id="org.eclipse.gemini.ext.di.feature.feature.group" version="1.2.0"/>
 	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="http://p2.fakturama.info/2.1.2"/>
+		<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.48"/>
+		<unit id="org.apache.odftoolkit.feature.feature.group" version="1.0.0.202106142350"/>
+		<unit id="org.hsql.jdbc.feature.feature.group" version="2.5.1"/>
+		<unit id="org.javamoney.feature.feature.group" version="1.0.2"/>
+		<unit id="org.slf4j.osgi.feature.feature.group" version="1.7.30"/>
+	</location>
 	<location includeDependencyScope="compile" includeSource="true" missingManifest="generate" type="Maven">
 		<groupId>org.bouncycastle</groupId>
 		<artifactId>bcpkix-jdk15on</artifactId>
@@ -218,13 +222,6 @@
 		<artifactId>xmpbox</artifactId>
 		<version>2.0.23</version>
 		<type>jar</type>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="jar:file:/D:/User/GitHome/fakturama-2/libs/fakturama-helper-libs/de.rhe.apps.updatesite/target/de.rhe.apps.updatesite.eclipse-repository-2.1.2.zip!/"/>
-		<unit id="com.mysql.jdbc.feature.feature.group" version="5.1.48"/>
-		<unit id="org.apache.odftoolkit.feature.feature.group" version="1.0.0.202106142244"/>
-		<unit id="org.hsql.jdbc.feature.feature.group" version="2.5.1"/>
-		<unit id="org.slf4j.osgi.feature.feature.group" version="1.7.30"/>
 	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
