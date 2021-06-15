@@ -26,7 +26,7 @@ Require-Bundle: org.eclipse.core.runtime,
  jakarta.xml.bind,
  jakarta.xml.bind-api,
  org.eclipse.nebula.widgets.opal.checkboxgroup
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Localization: OSGI-INF/l10n/zfbundle
 Export-Package: org.fakturama.export.zugferd
 Bundle-ActivationPolicy: lazy
