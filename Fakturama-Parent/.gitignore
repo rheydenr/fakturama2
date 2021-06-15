@@ -10,3 +10,4 @@ workspace/
 *.metaprops
 /*/.DS_Store
 /.DS_Store
+.polyglot*
