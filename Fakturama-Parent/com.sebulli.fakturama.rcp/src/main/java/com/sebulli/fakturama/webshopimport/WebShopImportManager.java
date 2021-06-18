@@ -70,7 +70,9 @@ import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
  * The WebshopImporter (which is started by this {@link WebShopImportManager}) creates the 
  * missing products, {@link VAT}s and {@link Document}s (orders in this case). 
  * 
+ * @deprecated Use {@link WebShopCallHandler} instead
  */
+@Deprecated
 public class WebShopImportManager {
 	
     @Inject
@@ -133,7 +135,7 @@ public class WebShopImportManager {
 	// The result of this import process
 	private String runResult = "";
 
-	private WebShopConnector conn;
+	private WebShopConnection conn;
 
 	@CanExecute
 	public boolean canExecute() {
@@ -157,7 +159,7 @@ public class WebShopImportManager {
 	    
 		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
 		
-        conn = new WebShopConnector()
+        conn = new WebShopConnection()
         		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
         		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
         		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))

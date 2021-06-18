@@ -188,7 +188,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	@Inject
 	private IDocumentAddressManager addressManager;
 
-	private WebShopConnector connector;
+	private WebShopConnection connector;
 	private String runResult = "";
 
 	// true, if the product's EAN number is imported as item number
@@ -249,7 +249,19 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 
             // Send user name, password and a list of unsynchronized orders to
             // the shop
-	        URLConnection connection = connector.createConnection();
+
+            /*
+             * An der Stelle könnte man die Weiche für die diversen Webshops einbauen.
+             * connector.createConnection() liefert dann die entsprechende Connection
+             * passend zum Shop. Die URL für den API-Call ist dann entsprechend auch 
+             * schon richtig gesetzt.
+             * Das konkrete Shopsystem muß in den Einstellungen hinterlegt sein, damit
+             * der Connector das von dort lesen kann. 
+             */
+            
+            
+            URLConnection connection = connector.createConnection();
+
             if(connection != null && connection.getDoOutput()) {
             	OutputStream outputStream = connection.getOutputStream();
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream);
@@ -280,7 +292,11 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 					}
                 }
             
+                // TODO nicht das Paßwort mit ausgeben!!!
                 log.debug("POST-String: " + postStringSb.toString());
+                
+                
+                // TODO hier commt der API-Call
                 writer.write(postStringSb.toString());
                 writer.flush();
                 writer.close();
@@ -340,17 +356,19 @@ public class WebShopDataImporter implements IRunnableWithProgress {
                 }
 
                 // Create a new file
-//                    Files.deleteIfExists(logFile);
-//                    Files.createFile(logFile);
-//    
                 // Create a buffered writer to write the imported data to the file system
+                // TODO das ist eigentlich überflüssig und könnte weggelassen werden (außer vielleicht im Debug-Modus)
                 logBuffer = Files.newBufferedWriter(logFile, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
+            
+            // TODO Der JSONConverter ist so zu bauen, daß am Ende ein Webshopexport-Dokument rauskommt.
+            
             
             // 3. Use the Unmarshaller to unmarshal the XML document to get
             // an instance of JAXBElement.
             // 4. Get the instance of the required JAXB Root Class from the
             // JAXBElement.
+            // TODO Das würde dann praktisch entfallen
 			webshopexport = (Webshopexport) unmarshaller
     					.unmarshal(interruptConnection.getInputStream());
             
@@ -368,7 +386,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
             
     		setProgress(40);
     		
-    		// Write the web shop log file
+    		// Write the web shop log file ==> TODO nein!
             if (logBuffer != null) {
             	Marshaller marshaller = jaxbContext.createMarshaller(); 
             	marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -389,6 +407,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 				if (webshopexport.getOrders() != null) {
 					connector.setOrderstosynchronize(new Properties());
 				} else {
+					// TODO Statusmeldung anpassen
 					setRunResult("import NOT ok");
 				}
 
@@ -1135,14 +1154,14 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	/**
 	 * @return the connector
 	 */
-	public WebShopConnector getConnector() {
+	public WebShopConnection getConnector() {
 		return connector;
 	}
 
 	/**
 	 * @param connector the connector to set
 	 */
-	public void setConnector(WebShopConnector connector) {
+	public void setConnector(WebShopConnection connector) {
 		this.connector = connector;
 	}
 }

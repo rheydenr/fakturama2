@@ -37,7 +37,7 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 //	private String productImagePath = "";
 	private int worked = 0;
 	
-	private WebShopConnector connector;
+	private WebShopConnection connector;
 	private ExecutionResult runResult;
 	
 	private IProgressMonitor localMonitor;
@@ -218,14 +218,14 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 	/**
 	 * @return the connector
 	 */
-	public WebShopConnector getConnector() {
+	public WebShopConnection getConnector() {
 		return connector;
 	}
 
 	/**
 	 * @param connector the connector to set
 	 */
-	public void setConnector(WebShopConnector connector) {
+	public void setConnector(WebShopConnection connector) {
 		this.connector = connector;
 	}
 
