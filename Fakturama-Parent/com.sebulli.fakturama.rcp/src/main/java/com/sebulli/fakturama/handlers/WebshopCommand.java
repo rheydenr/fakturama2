@@ -8,8 +8,10 @@ public enum WebshopCommand {
     /**
      * Action for importing new orders and products from web shop.
      */
-	GET_PRODUCTS_AND_ORDERS, // default command
+	/* getProducts = true, getOrder = true; */
+	GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS, // default command
 	
+	/* getProducts = false, getOrder = false; */
 	CHANGE_STATE,
 	
     /**

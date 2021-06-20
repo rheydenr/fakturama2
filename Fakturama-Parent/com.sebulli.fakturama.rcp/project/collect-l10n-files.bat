@@ -27,5 +27,8 @@ xcopy /f %FAKTURAMA_INSTALLDIR%\org.fakturama.export\OSGI-INF\l10n\*.properties 
 mkdir zugferd
 xcopy /f %FAKTURAMA_INSTALLDIR%\org.fakturama.exporter.zugferd\OSGI-INF\l10n\*.properties zugferd
 
+mkdir connectors
+xcopy /f %FAKTURAMA_INSTALLDIR%\org.fakturama.connectors\OSGI-INF\l10n\*.properties connectors
+
 cd ..
 

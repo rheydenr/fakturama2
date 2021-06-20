@@ -123,6 +123,7 @@ public class Constants {
      * Preference for enabling / disabling webshop import
      */
     public static final String PREFERENCES_WEBSHOP_ENABLED = "WEBSHOP_ENABLED";
+    public static final String PREFERENCES_WEBSHOP_SHOPTYPE = "PREFERENCES_WEBSHOP_SHOPTYPE";
 
 	/**
 	 * 
@@ -575,4 +576,5 @@ public class Constants {
     public static final String DISPLAY_SUCCESSFUL_PRINTING = "DISPLAY_SUCCESSFUL_PRINTING";
 
     public static final String CURRENT_PROGRAM_VERSION = "CURRENT_PROGRAM_VERSION";
+
 }

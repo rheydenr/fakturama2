@@ -35,7 +35,7 @@ public class OrderSyncManager {
     @Inject 
     private ILogger log;
 
-	private WebShopConnection conn;
+	private WebShopConfig conn;
 
 	/**
 	 * file name for the temporary sync info file.
@@ -133,10 +133,10 @@ public class OrderSyncManager {
 	/**
 	 * @return the conn
 	 */
-	public WebShopConnection getConn() {
+	public WebShopConfig getConn() {
 		if(conn == null) {
 			String scriptURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
-	        conn = new WebShopConnection()
+	        conn = new WebShopConfig()
 	        		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(scriptURL, "http://", "https://", "file://"))
 	        		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
 	        		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
@@ -151,7 +151,7 @@ public class OrderSyncManager {
 	/**
 	 * @param conn the conn to set
 	 */
-	public void setConn(WebShopConnection conn) {
+	public void setConn(WebShopConfig conn) {
 		this.conn = conn;
 	}
 

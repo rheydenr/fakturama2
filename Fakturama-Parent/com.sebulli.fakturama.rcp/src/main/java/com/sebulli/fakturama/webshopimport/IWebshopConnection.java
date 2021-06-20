@@ -19,6 +19,7 @@ import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 
+@Deprecated
 public interface IWebshopConnection {
 
 	/**

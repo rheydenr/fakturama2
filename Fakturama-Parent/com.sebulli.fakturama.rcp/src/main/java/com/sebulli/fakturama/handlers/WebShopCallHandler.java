@@ -21,7 +21,6 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -31,8 +30,10 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
@@ -40,9 +41,18 @@ import org.eclipse.swt.widgets.Shell;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.parts.ContactEditor;
+import com.sebulli.fakturama.parts.DocumentEditor;
+import com.sebulli.fakturama.parts.Editor;
+import com.sebulli.fakturama.parts.PaymentEditor;
+import com.sebulli.fakturama.parts.ProductEditor;
+import com.sebulli.fakturama.parts.ShippingEditor;
+import com.sebulli.fakturama.parts.VatEditor;
+import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.webshopimport.ExecutionResult;
-import com.sebulli.fakturama.webshopimport.WebShopConnection;
-import com.sebulli.fakturama.webshopimport.WebShopDataImporter;
+import com.sebulli.fakturama.webshopimport.WebShopConfig;
+import com.sebulli.fakturama.webshopimport.WebShopController;
+import com.sebulli.fakturama.webshopimport.Webshop;
 
 /**
  * Handler for calling web shop import actions or getting status values from web shop. This
@@ -58,6 +68,12 @@ public class WebShopCallHandler {
     @Inject @Optional
     private IPreferenceStore preferences;
     
+    @Inject
+    private EModelService modelService;
+    
+    @Inject
+    private MApplication application;
+
     @Inject 
     private ILogger log;
 
@@ -73,13 +89,8 @@ public class WebShopCallHandler {
 	 * the state of an order.
 	 */
 	public static final String PARAM_IS_GET_PRODUCTS = "com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders";
-    
-    @Inject
-    private EModelService modelService;
-    
-    @Inject
-    private MApplication application;
-
+	public static final String PARAM_SELECTEDSHOPSYSTEM = "com.sebulli.fakturama.webshopimport.selectedshopsystem";
+ 
     /**
      * Event Broker for sending update events to the list table
      */
@@ -99,55 +110,81 @@ public class WebShopCallHandler {
 	}
 	
 	@Execute
-	public ExecutionResult execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
+	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
 	        @Optional @Named(WebShopCallHandler.PARAM_IS_GET_PRODUCTS) Boolean prepareGetProductsAndOrders,
+	        @Optional @Named(WebShopCallHandler.PARAM_SELECTEDSHOPSYSTEM) String selectedShopSystemId,
 	        @Named(WebShopCallHandler.PARAM_ACTION) String action) {
 	    ExecutionResult executionResult = null;
 	    
+	    // Base URL points to where the API of the Shop starts
 		String shopBaseURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
 	    
 		WebshopCommand cmd = null;
 	    if(BooleanUtils.toBoolean(prepareGetProductsAndOrders)) {
-	    	// TODO: hier korrektes Command für den API-Call ermitteln
-	    	cmd = WebshopCommand.GET_PRODUCTS_AND_ORDERS;
+	    	cmd = WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS;
 	    } else {
 	    	cmd = WebshopCommand.CHANGE_STATE;
 	    }
-		
-		WebShopConnection conn = new WebShopConnection()
+    	
+	    if(selectedShopSystemId == null) {
+	        // use default shop from preferences
+	        selectedShopSystemId = preferences.getString(Constants.PREFERENCES_WEBSHOP_SHOPTYPE);
+	    }
+		Webshop selectedShopsystem = Webshop.valueOf(selectedShopSystemId);
+		WebShopConfig conn = new WebShopConfig()
         		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopBaseURL, "http://", "https://", "file://"))
         		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
         		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
         		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
         		.withUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_USER))
         		.withPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD))
-        		// das könnte man als Enum machen
-        		// derzeit gibt es sowieso nur eins, deswegen hier erst mal irrelevant
-        		//.withShopSystem(preferences.getString(Constants.PREFERENCES_WEBSHOP_SYSTEM))
+        		.withShopSystem(selectedShopsystem)
         		.withCommand(cmd)
         		;
 	    
         try {
             ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
+            
             IEclipseContext privateCtx = EclipseContextFactory.create("webshop-conn");
-            privateCtx.set(WebShopConnection.class, conn);
-            WebShopDataImporter importOperation = ContextInjectionFactory.make(WebShopDataImporter.class, 
-            		context, privateCtx);
+            privateCtx.set(WebShopConfig.class, conn);
+            WebShopController importOperation = ContextInjectionFactory.make(WebShopController.class, context, privateCtx);
+
             progressMonitorDialog.run(true, true, importOperation);
             this.runResult = importOperation.getRunResult();
-            executionResult = new ExecutionResult(runResult, 
-            		BooleanUtils.toInteger(runResult.isEmpty(), 0, 1));
+            executionResult = new ExecutionResult(runResult, BooleanUtils.toInteger(runResult.isEmpty(), 0, 1));
+        } catch (InvocationTargetException e) {
+            log.error(e, "Error running web shop import manager.");
+            executionResult = new ExecutionResult("Error running web shop import manager.", 1);
+        } catch (InterruptedException e) {
+            log.error(e, "Web shop import manager was interrupted.");
+            executionResult = new ExecutionResult("Web shop import manager was interrupted.", 2);
         }
-          catch (InvocationTargetException e) {
-        	  log.error(e, "Error running web shop import manager.");
-              executionResult = new ExecutionResult("Error running web shop import manager.", 1);
-          }
-          catch (InterruptedException e) {
-        	  log.error(e, "Web shop import manager was interrupted.");
-              executionResult = new ExecutionResult("Web shop import manager was interrupted.", 2);
-          }
 	    
-	    
-	    return executionResult;
+
+        // If there is no error - interpret the data.
+        if (executionResult.getErrorCode() != Constants.RC_OK) {
+            // If there is an error - display it in a message box
+            String errorMessage = StringUtils.abbreviate(executionResult.getErrorMessage(), 400);
+            MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
+            log.error(errorMessage);
+        } else {
+            MessageDialog.openInformation(parent, msg.importWebshopActionLabel, msg.importWebshopInfoSuccess);
+        }
+
+        // Refresh the views -> fire some update events
+        // => the messages are handled by list views! 
+        evtBroker.post(ProductEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        evtBroker.post(ContactEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        evtBroker.post(PaymentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        evtBroker.post(ShippingEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        evtBroker.post(VatEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+
+        // After the web shop import, open the document view
+        // and set the focus to the new imported orders.
+        MUIElement view = modelService.find(DocumentsListTable.ID, application);
+        modelService.bringToTop(view);
+//      ViewDocumentTable viewDocumentTable = (ViewDocumentTable) view;
+//      viewDocumentTable.getTopicTreeViewer().selectItemByName(DocumentType.ORDER.getPluralString() + "/" + DataSetDocument.getStringNOTSHIPPED());
 	}
 }

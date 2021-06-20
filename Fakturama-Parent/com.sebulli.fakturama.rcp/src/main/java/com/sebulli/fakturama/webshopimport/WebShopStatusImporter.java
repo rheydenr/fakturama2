@@ -27,6 +27,7 @@ import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 
 /**
  * Importer for the different WebShop states.
+ * @deprecated Use {@link WebShopController}
  */
 public class WebShopStatusImporter implements IRunnableWithProgress {
 	
@@ -34,10 +35,13 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 	@Translation
 	private Messages msg;
 
+    @Inject
+    private IWebshopConnectionService svc;
+
 //	private String productImagePath = "";
 	private int worked = 0;
 	
-	private WebShopConnection connector;
+	private WebShopConfig connector;
 	private ExecutionResult runResult;
 	
 	private IProgressMonitor localMonitor;
@@ -70,20 +74,21 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
         try {
         // Send user name, password and a list of unsynchronized orders to
         // the shop
-	        URLConnection connection = connector.createConnection();
-	        if(connection != null) {
-	        	((HttpURLConnection)connection).setRequestMethod( "POST" );
+            IWebshop webshop = svc.getWebshop(connector);
+            URLConnection urlConnection = webshop.connect();
+	        if(urlConnection != null) {
+	        	((HttpURLConnection)urlConnection).setRequestMethod( "POST" );
 	        	String postString = new StringBuilder("username=")
 	            					.append(URLEncoder.encode(connector.getUser(), "UTF-8"))
 									.append("&password=")
 									.append(URLEncoder.encode(connector.getPassword(), "UTF-8"))
 									.append("&action=get_status").toString();
                 //this.webShopImportManager.log.debug("POST-String: " + postString);
-	            connection.setRequestProperty("Content-Type",
+	        	urlConnection.setRequestProperty("Content-Type",
                         "application/x-www-form-urlencoded");
-	            connection.setRequestProperty("Content-Length", String.valueOf(postString.length()));
+	        	urlConnection.setRequestProperty("Content-Length", String.valueOf(postString.length()));
 	        	
-	        	OutputStream outputStream = connection.getOutputStream();
+	        	OutputStream outputStream = urlConnection.getOutputStream();
 	            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 	            setProgress(20);
 
@@ -95,13 +100,13 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 	        
             setProgress(30);
             // Start a connection in an extra thread
-            InterruptConnection interruptConnection = new InterruptConnection(connection);
+            InterruptConnection interruptConnection = new InterruptConnection(urlConnection);
             new Thread(interruptConnection).start();
             while (!localMonitor.isCanceled() && !interruptConnection.isFinished() && !interruptConnection.isError());
             
             // If the connection was interrupted and not finished: return
             if (!interruptConnection.isFinished()) {
-                ((HttpURLConnection)connection).disconnect();
+                ((HttpURLConnection)urlConnection).disconnect();
                 if (interruptConnection.isError()) {
                     //T: Status error message importing data from web shop
                 	setRunResult(msg.importWebshopErrorCantconnect);
@@ -111,7 +116,7 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
             
             // If there was an error, return with error message
             if (interruptConnection.isError()) {
-                ((HttpURLConnection)connection).disconnect();
+                ((HttpURLConnection)urlConnection).disconnect();
                 //T: Status message importing data from web shop
                 setRunResult(msg.importWebshopErrorCantread);
                 return;
@@ -218,14 +223,14 @@ public class WebShopStatusImporter implements IRunnableWithProgress {
 	/**
 	 * @return the connector
 	 */
-	public WebShopConnection getConnector() {
+	public WebShopConfig getConnector() {
 		return connector;
 	}
 
 	/**
 	 * @param connector the connector to set
 	 */
-	public void setConnector(WebShopConnection connector) {
+	public void setConnector(WebShopConfig connector) {
 		this.connector = connector;
 	}
 

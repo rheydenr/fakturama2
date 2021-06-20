@@ -3,10 +3,6 @@
  */
 package com.sebulli.fakturama.webshopimport;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Base64;
 import java.util.Properties;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -14,11 +10,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.sebulli.fakturama.handlers.WebshopCommand;
 
 /**
- * WebShopConfigVO contains all the necessary information
+ * Contains all the necessary information
  * for connection to a web shop.
  *
  */
-public class WebShopConnection {
+public class WebShopConfig {
 	/**
 	 * Main URL for the shop.
 	 */
@@ -28,42 +24,20 @@ public class WebShopConnection {
 	protected Boolean useAuthorization;
 	protected String authorizationUser;
 	protected String authorizationPassword;
+	
+	// Configuration of the web shop request
 	protected WebshopCommand webshopCommand;
+
+    private Webshop selectedWebshop;
 	
 	/**
 	 * The URL for shop connector.
 	 */
 	protected String scriptURL;
-	
-	// Configuration of the web shop request
-	private boolean getProducts, getOrders;
 
 	// List of all orders which are out of sync with the web shop.
 	private Properties orderstosynchronize = null;
 
-	public URLConnection createConnection() throws IOException {
-		
-// hier abhängig vom Shopsystem und vom Command den richtigen API call bauen		
-		
-		
-		
-		
-	    URLConnection conn = null;
-	    URL url = new URL(scriptURL);
-	    conn = url.openConnection();
-	    conn.setDoInput(true);
-	    conn.setConnectTimeout(4000);
-	    if (!scriptURL.toLowerCase().startsWith("file://")) {
-	        conn.setDoOutput(true);
-	
-	        // Use password for password protected web shops
-	        if (useAuthorization) {
-	        	String encodedPassword = Base64.getEncoder().encodeToString((authorizationUser + ":" + authorizationPassword).getBytes());
-	            conn.setRequestProperty( "Authorization", "Basic " + encodedPassword );
-	        }
-	    }
-	    return conn;
-	}
 	/**
 	 * @return the user
 	 */
@@ -73,7 +47,7 @@ public class WebShopConnection {
 	/**
 	 * @param user the user to set
 	 */
-	public WebShopConnection withUser(String user) {
+	public WebShopConfig withUser(String user) {
 		this.user = user;
 		return this;
 	}
@@ -86,7 +60,7 @@ public class WebShopConnection {
 	/**
 	 * @param password the password to set
 	 */
-	public WebShopConnection withPassword(String password) {
+	public WebShopConfig withPassword(String password) {
 		this.password = password;
 		return this;
 	}
@@ -99,7 +73,7 @@ public class WebShopConnection {
 	/**
 	 * @param useAuthorization the useAuthorization to set
 	 */
-	public WebShopConnection withUseAuthorization(Boolean useAuthorization) {
+	public WebShopConfig withUseAuthorization(Boolean useAuthorization) {
 		this.useAuthorization = useAuthorization;
 		return this;
 	}
@@ -112,7 +86,7 @@ public class WebShopConnection {
 	/**
 	 * @param authorizationUser the authorizationUser to set
 	 */
-	public WebShopConnection withAuthorizationUser(String authorizationUser) {
+	public WebShopConfig withAuthorizationUser(String authorizationUser) {
 		this.authorizationUser = authorizationUser;
 		return this;
 	}
@@ -125,7 +99,7 @@ public class WebShopConnection {
 	/**
 	 * @param authorizationPassword the authorizationPassword to set
 	 */
-	public WebShopConnection withAuthorizationPassword(String authorizationPassword) {
+	public WebShopConfig withAuthorizationPassword(String authorizationPassword) {
 		this.authorizationPassword = authorizationPassword;
 		return this;
 	}
@@ -134,28 +108,14 @@ public class WebShopConnection {
 	 * @return the getProducts
 	 */
 	public boolean isGetProducts() {
-		return getProducts;
-	}
-
-	/**
-	 * @param getProducts the getProducts to set
-	 */
-	public void setGetProducts(boolean getProducts) {
-		this.getProducts = getProducts;
+        return webshopCommand == WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS;
 	}
 
 	/**
 	 * @return the getOrders
 	 */
 	public boolean isGetOrders() {
-		return getOrders;
-	}
-
-	/**
-	 * @param getOrders the getOrders to set
-	 */
-	public void setGetOrders(boolean getOrders) {
-		this.getOrders = getOrders;
+		return webshopCommand == WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS;
 	}
 
 	/**
@@ -195,7 +155,7 @@ public class WebShopConnection {
 	/**
 	 * @param shopURL the shopURL to set
 	 */
-	public WebShopConnection withScriptURL(String scriptURL) {
+	public WebShopConfig withScriptURL(String scriptURL) {
 		this.scriptURL = scriptURL;
 		return this;
 	}
@@ -204,26 +164,40 @@ public class WebShopConnection {
 	 * Prepare the web shop import to request products and orders.
 	 */
 	public void prepareGetProductsAndOrders() {
-		setGetProducts(true);
-		setGetOrders(true);
+		setWebshopCommand(WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS);
 	}
 
 	/**
 	 * Prepare the web shop import to change the state of an order.
 	 */
 	public void prepareChangeState() {
-		setGetProducts(false);
-		setGetOrders(false);
+	    setWebshopCommand(WebshopCommand.CHANGE_STATE);
 	}
+	
+    public void setWebshopCommand(WebshopCommand webshopCommand) {
+        this.webshopCommand = webshopCommand;
+    }
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
 	
-	public WebShopConnection withCommand(WebshopCommand cmd) {
+	public WebShopConfig withCommand(WebshopCommand cmd) {
 		this.webshopCommand = cmd;
 		return this;
 	}
+    public WebshopCommand getWebshopCommand() {
+        return webshopCommand;
+    }
+    
+    public WebShopConfig withShopSystem(Webshop selectedShopsystem) {
+        this.selectedWebshop = selectedShopsystem;
+        return this;
+    }
+    
+    public Webshop getSelectedWebshop() {
+        return selectedWebshop;
+    }
 
 }

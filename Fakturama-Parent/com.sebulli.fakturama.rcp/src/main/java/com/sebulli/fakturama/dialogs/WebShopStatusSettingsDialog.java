@@ -61,7 +61,7 @@ import com.sebulli.fakturama.model.WebShop;
 import com.sebulli.fakturama.model.WebshopStateMapping;
 import com.sebulli.fakturama.parts.widget.contentprovider.SimpleTreeContentProvider;
 import com.sebulli.fakturama.webshopimport.ExecutionResult;
-import com.sebulli.fakturama.webshopimport.WebShopConnection;
+import com.sebulli.fakturama.webshopimport.WebShopConfig;
 import com.sebulli.fakturama.webshopimport.WebShopStatusImporter;
 import com.sebulli.fakturama.webshopimport.type.StatusType;
 import com.sebulli.fakturama.webshopimport.type.StatusType.Status;
@@ -560,7 +560,7 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
 		
         // Add "http://" if no protocol is given
-        WebShopConnection conn = new WebShopConnection()
+        WebShopConfig conn = new WebShopConfig()
         		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
         		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
         		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))

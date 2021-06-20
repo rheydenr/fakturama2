@@ -14,24 +14,13 @@
 
 package com.sebulli.fakturama.webshopimport;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -42,16 +31,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.MarshalException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -114,7 +98,6 @@ import com.sebulli.fakturama.webshopimport.type.AttributeType;
 import com.sebulli.fakturama.webshopimport.type.CommentType;
 import com.sebulli.fakturama.webshopimport.type.ContactType;
 import com.sebulli.fakturama.webshopimport.type.ItemType;
-import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
 import com.sebulli.fakturama.webshopimport.type.OrderType;
 import com.sebulli.fakturama.webshopimport.type.PaymentType;
 import com.sebulli.fakturama.webshopimport.type.ProductType;
@@ -122,9 +105,7 @@ import com.sebulli.fakturama.webshopimport.type.ProductsType;
 import com.sebulli.fakturama.webshopimport.type.ShippingType;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 
-public class WebShopDataImporter implements IRunnableWithProgress {
-	
-	private static final String WEBSHOP_IMPORT_LOGFILE = "WebShopImport.log";
+public class WebShopController implements IRunnableWithProgress {
 
 	private static final String PREFERENCE_LASTWEBSHOPIMPORT_DATE = "lastwebshopimport";
 
@@ -171,13 +152,14 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     @Inject
     private IDateFormatterService dateFormatterService;
 
+    @Inject
+    private IWebshopConnectionService svc;
+
     private OrderSyncManager orderSyncManager;
 
 	private MathContext mathContext = new MathContext(5);
 
 	private ProductUtil productUtil;
-	
-	private String generalWorkspace;
 	
 	@Inject
     private ILocaleService localeUtil;
@@ -188,7 +170,8 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	@Inject
 	private IDocumentAddressManager addressManager;
 
-	private WebShopConnection connector;
+    @Inject
+	private WebShopConfig webshopConfig;
 	private String runResult = "";
 
 	// true, if the product's EAN number is imported as item number
@@ -202,7 +185,6 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 
 	@PostConstruct
 	public void init() {
-		generalWorkspace = preferences.getString(Constants.GENERAL_WORKSPACE);
         orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, context);
 		useEANasItemNr = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
         productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
@@ -210,249 +192,81 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 
 	@Override
     public void run(IProgressMonitor pMonitor) throws InvocationTargetException, InterruptedException  {
-        if(connector == null) {
+        if(webshopConfig == null) {
         	runResult = "no connection information provided";
         	return;
         }
         
-        orderSyncManager.setConn(connector);
+        orderSyncManager.setConn(webshopConfig);
 
-        Integer maxProducts = preferences.getInt(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS);
-        Boolean onlyModifiedProducts = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS);
         localMonitor = pMonitor;
         setRunResult("");
-		Webshopexport webshopexport = null;
         
 		currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
-        String scriptUrl = connector.getScriptURL();
+        String scriptBaseUrl = webshopConfig.getScriptURL();
         
         // Check empty URL
-        if (scriptUrl.isEmpty()) {
+        if (scriptBaseUrl.isEmpty()) {
             //T: Status message importing data from web shop
         	setRunResult(msg.importWebshopErrorUrlnotset);
             return;
         }
+        
 
         // Get the open order IDs that are out of sync with the webshop
 		// from the file system. Store them in the WebShopConnector for further using.
         orderSyncManager.readOrdersToSynchronize();
-        BufferedWriter logBuffer = null;
 
+        // Connect to web shop
+        worked = 0;
+        //T: Status message importing data from web shop
+        localMonitor.beginTask(msg.importWebshopInfoConnection, 100);
+        //T: Status message importing data from web shop
+        localMonitor.subTask(msg.importWebshopInfoConnected + " " + scriptBaseUrl);
+        setProgress(10);
+
+        // Send user name, password and a list of unsynchronized orders to
+        // the shop
+
+        /*
+         * An der Stelle könnte man die Weiche für die diversen Webshops einbauen.
+         * connector.createConnection() liefert dann die entsprechende Connection
+         * passend zum Shop. Die URL für den API-Call ist dann entsprechend auch 
+         * schon richtig gesetzt.
+         * Das konkrete Shopsystem muß in den Einstellungen hinterlegt sein, damit
+         * der Connector das von dort lesen kann. 
+         */
         try {
-            // Connect to web shop
-            worked = 0;
-            //T: Status message importing data from web shop
-            localMonitor.beginTask(msg.importWebshopInfoConnection, 100);
-            //T: Status message importing data from web shop
-            localMonitor.subTask(msg.importWebshopInfoConnected + " " + scriptUrl);
-            setProgress(10);
-
-            // Send user name, password and a list of unsynchronized orders to
-            // the shop
-
-            /*
-             * An der Stelle könnte man die Weiche für die diversen Webshops einbauen.
-             * connector.createConnection() liefert dann die entsprechende Connection
-             * passend zum Shop. Die URL für den API-Call ist dann entsprechend auch 
-             * schon richtig gesetzt.
-             * Das konkrete Shopsystem muß in den Einstellungen hinterlegt sein, damit
-             * der Connector das von dort lesen kann. 
-             */
-            
-            
-            URLConnection connection = connector.createConnection();
-
-            if(connection != null && connection.getDoOutput()) {
-            	OutputStream outputStream = connection.getOutputStream();
-                OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-                setProgress(20);
-                StringBuilder postStringSb = new StringBuilder("username=")
-    					.append(URLEncoder.encode(connector.getUser(), "UTF-8"))
-						.append("&password=")
-						.append(URLEncoder.encode(connector.getPassword(), "UTF-8"));
-
-                String actionString = "";
-                if (connector.isGetProducts())
-                    actionString += "_products";
-                if (connector.isGetOrders())
-                    actionString += "_orders";
-                if (!actionString.isEmpty())
-                    actionString = "&action=get" + actionString;
-
-                postStringSb.append(actionString)
-                	.append("&setstate=").append(connector.getOrderstosynchronize().toString());
-				if (maxProducts > 0) {
-                	postStringSb.append("&maxproducts=").append(maxProducts.toString());
-                }
-
-                if (onlyModifiedProducts) {
-                    String lasttime = preferences.getString(PREFERENCE_LASTWEBSHOPIMPORT_DATE);
-                    if (! lasttime.isEmpty()) {
-						postStringSb.append("&lasttime=").append(lasttime.toString());
-					}
-                }
-            
-                // TODO nicht das Paßwort mit ausgeben!!!
-                log.debug("POST-String: " + postStringSb.toString());
-                
-                
-                // TODO hier commt der API-Call
-                writer.write(postStringSb.toString());
-                writer.flush();
-                writer.close();
-            }
-            setProgress(30);
-            
-            // Start a connection in an extra thread
-            InterruptConnection interruptConnection = new InterruptConnection(connection);
-            new Thread(interruptConnection).start();
-            while (!localMonitor.isCanceled() && !interruptConnection.isFinished() && !interruptConnection.isError());
-
-            // If the connection was interrupted and not finished: return
-            if (!interruptConnection.isFinished()) {
-                ((HttpURLConnection)connection).disconnect();
-                if (interruptConnection.isError()) {
-                    //T: Status error message importing data from web shop
-                	setRunResult(msg.importWebshopErrorCantconnect);
-                }
-                return;
-            }
-
-            // If there was an error, return with error message
-            if (interruptConnection.isError()) {
-                ((HttpURLConnection)connection).disconnect();
-                //T: Status message importing data from web shop
-                setRunResult(msg.importWebshopErrorCantread);
-                return;
-            }
-            
-    		// 1. We need to create JAXBContext instance
-            JAXBContext jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {ObjectFactory.class}, null);
-    		
-    		/* if we have larger documents we have to use SAX.         		*/
-            // 2. create a new XML parser
-//                SAXParserFactory factory = SAXParserFactory.newInstance();
-//                factory.setNamespaceAware(true);
-//                XMLReader reader = factory.newSAXParser().getXMLReader();
-    		
-    		// 2. Use JAXBContext instance to create the Unmarshaller.
-    		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            //T: Status message importing data from web shop
-            localMonitor.subTask(msg.importWebshopInfoLoading);
-
-            // Get the directory of the workspace
-            Path logFile = null;
-
-            // Do not save log files if there is no workspace set
-            if (!generalWorkspace.isEmpty()) {
-
-                // Create a sub folder "Log" if it does not exist yet.
-                // Name of the log file
-                // Create a File object
-                logFile = Paths.get(generalWorkspace, "Log", WEBSHOP_IMPORT_LOGFILE);
-                if (!Files.isDirectory(logFile.getParent())) {
-                    Files.createDirectories(logFile.getParent());
-                }
-
-                // Create a new file
-                // Create a buffered writer to write the imported data to the file system
-                // TODO das ist eigentlich überflüssig und könnte weggelassen werden (außer vielleicht im Debug-Modus)
-                logBuffer = Files.newBufferedWriter(logFile, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            }
-            
-            // TODO Der JSONConverter ist so zu bauen, daß am Ende ein Webshopexport-Dokument rauskommt.
-            
-            
-            // 3. Use the Unmarshaller to unmarshal the XML document to get
-            // an instance of JAXBElement.
-            // 4. Get the instance of the required JAXB Root Class from the
-            // JAXBElement.
-            // TODO Das würde dann praktisch entfallen
-			webshopexport = (Webshopexport) unmarshaller
-    					.unmarshal(interruptConnection.getInputStream());
-            
-			// alternatively (for large responses)
-            // prepare a Splitter
-//                Splitter splitter = new Splitter(jaxbContext);
-
-            // connect two components
-//                reader.setContentHandler(splitter);
-            
-			// TODO surround with try-catch! This is the main part for reading the stream.
-            // note that XMLReader expects an URL, not a file name.
-            // so we need conversion.
-//                reader.parse(new InputSource(interruptConnection.getInputStream()));
-            
-    		setProgress(40);
-    		
-    		// Write the web shop log file ==> TODO nein!
-            if (logBuffer != null) {
-            	Marshaller marshaller = jaxbContext.createMarshaller(); 
-            	marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            	marshaller.marshal(webshopexport, logBuffer);
-                logBuffer.close();
-            }
-            
-            // parse the XML stream
-            if (!localMonitor.isCanceled()) {
-            	if(webshopexport.getWebshop() == null) {
-                    //T: Status message importing data from web shop
-            		setRunResult(msg.importWebshopErrorNodata + "\n" + scriptUrl);
-                    return;
-                }
-
-                // Clear the list of orders to sync, if the data was sent
-            	// NodeList ndList = document.getElementsByTagName("webshopexport");
-				if (webshopexport.getOrders() != null) {
-					connector.setOrderstosynchronize(new Properties());
-				} else {
-					// TODO Statusmeldung anpassen
-					setRunResult("import NOT ok");
-				}
-
-                // Get the error elements and add them to the run result list
-                //ndList = document.getElementsByTagName("error");
-                if (StringUtils.isNotEmpty(webshopexport.getError()) ) {
-                	setRunResult(webshopexport.getError());
-                }
-
+            ContextInjectionFactory.inject(svc, context);
+            IWebshop webshop = svc.getWebshop(webshopConfig);
+            switch (webshopConfig.getWebshopCommand()) {
+            case GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS:
+                Webshopexport webshopexport = webshop.synchronizeOrdersAndGetProducts(this::setProgress, localMonitor);
                 // Interpret the imported data (and load the product images)
-                if (getRunResult().isEmpty()) {
+                if (webshopexport.getError() == null || webshopexport.getError().isEmpty()) {
                     // If there is no error - interpret the data.
                     interpretWebShopData(localMonitor, webshopexport);
+            
+                    // Store the time of now
+                    String now = dateFormatterService.DateAsISO8601String();
+                    preferences.putValue(PREFERENCE_LASTWEBSHOPIMPORT_DATE, now);
+                } else {
+                    setRunResult(webshopexport.getError());
                 }
-        
-                // Store the time of now
-                String now = dateFormatterService.DateAsISO8601String();
-                preferences.putValue(PREFERENCE_LASTWEBSHOPIMPORT_DATE, now);
+                localMonitor.done();
+                break;
+            case GET_AVAILABLE_STATES:
+                break;
+            default:
+                break;
             }
-            // else cancel the download process
-            localMonitor.done();
+        } catch (Exception e) {
+            // T: Status message importing data from web shop
+            setRunResult(msg.importWebshopErrorCantopen + "\n" + scriptBaseUrl + "\n");
+            setRunResult(getRunResult() + "Message: " + e.getLocalizedMessage() + "\n");
+            if (e.getStackTrace().length > 0) setRunResult(getRunResult() + "\nTrace: " + e.getStackTrace()[0].toString() + "\n");
         }
-        catch (MarshalException mex) {
-            //T: Status message importing data from web shop
-        	setRunResult(msg.importWebshopErrorNodata + "\n" + scriptUrl + "\n" + mex.getMessage());
-		}
-        catch (Exception e) {
-            //T: Status message importing data from web shop
-        	setRunResult(msg.importWebshopErrorCantopen + "\n" + scriptUrl + "\n");
-        	setRunResult(getRunResult()+"Message: " + e.getLocalizedMessage()+ "\n");
-            if (e.getStackTrace().length > 0)
-            	setRunResult(getRunResult()+"\nTrace: " + e.getStackTrace()[0].toString()+ "\n");
-
-            if (webshopexport != null)
-            	setRunResult(getRunResult()+"\n\n" + webshopexport);
-            }
-        finally {
-        	if(logBuffer != null) {
-        		try {
-					logBuffer.close();
-				} catch (IOException e) {
-					log.error(e, String.format("couldn't close output stream for logfile '%s'.", WEBSHOP_IMPORT_LOGFILE));
-				}
-        	}
-        }
+           
     }
 
     /**
@@ -465,7 +279,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     	// There is no order
     	if (webshopexport == null) return;
     	
-    	connector.setShopURL(webshopexport.getWebshop().getUrl());
+    	webshopConfig.setShopURL(webshopexport.getWebshop().getUrl());
     	productImagePath = "";
     
     	// Mark all orders as "in sync with the web shop"
@@ -498,6 +312,8 @@ public class WebShopDataImporter implements IRunnableWithProgress {
     	//T: Status message importing data from web shop
     	monitor.subTask(msg.importWebshopInfoImportorders);
     	setProgress(95);
+    	
+    	// process orders
         List<OrderType> orderList = webshopexport.getOrders().getOrder();
     	int orderListSize = orderList.size();
     	
@@ -713,7 +529,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 			                    .withGrossPrices(true)
 			                    .withQuantity(Double.valueOf(1.0))
 			                    .withVatPercent(vatPercent).build();
-			        
+			p.getTotalNet();
 			MonetaryAmount priceNet = priceGross.divide(1 + vatPercent);
 
             // Add the VAT value to the data base, if it is a new one
@@ -1001,7 +817,7 @@ public class WebShopDataImporter implements IRunnableWithProgress {
         // Create the URL to the product image
         byte[] picture = null;
         if (!product.getImage().isEmpty()) {
-        	picture = downloadImageFromUrl(connector.getShopURL() + productImagePath + product.getImage());
+        	picture = downloadImageFromUrl(webshopConfig.getShopURL() + productImagePath + product.getImage());
         }
 
         // Convert the quantity string to a double value
@@ -1154,14 +970,14 @@ public class WebShopDataImporter implements IRunnableWithProgress {
 	/**
 	 * @return the connector
 	 */
-	public WebShopConnection getConnector() {
-		return connector;
+	public WebShopConfig getWebshopConfig() {
+		return webshopConfig;
 	}
 
 	/**
 	 * @param connector the connector to set
 	 */
-	public void setConnector(WebShopConnection connector) {
-		this.connector = connector;
+	public void setWebshopConfig(WebShopConfig connector) {
+		this.webshopConfig = connector;
 	}
 }

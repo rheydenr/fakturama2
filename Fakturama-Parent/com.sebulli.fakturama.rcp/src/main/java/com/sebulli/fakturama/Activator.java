@@ -19,10 +19,8 @@ import java.util.List;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.update.configurator.IPlatformConfiguration;
 import org.eclipse.update.internal.configurator.FeatureEntry;
 import org.eclipse.update.internal.configurator.PlatformConfiguration;
@@ -31,10 +29,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
 import com.opcoach.e4.preferences.IPreferenceStoreProvider;
-import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.preferences.FakturamaPreferenceStoreProvider;
+import com.sebulli.fakturama.webshopimport.IWebshopConnectionService;
+import com.sebulli.fakturama.webshopimport.WebshopConnectionService;
 
 // import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -53,6 +53,8 @@ public class Activator implements BundleActivator, IBundleGroupProvider {
     private static BundleContext context;
     ServiceRegistration<?> bundleGroupProviderSR; 
 	private PlatformConfiguration configuration;
+	
+	private ServiceTracker<WebshopConnectionService, IWebshopConnectionService> webshopServiceTracker;
 	 
     /**
      * Returns the shared instance
@@ -62,6 +64,8 @@ public class Activator implements BundleActivator, IBundleGroupProvider {
     public static BundleContext getContext() {
         return context;
     }
+    
+    
 
     /*
      * (non-Javadoc)
