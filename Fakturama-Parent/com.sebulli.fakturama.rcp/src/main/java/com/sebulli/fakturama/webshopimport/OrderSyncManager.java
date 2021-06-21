@@ -18,10 +18,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.OrderState;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.WebshopStateMapping;
 
 /**
  * Handles synchronization of web shop orders with Fakturama database.
@@ -34,6 +36,9 @@ public class OrderSyncManager {
     
     @Inject 
     private ILogger log;
+    
+    @Inject
+    private WebshopDAO webshopDAO;
 
 	private WebShopConfig conn;
 
@@ -71,18 +76,28 @@ public class OrderSyncManager {
 
 		// Get the orders that are out of sync with the shop
 		readOrdersToSynchronize();
+		
+        java.util.Optional<String> webshopName = java.util.Optional.ofNullable(webshopDAO.createWebShopIdentifier(conn.getScriptURL()));
+		final java.util.Optional<WebshopStateMapping> mappedOrderState;
 
 		// Convert a percent value of 0..100% to a state of 1,2,3
-		if (progress >= OrderState.SHIPPED.getState())
-			webshopState = "3";
-		else if (progress >= OrderState.PROCESSING.getState())
+		if (progress >= OrderState.SHIPPED.getState()) {
+	        mappedOrderState = webshopDAO.findFakturamaOrderState(webshopName.orElse(""), OrderState.SHIPPED);
+	        webshopState = "3";
+		} else if (progress >= OrderState.PROCESSING.getState()) {
+	        mappedOrderState = webshopDAO.findFakturamaOrderState(webshopName.orElse(""), OrderState.PROCESSING);
 			webshopState = "2";
-		else
+		} else {
+	        mappedOrderState = webshopDAO.findFakturamaOrderState(webshopName.orElse(""), OrderState.PENDING);
 			webshopState = "1";
+		}
 
 		// Set the new progress state 
 		// Add an "*" to mark the ID as "notify customer"
-
+		if(mappedOrderState.isPresent()) {
+		    webshopState = mappedOrderState.get().getWebshopState();
+		}
+		
 		//Replace the "," by "&comma;
 		//Replace the "=" by "&equal;
 		comment = StringUtils.replace(comment, "%2C", "%26comma%3B").replace("%3D", "%26equal%3B");

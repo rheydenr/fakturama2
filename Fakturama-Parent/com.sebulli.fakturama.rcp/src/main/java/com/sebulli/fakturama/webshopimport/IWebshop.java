@@ -30,6 +30,29 @@ public interface IWebshop {
 
     URLConnection connect() throws IOException;
 
+    /**
+     * Get all products and orders from web shop. If configured in preferences, only latest products are retrieved from web shop.
+     * 
+     * @param progressMonitor Consumer for setting the progress
+     * @param localMonitor the local {@link IProgressMonitor}
+     * @return
+     */
     Webshopexport synchronizeOrdersAndGetProducts(Consumer<Integer> progressMonitor, IProgressMonitor localMonitor);
+
+    /**
+     * Retrieves all statuses which are available in the current web shop.
+     * 
+     * @return
+     */
+    Webshopexport getAvailableStates(IProgressMonitor localMonitor);
+
+    /**
+     * Change state of orders in web shop
+     * 
+     * @param object
+     * @param localMonitor
+     * @return
+     */
+    Webshopexport changeState(Consumer<Integer> progressMonitor, IProgressMonitor localMonitor);
 
 }

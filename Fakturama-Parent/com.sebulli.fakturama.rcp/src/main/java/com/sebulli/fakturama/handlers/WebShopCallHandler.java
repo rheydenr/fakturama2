@@ -90,6 +90,8 @@ public class WebShopCallHandler {
 	 */
 	public static final String PARAM_IS_GET_PRODUCTS = "com.sebulli.fakturama.webshopimport.prepareGetProductsAndOrders";
 	public static final String PARAM_SELECTEDSHOPSYSTEM = "com.sebulli.fakturama.webshopimport.selectedshopsystem";
+
+    public static final String ACTION_AVAILABLE_STATES = "getavailablestatus";
  
     /**
      * Event Broker for sending update events to the list table
@@ -100,9 +102,6 @@ public class WebShopCallHandler {
     @Inject 
     private IEclipseContext context;
 
-	// The result of this import process
-	private String runResult = "";
-
 	@CanExecute
 	public boolean canExecute() {
 	    // cancel if the webshop is disabled.
@@ -110,21 +109,29 @@ public class WebShopCallHandler {
 	}
 	
 	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
+	public ExecutionResult execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parent,
 	        @Optional @Named(WebShopCallHandler.PARAM_IS_GET_PRODUCTS) Boolean prepareGetProductsAndOrders,
 	        @Optional @Named(WebShopCallHandler.PARAM_SELECTEDSHOPSYSTEM) String selectedShopSystemId,
 	        @Named(WebShopCallHandler.PARAM_ACTION) String action) {
+
+	    // The result of this import process
 	    ExecutionResult executionResult = null;
 	    
 	    // Base URL points to where the API of the Shop starts
 		String shopBaseURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
 	    
-		WebshopCommand cmd = null;
-	    if(BooleanUtils.toBoolean(prepareGetProductsAndOrders)) {
-	    	cmd = WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS;
-	    } else {
-	    	cmd = WebshopCommand.CHANGE_STATE;
-	    }
+        WebshopCommand cmd = null;
+        boolean refreshUI = false;
+        if (BooleanUtils.toBoolean(prepareGetProductsAndOrders)) {
+            cmd = WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS;
+            refreshUI = true;
+        } else {
+            if (action != null && ACTION_AVAILABLE_STATES.equals(action)) {
+                cmd = WebshopCommand.GET_AVAILABLE_STATES;
+            } else {
+                cmd = WebshopCommand.CHANGE_STATE;
+            }
+        }
     	
 	    if(selectedShopSystemId == null) {
 	        // use default shop from preferences
@@ -150,8 +157,7 @@ public class WebShopCallHandler {
             WebShopController importOperation = ContextInjectionFactory.make(WebShopController.class, context, privateCtx);
 
             progressMonitorDialog.run(true, true, importOperation);
-            this.runResult = importOperation.getRunResult();
-            executionResult = new ExecutionResult(runResult, BooleanUtils.toInteger(runResult.isEmpty(), 0, 1));
+            executionResult = new ExecutionResult(importOperation.getRunResult());
         } catch (InvocationTargetException e) {
             log.error(e, "Error running web shop import manager.");
             executionResult = new ExecutionResult("Error running web shop import manager.", 1);
@@ -160,8 +166,6 @@ public class WebShopCallHandler {
             executionResult = new ExecutionResult("Web shop import manager was interrupted.", 2);
         }
 	    
-
-        // If there is no error - interpret the data.
         if (executionResult.getErrorCode() != Constants.RC_OK) {
             // If there is an error - display it in a message box
             String errorMessage = StringUtils.abbreviate(executionResult.getErrorMessage(), 400);
@@ -171,20 +175,24 @@ public class WebShopCallHandler {
             MessageDialog.openInformation(parent, msg.importWebshopActionLabel, msg.importWebshopInfoSuccess);
         }
 
-        // Refresh the views -> fire some update events
-        // => the messages are handled by list views! 
-        evtBroker.post(ProductEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-        evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-        evtBroker.post(ContactEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-        evtBroker.post(PaymentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-        evtBroker.post(ShippingEditor.EDITOR_ID, Editor.UPDATE_EVENT);
-        evtBroker.post(VatEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+        if (refreshUI) {
+            // Refresh the views -> fire some update events
+            // => the messages are handled by list views!
+            evtBroker.post(ProductEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+            evtBroker.post(DocumentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+            evtBroker.post(ContactEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+            evtBroker.post(PaymentEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+            evtBroker.post(ShippingEditor.EDITOR_ID, Editor.UPDATE_EVENT);
+            evtBroker.post(VatEditor.EDITOR_ID, Editor.UPDATE_EVENT);
 
-        // After the web shop import, open the document view
-        // and set the focus to the new imported orders.
-        MUIElement view = modelService.find(DocumentsListTable.ID, application);
-        modelService.bringToTop(view);
-//      ViewDocumentTable viewDocumentTable = (ViewDocumentTable) view;
-//      viewDocumentTable.getTopicTreeViewer().selectItemByName(DocumentType.ORDER.getPluralString() + "/" + DataSetDocument.getStringNOTSHIPPED());
+            // After the web shop import, open the document view
+            // and set the focus to the new imported orders.
+            MUIElement view = modelService.find(DocumentsListTable.ID, application);
+            modelService.bringToTop(view);
+            // ViewDocumentTable viewDocumentTable = (ViewDocumentTable) view;
+            // viewDocumentTable.getTopicTreeViewer().selectItemByName(DocumentType.ORDER.getPluralString()
+            // + "/" + DataSetDocument.getStringNOTSHIPPED());
+        }
+        return executionResult;
 	}
 }

@@ -98,6 +98,7 @@ import com.sebulli.fakturama.webshopimport.type.AttributeType;
 import com.sebulli.fakturama.webshopimport.type.CommentType;
 import com.sebulli.fakturama.webshopimport.type.ContactType;
 import com.sebulli.fakturama.webshopimport.type.ItemType;
+import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
 import com.sebulli.fakturama.webshopimport.type.OrderType;
 import com.sebulli.fakturama.webshopimport.type.PaymentType;
 import com.sebulli.fakturama.webshopimport.type.ProductType;
@@ -172,7 +173,7 @@ public class WebShopController implements IRunnableWithProgress {
 
     @Inject
 	private WebShopConfig webshopConfig;
-	private String runResult = "";
+	private Webshopexport runResult = null;
 
 	// true, if the product's EAN number is imported as item number
 	private Boolean useEANasItemNr = false;
@@ -183,24 +184,28 @@ public class WebShopController implements IRunnableWithProgress {
 	private CurrencyUnit currencyCode;
 	private final FakturamaModelFactory fakturamaModelFactory = new FakturamaModelFactory();
 
+    private ObjectFactory objectFactory;
+
 	@PostConstruct
 	public void init() {
         orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, context);
 		useEANasItemNr = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
         productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
+        objectFactory = new ObjectFactory();
 	}
 
 	@Override
     public void run(IProgressMonitor pMonitor) throws InvocationTargetException, InterruptedException  {
-        if(webshopConfig == null) {
-        	runResult = "no connection information provided";
+	    runResult = objectFactory.createWebshopexport();
+	    
+	    if(webshopConfig == null) {
+        	runResult.setError("no connection information provided");
         	return;
         }
         
         orderSyncManager.setConn(webshopConfig);
 
         localMonitor = pMonitor;
-        setRunResult("");
         
 		currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
         String scriptBaseUrl = webshopConfig.getScriptURL();
@@ -208,10 +213,9 @@ public class WebShopController implements IRunnableWithProgress {
         // Check empty URL
         if (scriptBaseUrl.isEmpty()) {
             //T: Status message importing data from web shop
-        	setRunResult(msg.importWebshopErrorUrlnotset);
+        	runResult.setError(msg.importWebshopErrorUrlnotset);
             return;
         }
-        
 
         // Get the open order IDs that are out of sync with the webshop
 		// from the file system. Store them in the WebShopConnector for further using.
@@ -241,32 +245,35 @@ public class WebShopController implements IRunnableWithProgress {
             IWebshop webshop = svc.getWebshop(webshopConfig);
             switch (webshopConfig.getWebshopCommand()) {
             case GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS:
-                Webshopexport webshopexport = webshop.synchronizeOrdersAndGetProducts(this::setProgress, localMonitor);
+                runResult = webshop.synchronizeOrdersAndGetProducts(this::setProgress, localMonitor);
                 // Interpret the imported data (and load the product images)
-                if (webshopexport.getError() == null || webshopexport.getError().isEmpty()) {
+                if (runResult.getError() == null || runResult.getError().isEmpty()) {
                     // If there is no error - interpret the data.
-                    interpretWebShopData(localMonitor, webshopexport);
+                    interpretWebShopData(localMonitor, runResult);
             
                     // Store the time of now
                     String now = dateFormatterService.DateAsISO8601String();
                     preferences.putValue(PREFERENCE_LASTWEBSHOPIMPORT_DATE, now);
-                } else {
-                    setRunResult(webshopexport.getError());
                 }
-                localMonitor.done();
+                break;
+            case CHANGE_STATE:
+                runResult = webshop.changeState(this::setProgress, localMonitor);
                 break;
             case GET_AVAILABLE_STATES:
+                runResult = webshop.getAvailableStates(localMonitor);
                 break;
+                
             default:
                 break;
             }
         } catch (Exception e) {
             // T: Status message importing data from web shop
-            setRunResult(msg.importWebshopErrorCantopen + "\n" + scriptBaseUrl + "\n");
-            setRunResult(getRunResult() + "Message: " + e.getLocalizedMessage() + "\n");
-            if (e.getStackTrace().length > 0) setRunResult(getRunResult() + "\nTrace: " + e.getStackTrace()[0].toString() + "\n");
+            runResult.setError(msg.importWebshopErrorCantopen + "\n" + scriptBaseUrl + "\n"
+                        + "Message: " + e.getLocalizedMessage() + "\n");
+            if (e.getStackTrace().length > 0) runResult.setError(runResult.getError() + "\nTrace: " + e.getStackTrace()[0].toString() + "\n");
+        } finally {
+            localMonitor.done();
         }
-           
     }
 
     /**
@@ -739,7 +746,7 @@ public class WebShopController implements IRunnableWithProgress {
     		String error = MessageFormat.format(msg.toolbarNewOrderName + ": " + webshopId + "\n"
     		+ msg.importWebshopErrorTotalsumincorrect, numberFormatterService.DoubleToFormatedPriceRound(paymentType.getTotal().doubleValue()),
     		numberFormatterService.formatCurrency(calcTotal));
-    		setRunResult(error);
+    		runResult.setError(error);
     	}        
     }
 
@@ -956,15 +963,8 @@ public class WebShopController implements IRunnableWithProgress {
 	/**
 	 * @return the runResult
 	 */
-	public String getRunResult() {
+	public Webshopexport getRunResult() {
 		return runResult;
-	}
-
-	/**
-	 * @param runResult the runResult to set
-	 */
-	public void setRunResult(String runResult) {
-		this.runResult = runResult;
 	}
 
 	/**

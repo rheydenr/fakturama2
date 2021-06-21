@@ -178,6 +178,7 @@ public class MarkOrderAsActionHandler {
                     // when we synchronize with the shop.
                     Map<String, Object> parameters = new HashMap<>();
                     parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, Boolean.FALSE.toString());
+                    parameters.put(WebShopCallHandler.PARAM_ACTION, CommandIds.CMD_MARK_ORDER_AS);
                     ParameterizedCommand command = cmdService.createCommand(CommandIds.CMD_WEBSHOP_IMPORT, parameters);
                     /*ExecutionResult executionResult = (ExecutionResult) */handlerService.executeHandler(command);
                     //                  webShopImportManager.prepareChangeState();

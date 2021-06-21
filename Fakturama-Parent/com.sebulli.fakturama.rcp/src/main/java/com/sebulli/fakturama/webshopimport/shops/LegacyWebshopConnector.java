@@ -28,18 +28,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.Properties;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -99,6 +101,13 @@ public class LegacyWebshopConnector implements IWebshop {
         }
         return conn;
     }
+    
+    @Override
+    public Webshopexport changeState(Consumer<Integer> progressMonitor, IProgressMonitor localMonitor) {
+        
+        // for legacy connectors it's the same
+        return synchronizeOrdersAndGetProducts(progressMonitor, localMonitor);
+    }
 
     @Override
     public Webshopexport synchronizeOrdersAndGetProducts(Consumer<Integer> progressMonitor, IProgressMonitor localMonitor) {
@@ -111,20 +120,19 @@ public class LegacyWebshopConnector implements IWebshop {
 
         // create an export object so that we can transport an error (if any).
         // Will be overwritten if import is ok.
-        Webshopexport webshopexport = objectFactory.createWebshopexport();
+        Webshopexport webshopCallResult = objectFactory.createWebshopexport();
         
         // Check empty URL
         if (scriptBaseUrl.isEmpty()) {
             //T: Status message importing data from web shop
-            webshopexport.setError(msg.importWebshopErrorUrlnotset);
-            return webshopexport;
+            webshopCallResult.setError(msg.importWebshopErrorUrlnotset);
+            return webshopCallResult;
         }
 
         BufferedWriter logBuffer = null;
 
         try {
             URLConnection urlConnection = connect();
-            List<String> urlStringWithParams = new ArrayList<String>();
 
             // Send user name, password and a list of unsynchronized orders to
             // the shop
@@ -132,6 +140,7 @@ public class LegacyWebshopConnector implements IWebshop {
                 OutputStream outputStream = urlConnection.getOutputStream();
                 OutputStreamWriter writer = new OutputStreamWriter(outputStream);
                 progressMonitor.accept(20);
+                
                 StringBuilder postStringSb = new StringBuilder("username=")
                         .append(URLEncoder.encode(webshopConfig.getUser(), "UTF-8"))
                         .append("&password=")
@@ -158,7 +167,7 @@ public class LegacyWebshopConnector implements IWebshop {
                     }
                 }
             
-                log.debug("POST-String: " + postStringSb.toString());
+                log.debug("POST-String: " + secureString(postStringSb.toString()));
                 writer.write(postStringSb.toString());
                 writer.flush();
                 writer.close();
@@ -169,23 +178,11 @@ public class LegacyWebshopConnector implements IWebshop {
             InterruptConnection interruptConnection = new InterruptConnection(urlConnection);
             new Thread(interruptConnection).start();
             while (!localMonitor.isCanceled() && !interruptConnection.isFinished() && !interruptConnection.isError());
-
-            // If the connection was interrupted and not finished: return
-            if (!interruptConnection.isFinished()) {
-                ((HttpURLConnection)urlConnection).disconnect();
-                if (interruptConnection.isError()) {
-                    //T: Status error message importing data from web shop
-                    webshopexport.setError(msg.importWebshopErrorCantconnect);
-                }
-                return webshopexport;
-            }
-
-            // If there was an error, return with error message
-            if (interruptConnection.isError()) {
-                ((HttpURLConnection)urlConnection).disconnect();
-                //T: Status message importing data from web shop
-                webshopexport.setError(msg.importWebshopErrorCantread);
-                return webshopexport;
+            
+            String error = checkErrors(interruptConnection, urlConnection);
+            if(StringUtils.isNotEmpty(error)) {
+                webshopCallResult.setError(error);
+                return webshopCallResult;
             }
             
             // 1. We need to create JAXBContext instance
@@ -229,7 +226,7 @@ public class LegacyWebshopConnector implements IWebshop {
             // an instance of JAXBElement.
             // 4. Get the instance of the required JAXB Root Class from the
             // JAXBElement.
-            webshopexport = (Webshopexport) unmarshaller
+            webshopCallResult = (Webshopexport) unmarshaller
                         .unmarshal(interruptConnection.getInputStream());
             
             // alternatively (for large responses)
@@ -250,34 +247,34 @@ public class LegacyWebshopConnector implements IWebshop {
             if (logBuffer != null) {
                 Marshaller marshaller = jaxbContext.createMarshaller(); 
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-                marshaller.marshal(webshopexport, logBuffer);
+                marshaller.marshal(webshopCallResult, logBuffer);
                 logBuffer.close();
             }
             
             // parse the XML stream
             if (!localMonitor.isCanceled()) {
-                if(webshopexport.getWebshop() == null) {
+                if(webshopCallResult.getWebshop() == null) {
                     //T: Status message importing data from web shop
-                    webshopexport.setError(msg.importWebshopErrorNodata + "\n" + scriptBaseUrl);
-                    return webshopexport;
+                    webshopCallResult.setError(msg.importWebshopErrorNodata + "\n" + scriptBaseUrl);
+                    return webshopCallResult;
                 }
 
                 // Clear the list of orders to sync, if the data was sent
                 // NodeList ndList = document.getElementsByTagName("webshopexport");
-                if (webshopexport.getOrders() != null) {
+                if (webshopCallResult.getOrders() != null) {
                     webshopConfig.setOrderstosynchronize(new Properties());
                 } else {
-                    webshopexport.setError("import NOT ok");
+                    webshopCallResult.setError("import NOT ok");
                 }
                
-                return webshopexport;
+                return webshopCallResult;
             }
         }
         catch (MarshalException mex) {
             //T: Status message importing data from web shop
-            webshopexport.setError(msg.importWebshopErrorNodata + "\n" + scriptBaseUrl + "\n" + mex.getMessage());
+            webshopCallResult.setError(msg.importWebshopErrorNodata + "\n" + scriptBaseUrl + "\n" + mex.getMessage());
         } catch(UnknownHostException uhe) {
-            webshopexport.setError("Can't connect to webshop (unknown host): " + uhe.getMessage());
+            webshopCallResult.setError("Can't connect to webshop (unknown host): " + uhe.getMessage());
         }
         catch (Exception e) {
             //T: Status message importing data from web shop
@@ -286,9 +283,9 @@ public class LegacyWebshopConnector implements IWebshop {
             if (e.getStackTrace().length > 0)
                 error += "\nTrace: " + e.getStackTrace()[0].toString()+ "\n";
 
-            if (webshopexport != null)
-                error += "\n\n" + webshopexport;
-            webshopexport.setError(error);
+            if (webshopCallResult != null)
+                error += "\n\n" + webshopCallResult;
+            webshopCallResult.setError(error);
         }
         finally {
             if(logBuffer != null) {
@@ -300,17 +297,129 @@ public class LegacyWebshopConnector implements IWebshop {
             }
         }
     
-        return webshopexport;
+        return webshopCallResult;
+    }
     
+    /**
+     * Removes passwords from String for Log output
+     * @param string String to test
+     * @return secured String
+     */
+    private String secureString(String insecureString) {
+        Pattern p = Pattern.compile("(.*?password=)(.*?)(&.*)", Pattern.DOTALL);
+        return RegExUtils.replaceAll(insecureString, p, "$1*****$3");
     }
 
-    private void addPostStringElement(String elem, List<String> postStringElements, List<String> logStringElements, boolean mask) {
-        postStringElements.add(elem);
-        if(mask) {
-            logStringElements.add(StringUtils.repeat('*', elem.length()));
-        } else {
-            logStringElements.add(elem);
+    private String checkErrors(InterruptConnection interruptConnection, URLConnection urlConnection) {
+
+        // If the connection was interrupted and not finished: return
+        if (!interruptConnection.isFinished()) {
+            ((HttpURLConnection)urlConnection).disconnect();
+            if (interruptConnection.isError()) {
+                //T: Status error message importing data from web shop
+                return msg.importWebshopErrorCantconnect;
+            }
+            return "";
         }
+
+        // If there was an error, return with error message
+        if (interruptConnection.isError()) {
+            ((HttpURLConnection)urlConnection).disconnect();
+            //T: Status message importing data from web shop
+            return msg.importWebshopErrorCantread;
+        }
+        
+        return "";
+    }
+
+    @Override
+    public Webshopexport getAvailableStates(IProgressMonitor localMonitor) {
+        String scriptBaseUrl = webshopConfig.getScriptURL();
+        ObjectFactory objectFactory = new ObjectFactory();
+        Webshopexport webshopCallResult = objectFactory.createWebshopexport();
+       
+        // Check empty URL
+        if (scriptBaseUrl.isEmpty()) {
+            //T: Status message importing data from web shop
+            webshopCallResult.setError(msg.importWebshopErrorUrlnotset);
+            return webshopCallResult;
+        }
+
+        try {
+            URLConnection urlConnection = connect();
+            if(urlConnection != null) {
+                ((HttpURLConnection)urlConnection).setRequestMethod( "POST" );
+                String postString = new StringBuilder("username=")
+                                    .append(URLEncoder.encode(webshopConfig.getUser(), "UTF-8"))
+                                    .append("&password=")
+                                    .append(URLEncoder.encode(webshopConfig.getPassword(), "UTF-8"))
+                                    .append("&action=status").toString();
+                //this.webShopImportManager.log.debug("POST-String: " + postString);
+                urlConnection.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded");
+                urlConnection.setRequestProperty("Content-Length", String.valueOf(postString.length()));
+                
+                OutputStream outputStream = urlConnection.getOutputStream();
+                OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+
+                writer.write(postString);
+                writer.flush();
+                writer.close();
+            }
+            
+            // Start a connection in an extra thread
+            InterruptConnection interruptConnection = new InterruptConnection(urlConnection);
+            new Thread(interruptConnection).start();
+            while (!localMonitor.isCanceled() && !interruptConnection.isFinished() && !interruptConnection.isError());
+            
+            String error = checkErrors(interruptConnection, urlConnection);
+            if(StringUtils.isNotEmpty(error)) {
+                webshopCallResult.setError(error);
+                return webshopCallResult;
+            }
+            
+            // 1. We need to create JAXBContext instance
+            JAXBContext jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {ObjectFactory.class}, null);
+
+            // 2. Use JAXBContext instance to create the Unmarshaller.
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+            // 3. Use the Unmarshaller to unmarshal the XML document to get
+            // an instance of JAXBElement.
+
+            //T: Status message importing data from web shop
+            localMonitor.subTask(msg.importWebshopInfoLoading);
+            // 4. Get the instance of the required JAXB Root Class from the
+            // JAXBElement.
+            webshopCallResult = (Webshopexport) unmarshaller
+                        .unmarshal(interruptConnection.getInputStream());
+            // parse the XML stream
+            if (!localMonitor.isCanceled()) {
+                if(webshopCallResult.getWebshop() == null) {
+                    //T: Status message importing data from web shop
+                    webshopCallResult.setError(msg.importWebshopErrorNodata + "\n" + scriptBaseUrl);
+                    return webshopCallResult;
+                }
+            }
+           
+        }
+        catch (MarshalException mex) {
+            //T: Status message importing data from web shop
+            webshopCallResult.setError(msg.importWebshopErrorNodata + "\n" + scriptBaseUrl + "\n" + mex.getMessage());
+        }
+        catch (UnmarshalException e) {
+            webshopCallResult.setError(msg.importWebshopErrorCantopen + "\n" + scriptBaseUrl + "\n"
+                    + "Message: " + e.getCause() + "\n"+ e.getMessage());
+        }
+        catch (Exception e) {
+            //T: Status message importing data from web shop
+            webshopCallResult.setError(msg.importWebshopErrorCantopen + "\n" + scriptBaseUrl + "\n"
+                        + "Message: " + e.getLocalizedMessage()+ "\n");
+        } finally {
+            localMonitor.done();
+        }
+        
+        return webshopCallResult;
     }
 
 }

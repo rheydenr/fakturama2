@@ -14,17 +14,29 @@
 
 package com.sebulli.fakturama.webshopimport;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.webshopimport.type.Webshopexport;
+
 /**
- * @author rheydenr
- *
+ * Transport object for the result of a Webshop call.
  */
 public final class ExecutionResult {
 	private String errorMessage;
-	private int errorCode;
+	private int errorCode = Constants.RC_OK;
 	private Throwable exception;
 	private String runResult;
+	private Webshopexport webshopCallResult;
 
-	/**
+	public ExecutionResult(Webshopexport webshopCallResult) {
+        this.webshopCallResult = webshopCallResult;
+        this.errorMessage = webshopCallResult.getError();
+        this.errorCode = BooleanUtils.toInteger(StringUtils.isEmpty(errorMessage), Constants.RC_OK, 1);
+    }
+
+    /**
 	 * @param errorMessage
 	 * @param errorCode
 	 */
@@ -82,5 +94,13 @@ public final class ExecutionResult {
 	public void setException(Throwable exception) {
 		this.exception = exception;
 	}
+
+    public Webshopexport getWebshopCallResult() {
+        return webshopCallResult;
+    }
+
+    public void setWebshopCallResult(Webshopexport webshopCallResult) {
+        this.webshopCallResult = webshopCallResult;
+    }
 
 }

@@ -9,19 +9,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -52,6 +54,7 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.handlers.WebShopCallHandler;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
@@ -61,8 +64,6 @@ import com.sebulli.fakturama.model.WebShop;
 import com.sebulli.fakturama.model.WebshopStateMapping;
 import com.sebulli.fakturama.parts.widget.contentprovider.SimpleTreeContentProvider;
 import com.sebulli.fakturama.webshopimport.ExecutionResult;
-import com.sebulli.fakturama.webshopimport.WebShopConfig;
-import com.sebulli.fakturama.webshopimport.WebShopStatusImporter;
 import com.sebulli.fakturama.webshopimport.type.StatusType;
 import com.sebulli.fakturama.webshopimport.type.StatusType.Status;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
@@ -81,9 +82,12 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 	
 	@Inject
 	private WebshopDAO webshopDAO;
-
+	
 	@Inject
-	private IEclipseContext context;
+	private EHandlerService handlerService;
+	
+	@Inject
+	private ECommandService cmdService;
     
     @Inject
     private ILogger log;
@@ -101,10 +105,9 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		// Set the title
 		// parent.getShell().setSize(500, 500);
+	    // Set the title
 		parent.getShell().setText(msg.preferencesWebshopSettings);
-		// setTitle(msg.preferencesWebshopSettings);
 		Composite area = (Composite) super.createDialogArea(parent);
 		Composite container = CompositeFactory.newComposite(SWT.NONE)
 		        .layout(GridLayoutFactory.swtDefaults().equalWidth(true).spacing(2, SWT.DEFAULT).numColumns(2).create())
@@ -117,7 +120,14 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 		        .layoutData(GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.TOP).span(2, 1).create())
 		        .text(msg.preferencesWebshopSettingsGetallstates)
 		        .onSelect(e -> {
-		            Webshopexport wsExport = execute(parent.getShell());
+		            Map<String, String> params = new HashedMap<>();
+		            params.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, Boolean.FALSE.toString());
+		            params.put(WebShopCallHandler.PARAM_ACTION, WebShopCallHandler.ACTION_AVAILABLE_STATES);
+		            
+		            ParameterizedCommand cmd = cmdService.createCommand("com.sebulli.fakturama.command.webShopImport", params);
+		            ExecutionResult result = (ExecutionResult) handlerService.executeHandler(cmd);
+		            
+		            Webshopexport wsExport = result.getWebshopCallResult();
 		            if (wsExport != null) {
 		                // set the values from web shop
 		                shopInfoString.setText(String.format("%s (%s: %s)", wsExport.getWebshop().getShop(),
@@ -548,42 +558,5 @@ public class WebShopStatusSettingsDialog extends TitleAreaDialog {
 		public final void setStateName(String stateName) {
 			this.stateName = stateName;
 		}
-	}
-
-	/**
-	 * @param parent
-	 */
-	public Webshopexport execute(Shell parent) {
-		ExecutionResult executionResult = null;
-		ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
-		
-		String shopURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
-		
-        // Add "http://" if no protocol is given
-        WebShopConfig conn = new WebShopConfig()
-        		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopURL, "http://", "https://", "file://"))
-        		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
-        		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
-        		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
-        		.withUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_USER))
-        		.withPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD));
-		
-        WebShopStatusImporter importOperation = ContextInjectionFactory.make(WebShopStatusImporter.class, context);
-        importOperation.setConnector(conn);
-		try {
-			// get all order status from web shop
-			progressMonitorDialog.run(true, true, importOperation);
-			executionResult = importOperation.getRunResult();
-		} catch (Exception ex) {
-			log.error(ex);
-		}
-
-		if (executionResult != null && executionResult.getErrorCode() != Constants.RC_OK) {
-			// If there is an error - display it in a message box
-			String errorMessage = StringUtils.abbreviate(executionResult.getErrorMessage(), 400);
-			MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
-			log.error(executionResult.getException(), errorMessage);
-		}
-		return importOperation.getWebshopexport();
 	}
 }
