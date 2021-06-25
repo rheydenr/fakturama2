@@ -70,7 +70,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceColors;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -101,7 +100,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -2287,7 +2285,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Selects the no VAT entry
 		comboViewerNoVat.setInput(vatDao.findNoVATEntries());
 		if (noVat) {
-			comboViewerNoVat.getCombo().setText(noVatObject.getDescription());
+            comboViewerNoVat.getCombo().setText(StringUtils.defaultString(noVatObject.getDescription(), noVatObject.getName()));
 		} else {
 		    comboViewerNoVat.getCombo().select(0);
 		}

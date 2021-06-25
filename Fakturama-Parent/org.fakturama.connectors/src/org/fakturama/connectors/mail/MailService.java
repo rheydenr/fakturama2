@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -117,8 +118,16 @@ public class MailService implements IPdfPostProcessor {
 
     @Override
     public boolean processPdf(Optional<Invoice> inputDocument) {
-        if (!inputDocument.isPresent())
+        if (!inputDocument.isPresent()) {
             return true;
+        }
+
+        DocumentReceiver billingAdress = addressManager.getBillingAdress(inputDocument.get());
+        if(StringUtils.isAllBlank(billingAdress.getEmail())) {
+            // ignore silently...
+            return true;
+        }
+        
 
         // Collect some settings...
         MailSettings settings = createSettings(inputDocument.get());
