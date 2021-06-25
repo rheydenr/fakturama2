@@ -112,10 +112,10 @@ public class LegacyWebshopConnector implements IWebshop {
         // create an export object so that we can transport an error (if any).
         // Will be overwritten if import is ok.
         Webshopexport webshopCallResult = objectFactory.createWebshopexport();
-        
+
         // Check empty URL
         if (scriptBaseUrl.isEmpty()) {
-            //T: Status message importing data from web shop
+            // T: Status message importing data from web shop
             webshopCallResult.setError(msg.importWebshopErrorUrlnotset);
             return webshopCallResult;
         }
@@ -128,7 +128,7 @@ public class LegacyWebshopConnector implements IWebshop {
             JAXBContext jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] { ObjectFactory.class }, null);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             HttpClient httpClient = HttpClient.newHttpClient();
-            
+
             progressMonitor.accept(30);
 
             HttpRequest request = createHttpRequest(scriptBaseUrl, data);
@@ -136,14 +136,14 @@ public class LegacyWebshopConnector implements IWebshop {
             webshopCallResult = (Webshopexport) unmarshaller.unmarshal(response.body());
 
             String error = "";//
-            if(StringUtils.isNotEmpty(error)) {
+            if (StringUtils.isNotEmpty(error)) {
                 webshopCallResult.setError(error);
                 return webshopCallResult;
             }
-        } catch  (Exception e) {
+        } catch (Exception e) {
             createErrorMessage(scriptBaseUrl, webshopCallResult, e);
         }
-        
+
         return webshopCallResult;
     }
    
@@ -327,22 +327,16 @@ public class LegacyWebshopConnector implements IWebshop {
 
         Integer maxProducts = preferences.getInt(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS);
         Boolean onlyModifiedProducts = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS);
-        
+
         Map<String, Object> data = new HashMap<>();
         data.put("username", URLEncoder.encode(webshopConfig.getUser(), "UTF-8"));
         data.put("password", URLEncoder.encode(webshopConfig.getPassword(), "UTF-8"));
         data.put("ts", System.currentTimeMillis());
 
-        String actionString = "";
-        if (webshopConfig.isGetProducts()) {
-            actionString += "_products";
-        }
-        if (webshopConfig.isGetOrders()) {
-            actionString += "_orders";
-        }
-        
+        String actionString = webshopConfig.getActionString();
+
         if (!actionString.isEmpty()) {
-            data.put("action", "get" + actionString);
+            data.put("action", actionString);
         }
 
         data.put("setstate", webshopConfig.getOrderstosynchronize().toString());
@@ -373,9 +367,9 @@ public class LegacyWebshopConnector implements IWebshop {
 
         // If the connection was interrupted and not finished: return
         if (!interruptConnection.isFinished()) {
-            ((HttpURLConnection)urlConnection).disconnect();
+            ((HttpURLConnection) urlConnection).disconnect();
             if (interruptConnection.isError()) {
-                //T: Status error message importing data from web shop
+                // T: Status error message importing data from web shop
                 return msg.importWebshopErrorCantconnect;
             }
             return "";
@@ -383,11 +377,11 @@ public class LegacyWebshopConnector implements IWebshop {
 
         // If there was an error, return with error message
         if (interruptConnection.isError()) {
-            ((HttpURLConnection)urlConnection).disconnect();
-            //T: Status message importing data from web shop
+            ((HttpURLConnection) urlConnection).disconnect();
+            // T: Status message importing data from web shop
             return msg.importWebshopErrorCantread;
         }
-        
+
         return "";
     }
 

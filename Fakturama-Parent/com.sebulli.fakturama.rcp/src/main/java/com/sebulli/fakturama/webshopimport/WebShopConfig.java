@@ -200,4 +200,20 @@ public class WebShopConfig {
         return selectedWebshop;
     }
 
+    /**
+     * Create action string for HTTP requests.
+     * 
+     * @return
+     */
+    public String getActionString() {
+        String actionString = "";
+        if (isGetProducts()) {
+            actionString  += "_products";
+        }
+        if (isGetOrders()) {
+            actionString += "_orders";
+        }
+        return "get" + actionString;
+    }
+
 }
