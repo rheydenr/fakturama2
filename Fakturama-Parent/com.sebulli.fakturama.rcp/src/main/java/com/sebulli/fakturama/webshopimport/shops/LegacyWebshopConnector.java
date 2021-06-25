@@ -60,6 +60,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.webshopimport.IWebshop;
 import com.sebulli.fakturama.webshopimport.InterruptConnection;
 import com.sebulli.fakturama.webshopimport.WebShopConfig;
+import com.sebulli.fakturama.webshopimport.Webshop;
 import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 
@@ -67,6 +68,7 @@ import com.sebulli.fakturama.webshopimport.type.Webshopexport;
  * Webshop connector for all PHP based webshops (legacy interface)
  */
 public class LegacyWebshopConnector implements IWebshop {
+
     private static final String PREFERENCE_LASTWEBSHOPIMPORT_DATE = "lastwebshopimport";
     
     private static final String WEBSHOP_IMPORT_LOGFILE = "WebShopImport.log";
@@ -285,26 +287,32 @@ public class LegacyWebshopConnector implements IWebshop {
     }
 
     private void createErrorMessage(String scriptBaseUrl, Webshopexport webshopCallResult, Exception exc) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(msg.importWebshopErrorCantopen).append("\n")
+                     .append(scriptBaseUrl).append("\n")
+                     .append("Message: ").append(exc.getLocalizedMessage())
+                     .append("\n");
+        
         //T: Status message importing data from web shop
-        String error = msg.importWebshopErrorCantopen + "\n" + scriptBaseUrl + "\n"
-        +"Message: " + exc.getLocalizedMessage()+ "\n";
         if (exc.getStackTrace().length > 0)
-            error += "\nTrace: " + exc.getStackTrace()[0].toString()+ "\n";
+            stringBuilder.append("Trace: ").append(exc.getStackTrace()[0].toString()).append("\n");
         
         if(exc.getCause() != null) {
-            error += exc.getCause().getMessage() + "\n";
+            stringBuilder.append(exc.getCause().getMessage()).append("\n");
         }
 
-        if (webshopCallResult != null)
-            error += "\n\n" + webshopCallResult.getError();
-        webshopCallResult.setError(error);
+        if (webshopCallResult != null) {
+            stringBuilder.append(webshopCallResult.getError());
+        }
+        
+        webshopCallResult.setError(stringBuilder.toString());
     }
 
     private HttpRequest createHttpRequest(String scriptBaseUrl, Map<String, Object> data) {
         Builder requestBuilder = HttpRequest.newBuilder()
                 .POST(buildFormDataFromMap(data))
                 .uri(URI.create(scriptBaseUrl))
-                .setHeader("User-Agent", "Fakturama Legacy Webshop Client")
+                .setHeader("User-Agent", Webshop.LEGACY_WEBSHOP.getLabel())
                 .header("Content-Type", "application/x-www-form-urlencoded");
         // Use password for password protected web shops
         if (webshopConfig.getUseAuthorization()) {
