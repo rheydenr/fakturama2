@@ -131,6 +131,7 @@ public class WebShopCallHandler {
                     cmd = WebshopCommand.GET_AVAILABLE_STATES;
                 } else if(CommandIds.CMD_MARK_ORDER_AS.equals(action)) {
                     cmd = WebshopCommand.CHANGE_STATE;
+                    refreshUI = true;
                 }
             }
         }
@@ -177,7 +178,7 @@ public class WebShopCallHandler {
             String errorMessage = StringUtils.abbreviate(executionResult.getErrorMessage(), 400);
             MessageDialog.openError(parent, msg.importWebshopActionError, errorMessage);
             log.error(errorMessage);
-        } else {
+        } else if(cmd == WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS) {
             MessageDialog.openInformation(parent, msg.importWebshopActionLabel, msg.importWebshopInfoSuccess);
         }
 
