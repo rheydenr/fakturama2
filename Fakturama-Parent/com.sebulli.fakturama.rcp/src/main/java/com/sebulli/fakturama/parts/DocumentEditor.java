@@ -2287,7 +2287,7 @@ public class DocumentEditor extends Editor<Document> {
 		// Selects the no VAT entry
 		comboViewerNoVat.setInput(vatDao.findNoVATEntries());
 		if (noVat) {
-			comboViewerNoVat.getCombo().setText(noVatObject.getDescription());
+			comboViewerNoVat.getCombo().setText(StringUtils.defaultString(noVatObject.getDescription(), noVatObject.getName()));
 		} else {
 		    comboViewerNoVat.getCombo().select(0);
 		}

@@ -148,7 +148,7 @@ public class OrderSyncManager {
 	/**
 	 * @return the conn
 	 */
-	public WebShopConfig getConn() {
+	private WebShopConfig getConn() {
 		if(conn == null) {
 			String scriptURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
 	        conn = new WebShopConfig()

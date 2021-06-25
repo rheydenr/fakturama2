@@ -18,5 +18,5 @@ public enum WebshopCommand {
      * Action for getting all the possible status from web shop.
      */
 	GET_AVAILABLE_STATES,
-	GET_SHOP_VERSION
+	GET_SHOP_VERSION, UPDATE_PROGRESS
 }

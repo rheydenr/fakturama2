@@ -126,11 +126,17 @@ public class WebShopCallHandler {
             cmd = WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS;
             refreshUI = true;
         } else {
-            if (action != null && ACTION_AVAILABLE_STATES.equals(action)) {
-                cmd = WebshopCommand.GET_AVAILABLE_STATES;
-            } else {
-                cmd = WebshopCommand.CHANGE_STATE;
+            if (action != null) {
+                if (ACTION_AVAILABLE_STATES.equals(action)) {
+                    cmd = WebshopCommand.GET_AVAILABLE_STATES;
+                } else if(CommandIds.CMD_MARK_ORDER_AS.equals(action)) {
+                    cmd = WebshopCommand.CHANGE_STATE;
+                }
             }
+        }
+        
+        if(cmd == null) {
+            return new ExecutionResult("no command to execute, aborting", 3);
         }
     	
 	    if(selectedShopSystemId == null) {

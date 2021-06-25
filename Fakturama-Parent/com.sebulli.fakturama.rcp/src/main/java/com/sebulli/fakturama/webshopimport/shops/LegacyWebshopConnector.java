@@ -16,22 +16,36 @@ package com.sebulli.fakturama.webshopimport.shops;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandler;
+import java.net.http.HttpResponse.BodySubscriber;
+import java.net.http.HttpResponse.ResponseInfo;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -40,12 +54,14 @@ import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
@@ -57,7 +73,7 @@ import com.sebulli.fakturama.webshopimport.type.ObjectFactory;
 import com.sebulli.fakturama.webshopimport.type.Webshopexport;
 
 /**
- *
+ * Webshop connector for all PHP based webshops (legacy interface)
  */
 public class LegacyWebshopConnector implements IWebshop {
     private static final String PREFERENCE_LASTWEBSHOPIMPORT_DATE = "lastwebshopimport";
@@ -104,9 +120,83 @@ public class LegacyWebshopConnector implements IWebshop {
     
     @Override
     public Webshopexport changeState(Consumer<Integer> progressMonitor, IProgressMonitor localMonitor) {
+        String scriptBaseUrl = webshopConfig.getScriptURL();
+        ObjectFactory objectFactory = new ObjectFactory();
+        generalWorkspace = preferences.getString(Constants.GENERAL_WORKSPACE);
+
+        Integer maxProducts = preferences.getInt(Constants.PREFERENCES_WEBSHOP_MAX_PRODUCTS);
+        Boolean onlyModifiedProducts = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_ONLY_MODIFIED_PRODUCTS);
+
+        // create an export object so that we can transport an error (if any).
+        // Will be overwritten if import is ok.
+        Webshopexport webshopCallResult = objectFactory.createWebshopexport();
         
+        // Check empty URL
+        if (scriptBaseUrl.isEmpty()) {
+            //T: Status message importing data from web shop
+            webshopCallResult.setError(msg.importWebshopErrorUrlnotset);
+            return webshopCallResult;
+        }
+
+        BufferedWriter logBuffer = null;
+
+        try {
+            URLConnection urlConnection = connect();
+
+            // Send user name, password and a list of unsynchronized orders to
+            // the shop
+            if(urlConnection != null && urlConnection.getDoOutput()) {
+                OutputStream outputStream = urlConnection.getOutputStream();
+                OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+                progressMonitor.accept(20);
+                
+                StringBuilder postStringSb = new StringBuilder("username=")
+                        .append(URLEncoder.encode(webshopConfig.getUser(), "UTF-8"))
+                        .append("&password=")
+                        .append(URLEncoder.encode(webshopConfig.getPassword(), "UTF-8"));
+
+
+                postStringSb.append("&setstate=").append(webshopConfig.getOrderstosynchronize().toString());
+
+                log.debug("POST-String: " + secureString(postStringSb.toString()));
+                writer.write(postStringSb.toString());
+                writer.flush();
+                writer.close();
+            }
+            progressMonitor.accept(30);
+            
+            // Start a connection in an extra thread
+            InterruptConnection interruptConnection = new InterruptConnection(urlConnection);
+            new Thread(interruptConnection).start();
+            while (!localMonitor.isCanceled() && !interruptConnection.isFinished() && !interruptConnection.isError());
+            
+            String error = checkErrors(interruptConnection, urlConnection);
+            if(StringUtils.isNotEmpty(error)) {
+                webshopCallResult.setError(error);
+                return webshopCallResult;
+            }
+        } catch  (Exception e) {
+            
+        }
+        
+        return webshopCallResult;
+            
         // for legacy connectors it's the same
-        return synchronizeOrdersAndGetProducts(progressMonitor, localMonitor);
+       // return synchronizeOrdersAndGetProducts(progressMonitor, localMonitor);
+    }
+   
+    private  HttpRequest.BodyPublisher buildFormDataFromMap(Map<Object, Object> data) {
+        var builder = new StringBuilder();
+        for (Map.Entry<Object, Object> entry : data.entrySet()) {
+            if (builder.length() > 0) {
+                builder.append("&");
+            }
+            builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
+            builder.append("=");
+            builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
+        }
+        System.out.println(builder.toString());
+        return HttpRequest.BodyPublishers.ofString(builder.toString());
     }
 
     @Override
@@ -134,6 +224,70 @@ public class LegacyWebshopConnector implements IWebshop {
         try {
             URLConnection urlConnection = connect();
 
+//            HttpClient httpClient = HttpClient.newHttpClient();
+//            // form parameters
+//            Map<Object, Object> data = new HashMap<>();
+//            data.put("username", "admin");
+//            data.put("password", "admin");
+////            data.put("custom", "secret");
+//            data.put("ts", System.currentTimeMillis());
+//            HttpRequest request = HttpRequest.newBuilder()
+//                    .POST(buildFormDataFromMap(data))
+//                    .uri(URI.create(webshopConfig.getScriptURL()))
+//                    .setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
+//                    .header("Content-Type", "application/x-www-form-urlencoded")
+//                    .build();
+//
+////            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+//            HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            
+            // 1. We need to create JAXBContext instance
+//            Map<String, Object> properties = new HashMap<String, Object>();
+//            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, response.body());
+//            JAXBContext jaxbContext1 = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {ObjectFactory.class, Webshopexport.class}, properties);
+//            Unmarshaller unmarshaller1 = jaxbContext1.createUnmarshaller();
+//
+//
+////            StreamSource json = new StreamSource(response.body(), response.uri().toString());
+//            Webshopexport md = (Webshopexport) unmarshaller1.unmarshal(response.body())/*, Webshopexport.class)*//*.getValue()*/;
+//           
+//            
+//            
+//               HttpResponse<Webshopexport> response = httpClient.send(request, new BodyHandler<Webshopexport>() {
+//
+//                @Override
+//                public BodySubscriber<Webshopexport> apply(ResponseInfo responseInfo) {
+//                    return HttpResponse.BodySubscribers.mapping(
+//                            HttpResponse.BodySubscribers.ofInputStream(), 
+//                            inputStream -> {
+//                                Webshopexport md = null;
+//                                try {
+////                                    StreamSource json = new StreamSource(inputStream);
+////                                    System.out.print(inputStream.read());
+//                                    
+//                                    // Hier steht das konkrete Objekt, das aus dem Shop geladen wird. Das implementiert aber ein allgmeines
+//                                    // Interface (und vor allem IAdaptable), damit das dann in ein gültiges Webshopexport-Objekt umgewandelt werden kann.
+//                                    md = (Webshopexport) unmarshaller1.unmarshal(inputStream/*, Webshopexport.class*/)/*.getValue()*/;
+//                                    System.out.println(md);
+//                                } catch (javax.xml.bind.JAXBException e) {
+//                                    // TODO Auto-generated catch block
+//                                    e.printStackTrace();
+//                                }
+//                                return md;
+//                            });
+//                        }
+//            });
+//               
+
+//            // print status code
+//            System.out.println(response.statusCode());
+//
+//            // print response body
+//            System.out.println(response.body());
+
+
+            
+            
             // Send user name, password and a list of unsynchronized orders to
             // the shop
             if(urlConnection != null && urlConnection.getDoOutput()) {
@@ -282,6 +436,10 @@ public class LegacyWebshopConnector implements IWebshop {
             +"Message: " + e.getLocalizedMessage()+ "\n";
             if (e.getStackTrace().length > 0)
                 error += "\nTrace: " + e.getStackTrace()[0].toString()+ "\n";
+            
+            if(e.getCause() != null) {
+                error += e.getCause().getMessage() + "\n";
+            }
 
             if (webshopCallResult != null)
                 error += "\n\n" + webshopCallResult;
