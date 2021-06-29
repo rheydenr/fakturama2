@@ -400,9 +400,11 @@ public class DocumentEditor extends Editor<Document> {
 		boolean wasDirty = getMDirtyablePart().isDirty();
         evtBroker.unsubscribe(itemListChangedHandler);
 		
-		// set items table silent
-		itemListTable.getNatTable().commitAndCloseActiveCellEditor();
-		
+        if(itemListTable != null) {
+    		// set items table silent
+    		itemListTable.getNatTable().commitAndCloseActiveCellEditor();
+        }
+        
 		// set focus outside of address tab
 		txtCustomerRef.setFocus();
 
@@ -528,7 +530,9 @@ public class DocumentEditor extends Editor<Document> {
 		if (newDocument) {
 		    try {
                 document = documentsDAO.save(document);
-                itemListTable.reloadItemList();
+                if(itemListTable != null) {
+                    itemListTable.reloadItemList();
+                }
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }
@@ -559,7 +563,9 @@ public class DocumentEditor extends Editor<Document> {
 		
         try {
             document = documentsDAO.save(document);
-            itemListTable.reloadItemList();
+            if(itemListTable != null) {
+                itemListTable.reloadItemList();
+            }
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
@@ -593,7 +599,7 @@ public class DocumentEditor extends Editor<Document> {
     private void saveSashSettings() {
     	IDialogSettings dialogSettings = getDialogSettings("SASH");
 		List<String> k = Arrays.stream(sashForm.getWeights()).mapToObj(i -> Integer.toString(i)).collect(Collectors.toList());
-    	dialogSettings.put("SASHWEIGHTS", k.toArray(new String[] {}));
+    	dialogSettings.put("SASHWEIGHTS_"+document.getBillingType().name(), k.toArray(new String[] {}));
 		sashForm.getWeights();
 	}
 
@@ -2340,7 +2346,7 @@ public class DocumentEditor extends Editor<Document> {
 			     * You have to clone the dialog because else there's no valid parent if you open the dialog 
 			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
-			    context.set(DOCUMENT_ID, document.getName());
+                context.set(DOCUMENT_ID, document.hashCode());
             	// save MPart
             	MPart myPart = context.get(MPart.class);
                 // FIXME Workaround (quick & dirty), please use enums or an extra button
@@ -2619,13 +2625,14 @@ public class DocumentEditor extends Editor<Document> {
 		sc2.setExpandHorizontal(true);
 		sc2.setExpandVertical(true);
 		
-	    String[] sashWeights = getDialogSettings("SASH").getArray("SASHWEIGHTS");
+	    String[] sashWeights = getDialogSettings("SASH").getArray("SASHWEIGHTS_"+document.getBillingType().name());
+	    int[] sashWeightsInt = new int[] { 2, 1};
 	    if(sashWeights != null && sashWeights.length > 0) {
-	    	int[] sashWeightsInt = Arrays.stream(sashWeights).mapToInt(Integer::parseInt).toArray();
-	    	sashForm.setWeights(sashWeightsInt);
-	    } else {
-	    	sashForm.setWeights(new int[] { 2, 1});
+            sashWeightsInt = Arrays.stream(sashWeights).mapToInt(Integer::parseInt).toArray();
+	    } else if(!documentType.hasItems()) {
+	        sashWeightsInt = new int[] { 1, 2};
 	    }
+	    sashForm.setWeights(sashWeightsInt);
 	    
 //		GridDataFactory.fillDefaults().applyTo(scrollcomposite);
 	}
@@ -3136,9 +3143,10 @@ public class DocumentEditor extends Editor<Document> {
     protected void handleDialogSelection(@UIEventTopic("DialogSelection/*") Event event) {
         if (event != null) {
             // the event has already all given params in it since we created them as Map
-            String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
+            Integer targetDocumentName = (Integer) event.getProperty(DOCUMENT_ID);
             // at first we have to check if the message is for us
-            if(!StringUtils.equals(targetDocumentName, document.getName())) {
+//            if(!StringUtils.equals(targetDocumentName, document.getName())) {
+            if(targetDocumentName != document.hashCode()) {
                 // silently ignore this event if it's not for this document
                 return; 
             }
