@@ -82,7 +82,9 @@
         <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@2:true"/>
-        <setEntry value="org.apache.xerces@default:default"/>
+        <setEntry value="org.apache.odftoolkit@default:default"/>
+        <setEntry value="org.apache.xerces*2.12.1.v20210115-0812@default:default"/>
+        <setEntry value="org.apache.xerces*2.9.0.v201101211617@default:default"/>
         <setEntry value="org.apache.xml.resolver@default:default"/>
         <setEntry value="org.apache.xml.serializer@default:default"/>
         <setEntry value="org.apache.xmlbeans@default:default"/>
@@ -262,7 +264,6 @@
         <setEntry value="com.sebulli.fakturama.resources.icons@default:false"/>
         <setEntry value="com.sebulli.fakturama.resources.templates@default:false"/>
         <setEntry value="com.sebulli.fakturama.resources@default:default"/>
-        <setEntry value="org.apache.odftoolkit@default:default"/>
         <setEntry value="org.fakturama.connectors@default:default"/>
         <setEntry value="org.fakturama.e4.ui.dialogs.ext@default:default"/>
         <setEntry value="org.fakturama.export@default:default"/>

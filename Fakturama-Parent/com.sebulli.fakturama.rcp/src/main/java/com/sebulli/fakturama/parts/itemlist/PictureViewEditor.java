@@ -35,9 +35,6 @@ import com.sebulli.fakturama.views.datatable.common.CellImagePainter;
  * @author Gerd Bartelt
  */
 public class PictureViewEditor extends AbstractCellEditor {
-
-    // The picture name
-    private String pictureName ="";
     
     // The scaled image with width and height (used to resize the dialog)
     private Image scaledImage = null;
