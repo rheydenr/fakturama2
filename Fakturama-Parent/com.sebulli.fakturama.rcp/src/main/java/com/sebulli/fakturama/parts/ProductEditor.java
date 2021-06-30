@@ -798,7 +798,7 @@ public class ProductEditor extends Editor<Product> {
 
 		// The picture name label
 		labelProductPicture = new FakturamaPictureControl(photoComposite, defaultValuePrefs, msg);
-//		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(labelProductPicture);
+//		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).minSize(100, SWT.DEFAULT).grab(true, false).applyTo(photoComposite);
 
 //		 The picture path
 //      ==> this is not longer necessary because we store the picture in database
@@ -825,7 +825,7 @@ public class ProductEditor extends Editor<Product> {
 		Group noteGroup = new Group(top, SWT.NONE);
 		noteGroup.setText(msg.editorContactLabelNotice);
 		GridLayoutFactory.swtDefaults().applyTo(noteGroup);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(noteGroup);
+		GridDataFactory.fillDefaults().span(2, 1).grab(true, true).applyTo(noteGroup);
 		
 		note = new Text(noteGroup, SWT.BORDER | SWT.MULTI);
 		note.addKeyListener(new ReturnKeyAdapter(note));
