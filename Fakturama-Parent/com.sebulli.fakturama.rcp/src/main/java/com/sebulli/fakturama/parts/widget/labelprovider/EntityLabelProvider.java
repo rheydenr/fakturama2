@@ -14,6 +14,7 @@
  
 package com.sebulli.fakturama.parts.widget.labelprovider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
 import com.sebulli.fakturama.model.IDescribableEntity;
@@ -37,7 +38,7 @@ public class EntityLabelProvider extends LabelProvider {
         String retval = "";
         if (element != null) {
             if(element instanceof IDescribableEntity) {
-                retval = ((IDescribableEntity)element).getDescription();
+                retval = StringUtils.defaultString(((IDescribableEntity)element).getDescription(), ((IEntity)element).getName());
             } else if (element instanceof IEntity) {
                 retval = ((IEntity)element).getName();
             }

@@ -16,6 +16,7 @@ package com.sebulli.fakturama.dto;
 
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 
@@ -40,13 +41,14 @@ public class VoucherSummarySetManager {
 	@Inject
 	private IEclipseContext ctx;
 
-	private VatSummarySet voucherSummarySet;
+	private VatSummarySet vatSummarySet;
 
 	/**
-	 * Constructor Creates a new voucherSummarySet
+	 * Creates a new voucherSummarySet
 	 */
-	public VoucherSummarySetManager() {
-		voucherSummarySet = new VatSummarySet();
+	@PostConstruct
+	public void init() {
+		vatSummarySet = ContextInjectionFactory.make(VatSummarySet.class, ctx);
 	}
 
 	/**
@@ -77,7 +79,7 @@ public class VoucherSummarySetManager {
 		// This will add all the entries to the VatSummarySet
 		VoucherSummaryCalculator summary = ContextInjectionFactory.make(VoucherSummaryCalculator.class, ctx);
 		CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
-		summary.calculate(voucherSummarySet,
+		summary.calculate(vatSummarySet,
 				itemNr > -1 ? voucher.getItems().stream().filter(item -> item.getPosNr().compareTo(itemNr) == 0)
 						.collect(Collectors.toList()) : voucher.getItems(),
 				useCategory,
@@ -93,8 +95,8 @@ public class VoucherSummarySetManager {
 	 * 
 	 * @return The voucherSummarySet
 	 */
-	public VatSummarySet getVoucherSummaryItems() {
-		return voucherSummarySet;
+	public VatSummarySet getVatSummaryItems() {
+		return vatSummarySet;
 	}
 
 	/**
@@ -103,7 +105,7 @@ public class VoucherSummarySetManager {
 	 * @return The size of the voucherSummarySet
 	 */
 	public int size() {
-		return voucherSummarySet.size();
+		return vatSummarySet.size();
 	}
 
 	/**
@@ -114,6 +116,6 @@ public class VoucherSummarySetManager {
 	 * @return Index of the item or -1, of none was found
 	 */
 	public int getIndex(VatSummaryItem voucherSummaryItem) {
-		return voucherSummarySet.getIndex(voucherSummaryItem);
+		return vatSummarySet.getIndex(voucherSummaryItem);
 	}
 }

@@ -103,7 +103,7 @@ public class BuyersAndTotal extends Object {
         getBuyerInfo(buyer).addTotalSoldGross(summary.getTotalGross());
         getBuyerInfo(buyer).addTotalSold(summary.getItemsNet());
         getBuyerInfo(buyer).addTotalVat(summary.getTotalVat());
-        getBuyerInfo(buyer).addTotalRebate(summary.getTotalDiscount());
+        getBuyerInfo(buyer).addTotalRebate(summary.getDiscountGross());
         getBuyerInfo(buyer).addTotalShipping(summary.getShippingGross());
     }
 

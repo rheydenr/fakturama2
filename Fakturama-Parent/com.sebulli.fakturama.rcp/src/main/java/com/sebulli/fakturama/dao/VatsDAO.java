@@ -73,7 +73,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	    }
 	    // if tax value is not set we create an irregular value to compare
 	    // (force creating a new object)
-        restrictions.add(cb.equal(vat.get(VAT_.taxValue), object.getTaxValue() != null ? object.getTaxValue() : Double.valueOf(-10.0)));
+        restrictions.add(cb.equal(vat.get(VAT_.taxValue), object.getTaxValue() != null ? object.getTaxValue() : Double.valueOf(0.0)));
 	    return restrictions;
 	}
 
@@ -139,7 +139,7 @@ public class VatsDAO extends AbstractDAO<VAT> {
 	 */
 	public List<VAT> findNoVATEntries() {
         //T: Name of a VAT entry that indicates that VAT is not 0%
-        VAT dummyVat = new VAT();
+        VAT dummyVat = FakturamaModelPackage.MODELFACTORY.createVAT();
         dummyVat.setName(msg.widgetNovatproviderWithvatLabel);
         dummyVat.setTaxValue(Double.valueOf(0.0));
 	    VATCategory vATCategory = vatCategoriesDAO.findCategoryByName(msg.dataVatSalestax);

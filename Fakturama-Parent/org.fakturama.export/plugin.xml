@@ -150,5 +150,12 @@
             name="%wizard.export.csv.lists.category"
             parentCategory="com.sebulli.fakturama.export.lists">
       </category>
+      <wizard
+            category="com.sebulli.fakturama.export.lists"
+            class="org.fakturama.export.wizard.texts.TextExportWizard"
+            icon="icons/16/text.png"
+            id="org.fakturama.export.texts"
+            name="%wizard.export.text.name">
+      </wizard>
    </extension>
 </plugin>

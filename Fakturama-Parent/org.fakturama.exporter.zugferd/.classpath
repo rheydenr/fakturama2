@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/fontbox-2.0.20.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/pdfbox-2.0.20.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xmpbox-2.0.20.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
 		<attributes>
+			<attribute name="module" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
@@ -13,6 +11,9 @@
 			<accessrule kind="accessible" pattern="org/eclipse/e4/**"/>
 		</accessrules>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/fontbox-2.0.20.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/pdfbox-2.0.20.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmpbox-2.0.20.jar"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src-gen/main/java"/>
 	<classpathentry including="*.xmp" kind="src" path="src/main/resources"/>

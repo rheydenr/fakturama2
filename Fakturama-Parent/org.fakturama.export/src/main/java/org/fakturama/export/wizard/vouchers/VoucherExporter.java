@@ -234,7 +234,7 @@ public class VoucherExporter extends OOCalcExporter {
 		// The VAT summary items are sorted. So first ignore the VAT entries
 		// with 0%. 
 		// If the VAT value is >0%, create a column with heading.
-		for (VatSummaryItem item : voucherSummarySetAllVouchers.getVoucherSummaryItems()) {
+		for (VatSummaryItem item : voucherSummarySetAllVouchers.getVatSummaryItems()) {
 
 			// Create a column, if the value is not 0%
 			if (vatIsNotZero || showZeroVatColumn || item.getVat() != null && Math.abs(item.getVat().getNumber().doubleValue()) > 0.001) {
@@ -266,7 +266,7 @@ public class VoucherExporter extends OOCalcExporter {
 
 		// A column for each Net value is created 
 		// The Net summary items are sorted. 
-		for (VatSummaryItem item : voucherSummarySetAllVouchers.getVoucherSummaryItems()) {
+		for (VatSummaryItem item : voucherSummarySetAllVouchers.getVatSummaryItems()) {
 
 			// Count the columns
 			columnsWithNetHeading++;
@@ -335,7 +335,7 @@ public class VoucherExporter extends OOCalcExporter {
 
 					// Get all VAT entries of this voucher and place them into the
 					// corresponding column.
-					for (VatSummaryItem item : vatSummarySetOneVoucher.getVoucherSummaryItems()) {
+					for (VatSummaryItem item : vatSummarySetOneVoucher.getVatSummaryItems()) {
 
 						// Get the column
 						int column = voucherSummarySetAllVouchers.getIndex(item) - zeroVatColumns;
@@ -351,7 +351,7 @@ public class VoucherExporter extends OOCalcExporter {
 
 					// Get all net entries of this voucher and place them into the
 					// corresponding column.
-					for (VatSummaryItem item : vatSummarySetOneVoucher.getVoucherSummaryItems()) {
+					for (VatSummaryItem item : vatSummarySetOneVoucher.getVatSummaryItems()) {
 						// Get the column
 						int column = voucherSummarySetAllVouchers.getIndex(item);
 
@@ -443,7 +443,7 @@ public class VoucherExporter extends OOCalcExporter {
 		// The VAT summary items are sorted. So first ignore the VAT entries
 		// with 0%. 
 		// If the VAT value is >0%, create a column with heading.
-		for (VatSummaryItem item : voucherSummaryCategories.getVoucherSummaryItems()) {
+		for (VatSummaryItem item : voucherSummaryCategories.getVatSummaryItems()) {
 			col = 0;
 			setCellText(row, col++, item.getDescription());
 			setCellText(row, col++, item.getVatName());

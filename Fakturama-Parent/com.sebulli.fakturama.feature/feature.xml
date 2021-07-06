@@ -2,7 +2,7 @@
 <feature
       id="com.sebulli.fakturama.feature"
       label="Fakturama Core Feature"
-      version="2.1.1"
+      version="2.1.2"
       provider-name="Fakturama.org"
       plugin="com.sebulli.fakturama.rcp">
 
@@ -14,12 +14,13 @@ or OpenOffice.
 Connect your web shop with Fakturama and get all
 your orders, products and customers in sync. Futher, you can
 fill out online forms from various parcel services automatically.
-Last - but not least - you can create ZUGFeRD invoices without
-additional effort.
+Last - but not least - you can create ZUGFeRD or XRechnung invoices
+without additional effort. Furthermore, you can send your invoices
+via e-mail.
    </description>
 
    <copyright url="https://www.fakturama.info">
-      Copyright (C) 2020 Fakturama Team
+      Copyright (C) 2021 Fakturama Team
    </copyright>
 
    <license url="http://www.eclipse.org/legal/epl-v10.html">
@@ -133,13 +134,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="com.sebulli.fakturama.resources"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.hsqldb.jdbc"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -270,6 +264,63 @@ This Agreement is governed by the laws of the State of New York and the intellec
          install-size="0"
          version="0.0.0"
          fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.fakturama.connectors"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="wrapped.org.hsqldb.hsqldb"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.qos.logback.slf4j"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.slf4j.api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.slf4j.apis.log4j"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.slf4j.ext"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.slf4j.jul"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.opencsv"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>

@@ -185,7 +185,7 @@ public List<AccountEntry> findAccountedDocuments(VoucherCategory account, Date s
      */
     public String[] getVisibleProperties() {
         return new String[] { Document_.name.getName(), Document_.addressFirstLine.getName(), 
-                Document_.documentDate.getName(), Document_.totalValue.getName() };
+                Document_.documentDate.getName(), Document_.totalValue.getName(), Document_.customerRef.getName() };
     }
 
     /**

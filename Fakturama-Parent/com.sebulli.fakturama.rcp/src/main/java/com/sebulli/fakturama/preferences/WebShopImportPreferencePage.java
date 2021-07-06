@@ -95,7 +95,7 @@ public class WebShopImportPreferencePage extends FieldEditorPreferencePage imple
 		Button b = new Button(getFieldEditorParent(), SWT.PUSH);
 		b.setText(msg.pageWebshopsettings);
 		b.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
-				context.set(Messages.class, msg);
+				context.set(Messages.class, msg);context.get("activeShell");
 				WebShopStatusSettingsDialog dialog = ContextInjectionFactory.make(WebShopStatusSettingsDialog.class, context);
 				dialog.open();				
 		}));

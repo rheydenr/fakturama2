@@ -1050,7 +1050,7 @@
 			</inlinemediaobject> Auftrag</subtitle>
 			<para>Erstellt einen neuen Auftrag und öffnet diesen in einem Editorfenster. Mit gedrückter <keycap>STRG</keycap>-Taste (bzw. <keycap>CMD</keycap>-Taste bei MacOS) 
 			wird der aktive Auftrag dupliziert und in einem neuen Editor dargestellt (ggf. muss man dazu zunächst den Fokus direkt auf den 
-			aktiven Editor setzen).</para>
+			aktiven Editor setzen). Beim Duplizieren werden die Felder für das Dokumentdatum, das Bestelldatum, das Bezahldatum und das Leistungsdatum zurückgesetzt. Sämtliche Rechnungsbezüge werden ebenfalls entfernt.</para>
 			<para>Siehe auch <link linkend="editor_editor_document">Dokumenteneditor</link>
 			</para>
 		</section>
@@ -1574,7 +1574,7 @@
 	</section>
 	<section>
 		<anchor xreflabel="" xml:id="editor_editor_browser"/><title>Webbrowser</title>
-		<para>Öffnet die Fakturama-<link xl:href="http://www.fakturama.info/">Projektseite</link> in einem Browserfenster.
+		<para>Öffnet die Fakturama-<link xl:href="https://www.fakturama.info">Projektseite</link> in einem Browserfenster.
 		<informalfigure>
 			<mediaobject>
 				<imageobject role="html">
@@ -1659,6 +1659,17 @@
 			</informalfigure>
 			<para>Art dieses Dokumentes incl. Icon. Beispiel: Rechnung, Auftrag, Brief etc.</para>
 		</section>
+		<tip>Die folgenden Felder können zur besseren Übersichtlichkeit des Dialogs eingeklappt werden, in dem man auf die Schaltleiste "allgemeine Angaben" klickt.</tip>
+		<informalfigure>
+			<mediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/blue_bar.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="60%" fileref="../images/editor/blue_bar.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</mediaobject>
+		</informalfigure>
 		<section>
 			<subtitle>Kundenreferenz</subtitle>
 			<para>Referenznummer des Kunden. Bei einem Import aus dem Webshop wird hier die Webshop-Bestellnummer verwendet.</para>
@@ -1887,6 +1898,19 @@
 				</para>
 			</tip>
 		</section>
+		<section><subtitle>Eingabe Gewicht</subtitle>
+		<para>Wurde in den Einstellungen die Option "Gewicht verwenden" aktiviert (siehe <link linkend="preferences_use_weight_and_vat">Einstellung "MwSt. auswählbar und Gewicht benutzen"</link>), erscheint unter der Artikelliste ein Eingabefeld für das Verpackungsgewicht (Tara) der Sendung. Brutto- und Nettogewicht werden zur Information mit dargestellt.</para>
+		<informalfigure>
+			<inlinemediaobject>
+				<imageobject role="html">
+					<imagedata fileref="../images/editor/weight_tara.png" format="PNG" scalefit="1"/>
+				</imageobject>
+				<imageobject role="fo">
+					<imagedata contentdepth="50%" fileref="../images/editor/weight_tara.png" format="PNG" scalefit="1"/>
+				</imageobject>
+			</inlinemediaobject>
+		</informalfigure>
+		</section>
 		<section>
 			<subtitle>Bemerkung</subtitle>
 			<para>Feld für eine zusätzliche Bemerkung, die auf Rechnung oder Lieferschein gedruckt wird.
@@ -2023,7 +2047,7 @@
 						<imagedata fileref="../images/editor/editor_product_qunit_plural.png" format="PNG" scalefit="1"/>
 					</imageobject>
 					<imageobject role="fo">
-						<imagedata width="60%" fileref="../images/editor/editor_product_qunit_plural.png" format="PNG" scalefit="1"/>
+						<imagedata contentdepth="80%" fileref="../images/editor/editor_product_qunit_plural.png" format="PNG" scalefit="1"/>
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
@@ -2136,6 +2160,8 @@
 			diese Auswahl wird in den kommenden Versionen von Fakturama vervollständigt). Lässt man
 			die Auswahl leer, kann die Adresse für beliebige Arten von Dokumenten verwendet werden. Ansonsten werden die Adressen
 			des Kontaktes bei der Adressauswahl über den Dokumentendialog gefiltert.</para>
+			<tip>In der Länderliste kann man durch Eingabe der Anfangsbuchstaben des gewünschten Landes schnell zum entsprechenden Eintrag springen. 
+			Die Übernahme des Wertes erfolgt dann durch Drücken von ENTER oder Mausklick.</tip>
 			<para>Siehe dazu auch <link linkend="editor_editor_document_address">Adressauswahl im Dokumenteneditor</link>.</para>
 		</section>
 		<section>
@@ -2169,7 +2195,7 @@
 		</section>
 		<section>
 			<subtitle>Zusätzliche Kontaktdaten</subtitle>
-			<para>Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN, Aliasname und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
+			<para>Hierzu zählen Lieferantennummer, E-Mail, Telefon, Telefax, Mobilnummer, Webseite, GLN, Aliasname und USt.-IdNr. Auch ein Webshop-Name kann hier hinterlegt werden.</para>
 			<para>Das Eingabefeld für die Webseite ist interaktiv. Hat man hier eine gültige URL eingegeben (beginnend mit "http://" oder "https://"), kann man per <keycombo>
        <keycap>STRG</keycap><mousebutton>Mausklick</mousebutton></keycombo>
 			auf das Feld die Seite direkt im Browser aufrufen. Das gilt auch für das E-Mail-Feld. Hier wird die Standard-E-Mail-Anwendung des Systems verwendet und ein
@@ -2702,6 +2728,7 @@
 		</section>
 		<section>
 			<subtitle>Summe der unbezahlten Rechnungen</subtitle>
+			<para>Fährt man mit der Maus über den Eintrag "Rechnungen" oder einen der Untereinträge, wird die Summe aller unbezahlten bzw. bezahlten Rechnungen angezeigt.</para>
 			<informalfigure>
 				<mediaobject>
 					<imageobject role="html">
@@ -2712,9 +2739,8 @@
 					</imageobject>
 				</mediaobject>
 			</informalfigure>
-			<para>Fährt man mit der Maus über den Eintrag "Rechnungen" oder einen der Untereinträge, wird die Summe aller unbezahlten bzw. bezahlten Rechnungen angezeigt.</para>
 		</section>
-		<sect2>
+		<section>
 			<subtitle>Weitere Bearbeitungssymbole</subtitle>
 			<variablelist>
 				<varlistentry>
@@ -2766,7 +2792,6 @@
 				</varlistentry>
 				<varlistentry>
 					<term>
-
 						<inlinemediaobject>
 							<imageobject role="html">
 								<imagedata fileref="../images/application/plus_16.png" format="PNG" scalefit="1"/>
@@ -2781,7 +2806,8 @@
 					</listitem>
 				</varlistentry>
 			</variablelist>
-		</sect2>
+			<para>Über das Kontextmenü (rechte Maustaste) können in allen Übersichtsfenstern zusätzliche Aktionen ausgeführt werden. Dabei ist auch die Selektion und Bearbeitung  mehrerer Einträge möglich. Kann eine Aktion nicht ausgeführt werden (wenn z. B. kein Eintrag selektiert wurde, der für die Ausführung der Aktion notwendig wäre), wird sie im Kontextmenü inaktiv dargestellt.</para>
+		</section>
 		<section>
 			<subtitle>Suchfeld</subtitle>
 			<informalfigure>

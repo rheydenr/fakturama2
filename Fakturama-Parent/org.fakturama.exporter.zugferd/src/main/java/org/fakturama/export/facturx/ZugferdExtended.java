@@ -105,7 +105,7 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.model.VAT;
-import com.sebulli.fakturama.office.Placeholders;
+import com.sebulli.fakturama.office.TemplateProcessor;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**

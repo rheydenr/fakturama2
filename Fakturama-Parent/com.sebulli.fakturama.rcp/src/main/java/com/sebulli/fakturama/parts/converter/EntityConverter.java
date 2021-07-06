@@ -14,6 +14,7 @@
  
 package com.sebulli.fakturama.parts.converter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.conversion.Converter;
 
 import com.sebulli.fakturama.model.IDescribableEntity;
@@ -39,7 +40,7 @@ public class EntityConverter<T extends IEntity> extends Converter<T, String> {
         String result = null;
         if(type.equals(getFromType()) && fromObject != null) {
             if(fromObject instanceof IDescribableEntity) {
-                result = ((IDescribableEntity)fromObject).getDescription();
+                result = StringUtils.defaultString(((IDescribableEntity)fromObject).getDescription(), fromObject.getName());
             } else {
                 result = fromObject.getName();
             }

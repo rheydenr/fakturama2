@@ -64,11 +64,12 @@ import com.sebulli.fakturama.model.Shipping_;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
-import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
-import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.common.CommonListItemMatcher;
+import com.sebulli.fakturama.views.datatable.common.DefaultCheckmarkPainter;
+import com.sebulli.fakturama.views.datatable.common.ListSelectionStyleConfiguration;
+import com.sebulli.fakturama.views.datatable.common.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.common.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.layer.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -360,7 +361,7 @@ public class ShippingListTable extends AbstractViewDataTable<Shipping, ShippingC
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Reset transaction and contact filter, set category filter
-        treeFilteredIssues.setMatcher(new ShippingMatcher(filter, treeObjectType,createRootNodeDescriptor(filter)));
+        treeFilteredIssues.setMatcher(new CommonListItemMatcher<Shipping>(filter, treeObjectType,createRootNodeDescriptor(filter)));
         //   contentProvider.setTreeObject(treeObject);
 
         //Refresh is done automagically...

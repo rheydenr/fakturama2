@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section xmlns="http://docbook.org/ns/docbook"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:xl="http://www.w3.org/1999/xlink"
+         xml:lang="de">
+  <title>Verwendung des Mailservice</title>
+  <anchor xreflabel="" xml:id="using_mailservice"/>
+  <para>Wurde der Mailservice aktiviert (siehe <link linkend="preferences_mailservice">Einstellungen Mailservice</link>), wird nach dem erfolgreichen Erstellen eines PDFs ein Dialog für den Mailversand angezeigt. Hier können noch die Angaben zu den Empfängern, der Betreff der E-Mail, der eigentliche Mailtext und auch die Anhänge geändert werden. Sämtliche Felder sind bereits anhand des soeben gedruckten Dokumentes vorausgefüllt (außer CC und BCC).</para>
+  <warning>Es ist darauf zu achten, dass in den Einstellungen zur eigenen Firma eine korrekte E-Mail-Adresse hinterlegt ist. Des weiteren müssen die Felder für Host, Benutzer und Passwort korrekt ausgefüllt sein. Mindestens eins der Felder für Empfänger, CC oder BCC muss ebenfalls gefüllt sein. Das Programm zeigt ansonsten eine entsprechende Fehlermeldung an.</warning>
+   <informalfigure>
+		<mediaobject>
+			<imageobject role="html">
+				<imagedata fileref="../../maildialog.png" format="PNG" scalefit="1"/>
+			</imageobject>
+			<imageobject role="fo">
+				<imagedata contentdepth="100%" fileref="../../maildialog.png" format="PNG" scalefit="1" width="80%"/>
+			</imageobject>
+		</mediaobject>
+	</informalfigure>
+  <para>Über die Schaltflächen <emphasis role="bold">Hinzufügen</emphasis> und <emphasis role="bold">Entfernen</emphasis> können Anhänge hinzugefügt oder entfernt werden.</para>
+  <para>Der Betreff der E-Mail wird gemäß der hinterlegten Einstellungen erzeugt. Der Mailtext kann als Vorlage im Vorlagenordner der jeweiligen Dokumentart als Textdatei
+  mit der Endung <filename>.txt</filename> hinterlegt werden.</para>
+   <informalfigure>
+		<mediaobject>
+			<imageobject role="html">
+				<imagedata fileref="../../mailtemplate.png" format="PNG" scalefit="1"/>
+			</imageobject>
+			<imageobject role="fo">
+				<imagedata contentdepth="100%" fileref="../../mailtemplate.png" format="PNG" scalefit="1" width="80%"/>
+			</imageobject>
+		</mediaobject>
+	</informalfigure>
+  <para>In der Vorlage können auch Platzhalter eingesetzt werden (z. B. <computeroutput>&lt;DOCUMENT.NAME&gt;</computeroutput>). Existieren mehrere Dateien mit der Endung <filename>.txt</filename>, kann nicht sichergestellt werden, welche verwendet wird. Deswegen sollte man möglichst nur eine Vorlagendatei je Dokument-Typ verwenden.</para>
+</section>

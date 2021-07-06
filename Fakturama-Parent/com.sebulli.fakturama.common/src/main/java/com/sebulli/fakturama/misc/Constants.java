@@ -6,7 +6,6 @@ package com.sebulli.fakturama.misc;
 import java.util.Locale;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 
 /**
@@ -565,6 +564,8 @@ public class Constants {
 	public static final String PREFERENCES_PRODUCT_CHANGE_QTY_ORDER = "0";
 	public static final String PREFERENCES_PRODUCT_CHANGE_QTY_DELIVERY = "1";
 	public static final String PREFERENCES_PRODUCT_CHANGE_QTY_INVOICE = "2";
+	
+	public static final String PREFERENCES_HSQL_DB_PORT = "PREFERENCES_HSQL_DB_PORT";
 
 	public static final String PARAM_STATUS =   "com.sebulli.fakturama.command.order.markas.status";
 	public static final String PARAM_PROGRESS = "com.sebulli.fakturama.command.order.markas.progress";
@@ -572,4 +573,6 @@ public class Constants {
 	public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
 
     public static final String DISPLAY_SUCCESSFUL_PRINTING = "DISPLAY_SUCCESSFUL_PRINTING";
+
+    public static final String CURRENT_PROGRAM_VERSION = "CURRENT_PROGRAM_VERSION";
 }

@@ -29,6 +29,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.widgets.LabelFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -101,23 +102,24 @@ public class ItemListBuilder {
 //        this.part = (MPart) parent.getData("modelElement");
 //        MSnippetContainer snippetWindow = (MSnippetContainer)modelService.find("com.sebulli.fakturama.snippets", application);
 //        modelService.cloneSnippet(snippetWindow, ID, part);
+        GridDataFactory gridDataFactory = GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP);
         
         // Container for the label and the add and delete button.
         Composite addButtonComposite = new Composite(parent, SWT.NONE | SWT.RIGHT);
-        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(addButtonComposite);
+        GridLayoutFactory.fillDefaults().applyTo(addButtonComposite);
         GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addButtonComposite);
         // Items label
-        Label labelItems = new Label(addButtonComposite, SWT.NONE | SWT.RIGHT);
-        //T: Document Editor
-        //T: Label items
-        labelItems.setText(msg.editorDocumentItems);
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(labelItems);
+        LabelFactory.newLabel(SWT.NONE | SWT.RIGHT)
+        		.text(msg.editorDocumentItems)
+        		.supplyLayoutData(gridDataFactory::create)
+        		.create(addButtonComposite);
 
         // Item add button
-        Label addFromListButton = new Label(addButtonComposite, SWT.NONE);
-        addFromListButton.setToolTipText(msg.dialogSelectproductTooltip);
-        addFromListButton.setImage(Icon.DOCEDIT_PRODUCT_LIST.getImage(IconSize.BrowserIconSize));
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addFromListButton);
+        Label addFromListButton = LabelFactory.newLabel(SWT.NONE)
+        		.tooltip(msg.dialogSelectproductTooltip)
+        		.image(Icon.DOCEDIT_PRODUCT_LIST.getImage(IconSize.BrowserIconSize))
+        		.supplyLayoutData(gridDataFactory::create)
+        		.create(addButtonComposite);
         addFromListButton.addMouseListener(new MouseAdapter() {
             // Open the product dialog and add the
             // selected product as new item.
@@ -144,11 +146,11 @@ public class ItemListBuilder {
         // was: documentType.hasAddFromDeliveryNote()
         if (documentType == DocumentType.INVOICE || documentType == DocumentType.PROFORMA) {
             // Item add button
-            Label addFromDeliveryNoteButton = new Label(addButtonComposite, SWT.NONE);
-            //T: Tool Tip Text
-            addFromDeliveryNoteButton.setToolTipText(msg.editorDocumentCollectiveinvoiceTooltip);
-            addFromDeliveryNoteButton.setImage(Icon.DOCEDIT_DELIVERY_NOTE_LIST.getImage(IconSize.DocumentIconSize));
-            GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addFromDeliveryNoteButton);
+            Label addFromDeliveryNoteButton = LabelFactory.newLabel(SWT.NONE)
+            		.tooltip(msg.editorDocumentCollectiveinvoiceTooltip)
+            		.image(Icon.DOCEDIT_DELIVERY_NOTE_LIST.getImage(IconSize.DocumentIconSize))
+            		.supplyLayoutData(gridDataFactory::create)
+            		.create(addButtonComposite);
             addFromDeliveryNoteButton.addMouseListener(new MouseAdapter() {
 
                 // Open the product dialog and add the
@@ -177,24 +179,24 @@ public class ItemListBuilder {
         }
 
         // Item add button
-        Label addButton = new Label(addButtonComposite, SWT.NONE);
-        //T: Tool Tip Text
-        addButton.setToolTipText(msg.editorDocumentAdditemTooltip);
-        addButton.setImage(Icon.COMMAND_PLUS.getImage(IconSize.DefaultIconSize));
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addButton);
+        Label addButton = LabelFactory.newLabel(SWT.NONE)
+        		.tooltip(msg.editorDocumentAdditemTooltip)
+        		.image(Icon.COMMAND_PLUS.getImage(IconSize.DefaultIconSize))
+        		.supplyLayoutData(gridDataFactory::create)
+        		.create(addButtonComposite);
 
         // Item delete button
-        Label deleteButton = new Label(addButtonComposite, SWT.NONE);
-        //T: Tool Tip Text
-        deleteButton.setToolTipText(msg.editorDocumentDeleteitemTooltip);
-        deleteButton.setImage(Icon.COMMAND_DELETE.getImage(IconSize.DefaultIconSize));
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(deleteButton);
+        Label deleteButton = LabelFactory.newLabel(SWT.NONE)
+        		.tooltip(msg.editorDocumentDeleteitemTooltip)
+        		.image(Icon.COMMAND_DELETE.getImage(IconSize.DefaultIconSize))
+        		.supplyLayoutData(gridDataFactory::create)
+        		.create(addButtonComposite);
 
         // Composite that contains the table
         // The table viewer
         final DocumentItemListTable itemListTable = ContextInjectionFactory.make(DocumentItemListTable.class, context);
         Control tableComposite = itemListTable.createPartControl(parent, document/*, useGross*/, container, netgross);
-        GridDataFactory.fillDefaults().span(3, 1).hint(SWT.DEFAULT, 180).grab(true, false).applyTo(tableComposite);
+		GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(tableComposite);
 
         itemListTable.setItemsNoVat(document.getNoVatReference() != null, document.getNoVatReference());
 
@@ -245,13 +247,12 @@ public class ItemListBuilder {
             }
         });
         
-
         // Item copy button
-        Label copyButton = new Label(addButtonComposite, SWT.NONE);
-        //T: Tool Tip Text
-        copyButton.setToolTipText(msg.editorDocumentCopyitemTooltip);
-        copyButton.setImage(Icon.COMMAND_COPY.getImage(IconSize.DefaultIconSize));
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(copyButton);
+        Label copyButton = LabelFactory.newLabel(SWT.NONE)
+        		.tooltip(msg.editorDocumentCopyitemTooltip)
+        		.image(Icon.COMMAND_COPY.getImage(IconSize.DefaultIconSize))
+        		.supplyLayoutData(gridDataFactory::create)
+        		.create(addButtonComposite);
         copyButton.addMouseListener(new MouseAdapter() {
 
             // Delete the selected item

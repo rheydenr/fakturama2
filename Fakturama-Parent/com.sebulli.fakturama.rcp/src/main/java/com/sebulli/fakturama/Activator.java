@@ -19,10 +19,8 @@ import java.util.List;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.update.configurator.IPlatformConfiguration;
 import org.eclipse.update.internal.configurator.FeatureEntry;
 import org.eclipse.update.internal.configurator.PlatformConfiguration;
@@ -33,7 +31,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 import com.opcoach.e4.preferences.IPreferenceStoreProvider;
-import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.preferences.FakturamaPreferenceStoreProvider;
 
 // import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -74,7 +71,7 @@ public class Activator implements BundleActivator, IBundleGroupProvider {
     public void start(BundleContext bundleContext) throws Exception {
         Activator.context = bundleContext;
         // background color for focused widgets
-        JFaceResources.getColorRegistry().put(Constants.COLOR_BGYELLOW, new RGB(255, 255, 225));
+//        JFaceResources.getColorRegistry().put(Constants.COLOR_BGYELLOW, new RGB(255, 255, 225));
         
         // perhaps: set RTL mode and configure the Workbench like so:
         if(BooleanUtils.toBoolean(System.getProperty("force.rtl"))) {
@@ -82,7 +79,7 @@ public class Activator implements BundleActivator, IBundleGroupProvider {
         }
 
         // background for Browser
-		JFaceResources.getColorRegistry().put(Constants.COLOR_WHITE, new RGB(0xff, 0xff, 0xff));
+//		JFaceResources.getColorRegistry().put(Constants.COLOR_WHITE, new RGB(0xff, 0xff, 0xff));
 		registerBundleGroupProvider();
 		
 		// register preference store provider

@@ -1,12 +1,39 @@
 #!/bin/bash
 
+# DEVELOPER_PASSWORD is set in .bash_profile
+
 # by Andy Maloney
 # http://asmaloney.com/2013/07/howto/packaging-a-mac-os-x-application-using-a-dmg/
 
-echo "*****************************************************"
-echo "DEPRECATED, PLEASE USE create_installer.sh INSTEAD!!!"
-echo "*****************************************************"
-exit 1
+wait_while_in_progress() 
+{
+	uuid=`cat tmp | grep -Eo '\w{8}-(\w{4}-){3}\w{12}$'`
+	while true; do
+	    echo "checking for notarization..."
+	 
+	    xcrun altool --notarization-info "$uuid" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} &> tmp
+	    r=`cat tmp`
+	    t=`echo "$r" | grep "success"`
+	    f=`echo "$r" | grep "invalid"`
+	    if [[ "$t" != "" ]]; then
+	        echo "notarization done!"
+#	        xcrun stapler staple "APP_NAME.app"
+	        xcrun stapler staple ../install/${DMG_FINAL}
+	        echo "stapler done!"
+	        break
+	    fi
+	    if [[ "$f" != "" ]]; then
+	        echo "$r"
+	        return 1
+	    fi
+	    echo "not finish yet, sleep 2m then check again..."
+	    sleep 120
+	done
+}
+
+
+export PLUGIN_ROOT=/Users/rheydenr/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site
+export INSTALL_MAIN_DIR=${PLUGIN_ROOT}/install/mac
 
 # make sure we are in the correct dir when we double-click a .command file
 dir=${0%/*}
@@ -14,15 +41,12 @@ if [ -d "$dir" ]; then
   cd "$dir"
 fi
 
-VERSION=2.1.1
-# prepare the correct directory structure
-tar -xzf ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-macosx.cocoa.x86_64.tar.gz
-
 # set up your app name, version number, and background image file name
 APP_NAME="Fakturama2"
 
+export VERSION=2.1.2-BETA
+
 DMG_BACKGROUND_IMG="Background_${APP_NAME}.png"
-# cp ../${DMG_BACKGROUND_IMG} .
 
 # you should not need to change these
 APP_EXE="${APP_NAME}.app/Contents/MacOS/Fakturama"
@@ -56,8 +80,20 @@ mkdir -p "${STAGING_DIR}"
 
 echo "staging dir created: ${STAGING_DIR}"
 
-cp -rpf "${APP_NAME}.app" "${STAGING_DIR}"
+# prepare the correct directory structure
+cp -rpf ${PLUGIN_ROOT}/target/products/Fakturama.ID/macosx/cocoa/x86_64/"${APP_NAME}".app "${STAGING_DIR}"
 # ... cp anything else you want in the DMG - documentation, etc.
+
+# copy current JRE into the product
+# echo "copy JRE 15 into product..."
+# mkdir "${STAGING_DIR}"/${APP_NAME}.app/jre
+# cp -R /Library/Java/JavaVirtualMachines/adoptopenjdk-15.jre/* "${STAGING_DIR}"/${APP_NAME}.app/jre/Contents
+
+# enable some L10N (specific to MacOS)
+cd "${STAGING_DIR}"/${APP_NAME}.app/Contents/Resources
+echo "creating L10N directories..."
+mkdir -v de.lproj it.lproj sv.lproj sk.lproj el.lproj es.lproj ar_LY.lproj pl.lproj fr.lproj de_CH.lproj de_LI.lproj de_AT.lproj eu.lproj hu.lproj ro.lproj ru.lproj tr.lproj uk.lproj
+cd -
 
 # cp DS_Store ${STAGING_DIR}/.DS_Store
 
@@ -76,8 +112,9 @@ fi
 
 # ... perform any other stripping/compressing of libs and executables
 
-echo "sign the app..."
-codesign -f -v -s "Developer ID" ${APP_NAME}.app 
+# echo "sign the app..."
+# codesign -f -v -s "Developer ID" ${APP_NAME}.app 
+xcrun codesign --force --options runtime --timestamp --entitlements ${INSTALL_MAIN_DIR}/entitlement.xml --sign "Developer ID" ${APP_NAME}.app
 
 popd
 
@@ -147,15 +184,41 @@ hdiutil detach "${DEVICE}"
 echo "Creating compressed image"
 hdiutil convert "${DMG_TMP}" -format UDZO -imagekey zlib-level=9 -o "${DMG_FINAL}"
 
+# echo "Moving installer to install directory"
+mv "${DMG_FINAL}" ../install
+
 echo 'clean up...'
 rm -rf "${DMG_TMP}"
 rm -rf "${STAGING_DIR}"
 rm -rf "${APP_NAME}.app"
-echo 'Done.'
+
+echo 'signing application...'
+xcrun codesign --force --verbose --options runtime --entitlements entitlement.xml --timestamp --sign "Developer ID" ../install/${DMG_FINAL}
+
+echo 'notarize application...'
+xcrun altool --notarize-app --verbose --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --file ../install/${DMG_FINAL}
+
+########## alternative method to check the success of notarization: ########################
+# no --verbose output
+# xcrun altool --notarize-app  --primary-bundle-id org.fakturama.Fakturama -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --file ../install/${DMG_FINAL} --output-format xml &> tmp
+# xcrun altool --notarization-info `/usr/libexec/PlistBuddy -c "Print :notarization-upload:RequestUUID" ${UPLOAD_INFO_PLIST}` -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} --output-format xml > $(REQUEST_INFO_PLIST)
+# wait_while_in_progress
+#############################################################################################
+
+
+# xcrun altool --notarization-info "39e1af56-578b-4d19-9169-62936e5d8010" -u "apple-dev@fakturama.net" -p ${DEVELOPER_PASSWORD} 
+# xcrun stapler staple ../install/${DMG_FINAL}
+# spctl --assess --type open --context context:primary-signature --verbose "../install/${DMG_FINAL}"
 
 echo 'moving installer (tar.gz) to installer directory'
-mv ~/git/fakturama-2/Fakturama-Parent/com.sebulli.fakturama.site/target/products/Fakturama.ID-linux.gtk.x86_64.tar.gz ../install/Installer_Fakturama_linux_x64_${VERSION}.tar.gz
-mv "${DMG_FINAL}" ../install
+mv ${PLUGIN_ROOT}/target/products/Fakturama.ID-linux.gtk.x86_64.tar.gz ../install/Installer_Fakturama_linux_x64_${VERSION}.tar.gz
+
+echo 'create ZIP file for Windows installer...'
 zip -m -o -v -j ../install/Installer_Fakturama_windows_x64_${VERSION}.zip ../install/Installer_Fakturama_windows-x64_${VERSION}.exe
-exit
+
+echo 'Done.'
+
+echo 'NOTE: You have to check the notarization success manually!'
+
+# exit
 

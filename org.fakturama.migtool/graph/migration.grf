@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><Graph author="Ralf" created="Wed Jan 17 01:35:08 CET 2018" guiVersion="3.3.0.P" id="1516149394050" licenseType="Commercial" modified="Sat May 23 22:17:57 CEST 2020" modifiedBy="Ralf" name="migration" revision="1.4" showComponentDetails="true">
+<?xml version="1.0" encoding="UTF-8"?><Graph author="Ralf" created="Wed Jan 17 01:35:08 CET 2018" guiVersion="3.3.0.P" id="1516149394050" licenseType="Commercial" modified="Tue Mar 02 23:47:17 CET 2021" modifiedBy="Ralf" name="migration" revision="1.6" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata5" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter=";" name="ADDRESS_METADATA" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" recordSize="-1" type="delimited">
@@ -179,8 +179,8 @@
 <Field eofAsDelimiter="false" name="FK_CATEGORY" nullable="true" shift="0" size="64" type="long"/>
 </Record>
 </Metadata>
-<Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fktest" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fktestuser" type="JDBC" user="fktestuser"/>
-<Connection dbDriver="org.hsqldb.jdbcDriver" dbURL="jdbc:hsqldb:hsql://localhost:9002/fakturama2" driverLibrary="file:/D:/Javalibs/hsqldb-2.5.0/hsqldb/lib/hsqldb.jar" id="JDBC0" jdbcSpecific="GENERIC" name="hsqldb" type="JDBC" user="sa"/>
+<Connection database="MYSQL" dbURL="jdbc:mysql://localhost/fakturama_mig" id="JDBC1" jdbcSpecific="MYSQL" name="FktMysql" password="fakturama" type="JDBC" user="fakturama"/>
+<Connection dbDriver="org.hsqldb.jdbcDriver" dbURL="jdbc:hsqldb:hsql://localhost:9001/Fakturama2" driverLibrary="file:/D:/Javalibs/hsqldb-2.5.0/hsqldb/lib/hsqldb.jar" id="JDBC0" jdbcSpecific="GENERIC" name="hsqldb" type="JDBC" user="sa"/>
 <Dictionary/>
 </Global>
 <Phase number="0">

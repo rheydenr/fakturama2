@@ -48,7 +48,7 @@ public class PaymentMatcher implements Matcher<Payment> {
         boolean found = false;
         if(!isRootNode) {
             String fullCategoryName = CommonConverter.getCategoryName(item.getCategory(), rootNodeName);
-            found = fullCategoryName.startsWith(paymentCategoryName);
+            found = fullCategoryName.startsWith(StringUtils.stripEnd(paymentCategoryName, "/"));
         }
         return isRootNode || found;
     }

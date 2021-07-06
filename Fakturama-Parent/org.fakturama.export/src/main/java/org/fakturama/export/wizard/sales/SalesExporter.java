@@ -221,7 +221,7 @@ public class SalesExporter extends OOCalcExporter {
 		for (VatSummaryItem item : vatSummarySetAllDocuments.getVatSummaryItems()) {
 
 			// Create a column, if the value is not 0%
-			if ((item.getVat().getNumber().doubleValue() > 0.001) || vatIsNotZero || showZeroVatColumn) {
+			if (vatIsNotZero || (item.getVat().getNumber().doubleValue() > 0.001) || showZeroVatColumn) {
 
 				// If the first non-zero VAT column is created,
 				// do not check the value any more.

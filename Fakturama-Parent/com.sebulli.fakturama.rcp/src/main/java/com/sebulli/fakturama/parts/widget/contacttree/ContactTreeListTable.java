@@ -321,7 +321,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
             nattable.getUiBindingRegistry().registerFirstSingleClickBinding(MouseEventMatcher.bodyLeftClick(SWT.NONE), 
         		(NatTable natTable, MouseEvent event) -> {
                 int rowPos = natTable.getRowPositionByY(event.y);
-                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack);
+                int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, bodyLayerStack.getSelectionLayer());
                 selectedObject = ((ListDataProvider<K>) bodyLayerStack.getBodyDataProvider()).getRowObject(bodyRowPos);
             });
         }
@@ -430,6 +430,8 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
                 case LASTNAME:
                 case ZIP:
                 case CITY:
+                case NAMEADDON: /* GS/ */
+                case LOCALCONSULTANT: /* GS/ */
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex);
                 case COMPANY:
                 	String value = (String) columnPropertyAccessor.getDataValue(rowObject, columnIndex);
@@ -537,7 +539,7 @@ public abstract class ContactTreeListTable<K extends DebitorAddress> {
 				}, false);
 		bodyLayerStack.getSelectionLayer().setSelectionModel(selectionModel);
 		// Select complete rows
-		bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration<K>());
+		bodyLayerStack.getSelectionLayer().addConfiguration(new RowOnlySelectionConfiguration());
 		return natTable;
 	}
 

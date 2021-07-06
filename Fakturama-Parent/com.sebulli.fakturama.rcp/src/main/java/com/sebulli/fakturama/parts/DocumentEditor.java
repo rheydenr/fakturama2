@@ -69,6 +69,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -76,14 +77,20 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.widgets.CompositeFactory;
+import org.eclipse.jface.widgets.LabelFactory;
+import org.eclipse.jface.widgets.SashFormFactory;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.PercentFormatter;
+import org.eclipse.nebula.widgets.pgroup.PGroup;
+import org.eclipse.nebula.widgets.pgroup.TwisteToggleRenderer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -94,7 +101,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -110,9 +116,9 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.javamoney.moneta.Money;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.sebulli.fakturama.calculate.CustomerStatistics;
-import com.sebulli.fakturama.calculate.DocumentSummaryCalculator;
 import com.sebulli.fakturama.dao.DocumentsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.dao.ProductsDAO;
@@ -124,6 +130,8 @@ import com.sebulli.fakturama.dialogs.SelectTreeContactDialog;
 import com.sebulli.fakturama.dto.AddressDTO;
 import com.sebulli.fakturama.dto.DocumentItemDTO;
 import com.sebulli.fakturama.dto.DocumentSummary;
+import com.sebulli.fakturama.dto.DocumentSummaryManager;
+import com.sebulli.fakturama.dto.DocumentSummaryParam;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
 import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
@@ -181,7 +189,8 @@ import com.sebulli.fakturama.views.datatable.texts.TextListTable;
  */
 public class DocumentEditor extends Editor<Document> {
 
-	private static final String ADDRESS_TAB_BILLINGTYPE = "ADDRESS_FOR_BILLING_TAB";
+	private static final String ITEM_CHANGED_EVENT_PATH = "/itemChanged";
+    private static final String ADDRESS_TAB_BILLINGTYPE = "ADDRESS_FOR_BILLING_TAB";
 	public static final String DOCUMENT_RECALCULATE = "DOCUMENT.RECALCULATE";
 	public static final String PARAM_SILENT_MODE = "org.fakturama.documenteditor.silentmode";
 	
@@ -291,7 +300,7 @@ public class DocumentEditor extends Editor<Document> {
 	private boolean useGross;
 
 	private boolean noVat;
-	private String noVatName;
+	private VAT noVatObject;
 	private Shipping shipping = null;
 	private MonetaryAmount total =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
 	private MonetaryAmount deposit =  Money.zero(DataUtils.getInstance().getDefaultCurrencyUnit());
@@ -328,6 +337,33 @@ public class DocumentEditor extends Editor<Document> {
 	private List<Document> pendingDeliveryMerges;
 	private Label netWeight;
 	private Label totalWeight;
+	private SashForm sashForm;
+	
+     /**
+     * This method is for setting the dirty state to <code>true</code>. This
+     * happens if e.g. the items list has changed. (could be sent from
+     * DocumentListTable)
+     */
+       //@UIEventTopic(EDITOR_ID + "/itemChanged")
+	private EventHandler itemListChangedHandler =(Event event) -> {
+        if (event != null) {
+            // the event has already all given params in it since we created them as Map
+            String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
+            // at first we have to check if the message is for us
+            if (!StringUtils.equals(targetDocumentName, document.getName())) {
+                // if not, silently ignore this event
+                return;
+            }
+            // (re)calculate summary
+            // TODO check if this has to be done in a synchronous or asynchronous call
+            // within UISynchronize
+            if ((Boolean) event.getProperty(DOCUMENT_RECALCULATE)) {
+                calculate(true);
+            }
+            setDirty(true);
+        }
+    };   
+
 	
 	/**
 	 * Mark this document as printed
@@ -362,7 +398,13 @@ public class DocumentEditor extends Editor<Document> {
 		 */
     	
 		boolean wasDirty = getMDirtyablePart().isDirty();
+        evtBroker.unsubscribe(itemListChangedHandler);
 		
+        if(itemListTable != null) {
+    		// set items table silent
+    		itemListTable.getNatTable().commitAndCloseActiveCellEditor();
+        }
+        
 		// set focus outside of address tab
 		txtCustomerRef.setFocus();
 
@@ -488,7 +530,9 @@ public class DocumentEditor extends Editor<Document> {
 		if (newDocument) {
 		    try {
                 document = documentsDAO.save(document);
-                reloadItemList();
+                if(itemListTable != null) {
+                    itemListTable.reloadItemList();
+                }
             } catch (FakturamaStoringException e) {
                 log.error(e);
             }
@@ -519,7 +563,9 @@ public class DocumentEditor extends Editor<Document> {
 		
         try {
             document = documentsDAO.save(document);
-            reloadItemList();
+            if(itemListTable != null) {
+                itemListTable.reloadItemList();
+            }
         } catch (FakturamaStoringException e) {
             log.error(e);
         }
@@ -540,23 +586,22 @@ public class DocumentEditor extends Editor<Document> {
         
         bindModel();
         
+        saveSashSettings();
+        
         // reset dirty flag
         setDirty(false);
         ((MPart)getMDirtyablePart()).getTransientData().put(CallEditor.PARAM_OBJ_ID, Long.toString(document.getId()));
+        evtBroker.subscribe(EDITOR_ID + ITEM_CHANGED_EVENT_PATH, itemListChangedHandler);
+
         return Boolean.TRUE;
 	}
     
-    private void reloadItemList() {
-    	
-		if (!getDocumentType().hasPrice()) {
-			return;
-		}
-		
-        itemListTable.getDocumentItemsListData().clear();
-        
-        List<DocumentItemDTO> documentItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
-        itemListTable.getDocumentItemsListData().addAll(documentItems);
-    }
+    private void saveSashSettings() {
+    	IDialogSettings dialogSettings = getDialogSettings("SASH");
+		List<String> k = Arrays.stream(sashForm.getWeights()).mapToObj(i -> Integer.toString(i)).collect(Collectors.toList());
+    	dialogSettings.put("SASHWEIGHTS_"+document.getBillingType().name(), k.toArray(new String[] {}));
+		sashForm.getWeights();
+	}
 
     private void reassignDocumentReceiver() {
 		document.getReceiver().clear();
@@ -628,7 +673,7 @@ public class DocumentEditor extends Editor<Document> {
 		    public IStatus validate(Date vestingPeriodStart) {
 		    	if(vestingPeriodStart == null || dtVestingPeriodEnd.getSelection() == null) return ValidationStatus.ok();
 		        if(vestingPeriodStart.after(dtVestingPeriodEnd.getSelection())) {
-		        	return ValidationStatus.error("Startdatum liegt nach dem Endedatum!");
+		        	return ValidationStatus.error(msg.editorDocumentErrorStartdateafterenddate);
 		        } else {
 		        	return ValidationStatus.ok();
 		        }
@@ -806,8 +851,10 @@ public class DocumentEditor extends Editor<Document> {
 		ComboViewer comboViewerPayment;
         comboViewerPayment = new ComboViewer(comboPayment);
         comboViewerPayment.setContentProvider(new EntityComboProvider());
+        
+ //       getCtx().getBindings()
         comboViewerPayment.setLabelProvider(new EntityLabelProvider());
-        GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(comboPayment);
+        GridDataFactory.swtDefaults().hint(80, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(comboPayment);
 
         // If a new payment is selected ...
         comboViewerPayment.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -1121,10 +1168,10 @@ public class DocumentEditor extends Editor<Document> {
 
 		noVat = document.getNoVatReference() != null;
 		if(noVat) {
-		    noVatName = document.getNoVatReference().getName();
+		    noVatObject = document.getNoVatReference();
 		}
 		
-		netgross = document.getNetGross() != null ? document.getNetGross() : DocumentSummary.ROUND_NET_VALUES;
+		netgross = document.getNetGross() != null ? document.getNetGross() : defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS);
 		if (dunningLevel <= 0) {
             if (document.getBillingType().isDUNNING()) {
             	dunningLevel = ((Dunning)document).getDunningLevel();
@@ -1158,6 +1205,9 @@ public class DocumentEditor extends Editor<Document> {
         } else {
         	createPartControl(parent);
         }
+        
+        // activate Event Broker for items list
+        evtBroker.subscribe(EDITOR_ID + ITEM_CHANGED_EVENT_PATH, itemListChangedHandler);
 	}
 
     /**
@@ -1175,7 +1225,8 @@ public class DocumentEditor extends Editor<Document> {
      * @return a copy of the source document
      */
 	private Document copyFromSourceDocument(Document parentDoc, BillingType pTargetType) {
-		DocumentType documentType = DocumentTypeUtil.findByBillingType(pTargetType);
+
+	    DocumentType documentType = DocumentTypeUtil.findByBillingType(pTargetType);
 		
 		// TODO Check if parentDoc is equal to field "document"
 		Document retval = DocumentTypeUtil.createDocumentByBillingType(pTargetType);
@@ -1213,7 +1264,9 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		retval.setCustomerRef(parentDoc.getCustomerRef());
-		retval.setServiceDate(parentDoc.getServiceDate());
+		
+		// set current date as a default for service date
+	    retval.setServiceDate(Calendar.getInstance().getTime());
 		retval.setOrderDate(parentDoc.getOrderDate());
 		if(parentDoc.getBillingType().isINVOICE()) {
 			retval.setInvoiceReference((Invoice) parentDoc);
@@ -1399,28 +1452,43 @@ public class DocumentEditor extends Editor<Document> {
 			shipping = lookupDefaultShippingValue();
 		}
 		
-		DocumentSummaryCalculator documentSummaryCalculator = new DocumentSummaryCalculator(
-				defaultValuePrefs.getBoolean(Constants.PREFERENCES_CONTACT_USE_SALES_EQUALIZATION_TAX));
+		DocumentSummaryManager documentSummaryManager = ContextInjectionFactory.make(DocumentSummaryManager.class, context);
+		
+		DocumentSummaryParam sumCalcParam;
         if(document.getShipping() == null) {
-    		documentSummary = documentSummaryCalculator.calculate(null, docItems,
-    				document.getShippingValue()/* * sign*/,
-                    null, 
-                    document.getShippingAutoVat(), 
-                    rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+			sumCalcParam = new DocumentSummaryParam()
+        		.withItems(docItems)
+        		.withAutoVat(document.getShippingAutoVat())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withShippingValue(document.getShippingValue())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withScaleFactor(Double.valueOf(1.0))
+        		.withNetGross(netgross)
+        		.withDeposit(deposit)
+        		.withItemsDiscount(rebate);
+        	
         } else {
-			documentSummary = documentSummaryCalculator.calculate(null, docItems,
-	                document.getShipping().getShippingValue(),
-	                document.getShipping().getShippingVat(), 
-	                document.getShipping().getAutoVat(), 
-	                rebate, document.getNoVatReference(), Double.valueOf(1.0), netgross, deposit);
+			sumCalcParam = new DocumentSummaryParam()
+        		.withItems(docItems)
+        		.withAutoVat(document.getShipping().getAutoVat())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withShippingValue(document.getShipping().getShippingValue())
+        		.withShippingVat(document.getShipping().getShippingVat())
+        		.withNoVatRef(document.getNoVatReference())
+        		.withScaleFactor(Double.valueOf(1.0))
+        		.withNetGross(netgross)
+        		.withDeposit(deposit)
+        		.withItemsDiscount(rebate);
         }
+        	
+        documentSummary = documentSummaryManager.calculate(document, sumCalcParam);
 
 		// Get the total result
 		total = documentSummary.getTotalGross();
 
 		// Set the items sum
 		if (itemsSum != null) {
-			itemsSum.setValue(useGross ? documentSummary.getItemsGross() : documentSummary.getItemsNet());
+			itemsSum.setValue(useGross ? documentSummary.getItemsGross().with(DataUtils.getInstance().getRounding()) : documentSummary.getItemsNetDiscounted().with(DataUtils.getInstance().getRounding()));
 		}
 
 		// Set the shipping
@@ -1454,7 +1522,7 @@ public class DocumentEditor extends Editor<Document> {
 			        .filter(d -> d.getWeight() != null)
 					.mapToDouble(i -> i.getWeight() * i.getDocumentItem().getQuantity()).sum();
 			netWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue));
-			Double taraValue = document.getTara() != null ? document.getTara() : Double.valueOf(0.0);
+			Double taraValue = java.util.Optional.ofNullable(document.getTara()).orElse(Double.valueOf(0.0));
 			totalWeight.setText(numberFormatterService.doubleToFormattedQuantity(netWeightValue + taraValue));
 		}
     }
@@ -1479,7 +1547,7 @@ public class DocumentEditor extends Editor<Document> {
 		
 		// Get some settings from the preference store
         if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
-            useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == 1;
+            useGross = defaultValuePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_GROSS_VALUES;
         } else {
             useGross = netgross == DocumentSummary.ROUND_GROSS_VALUES;
         }
@@ -1630,8 +1698,8 @@ public class DocumentEditor extends Editor<Document> {
 
 		// Create the new paid container
 		paidDataContainer = new Composite(paidContainer, SWT.NONE);
-		GridLayoutFactory.swtDefaults().margins(0, 5).numColumns(6).applyTo(paidDataContainer);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.BOTTOM).applyTo(paidDataContainer);
+		GridLayoutFactory.fillDefaults().margins(0, 5).numColumns(6).applyTo(paidDataContainer);
+		GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BOTTOM).applyTo(paidDataContainer);
 
 		// Should this container have the widgets for the state "paid" ?
 		if (paid) {
@@ -1667,7 +1735,7 @@ public class DocumentEditor extends Editor<Document> {
 			spDueDays.setIncrement(1);
 			spDueDays.setPageIncrement(10);
 			spDueDays.setToolTipText(dueDaysLabel.getToolTipText());
-			GridDataFactory.swtDefaults().hint(90, SWT.DEFAULT).applyTo(spDueDays);
+			//GridDataFactory.swtDefaults().hint(90, SWT.DEFAULT).applyTo(spDueDays);
 
 			// If the spinner's value changes, add the due days to the
 			// day of today.
@@ -1695,7 +1763,7 @@ public class DocumentEditor extends Editor<Document> {
 			dtIssueDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 			dtIssueDate.setToolTipText(issueDateLabel.getToolTipText());
 			dtIssueDate.setFormat(CDT.DATE_MEDIUM);
-			GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
+			GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).grab(true, false).applyTo(dtIssueDate);
 			dtIssueDate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> { 
 				// Calculate the difference between the date of the
 				// issue date widget and the documents date,
@@ -1749,7 +1817,7 @@ public class DocumentEditor extends Editor<Document> {
 		paidDateLabel.setText(msg.editorDocumentPaidat);
 		paidDateLabel.setToolTipText(msg.editorDocumentDateofpayment);
 
-		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(paidDateLabel);
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).applyTo(paidDateLabel);
 
 		dtPaidDate = new CDateTime(paidDataContainer, CDT.BORDER | CDT.DROP_DOWN);
 		dtPaidDate.setToolTipText(paidDateLabel.getToolTipText());
@@ -1796,7 +1864,7 @@ public class DocumentEditor extends Editor<Document> {
     			}
     		}
     	});
-		GridDataFactory.swtDefaults().hint(60, SWT.DEFAULT).applyTo(txtPayValue.getControl());
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(txtPayValue.getControl());
 
 		// If it's the first time that this document is marked as paid
 		// (if the value is 0.0), then also set the date to "today"
@@ -1919,28 +1987,25 @@ public class DocumentEditor extends Editor<Document> {
 	 * @param contact currently selected {@link Contact}
 	 */
 	private void addOtherAddressesIfNotExisting(Contact contact) {
-		if (document.getBillingType().isINVOICE() || document.getBillingType().isDELIVERY()) {
-			BillingType billingTypeToCheck = document.getBillingType().isINVOICE() ? BillingType.DELIVERY
-					: BillingType.INVOICE;
-			ContactType contactType = contactUtil.convertToContactType(billingTypeToCheck);
-			if (contactType != null && !selectedAddresses.containsKey(billingTypeToCheck)) {
-				java.util.Optional<Address> alternateAddress = contact.getAddresses().parallelStream()
-						.filter(a -> a.getContactTypes().contains(contactType)).findAny();
-				if (alternateAddress.isPresent()) {
-					DocumentReceiver documentReceiver = addressManager
-							.createDocumentReceiverFromAddress(alternateAddress.get(), billingTypeToCheck);
-					document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver);
-					java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(
-							billingTypeToCheck);
-						// only set an additional tab if haven't a tab for this billing type yet
-					if(!addressTabForAlternativeAddress.isPresent()) {
-						CTabItem currenCTabItem = createAddressTabItem(documentReceiver);
-						setAddressInTab(currenCTabItem, documentReceiver, addressAndIconComposite.getItemCount());
-					}
+		BillingType billingTypeToCheck = document.getBillingType().isDELIVERY() ? BillingType.INVOICE
+				: BillingType.DELIVERY;
+		ContactType contactType = contactUtil.convertToContactType(billingTypeToCheck);
+		if (contactType != null && !selectedAddresses.containsKey(billingTypeToCheck)) {
+			java.util.Optional<Address> alternateAddress = contact.getAddresses().parallelStream()
+					.filter(a -> a.getContactTypes().contains(contactType)).findAny();
+			if (alternateAddress.isPresent()) {
+				DocumentReceiver documentReceiver = addressManager
+						.createDocumentReceiverFromAddress(alternateAddress.get(), billingTypeToCheck);
+				document = addressManager.addOrReplaceReceiverToDocument(document, documentReceiver);
+				java.util.Optional<CTabItem> addressTabForAlternativeAddress = lookupAddressTabForBillingType(
+						billingTypeToCheck);
+					// only set an additional tab if we haven't a tab for this billing type yet
+				if(!addressTabForAlternativeAddress.isPresent()) {
+					CTabItem currenCTabItem = createAddressTabItem(documentReceiver);
+					setAddressInTab(currenCTabItem, documentReceiver, addressAndIconComposite.getItemCount());
 				}
 			}
 		}
-
 	}
 
 	private java.util.Optional<CTabItem> lookupAddressTabForBillingType(BillingType billingType) {
@@ -1971,7 +2036,6 @@ public class DocumentEditor extends Editor<Document> {
 		}
 	}
 	
-	
 	/**
 	 * Creates the SWT controls for this workbench part
 	 * 
@@ -1980,29 +2044,27 @@ public class DocumentEditor extends Editor<Document> {
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	private void createPartControl(Composite parent) {
+
+		// Use parent as top Composite
+		top = parent;
+
+	    sashForm = SashFormFactory.newSashForm(SWT.VERTICAL).create(parent);
+	    
 		// Create the ScrolledComposite to scroll horizontally and vertically
-	    ScrolledComposite scrollcomposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
-
-		// Create the top Composite
-		top = new Composite(scrollcomposite, SWT.SCROLLBAR_OVERLAY | SWT.NONE );  //was parent before 
-		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(top);
-
-		scrollcomposite.setContent(top);
-		scrollcomposite.setMinSize(1100, 550);   // 2nd entry should be adjusted to higher value when new fields will be added to composite 
-		scrollcomposite.setExpandHorizontal(true);
-		scrollcomposite.setExpandVertical(true);
-        scrollcomposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,true));
+	    ScrolledComposite scrollcomposite = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+	    Composite upperObjects = CompositeFactory.newComposite(SWT.NONE)
+	    		.layout(GridLayoutFactory.fillDefaults().numColumns(4).create())
+	    		.create(scrollcomposite);
 
 		// Create an invisible container for all hidden components
-		Composite invisible = new Composite(top, SWT.NONE);
+		Composite invisible = CompositeFactory.newComposite(SWT.NONE)
+				.layoutData(GridDataFactory.fillDefaults().hint(0, 0).span(4, 1).create()).create(upperObjects);
 		invisible.setVisible(false);
-		GridDataFactory.fillDefaults().hint(0, 0).span(4, 1).applyTo(invisible);
 
 		// Add context help reference 
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(top, ContextHelpConstants.DOCUMENT_EDITOR);
-		
 		// Document number label
-		Label labelName = new Label(top, SWT.NONE);
+		Label labelName = LabelFactory.newLabel(SWT.NONE).create(upperObjects);
 
 		// for letters the "No." label has to be changed, see FAK-437
 		if(document.getBillingType().isLETTER()) {
@@ -2018,7 +2080,7 @@ public class DocumentEditor extends Editor<Document> {
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelName);
 		
 		// Container for the document number and the date
-		Composite nrDateNetGrossComposite = new Composite(top, SWT.NONE);
+		Composite nrDateNetGrossComposite = new Composite(upperObjects, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(0, 0).numColumns(4).applyTo(nrDateNetGrossComposite);
 		GridDataFactory.fillDefaults().minSize(540, SWT.DEFAULT).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(nrDateNetGrossComposite);
 
@@ -2052,76 +2114,31 @@ public class DocumentEditor extends Editor<Document> {
 		}));
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(dtDate);
 		
-		// combo list to select between net or gross
-		comboNetGross = new ComboViewer(getDocumentType().hasPrice() ? nrDateNetGrossComposite : invisible, SWT.BORDER | SWT.READ_ONLY);
-		comboNetGross.getCombo().setToolTipText(msg.editorDocumentNetgrossTooltip);
-		
-		Map<Integer, String> netGrossContent = new HashMap<>();
-		// empty if nothing is selected
-		netGrossContent.put(0, "---"); 
-		//T: Text in combo box
-		netGrossContent.put(1, msg.productDataNet);
-		netGrossContent.put(2, msg.productDataGross);
-        
-		comboNetGross.setContentProvider(new HashMapContentProvider<Integer, String>());
-		comboNetGross.setLabelProvider(new NumberLabelProvider<Integer, String>(netGrossContent));
-		comboNetGross.setInput(netGrossContent);
-		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).indent(20, 0).minSize(80, SWT.DEFAULT).grab(true, false).applyTo(comboNetGross.getControl());
-		
-		comboNetGross.getCombo().addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				StructuredSelection selection = (StructuredSelection)comboNetGross.getSelection();
-				netgross = selection.isEmpty() ? netgross : (int) selection.toList().get(0);
-				// recalculate the total sum
-//				calculate();
-				updateUseGross(false);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-		});
+		createComboNetGross(invisible, nrDateNetGrossComposite);
 	
-		// The titleComposite contains the title and the document icon
-		Composite titleComposite = new Composite(top, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(2).applyTo(titleComposite);
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.BOTTOM).span(2, 1).grab(true, false).applyTo(titleComposite);
-
-		// Set the title in large letters
-		Label labelDocumentType = new Label(titleComposite, SWT.NONE);
-		String documentTypeString = msg.getMessageFromKey(getDocumentType().getSingularKey());
-		if (document.getBillingType().isDUNNING()) {
-			documentTypeString = MessageFormat.format("{0}. {1}", Integer.toString(dunningLevel), documentTypeString);
-		}
-		labelDocumentType.setText(documentTypeString);
-		makeLargeLabel(labelDocumentType);
-		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(labelDocumentType);
-
-		// Set the document icon
-		Label labelDocumentTypeIcon = new Label(titleComposite, SWT.NONE);
-		Icon icon = createDocumentIcon();
-		labelDocumentTypeIcon
-					.setImage(icon.getImage(IconSize.ToolbarIconSize));
-		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.TOP).grab(true, false).applyTo(labelDocumentTypeIcon);
-
+		createTitleAndIcon(upperObjects);
+		
+		PGroup headerGroup = new PGroup(upperObjects, SWT.SMOOTH);
+		headerGroup.setToggleRenderer(new TwisteToggleRenderer());
+		headerGroup.setText(msg.editorDocumentCommondata);		
+		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(headerGroup);
+		GridDataFactory.fillDefaults().grab(true, false).span(4, 1).applyTo(headerGroup);
+		
 		// Customer reference label
-		Label labelCustomerRef = new Label(top, SWT.NONE);
+		Label labelCustomerRef = new Label(headerGroup, SWT.NONE);
 		//T: Document Editor - Label Customer Reference
 		labelCustomerRef.setText(msg.editorDocumentFieldCustref);
 		labelCustomerRef.setToolTipText(msg.editorDocumentFieldCustrefTooltip);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(labelCustomerRef);
 
 		// Customer reference 
-		txtCustomerRef = new Text(top, SWT.BORDER); 
+		txtCustomerRef = new Text(headerGroup, SWT.BORDER); 
 		txtCustomerRef.setToolTipText(labelCustomerRef.getToolTipText());
 	 	GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(txtCustomerRef);
 				
 		// The extra settings composite contains additional fields like
 		// the no-Vat widget or a reference to the invoice
-		Composite xtraSettingsComposite = new Composite(top, SWT.BORDER);
+		Composite xtraSettingsComposite = new Composite(headerGroup, SWT.BORDER);
 		GridLayoutFactory.fillDefaults().margins(10, 10).numColumns(2).applyTo(xtraSettingsComposite);
 		GridDataFactory.fillDefaults().span(1, 2).minSize(250, SWT.DEFAULT).align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(xtraSettingsComposite);
 		
@@ -2244,12 +2261,12 @@ public class DocumentEditor extends Editor<Document> {
 					// get the "no-VAT" values
 					if (dataSetVat.getId() > 0) {
 						noVat = true;
-						noVatName = dataSetVat.getName();
+						noVatObject = dataSetVat;
 //						noVatDescription = dataSetVat.getDescription();
 					}
 					else {
 						noVat = false;
-						noVatName = "";
+						noVatObject = null;
 						/* because later on we have to
 						 * to decide if noVAT is set based on null or not null 
 						 */
@@ -2274,12 +2291,12 @@ public class DocumentEditor extends Editor<Document> {
 		// Selects the no VAT entry
 		comboViewerNoVat.setInput(vatDao.findNoVATEntries());
 		if (noVat) {
-			comboViewerNoVat.getCombo().setText(noVatName);
+            comboViewerNoVat.getCombo().setText(StringUtils.defaultString(noVatObject.getDescription(), noVatObject.getName()));
 		} else {
 		    comboViewerNoVat.getCombo().select(0);
 		}
 
-		copyGroup = new Group(top, SWT.SHADOW_OUT);
+		copyGroup = new Group(headerGroup, SWT.SHADOW_OUT);
 		
 		//T: Document Editor
 		//T: Label Group box to create a new document based on this one.
@@ -2294,7 +2311,7 @@ public class DocumentEditor extends Editor<Document> {
         }
 		
 		// Composite that contains the address label and the address icon
-		Composite addressComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
+		Composite addressComposite = new Composite(headerGroup, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(addressComposite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addressComposite);
 
@@ -2329,7 +2346,7 @@ public class DocumentEditor extends Editor<Document> {
 			     * You have to clone the dialog because else there's no valid parent if you open the dialog 
 			     * a second time. Look at https://www.eclipse.org/forums/index.php/t/370078.
 			     */
-			    context.set(DOCUMENT_ID, document.getName());
+                context.set(DOCUMENT_ID, document.hashCode());
             	// save MPart
             	MPart myPart = context.get(MPart.class);
                 // FIXME Workaround (quick & dirty), please use enums or an extra button
@@ -2337,11 +2354,10 @@ public class DocumentEditor extends Editor<Document> {
 		    	context.set("ADDRESS_TYPE", document.getBillingType());
 			    if((e.stateMask & SWT.CTRL) != 0) {
 				    context.set("CONTACT_TYPE", "CREDITOR");
-				    dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    } else {
 			    	context.set("CONTACT_TYPE", "DEBITOR");
-			    	dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    }
+			    dlg = ContextInjectionFactory.make(SelectTreeContactDialog.class, context);
 			    dlg.setDialogBoundsSettings(getDialogSettings("SelectTreeContactDialog"), Dialog.DIALOG_PERSISTSIZE | Dialog.DIALOG_PERSISTLOCATION);
 			    dlg.open();
 			    context.set(MPart.class, myPart);
@@ -2389,7 +2405,7 @@ public class DocumentEditor extends Editor<Document> {
 		});
 
 		// Composite that contains the addresses
-		addressAndIconComposite = new CTabFolder(top, SWT.NONE);
+		addressAndIconComposite = new CTabFolder(headerGroup, SWT.NONE);
 		addressAndIconComposite.setSimple(false);
 		// create main document receiver
 		DocumentReceiver mainReceiver = createOrGetMainReceiver();
@@ -2408,14 +2424,14 @@ public class DocumentEditor extends Editor<Document> {
 		
 		GridDataFactory.fillDefaults().minSize(100, 80).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(addressAndIconComposite);
 //		addressAndIconComposite.setSelection(0);
-
+		
 		DocumentType documentType = getDocumentType();
 /* * * * * * * * * * * * *  here the items list table is created * * * * * * * * * * * * */ 
 		// Add the item table, if the document is one with items.
 		if (documentType.hasItems()) {
 		    ItemListBuilder itemListBuilder = ContextInjectionFactory.make(ItemListBuilder.class, context);
 		    itemListTable = itemListBuilder
-		        .withParent(top)
+		        .withParent(upperObjects)
 		        .withDocument(document)
 		        .withNetGross(netgross)
 //		        .withUseGross(useGross)
@@ -2423,15 +2439,26 @@ public class DocumentEditor extends Editor<Document> {
 		        .build();
 		}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * * * * */ 
+
+		// finally calculate and set required size
+		scrollcomposite.setMinSize(upperObjects.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrollcomposite.setContent(upperObjects);
+		scrollcomposite.setExpandHorizontal(true);
+		scrollcomposite.setExpandVertical(true);
 		
-		Composite taraComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? top : invisible, SWT.NONE | SWT.RIGHT);
+        ScrolledComposite sc2 = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+		Composite bottomObjects = new Composite(sc2, SWT.NONE);
+		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(bottomObjects);
+		GridDataFactory.fillDefaults().applyTo(bottomObjects);
+
+		Composite taraComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? bottomObjects : invisible, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(taraComposite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraComposite);
 		Label taraLabel = new Label(taraComposite, SWT.NONE);
 		taraLabel.setText(msg.editorDocumentFieldTara);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(taraLabel);
 		
-		Composite weightComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? top : invisible, SWT.NONE);
+		Composite weightComposite = new Composite(defaultValuePrefs.getBoolean(Constants.PREFERENCES_PRODUCT_USE_WEIGHT) && getDocumentType().hasPrice() ? bottomObjects : invisible, SWT.NONE);
 		GridLayoutFactory.fillDefaults().numColumns(5).applyTo(weightComposite);
 		GridDataFactory.swtDefaults().span(3, 1).applyTo(weightComposite);
 		tara = new FormattedText(weightComposite, SWT.BORDER | SWT.RIGHT);
@@ -2448,16 +2475,20 @@ public class DocumentEditor extends Editor<Document> {
 		netWeightLabel.setText(msg.editorDocumentFieldNetweight);
 		netWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
 		netWeight.setAlignment(SWT.RIGHT);
+		netWeight.setBackground(JFaceColors.getInformationViewerBackgroundColor(top.getDisplay()));
+		netWeight.setEnabled(false);
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(netWeight);
 		
 		Label totalWeightLabel = new Label(weightComposite, SWT.NONE);
 		totalWeightLabel.setText(msg.editorDocumentFieldTotalweight);
 		totalWeight = new Label(weightComposite, SWT.BORDER | SWT.SHADOW_IN);
+		totalWeight.setBackground(JFaceColors.getInformationViewerBackgroundColor(top.getDisplay()));
+		totalWeight.setEnabled(false);
 		totalWeight.setAlignment(SWT.RIGHT);
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(totalWeight);
 		
 		// Container for the message label and the add button
-		Composite addMessageButtonComposite = new Composite(top, SWT.NONE | SWT.RIGHT);
+		Composite addMessageButtonComposite = new Composite(bottomObjects, SWT.NONE | SWT.RIGHT);
 		GridLayoutFactory.fillDefaults().applyTo(addMessageButtonComposite);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(addMessageButtonComposite);
 
@@ -2513,7 +2544,7 @@ public class DocumentEditor extends Editor<Document> {
 		int noOfMessageFields = getNumberOfMessageFields();
 		
 		// Container for 1..3 message fields
-		Composite messageFieldsComposite = new Composite(top,SWT.NONE );
+		Composite messageFieldsComposite = new Composite(bottomObjects,SWT.NONE );
 		GridLayoutFactory.fillDefaults().applyTo(messageFieldsComposite);
 		
 		// Add a multi line text field for the message.
@@ -2561,12 +2592,12 @@ public class DocumentEditor extends Editor<Document> {
 			}
 			
 			// Create a column for the documents subtotal, shipping and total
-			createTotalComposite(documentType.hasPrice());
+			createTotalComposite(documentType.hasPrice(), bottomObjects);
 
 			// Create the "paid"-controls, only if the document type allows
 			// this.
 			if (documentType.canBePaid()) {
-				createPaidControls();
+				createPaidControls(bottomObjects);
 			}
 		}
 
@@ -2588,6 +2619,81 @@ public class DocumentEditor extends Editor<Document> {
 			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), itemListTable.getNatTable());
 		else
 			setTabOrder((Text) addressAndIconComposite.getItem(0).getControl(), txtMessage);
+		
+		sc2.setContent(bottomObjects); 
+		sc2.setMinSize(bottomObjects.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		sc2.setExpandHorizontal(true);
+		sc2.setExpandVertical(true);
+		
+	    String[] sashWeights = getDialogSettings("SASH").getArray("SASHWEIGHTS_"+document.getBillingType().name());
+	    int[] sashWeightsInt = new int[] { 2, 1};
+	    if(sashWeights != null && sashWeights.length > 0) {
+            sashWeightsInt = Arrays.stream(sashWeights).mapToInt(Integer::parseInt).toArray();
+	    } else if(!documentType.hasItems()) {
+	        sashWeightsInt = new int[] { 1, 2};
+	    }
+	    sashForm.setWeights(sashWeightsInt);
+	    
+//		GridDataFactory.fillDefaults().applyTo(scrollcomposite);
+	}
+
+	private void createTitleAndIcon(Composite upperObjects) {
+		// The titleComposite contains the title and the document icon
+		Composite titleComposite = new Composite(upperObjects, SWT.NONE);
+		GridLayoutFactory.fillDefaults().numColumns(2).applyTo(titleComposite);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.BOTTOM).span(2, 1).grab(true, false).applyTo(titleComposite);
+
+		// Set the title in large letters
+		Label labelDocumentType = new Label(titleComposite, SWT.NONE);
+		String documentTypeString = msg.getMessageFromKey(getDocumentType().getSingularKey());
+		if (document.getBillingType().isDUNNING()) {
+			documentTypeString = MessageFormat.format("{0}. {1}", Integer.toString(dunningLevel), documentTypeString);
+		}
+		labelDocumentType.setText(documentTypeString);
+		makeLargeLabel(labelDocumentType);
+		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(labelDocumentType);
+
+		// Set the document icon
+		Label labelDocumentTypeIcon = new Label(titleComposite, SWT.NONE);
+		Icon icon = createDocumentIcon();
+		labelDocumentTypeIcon
+					.setImage(icon.getImage(IconSize.ToolbarIconSize));
+		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.TOP).grab(true, false).applyTo(labelDocumentTypeIcon);
+	}
+
+	private void createComboNetGross(Composite invisible, Composite nrDateNetGrossComposite) {
+		// combo list to select between net or gross
+		comboNetGross = new ComboViewer(getDocumentType().hasPrice() ? nrDateNetGrossComposite : invisible, SWT.BORDER | SWT.READ_ONLY);
+		comboNetGross.getCombo().setToolTipText(msg.editorDocumentNetgrossTooltip);
+		
+		Map<Integer, String> netGrossContent = new HashMap<>();
+		// empty if nothing is selected
+		netGrossContent.put(0, "---"); 
+		//T: Text in combo box
+		netGrossContent.put(1, msg.productDataNet);
+		netGrossContent.put(2, msg.productDataGross);
+        
+		comboNetGross.setContentProvider(new HashMapContentProvider<Integer, String>());
+		comboNetGross.setLabelProvider(new NumberLabelProvider<Integer, String>(netGrossContent));
+		comboNetGross.setInput(netGrossContent);
+		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).indent(20, 0).minSize(80, SWT.DEFAULT).grab(true, false).applyTo(comboNetGross.getControl());
+		
+		comboNetGross.getCombo().addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				StructuredSelection selection = (StructuredSelection)comboNetGross.getSelection();
+				netgross = selection.isEmpty() ? netgross : (int) selection.toList().get(0);
+				// recalculate the total sum
+//				calculate();
+				updateUseGross(false);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
 	}
 
 	private DocumentReceiver createOrGetMainReceiver() {
@@ -2731,10 +2837,11 @@ public class DocumentEditor extends Editor<Document> {
 
     /**
      * Create the "paid"-controls
+     * @param parentComposite 
      */
-    private void createPaidControls() {
+    private void createPaidControls(Composite parentComposite) {
         // The paid label
-        bPaid = new Button(top, SWT.CHECK | SWT.LEFT);
+        bPaid = new Button(parentComposite, SWT.CHECK | SWT.LEFT);
         if (BooleanUtils.toBoolean(document.getDeposit())) {
         	// deposit means that not the whole amount is paid
 //        	bPaid.setSelection(true);
@@ -2748,7 +2855,7 @@ public class DocumentEditor extends Editor<Document> {
         GridDataFactory.swtDefaults().applyTo(bPaid);
 
         // Container for the payment and the paid state
-        paidContainer = new Composite(top, SWT.NONE);
+        paidContainer = new Composite(parentComposite, SWT.NONE);
         GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(2).applyTo(paidContainer);
         GridDataFactory.swtDefaults().span(2, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(paidContainer);
 
@@ -2774,28 +2881,33 @@ public class DocumentEditor extends Editor<Document> {
     }
 
     /**
+     * @param parentComposite 
      * 
      */
-    private void createTotalComposite(boolean hasPrice) {
-        Composite totalComposite = new Composite(top, SWT.NONE);
-        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(totalComposite);
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).span(1, 2).applyTo(totalComposite);
+    private void createTotalComposite(boolean hasPrice, Composite parentComposite) {
+		Composite totalComposite = CompositeFactory.newComposite(SWT.NONE)
+				.layout(GridLayoutFactory.swtDefaults().numColumns(3).equalWidth(false).create())
+				.layoutData(
+						GridDataFactory.fillDefaults().grab(true, false).span(1, 2).create())
+				.create(parentComposite);
 
         if(hasPrice) {
             // Label sub total
-            netLabel = new Label(totalComposite, SWT.NONE);
-            // Set the total text
-            netLabel.setText(getTotalText());
-            GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(netLabel);
+			netLabel = LabelFactory.newLabel(SWT.NONE)
+					// Set the total text
+					.text(getTotalText())
+					.layoutData(GridDataFactory.swtDefaults().span(2, 1).align(SWT.END, SWT.CENTER).create())
+					.create(totalComposite);
     
             // Sub total
-            itemsSum = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
+            itemsSum = new FormattedText(totalComposite, SWT.BORDER | SWT.SHADOW_IN | SWT.RIGHT);
             context.set(ILocaleService.class, localeUtil);
     		MoneyFormatter formatter = ContextInjectionFactory.make(MoneyFormatter.class, context);
             itemsSum.setFormatter(formatter);
+            itemsSum.getControl().setBackground(JFaceColors.getInformationViewerBackgroundColor(totalComposite.getDisplay()));
             itemsSum.getControl().setEnabled(false);
     //			itemsSum.setText("---");
-            GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsSum.getControl());
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(itemsSum.getControl());
     
             if (defaultValuePrefs.getBoolean(Constants.PREFERENCES_DOCUMENT_USE_DISCOUNT_ALL_ITEMS) ||
             		!DataUtils.getInstance().DoublesAreEqual(document.getItemsRebate(), 0.0)) {
@@ -2805,14 +2917,14 @@ public class DocumentEditor extends Editor<Document> {
             	//T: Document Editor - Label discount 
             	discountLabel.setText(msg.commonFieldDiscount);
             	discountLabel.setToolTipText(msg.editorDocumentDiscountTooltip);
-            	GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(discountLabel);
+            	GridDataFactory.swtDefaults().span(2, 1).align(SWT.END, SWT.CENTER).applyTo(discountLabel);
             	
             	// Discount field
             	itemsDiscount = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
             	itemsDiscount.setFormatter(new PercentFormatter());
             	itemsDiscount.setValue(document.getItemsRebate());
             	itemsDiscount.getControl().setToolTipText(discountLabel.getToolTipText());
-            	GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(itemsDiscount.getControl());
+                GridDataFactory.fillDefaults().grab(true, false).applyTo(itemsDiscount.getControl());
     
             	// Set the tab order
             	setTabOrder(txtMessage, itemsDiscount.getControl());
@@ -2820,7 +2932,7 @@ public class DocumentEditor extends Editor<Document> {
             	// Recalculate, if the discount field looses the focus.
             	itemsDiscount.getControl().addFocusListener(new FocusAdapter() {
             		public void focusLost(FocusEvent e) {
-            			calculate();
+        				calculate();
             		}
             	});
     
@@ -2840,47 +2952,50 @@ public class DocumentEditor extends Editor<Document> {
             Label vatLabel = new Label(totalComposite, SWT.NONE);
             //T: Document Editor - Label VAT 
             vatLabel.setText(msg.commonFieldVat);
-            GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(vatLabel);
+            GridDataFactory.swtDefaults().span(2, 1).align(SWT.END, SWT.CENTER).applyTo(vatLabel);
     
             // VAT value
-            vatValue = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
+            vatValue = new FormattedText(totalComposite, SWT.BORDER | SWT.SHADOW_IN | SWT.RIGHT);
             vatValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
-            vatValue.getControl().setEditable(false);
+            vatValue.getControl().setBackground(JFaceColors.getInformationViewerBackgroundColor(totalComposite.getDisplay()));
+            vatValue.getControl().setEnabled(false);
     //			vatValue.setText("---");
 // TODO ???            bindModelValue(documentSummary, vatValue.getControl(), "totalVat", 30);
-            GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(vatValue.getControl());
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(vatValue.getControl());
         }
 
         // Total label
         Label totalLabel = new Label(totalComposite, SWT.NONE);
         //T: Document Editor - Total sum of this document 
         totalLabel.setText(msg.commonFieldTotal);
-        GridDataFactory.swtDefaults().align(SWT.END, SWT.TOP).applyTo(totalLabel);
+        GridDataFactory.swtDefaults().span(2, 1).align(SWT.END, SWT.CENTER).applyTo(totalLabel);
 
         // Total value
-        totalValue = new FormattedText(totalComposite, SWT.NONE | SWT.RIGHT);
+        totalValue = new FormattedText(totalComposite, SWT.BORDER | SWT.SHADOW_IN | SWT.RIGHT);
         totalValue.setFormatter(ContextInjectionFactory.make(MoneyFormatter.class, context));
-        totalValue.getControl().setEditable(false);
-        GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.TOP).applyTo(totalValue.getControl());
+        totalValue.getControl().setBackground(JFaceColors.getInformationViewerBackgroundColor(totalComposite.getDisplay()));
+        totalValue.getControl().setEnabled(false);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(totalValue.getControl());
     }
 
 	private void createShippingInfoFields(Composite totalComposite) {
-        // Shipping composite contains label and combo.
-        Composite shippingComposite = new Composite(totalComposite, SWT.NONE);
-        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(3).applyTo(shippingComposite);
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(true, false).applyTo(shippingComposite);
 
 		// Shipping label
-		Label shippingLabel = new Label(shippingComposite, SWT.NONE);
+		Label shippingLabel = new Label(totalComposite, SWT.NONE);
 		//T: Document Editor - Label shipping 
 		shippingLabel.setText(msg.editorDocumentFieldShipping);
 		GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).applyTo(shippingLabel);
 		shippingLabel.setToolTipText(msg.editorDocumentFieldShippingTooltip);
+		
+//        // Shipping composite contains label and combo.
+//        Composite shippingComposite = new Composite(totalComposite, SWT.NONE);
+//        GridLayoutFactory.swtDefaults().margins(0, 0).numColumns(2).equalWidth(false).applyTo(shippingComposite);
+//        GridDataFactory.fillDefaults().grab(true, false).applyTo(shippingComposite);
    
 		// Shipping combo		
-		comboShipping = new Combo(shippingComposite, SWT.BORDER);
+		comboShipping = new Combo(totalComposite, SWT.BORDER);
 		comboShipping.setToolTipText(msg.editorDocumentFieldShippingTooltip);
-		GridDataFactory.swtDefaults().hint(250, SWT.DEFAULT).grab(true, false).align(SWT.END, SWT.TOP).applyTo(comboShipping);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(comboShipping);
    
 		// Shipping value field
 		shippingValue = new FormattedText(totalComposite, SWT.BORDER | SWT.RIGHT);
@@ -2891,7 +3006,7 @@ public class DocumentEditor extends Editor<Document> {
 		// since the shipping value can be changed also by comboNetGross we have to store
 		// the shipping value "manually"
 //            bindModelValue(document, shippingValue, Document_.shippingValue.getName(), 30);
-		GridDataFactory.swtDefaults().hint(70, SWT.DEFAULT).align(SWT.END, SWT.CENTER).applyTo(shippingValue.getControl());
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(shippingValue.getControl());
    
 		// Recalculate, if the shipping field looses the focus.
 		/*
@@ -3028,9 +3143,10 @@ public class DocumentEditor extends Editor<Document> {
     protected void handleDialogSelection(@UIEventTopic("DialogSelection/*") Event event) {
         if (event != null) {
             // the event has already all given params in it since we created them as Map
-            String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
+            Integer targetDocumentName = (Integer) event.getProperty(DOCUMENT_ID);
             // at first we have to check if the message is for us
-            if(!StringUtils.equals(targetDocumentName, document.getName())) {
+//            if(!StringUtils.equals(targetDocumentName, document.getName())) {
+            if(targetDocumentName != document.hashCode()) {
                 // silently ignore this event if it's not for this document
                 return; 
             }
@@ -3316,32 +3432,6 @@ public class DocumentEditor extends Editor<Document> {
     public void setDirty(boolean isDirty) {
     	getMDirtyablePart().setDirty(isDirty);
     }
-
-    /**
-     * This method is for setting the dirty state to <code>true</code>. This
-     * happens if e.g. the items list has changed. (could be sent from
-     * DocumentListTable)
-     */
-    @Inject
-    @org.eclipse.e4.core.di.annotations.Optional
-    protected void handleItemChanged(@UIEventTopic(EDITOR_ID + "/itemChanged") Event event) {
-        if (event != null) {
-            // the event has already all given params in it since we created them as Map
-            String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
-            // at first we have to check if the message is for us
-            if (!StringUtils.equals(targetDocumentName, document.getName())) {
-                // if not, silently ignore this event
-                return;
-            }
-            // (re)calculate summary
-            // TODO check if this has to be done in a synchronous or asynchronous call
-            // within UISynchronize
-            if ((Boolean) event.getProperty(DOCUMENT_RECALCULATE)) {
-                calculate(true);
-            }
-            setDirty(true);
-        }
-    }    
     
     /**
      * If an entity is deleted via list view we have to close a possibly open
@@ -3360,12 +3450,6 @@ public class DocumentEditor extends Editor<Document> {
         }
         partService.hidePart(part, true);
     }
-
-//    
-//    @Inject
-//    @org.eclipse.e4.core.di.annotations.Optional
-//    protected void handleRecalculationRequest(@UIEventTopic(EDITOR_ID + "/recalculation") Event event) {
-//    }    
     
     @Override
     protected Class<Document> getModelClass() {

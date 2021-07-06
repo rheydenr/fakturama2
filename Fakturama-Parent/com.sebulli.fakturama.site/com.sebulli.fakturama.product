@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.1.1" useFeatures="true" includeLaunchers="true">
+<product name="Fakturama" uid="Fakturama.ID" id="com.sebulli.fakturama.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.1.2" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="icon://APP_ABOUT_ICON"/>
@@ -14,16 +14,16 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true --add-modules=ALL-SYSTEM
+      <vmArgs>-DREFRESH_BUNDLES=false -Dorg.eclipse.e4.ui.css.dynamic=true --add-modules=ALL-SYSTEM -DLiquibaseHubMode=off
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:name=Fakturama -Xdock:icon=../Resources/app.icns
       </vmArgsMac>
-      <vmArgsWin>-clean
-      </vmArgsWin>
    </launcherArgs>
 
    <windowImages i16="app/app_16.png" i32="app/app_32.png" i48="app/app_48.png" i64="app/app_64.png" i128="app/app_128.png" i256="app/app_256.png"/>
 
+   <splash
+      location="com.sebulli.fakturama.rcp" />
    <launcher name="Fakturama">
       <linux icon="app/app_256.xpm"/>
       <macosx icon="app/app.icns"/>
@@ -40,10 +40,10 @@
    </launcher>
 
    <vm>
-      <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</linux>
-      <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</macos>
-      <solaris include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</solaris>
-      <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
+      <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11</linux>
+      <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11</macos>
+      <solaris include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11</solaris>
+      <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11</windows>
    </vm>
 
    <license>
@@ -197,7 +197,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
-      <plugin id="org.eclipse.equinox.ds"/>
       <plugin id="org.eclipse.equinox.event"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
@@ -233,17 +232,12 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </plugins>
 
    <features>
-      <feature id="com.sebulli.fakturama.feature" version="2.1.1"/>
-      <feature id="org.fakturama.exporter.zugferd.feature" version="2.1.1"/>
-      <feature id="org.fakturama.export.feature" version="2.1.1"/>
-      <feature id="org.fakturama.import.feature" version="2.1.1"/>
-      <feature id="org.eclipse.gemini.dbaccess.feature" version="1.1.0.RELEASE"/>
-      <feature id="org.eclipse.gemini.dbaccess.mysql.feature" version="1.1.1.RELEASE"/>
-      <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature" version="1.1.0.RELEASE"/>
-      <feature id="org.eclipse.gemini.jpa.feature" version="1.2.0.M1"/>
+      <feature id="com.sebulli.fakturama.feature" version="2.1.2"/>
+      <feature id="org.fakturama.exporter.zugferd.feature" version="2.1.2"/>
+      <feature id="org.fakturama.export.feature" version="2.1.2"/>
+      <feature id="org.fakturama.import.feature" version="2.1.2"/>
       <feature id="org.eclipse.gemini.ext.di.feature"/>
       <feature id="com.mysql.jdbc.feature"/>
-      <feature id="org.hsql.jdbc.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.nebula.widgets.nattable.core.feature"/>
       <feature id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature"/>
@@ -271,32 +265,36 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <feature id="org.eclipse.babel.nls_eclipse_el"/>
       <feature id="org.eclipse.babel.nls_eclipse_sv"/>
       <feature id="org.eclipse.persistence.moxy"/>
-      <feature id="com.opencsv.feature"/>
       <feature id="org.eclipse.persistence.jpa" installMode="root"/>
-      <feature id="org.apache.commons.feature"/>
-      <feature id="org.slf4j.osgi.feature" installMode="root"/>
+      <feature id="org.eclipse.gemini.dbaccess.feature"/>
+      <feature id="org.eclipse.gemini.dbaccess.mysql.feature"/>
+      <feature id="org.eclipse.gemini.dbaccess.hsqldb.feature"/>
+      <feature id="org.eclipse.gemini.jpa.feature"/>
+      <feature id="org.eclipse.gemini.dbaccess.derby.feature"/>
    </features>
 
    <configurations>
       <plugin id="ch.qos.logback.classic" autoStart="false" startLevel="2" />
       <plugin id="ch.qos.logback.core" autoStart="false" startLevel="2" />
       <plugin id="com.sebulli.fakturama.model" autoStart="true" startLevel="4" />
+      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.gemini.dbaccess.derby" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.dbaccess.hsqldb" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.dbaccess.mysql" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.gemini.jpa" autoStart="true" startLevel="3" />
+      <property name="org.eclipse.update.reconcile" value="false" />
+      <property name="osgi.instance.area" value="@user.home/.fakturama2" />
+      <property name="eclipse.p2.profile" value="profile" />
       <property name="org.eclipse.swt.browser.IEVersion" value="12001" os="win32" />
       <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
+      <property name="osgi.splashPath" value="file:plugins/com.sebulli.fakturama.rcp" />
       <property name="eclipse.p2.data.area" value="@config.dir/../p2" />
-      <property name="osgi.instance.area" value="@user.home/.fakturama2" />
-      <property name="org.eclipse.update.reconcile" value="false" />
-      <property name="eclipse.p2.profile" value="profile" />
    </configurations>
 
    <repositories>
+      <repository location="https://files.fakturama.info/release/update2/" enabled="true" />
       <repository location="https://files.fakturama.info/release/update2/" enabled="true" />
    </repositories>
 

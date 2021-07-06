@@ -139,13 +139,13 @@ import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.DocumentItemUtil;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 import com.sebulli.fakturama.util.ProductUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.CellImagePainter;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-//import com.sebulli.fakturama.views.datatable.ListViewGridLayer;
-import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
-import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
+import com.sebulli.fakturama.views.datatable.common.CellImagePainter;
+import com.sebulli.fakturama.views.datatable.common.ListSelectionStyleConfiguration;
+import com.sebulli.fakturama.views.datatable.common.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.layer.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -248,7 +248,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         this.container = container;
         this.productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         this.documentItemUtil = ContextInjectionFactory.make(DocumentItemUtil.class, context);
-        this.useSET = document != null && documentReceiverDao.isSETEnabled(document);
+        this.useSET = documentReceiverDao.isSETEnabled(document);
 //        // Get some settings from the preference store
 //        if (netgross == DocumentSummary.ROUND_NOTSPECIFIED) {
 //            useGross = (eclipsePrefs.getInt(Constants.PREFERENCES_DOCUMENT_USE_NET_GROSS) == DocumentSummary.ROUND_NET_VALUES);
@@ -257,7 +257,6 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 //        }
         
         super.createPartControl(parent, DocumentItemDTO.class, false, ID);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
         // Listen to double clicks (omitted at the moment, perhaps at a later time
 //        hookDoubleClickCommand(natTable, gridLayer);
         return top;
@@ -444,21 +443,25 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                    		: (VAT) columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
 	                    break;
 	                case SALESEQUALIZATIONTAX:
-	                	Double tmpVat = (Double)columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
-	                	retval = tmpVat != null ? DataUtils.getInstance().round(tmpVat, 3) : Double.valueOf(0.0);
+	                    Price price = rowObject.getPrice(useSET);
+//	                	Double tmpVat = (Double)columnPropertyAccessor.getDataValue(rowObject.getDocumentItem(), columnIndex);
+//	                	retval = tmpVat != null ? DataUtils.getInstance().round(tmpVat, 3) : NumberUtils.DOUBLE_ZERO;
+	                    retval = price.getTotalSalesEqTaxRounded();
 	                	break;
 	                case UNITPRICE:
-	                    retval = container.getUseGross() 
-	                			? new Price(rowObject.getDocumentItem(), useSET).getUnitGrossRounded() 
-	                			: new Price(rowObject.getDocumentItem(), useSET).getUnitNetRounded();
+	                    price = rowObject.getPrice(useSET);
+						retval = container.getUseGross() 
+	                			? price.getUnitGrossRounded() 
+	                			: price.getUnitNetRounded();
 	                    break;
 	                case TOTALPRICE:
+	                    price = rowObject.getPrice(useSET);
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"
 	                        // Fill the cell with the total gross value of the item
-	                        retval = rowObject.getPrice(useSET).getTotalGrossRounded();
+	                        retval = price.getTotalGrossRounded();
 	                    } else { // "$ItemNetTotal"
 	                        // Fill the cell with the total net value of the item
-	                        retval = rowObject.getPrice(useSET).getTotalNetRounded();
+	                        retval = price.getTotalNetRounded();
 	                    }
 	                    break;
 	                default:
@@ -549,7 +552,14 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 case VAT:
                     // Set the VAT
                     if (newValue != null) {
+            			// Set the vat and store the vat value before and after the modification.
+            			Double oldVat = 1.0 + rowObject.getDocumentItem().getItemVat().getTaxValue();
                         rowObject.getDocumentItem().setItemVat((VAT) newValue);
+
+            			// Modify the net value that the gross value stays constant.
+            			if (container.getUseGross()) {
+            				rowObject.getDocumentItem().setPrice(oldVat / (1 + ((VAT) newValue).getTaxValue()) * rowObject.getDocumentItem().getPrice());
+            			}
                     }
                     break;
                 case UNITPRICE:
@@ -574,12 +584,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     // Set the price as gross or net value.
                     // If the editor displays gross values, calculate the net value,
                     // because only net values are stored.
+                    MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
                     if (useGross) {
-                        MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
-                        Price newPrice = new Price(amount, rowObject.getDocumentItem().getItemVat().getTaxValue(), rowObject.getDocumentItem().getNoVat(), true);
+                        Price newPrice = new Price(amount, rowObject.getDocumentItem().getItemVat().getTaxValue(), rowObject.getDocumentItem().getNoVat(), useGross);
                         rowObject.getDocumentItem().setPrice(newPrice.getUnitNet().getNumber().doubleValue());
                     } else {
-                        MonetaryAmount amount = Money.of(DataUtils.getInstance().StringToDouble(priceString), DataUtils.getInstance().getDefaultCurrencyUnit());
                         rowObject.getDocumentItem().setPrice(amount.getNumber().doubleValue());
                     }
                     break;
@@ -649,9 +658,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         );
          
         // add some edit configuration
-        gridListLayer.getViewportLayer().addConfiguration(new DefaultEditBindings());
-        gridListLayer.getViewportLayer().addConfiguration(new DefaultEditConfiguration());
-        gridListLayer.getViewportLayer().addConfiguration(new DocumentItemTableConfiguration());
+        gridListLayer.getGridLayer().addConfiguration(new DefaultEditBindings());
+        gridListLayer.getGridLayer().addConfiguration(new DefaultEditConfiguration());
+        gridListLayer.getGridLayer().addConfiguration(new DocumentItemTableConfiguration());
         
         // Create a label accumulator - adds custom labels to all cells which we
         // wish to render differently.
@@ -661,7 +670,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.OPTIONAL, OPTIONAL_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.PICTURE, PICTURE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.VAT, VAT_CELL_LABEL);
-        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.SALESEQUALIZATIONTAX, PERCENT_CELL_LABEL);
+        registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.SALESEQUALIZATIONTAX, MONEYVALUE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.DISCOUNT, PERCENT_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.UNITPRICE, MONEYVALUE_CELL_LABEL);
         registerColumnOverrides(reverseMap, columnLabelAccumulator, DocumentItemListDescriptor.TOTALPRICE, TOTAL_MONEYVALUE_CELL_LABEL);
@@ -698,13 +707,12 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 // FIXME: Doesn't work! 
                ,gridListLayer.getViewportLayer()  */
 		 gridListLayer.getGridLayer() , false);
-        GridDataFactory.fillDefaults().grab(false, true).applyTo(natTable);
         natTable.setLayerPainter(new NatGridLayerPainter(natTable, DataLayer.DEFAULT_ROW_HEIGHT));
 
         // register a MoveCellSelectionCommandHandler with
         // TABLE_CYCLE_TRAVERSAL_STRATEGY for horizontal traversal
         // and AXIS_CYCLE_TRAVERSAL_STRATEGY for vertical traversal
-        gridListLayer.getBodyLayerStack().getViewportLayer().registerCommandHandler(
+        gridListLayer.getGridLayer().registerCommandHandler(
                 new MoveCellSelectionCommandHandler(gridListLayer.getSelectionLayer(),
                         new EditTraversalStrategy(ITraversalStrategy.TABLE_CYCLE_TRAVERSAL_STRATEGY, natTable),
                         new EditTraversalStrategy(ITraversalStrategy.AXIS_CYCLE_TRAVERSAL_STRATEGY, natTable)));
@@ -713,10 +721,22 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         // https://stackoverflow.com/questions/31907288/delete-rows-from-nattable
         gridListLayer.getBodyDataLayer().registerCommandHandler(
                 new DeleteRowCommandHandler<DocumentItemDTO>(gridListLayer.getBodyDataProvider().getList()));
-        
         return natTable;
     }
 
+
+    public void reloadItemList() {
+        DocumentType documentType = DocumentTypeUtil.findByBillingType(document.getBillingType());
+        
+        if (!documentType.hasPrice()) {
+            return;
+        }
+        
+        getDocumentItemsListData().clear();
+        
+        List<DocumentItemDTO> documentItems = document.getItems().stream().map(DocumentItemDTO::new).collect(Collectors.toList());
+        getDocumentItemsListData().addAll(documentItems);
+    }
 
 	private BidiMap<Integer, DocumentItemListDescriptor> createColumns() {
 		// Create the table columns 
@@ -867,6 +887,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                 });
 
         natTable.configure();
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);        
     }
     
     private void initItemsList() {
@@ -1038,6 +1059,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     public void addNewItem(DocumentItemDTO newItem) {
     	newItem.getDocumentItem().setPosNr(documentItemsListData.size() + 1);
     	documentItemsListData.add(newItem);
+    	natTable.doCommand(new SelectRowsCommand(getGridLayer().getSelectionLayer(), 0, documentItemsListData.size()-1, false, false));
         getContainer().setDirty(true);
     }
 

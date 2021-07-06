@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sebulli.fakturama</groupId>
 	<artifactId>Fakturama-Parent</artifactId>
-	<version>2.1.1</version>
+	<version>2.1.2</version>
 	<packaging>pom</packaging>
 	<properties>
-		<tycho.version>1.7.0</tycho.version>
-		<tycho-extras.version>1.7.0</tycho-extras.version>
+		<tycho.version>2.3.0</tycho.version>
+		<tycho-extras.version>2.3.0</tycho-extras.version>
 	<!-- 	<maven.compiler.release>8</maven.compiler.release> -->
 		<maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
 		<buildTimestamp>${maven.build.timestamp}</buildTimestamp>
@@ -19,6 +19,7 @@
 	    <module>org.fakturama.e4.ui.dialogs.ext</module>
 	    
 	    <module>com.sebulli.fakturama.rcp</module>
+	    <module>com.sebulli.fakturama.rcp.test</module>
 	    <module>com.sebulli.fakturama.model</module>
 	    <module>com.sebulli.fakturama.site</module>
 	    <module>com.sebulli.fakturama.feature</module>
@@ -36,6 +37,7 @@
 	    <module>org.fakturama.wizards</module>
 	    <module>org.fakturama.exporter.zugferd.feature</module>
 	    <module>org.fakturama.exporter.zugferd</module>
+	    <module>org.fakturama.connectors</module>
 	</modules>
 	<build>
 		<plugins>
@@ -49,7 +51,7 @@
 			<plugin>
 			    <groupId>org.codehaus.mojo</groupId>
 			    <artifactId>versions-maven-plugin</artifactId>
-			    <version>2.7</version>
+			    <version>2.8.1</version>
 			    <configuration>
 			        <generateBackupPoms>false</generateBackupPoms>
 			    </configuration>
@@ -89,7 +91,7 @@
 				<version>${tycho-extras.version}</version>
 			</plugin>
 
-            <!-- Use custom target platform -->
+            <!-- Materialize Products -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>target-platform-configuration</artifactId>
@@ -112,7 +114,14 @@
                             <ws>cocoa</ws>
                             <arch>x86_64</arch>
                         </environment>
+						<!-- works only with a native MacOS -->
+<!-- 						<environment> -->
+<!-- 							<os>macosx</os> -->
+<!-- 							<ws>cocoa</ws> -->
+<!-- 							<arch>aarch64</arch> -->
+<!-- 						</environment> -->
                     </environments>
+            <!-- Use custom target platform -->
 					<target>
 						<artifact>
 							<groupId>${project.groupId}</groupId>
@@ -120,6 +129,7 @@
 							<version>${project.version}</version>
 						</artifact>
 					</target>
+          			<pomDependencies>wrapAsBundle</pomDependencies>
 				</configuration>
 			</plugin>
 
@@ -170,27 +180,22 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-
-
-
-
-
 		</plugins>
-		
 	</build>
-<dependencies><dependency>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>exec-maven-plugin</artifactId>
-    <version>3.0.0</version>
-</dependency>
-
-</dependencies>
+	
+	<dependencies>
+		<dependency>
+		    <groupId>org.codehaus.mojo</groupId>
+		    <artifactId>exec-maven-plugin</artifactId>
+		    <version>3.0.0</version>
+		</dependency>
+	</dependencies>
+	
 	<repositories>
 		<repository>
-			<id>eclipse-2020</id>
+			<id>eclipse-2021</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/2020-09</url>
+			<url>http://download.eclipse.org/releases/2021-03</url>
 		</repository>
 	</repositories>
 
@@ -199,10 +204,8 @@
 			<id>tycho-snapshots</id>
 			<url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
 		</pluginRepository>
-				
-		
-	
 	</pluginRepositories>
+	
 	<name>Fakturama</name>
 	<url>https://www.fakturama.info</url>
 	<issueManagement>
@@ -211,7 +214,7 @@
 	</issueManagement>
 	<scm>
 		<url>https://bitbucket.org/fakturamadev/fakturama-2</url>
-		<developerConnection>Ralf Heydenreich; Oliver Groth</developerConnection>
+		<developerConnection>Ralf Heydenreich; Oliver Groth, Gerd Schrick</developerConnection>
 	</scm>
 	<description>The program is for creating invoices, delivery papers, order documents and such stuff. Furthermore, you can connect to your webshop and administer your web shop orders. And you can create labels for various parcel services online.
 </description>

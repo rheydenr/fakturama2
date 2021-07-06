@@ -26,12 +26,12 @@
 				<surname>Fakturama Team</surname>
 			</author>
 		</authorgroup>
-		<edition>Benutzerhandbuch für Fakturama v2.1.1</edition>
+		<edition>Benutzerhandbuch für Fakturama v2.1.2</edition>
 		<pubdate>
 			<?dbtimestamp format="d.m.Y"?>
 		</pubdate>
 		<copyright>
-			<year>2011-2020</year>
+			<year>2011-2021</year>
 			<holder>Fakturama.org</holder>
 		</copyright>
 
@@ -131,7 +131,7 @@
 				<para>Diese "Commons Deed" ist lediglich eine vereinfachte Zusammenfassung des <link xl:href="http://creativecommons.org/licenses/by-nc-nd/3.0/de/legalcode">rechtsverbindlichen Lizenzvertrages</link> in allgemeinverständlicher Sprache.</para>
 		</legalnotice>
 
-		<releaseinfo>Version 2.1.1</releaseinfo>
+		<releaseinfo>Version 2.1.2</releaseinfo>
 	</bookinfo>
 
 	<xi:include xmlns:d="http://docbook.org/ns/docbook" href="chapters/01_introduction/01_introduction.xml"/>
@@ -170,11 +170,11 @@ Attribut gibt es natürlich nicht, deswegen kann die Datenbank nicht initialisie
 	<programlisting>
 Tue Jun 20 21:33:55 CEST 2017 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
 	</programlisting>
-Abhilfe: An die URL noch folgendes ranhängen: <code>?useSSL=false</code>.
+Abhilfe: An die URL noch folgendes anhängen: <code>?useSSL=false</code>.
 also z. B. 
 <programlisting>jdbc:mysql://rhehomesrv/fakturama?useSSL=false&#038;characterEncoding=utf8&#038;useUnicode=yes</programlisting>
 </para>
-<para>Als Alternative empfehlen wir den Einsatz einer verschlüsselten Verbindung. Wie diese einzurichten ist steht im <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/develop/Fakturama-Parent/org.fakturama.help/howto/mysql/ssl4mysql.md">HowTo-Dokument</link>.</para>
+<para>Als Alternative wird der Einsatz einer verschlüsselten Verbindung empfohlen. Wie diese einzurichten ist steht im <link xl:href="https://bitbucket.org/fakturamadev/fakturama-2/raw/develop/Fakturama-Parent/org.fakturama.help/howto/mysql/ssl4mysql.md">HowTo-Dokument</link>.</para>
 </answer>
 	</qandaentry>
 	
@@ -187,9 +187,13 @@ also z. B.
 Die Frage kann dann mit den Zusatzhinweisen auch im Forum gepostet werden.
 </para></answer></qandaentry>
 
+	<qandaentry><question><para>Fakturama bleibt beim Start hängen</para></question>
+	<answer><para>Die Ursache dafür kann ein Lock-Eintrag in der Datenbank sein. Zur Fehlerbereinigung muß die Datei <code>Database.script</code> mit einem Texteditor geändert werden. In dieser Datei muß die Zeile 
+<programlisting>INSERT INTO DATABASECHANGELOGLOCK...</programlisting> gesucht und entfernt werden.
+</para></answer></qandaentry>
 <qandaentry><question><para>MySQL-DB ist im Netzwerk nicht erreichbar</para></question>
 <answer><para>
-siehe dazu den entsprechenden <link xl:href="https://forum.fakturama.info/read.php?9,10826,11823#msg-11823">Foreneintrag</link>.
+siehe dazu den entsprechenden <link xl:href="https://www.fakturama.info/community/fakturama-2/umschalten-auf-mysql/">Foreneintrag</link>.
 Wichtig ist hier, als <code>bind-addr</code> <code>0.0.0.0</code> anzugeben.</para></answer></qandaentry>
 	</qandadiv>
 	
@@ -206,6 +210,7 @@ Wichtig ist hier, als <code>bind-addr</code> <code>0.0.0.0</code> anzugeben.</pa
 		#!/bin/bash
 		/Applications/Fakturama2.app/Contents/MacOS/Fakturama
 		</programlisting>
+		Seit Version 2.1 ist die Anwendung signiert, da Problem sollte damit nicht mehr auftreten.
 </para></answer>
 	</qandaentry>	
 	<qandaentry>
@@ -216,10 +221,11 @@ cd /Applications
 xattr -d com.apple.quarantine Fakturama2.app
         </programlisting>
        Anschließend im Finder mit gedrückter CTRL-Taste das Fakturama-Icon anklicken und in dem aufklappenden Menü "Öffnen" wählen. Dann muss man nur noch die Netzwerkverbindung zulassen. 
-       Die nachfolgenden Aufrufe funktionieren dann auch ohne CTRL-Taste.  
+       Die nachfolgenden Aufrufe funktionieren dann auch ohne CTRL-Taste. </para><para>Seit Version 2.1 ist die Anwendung signiert, da Problem sollte damit nicht mehr auftreten.
 	</para></answer>
-	</qandaentry>	
-	</qandadiv>
+	</qandaentry><qandaentry><question><para>Die Menüleiste kann nicht aktiviert (angeklickt) werden</para></question>
+	<answer><para>Dazu kurz zu einem beliebigen anderen Programm (oder zum Desktop) wechseln und dann wieder zurück zu Fakturama.</para></answer>
+	</qandaentry></qandadiv>
 	
       <qandadiv>
         <title>Fakturama 2 unter Linux</title>
@@ -306,7 +312,7 @@ Zum Beispiel:
 </tbody>
 </tgroup>
   </informaltable>
-</para><!-- --></answer></qandaentry>
+</para></answer></qandaentry>
 
 		</qandadiv>
     </qandaset>

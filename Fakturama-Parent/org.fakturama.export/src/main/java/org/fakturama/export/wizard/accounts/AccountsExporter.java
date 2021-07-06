@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -184,12 +185,13 @@ public class AccountsExporter extends OOCalcExporter {
 		row += 2;
 
 		boolean somethingExported = false;
+		CurrencyUnit defaultCurrencyUnit = DataUtils.getInstance().getDefaultCurrencyUnit();
 		
 		for (AccountEntry accountEntry : accountEntries) {
 
 			// calculate the balance of all vouchers and documents,
-			// also of those, which are not in the time intervall
-			MonetaryAmount value = Money.of(accountEntry.value, DataUtils.getInstance().getDefaultCurrencyUnit());
+			// also of those, which are not in the time interval
+			MonetaryAmount value = Money.of(accountEntry.value, defaultCurrencyUnit);
 
 			// Get the date of the voucher and convert it to a
 			// GregorianCalendar object.

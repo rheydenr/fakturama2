@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.sebulli.fakturama.feature_2.1.1.jar" id="com.sebulli.fakturama.feature" version="2.1.1">
+   <feature url="features/com.sebulli.fakturama.feature_2.1.2.jar" id="com.sebulli.fakturama.feature" version="2.1.2">
       <category name="com.sebulli.fakturama"/>
    </feature>
    <category-def name="com.sebulli.fakturama" label="Fakturama 2.0"/>

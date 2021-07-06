@@ -4,7 +4,7 @@ Bundle-Name: Commons BeanUtils
 Bundle-SymbolicName: org.apache.commons.beanutils;singleton:=true
 Bundle-Version: 1.9.4
 Bundle-Vendor: Apache.org
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.apache.commons.beanutils,
  org.apache.commons.beanutils.converters,
  org.apache.commons.beanutils.expression,

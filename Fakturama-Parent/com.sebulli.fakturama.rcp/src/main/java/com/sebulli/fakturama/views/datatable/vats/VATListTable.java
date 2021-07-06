@@ -68,10 +68,10 @@ import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.parts.converter.DoublePercentageDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.DefaultCheckmarkPainter;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
-import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.common.DefaultCheckmarkPainter;
+import com.sebulli.fakturama.views.datatable.common.ListSelectionStyleConfiguration;
+import com.sebulli.fakturama.views.datatable.common.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.layer.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -151,7 +151,7 @@ public class VATListTable extends AbstractViewDataTable<VAT, VATCategory> {
         natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
         natTable.addConfiguration(new VATTableConfiguration());
         natTable.addConfiguration(new ListSelectionStyleConfiguration());
-    natTable.setBackground(GUIHelper.COLOR_WHITE);
+        natTable.setBackground(GUIHelper.COLOR_WHITE);
         // nur für das Headermenü, falls das mal irgendwann gebraucht werden sollte
         //		natTable.addConfiguration(new HeaderMenuConfiguration(n6));
         gridListLayer.getSelectionLayer().getSelectionModel().setMultipleSelectionAllowed(true);

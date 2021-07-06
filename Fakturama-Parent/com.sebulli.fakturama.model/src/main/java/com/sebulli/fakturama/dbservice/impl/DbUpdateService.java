@@ -18,7 +18,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.osgi.framework.BundleContext;
@@ -41,7 +41,6 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.ValidationFailedException;
-import liquibase.osgi.OSGiResourceAccessor;
 
 /**
  * Implementation of {@link IDbUpdateService}.
@@ -49,52 +48,60 @@ import liquibase.osgi.OSGiResourceAccessor;
  */
 public class DbUpdateService implements IDbUpdateService {
 
-    private static final String PROP_HSQLFILEDB = "hsqlfiledb";
+	private static final String SYS_PROP_DATABASE_PORT = "hsql.database.port";
 	private IPreferenceStore preferenceStore;
 	private IActivateDbServer currentService;
     
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.dbservice.IDbUpdateService#updateDatabase()
 	 */
-	@Override
-	public boolean updateDatabase() {
-		boolean retval = true;
-		
-		// get the preferences for this application
-//        EclipseContextFactory.getServiceContext(context).set(IPreferenceStore.class, preferenceStore);
-        
-		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+    @Override
+    public boolean updateDatabase() {
+        boolean retval = true;
+
+        // get the preferences for this application
+        BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
         ServiceReference<IPreferenceStoreProvider> serviceReference = context.getServiceReference(IPreferenceStoreProvider.class);
         preferenceStore = context.getService(serviceReference).getPreferenceStore();
-		try (java.sql.Connection connection = openConnection(context);) {
-			if(connection == null) {
-				throw new SQLException("can't create database connection!");
-			}
-		
-    		// emergency switch: turn off this feature with NODBUPDATE=true
-    		if(BooleanUtils.toBoolean(System.getProperty("NODBUPDATE"))) {
-    			return retval;
-    		}
-    		
-			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-			Liquibase liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
-					new OSGiResourceAccessor(context.getBundle()), database);
-//			if(!eclipsePrefs.get("GENERAL_WORKSPACE_REQUEST", "").isEmpty()) {
-//				System.err.println("dropping old database schema for workspace request");
-//				liquibase.dropAll();
-//			}
-//			liquibase.forceReleaseLocks();   // workaround!
-//			liquibase.generateDocumentation("f:\\tmp\\f2_007\\");
-			liquibase.update(new Contexts(), new LabelExpression());
-		} catch (ValidationFailedException exc) {
-    		System.err.println("Database has not the correct version! " + exc.getMessage());
-			retval = false;
-		} catch (LiquibaseException | SQLException | NullPointerException ex) {
-			System.err.println("Failed to create the database connection: " + ex);
-			retval = false;
-		}
-		return retval;
-	}
+        Liquibase liquibase = null;
+        try (java.sql.Connection connection = openConnection(context);) {
+            if (connection == null) {
+                throw new SQLException("can't create database connection!");
+            }
+
+            // emergency switch: turn off this feature with NODBUPDATE=true
+            if (Boolean.getBoolean("NODBUPDATE")) {
+                return retval;
+            }
+/*
+ * Annoying Feature: Liquibase Hub.
+ * https://docs.liquibase.com/tools-integrations/liquibase-hub/operations.html?Highlight=liquibase%20hub
+ * you can set the level of data specifying SET JAVA_OPTS="-DLiquibaseHubMode=[all|meta|off]"
+ * Alternatively, you can pass your API key as a runtime argument and run your commands as usual or you 
+ * can specify it in your JAVA_OPTS as -Dliquibase.hub.apiKey. 
+ */
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+            liquibase = new liquibase.Liquibase("/changelog/db.changelog-master.xml", 
+                    new liquibase.resource.OSGiResourceAccessor(context.getBundle()), database);
+
+            liquibase.update(new Contexts(), new LabelExpression());
+        } catch (ValidationFailedException exc) {
+            System.err.println("Database has not the correct version! " + exc.getMessage());
+            retval = false;
+        } catch (LiquibaseException | SQLException | NullPointerException ex) {
+            System.err.println("Failed to create the database connection: " + ex);
+            retval = false;
+        } finally {
+            if (liquibase != null) {
+                try {
+                    liquibase.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+        }
+        return retval;
+    }
 
 	/**
 	 * @param context 
@@ -105,8 +112,11 @@ public class DbUpdateService implements IDbUpdateService {
 		Connection conn = null;
 		try {
 			ServiceReference<?>[] allServiceReferences = context.getAllServiceReferences(
-					org.osgi.service.jdbc.DataSourceFactory.class.getName(), "(osgi.jdbc.driver.class="+preferenceStore.getString(PersistenceUnitProperties.JDBC_DRIVER)+")");
+					org.osgi.service.jdbc.DataSourceFactory.class.getName(),
+					String.format("(%s=%s)", DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,
+							preferenceStore.getString(PersistenceUnitProperties.JDBC_DRIVER)));
 			ServiceReference<DataSourceFactory> serviceReference;
+
 			if(allServiceReferences != null && allServiceReferences.length > 0) {
 				serviceReference = (ServiceReference<DataSourceFactory>) allServiceReferences[0];
 			} else {
@@ -115,8 +125,8 @@ public class DbUpdateService implements IDbUpdateService {
 			}
 		    Properties prop = new Properties();
 		    prop.put(DataSourceFactory.JDBC_URL, preferenceStore.getString(PersistenceUnitProperties.JDBC_URL));
-		    prop.put(DataSourceFactory.JDBC_USER, preferenceStore.getString(PersistenceUnitProperties.JDBC_USER));//, "fakturama"
-		    prop.put(DataSourceFactory.JDBC_PASSWORD, preferenceStore.getString(PersistenceUnitProperties.JDBC_PASSWORD)); //, "fakturama"
+		    prop.put(DataSourceFactory.JDBC_USER, preferenceStore.getString(PersistenceUnitProperties.JDBC_USER));
+		    prop.put(DataSourceFactory.JDBC_PASSWORD, preferenceStore.getString(PersistenceUnitProperties.JDBC_PASSWORD));
 	    	
 			String dataSource = (String)prop.get(DataSourceFactory.JDBC_URL);
 			/*
@@ -129,11 +139,23 @@ public class DbUpdateService implements IDbUpdateService {
 			 * ONLY(!!!) important if we use HSQL in the standard way. All other possibilities use an extra database which is 
 			 * independent of working directory. 
 			 */
-			if(dataSource.startsWith("jdbc:hsqldb:file") || dataSource.endsWith("fakdbneu")) {
+			if (dataSource.contains("hsqldb") ) {
 				allServiceReferences = context.getAllServiceReferences(IActivateDbServer.class.getName(), null);
 				if(allServiceReferences != null && allServiceReferences.length > 0) {
 					ServiceReference<IActivateDbServer> serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
-					prop.put(PROP_HSQLFILEDB, preferenceStore.getString(PROP_HSQLFILEDB));
+					String dataSourceName = preferenceStore.getString(DataSourceFactory.JDBC_DATASOURCE_NAME);
+					
+					// check old setting (before v2.1.2)
+					if(StringUtils.isBlank(dataSourceName)) {
+					    dataSourceName = preferenceStore.getString("hsqlfiledb");
+					}
+                    prop.put(DataSourceFactory.JDBC_DATASOURCE_NAME, dataSourceName);
+					
+					String sysPropPort = System.getProperty(SYS_PROP_DATABASE_PORT, preferenceStore.getString(DataSourceFactory.JDBC_PORT_NUMBER));
+					if(StringUtils.isNumeric(sysPropPort)) {
+						prop.put(DataSourceFactory.JDBC_PORT_NUMBER, sysPropPort);
+					}
+					
 					prop.put("encoding", "UTF-8");
 					prop.put(Constants.GENERAL_WORKSPACE, preferenceStore.getString(Constants.GENERAL_WORKSPACE));
 					
@@ -141,11 +163,14 @@ public class DbUpdateService implements IDbUpdateService {
                     if (!isDbAlive()) {
                         Properties activateProps = currentService.activateServer(prop);
                         preferenceStore.putValue(PersistenceUnitProperties.JDBC_URL,
-                                String.format("jdbc:hsqldb:hsql://localhost:9002/%s", activateProps.get("runningfakdb")));
+                                String.format("jdbc:hsqldb:hsql://localhost:%s/%s", 
+                                        activateProps.get(DataSourceFactory.JDBC_PORT_NUMBER), 
+                                        activateProps.get(DataSourceFactory.JDBC_DATABASE_NAME)));
                         prop.put(DataSourceFactory.JDBC_URL, preferenceStore.getString(PersistenceUnitProperties.JDBC_URL));
-                        preferenceStore.putValue(PROP_HSQLFILEDB, (String) activateProps.get(PROP_HSQLFILEDB));
+                        preferenceStore.putValue(DataSourceFactory.JDBC_DATASOURCE_NAME, 
+                                (String) activateProps.get(DataSourceFactory.JDBC_DATASOURCE_NAME));
                     } else {
-                        System.err.println("DB wurde schon gestartet");
+                        System.err.println("database was already started");
                     }
                     ServiceReference<IDbConnection> serviceDbRef2 = (ServiceReference<IDbConnection>) allServiceReferences[0];
                     IDbConnection dbConn = context.getService(serviceDbRef2);
@@ -181,8 +206,6 @@ public class DbUpdateService implements IDbUpdateService {
 
     @Override
     public boolean isDbAlive() {
-        boolean alive = currentService != null && currentService.isAlive();
-//        System.err.println("DB is " + (alive ? "" : "NOT ") + "alive!");
-        return alive;
+        return currentService != null && currentService.isAlive();
     }
 }

@@ -28,6 +28,9 @@ public enum ContactListDescriptor {
     ZIP("address.zip", "common.field.zipcode", 4, 50),
     CITY("address.city", "common.field.city", 5, 80),
     TYPE("contactType", "editor.contact.field.contacttype", 6, 30), 
+ // GS/
+    NAMEADDON("address.name", "editor.contact.field.name.addon", 7, 30), 
+    LOCALCONSULTANT("address.localConsultant", "editor.contact.field.localconsultant", 8, 30), 
     ;
     
     private String propertyName, messageKey;
@@ -94,6 +97,9 @@ public enum ContactListDescriptor {
                 ContactListDescriptor.ZIP.getPropertyName(), 
                 ContactListDescriptor.CITY.getPropertyName(), 
                 ContactListDescriptor.TYPE.getPropertyName(), 
+// GS/
+                ContactListDescriptor.NAMEADDON.getPropertyName(),
+                ContactListDescriptor.LOCALCONSULTANT.getPropertyName(),
         };
     }
 }

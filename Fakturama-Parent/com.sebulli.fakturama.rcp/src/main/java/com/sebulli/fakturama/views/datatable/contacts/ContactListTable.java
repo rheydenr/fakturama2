@@ -60,8 +60,9 @@ import com.sebulli.fakturama.parts.DebitorEditor;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.common.CommonListItemMatcher;
+import com.sebulli.fakturama.views.datatable.common.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.layer.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -105,7 +106,7 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<T> treeFilteredIssues;
 
-	private ContactMatcher currentFilter;
+	private CommonListItemMatcher<T> currentFilter;
 
     private EventList<T> contactListData;
 
@@ -318,9 +319,10 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
         final MatcherEditor<T> textMatcherEditor = createTextWidgetMatcherEditor();
         
         // Filtered list for Search text field filter
+        final FilterList<T> textFilteredIssues = new FilterList<T>(contactListData, textMatcherEditor);
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
-        treeFilteredIssues = new FilterList<T>(contactListData, textMatcherEditor);
+        treeFilteredIssues = new FilterList<T>(textFilteredIssues);
         
         //build the grid layer
         setGridLayer(new EntityGridListLayer<T>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry));
@@ -402,8 +404,8 @@ public abstract class ContactListTable<T extends Contact> extends AbstractViewDa
      */
     @Override
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
-        currentFilter = new ContactMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
-        if(currentFilter.isRootNode) {
+        currentFilter = new CommonListItemMatcher<T>(filter, treeObjectType, createRootNodeDescriptor(filter));
+        if(currentFilter.isRootNode()) {
             treeFilteredIssues.setMatcherEditor(createTextWidgetMatcherEditor());
         } else {
             treeFilteredIssues.setMatcher(currentFilter);

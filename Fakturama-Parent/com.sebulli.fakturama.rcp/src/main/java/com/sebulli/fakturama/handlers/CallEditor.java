@@ -28,9 +28,11 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -38,6 +40,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.descriptor.basic.MPartDescriptor;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
@@ -49,6 +52,7 @@ import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.model.BillingType;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.IEntity;
 import com.sebulli.fakturama.model.VoucherType;
 import com.sebulli.fakturama.parts.ContactEditor;
@@ -146,6 +150,18 @@ public class CallEditor {
     
     @Inject
     private ILogger log;
+    
+    @CanExecute
+    public boolean canExecute(@Active MPart activePart, EPartService partService, @Optional MMenuItem menuItem) {
+        boolean retval = true;
+        // only check for a certain popup menu action; the action is nearly always executable
+        if (menuItem != null && menuItem.getElementId().equals("com.sebulli.fakturama.document.popup.opendoc")) {
+            @SuppressWarnings("unchecked")
+            List<Document> selectedObjects = (List<Document>) selectionService.getSelection(activePart.getElementId());
+            retval = selectedObjects != null && selectedObjects.size() == 1;
+        }
+        return retval;
+    }
 
 	/**
 	 * Execute the command
@@ -172,8 +188,6 @@ public class CallEditor {
             if(preferences.getBoolean(Constants.PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS)) {
                 ParameterizedCommand closeCommand = commandService.createCommand("org.eclipse.ui.file.closeAll", null);
                 handlerService.executeHandler(closeCommand);
-                
-//            	partService.getParts().forEach(part -> { if(part.getTags().contains(EPartService.REMOVE_ON_HIDE_TAG)) {partService.hidePart(part);}});
             }
             
             Map<String, String> params = new HashMap<>();

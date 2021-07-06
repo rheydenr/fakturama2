@@ -17,6 +17,7 @@ import org.odftoolkit.odfdom.pkg.OdfElement;
 import org.odftoolkit.odfdom.pkg.OdfFileDom;
 import org.odftoolkit.odfdom.type.Length;
 import org.odftoolkit.odfdom.type.Length.Unit;
+import org.odftoolkit.simple.Document;
 import org.odftoolkit.simple.common.TextExtractor;
 import org.odftoolkit.simple.draw.Image;
 import org.odftoolkit.simple.text.Span;
@@ -74,6 +75,8 @@ public class PlaceholderNode extends Selection {
 	 * flag which indicates that this node is inside the styles section
 	 */
 	private boolean styleNode;
+	
+	private Document ownerDocument;
 
 	/**
 	 * Constructor for a new PlaceholderNode.
@@ -355,7 +358,7 @@ public class PlaceholderNode extends Selection {
 	 * @return
 	 */
 	private TextSelection getTextSelection(OdfElement elementBase) {
-		TextNavigation search = new TextNavigation(getNode().getTextContent(), elementBase);
+		TextNavigation search = new TextNavigation(getNode().getTextContent(), ownerDocument);
 		TextSelection ts = TextSelection.newTextSelection(search, getNode().getTextContent(), elementBase, 0);
 		return ts;
 	}
@@ -505,5 +508,13 @@ public class PlaceholderNode extends Selection {
 		// TODO Auto-generated method stub
 
 	}
+
+    public Document getOwnerDocument() {
+        return ownerDocument;
+    }
+
+    public void setOwnerDocument(Document ownerDocument) {
+        this.ownerDocument = ownerDocument;
+    }
 
 }

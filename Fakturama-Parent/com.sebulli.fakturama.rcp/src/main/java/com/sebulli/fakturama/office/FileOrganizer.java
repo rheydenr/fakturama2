@@ -155,10 +155,10 @@ public class FileOrganizer {
 		// Find the placeholder for a decimal number with n digits
 		// with the format "{Xnr}", "X" is the number of digits (which can be
 		// empty).
+		
 		Pattern p = Pattern.compile("\\{(\\d*)nr\\}");
 		Matcher m = p.matcher(fileNamePlaceholder);
 		if (m.find()) { // found?
-			String replacementString = "";
 			String replaceNumberString = "%d"; // default
 			if (m.groupCount() > 0) { // has some digits before <nr>?
 				String numberString = m.group(1); // get the length for the resulting number
@@ -167,14 +167,8 @@ public class FileOrganizer {
 					replaceNumberString = "%0" + numberString + "d";
 				}
 			}
-			// find the current docNumber
-			Pattern docNumberPattern = Pattern.compile("\\w+(\\d+)");
-			Matcher docNumberMatcher = docNumberPattern.matcher(document.getName());
-			if (docNumberMatcher.find() && docNumberMatcher.groupCount() > 0) {
-				String docNumberString = docNumberMatcher.group(1);
-				Integer docNumber = Integer.valueOf(docNumberString);
-				replacementString = String.format(replaceNumberString, docNumber);
-			}
+
+			String replacementString = createNumberReplacementString(document, replaceNumberString);
 			fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{\\d*nr\\}", replacementString);
 		}
 
@@ -215,6 +209,29 @@ public class FileOrganizer {
 		}
 
 		return savePath;
+	}
+
+	private String createNumberReplacementString(Document document, String replaceNumberString) {
+		String replacementString = "";
+		
+		// find the current docNumber according to current formatting pattern
+		String formatString = preferences.getString("NUMBERRANGE_"+document.getBillingType()+"_FORMAT");
+		String pattern = formatString.replaceAll("YYYY|yyyy|MM|mm|DD|dd", "\\\\d+");
+		pattern = pattern.replaceAll("\\{\\d*nr\\}", "(\\\\d+)");
+		pattern = pattern.replaceAll("\\{|\\}", "");
+		Pattern docNumberPattern = Pattern.compile(pattern);
+		Matcher docNumberMatcher = docNumberPattern.matcher(document.getName());
+		
+		// RE-2021_0002-JKU    RE-{yyyy}_{4nr}-JKU  ==> RE-\d+_(\d+)-JKU
+		// INV_202102-002  INV_{YYYYMM}-{3nr}
+		// RE{6nr}  ==> RE(\d+)
+
+		if (docNumberMatcher.find() && docNumberMatcher.groupCount() > 0) {
+			String docNumberString = docNumberMatcher.group(1);
+			Integer docNumber = Integer.valueOf(docNumberString);
+			replacementString = String.format(replaceNumberString, docNumber);
+		}
+		return replacementString;
 	}
 
 	/**

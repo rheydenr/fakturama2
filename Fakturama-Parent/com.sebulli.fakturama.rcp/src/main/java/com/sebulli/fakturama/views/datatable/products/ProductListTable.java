@@ -78,10 +78,11 @@ import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
-import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
-import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.common.CommonListItemMatcher;
+import com.sebulli.fakturama.views.datatable.common.ListSelectionStyleConfiguration;
+import com.sebulli.fakturama.views.datatable.common.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.common.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.layer.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
@@ -129,7 +130,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     private ConfigRegistry configRegistry = new ConfigRegistry();
     protected FilterList<Product> treeFilteredIssues;
 
-	private ProductMatcher currentFilter;
+	private CommonListItemMatcher<Product> currentFilter;
 
 	private BidiMap<Integer, ProductListDescriptor> prodListDescriptors;
 
@@ -285,7 +286,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     @Override
                     public void run(NatTable natTable, MouseEvent event) {
                         int rowPosition = natTable.getRowPositionByY(event.y);
-                        System.err.println("products clicked!");
+//                        System.err.println("products clicked!");
                         if(!gridListLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
                             selectRowAction.run(natTable, event);
                         }                   
@@ -486,7 +487,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
      */
     public void setCategoryFilter(String filter, TreeObjectType treeObjectType) {
         // Reset transaction and contact filter, set category filter
-    	currentFilter = new ProductMatcher(filter, treeObjectType, createRootNodeDescriptor(filter));
+    	currentFilter = new CommonListItemMatcher<Product>(filter, treeObjectType, createRootNodeDescriptor(filter));
 		treeFilteredIssues.setMatcher(currentFilter);
 
         //Refresh is done automagically...

@@ -95,11 +95,11 @@ import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
-import com.sebulli.fakturama.views.datatable.CellImagePainter;
-import com.sebulli.fakturama.views.datatable.EntityGridListLayer;
-import com.sebulli.fakturama.views.datatable.MoneyDisplayConverter;
-import com.sebulli.fakturama.views.datatable.impl.ListSelectionStyleConfiguration;
-import com.sebulli.fakturama.views.datatable.impl.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.common.CellImagePainter;
+import com.sebulli.fakturama.views.datatable.common.ListSelectionStyleConfiguration;
+import com.sebulli.fakturama.views.datatable.common.MoneyDisplayConverter;
+import com.sebulli.fakturama.views.datatable.common.NoHeaderRowOnlySelectionBindings;
+import com.sebulli.fakturama.views.datatable.layer.EntityGridListLayer;
 import com.sebulli.fakturama.views.datatable.tree.model.TreeObject;
 import com.sebulli.fakturama.views.datatable.tree.ui.TopicTreeViewer;
 import com.sebulli.fakturama.views.datatable.tree.ui.TreeCategoryLabelProvider;
@@ -391,6 +391,8 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
                     return columnPropertyAccessor.getDataValue(rowObject, columnIndex-1);
                 case NAME:
                     return columnPropertyAccessor.getDataValue(rowObject, 1);
+                case CUSTREF:
+                    return columnPropertyAccessor.getDataValue(rowObject, 4); 
                 case TOTAL:
                     // alternative: return rowObject.getFirstName();
                     return columnPropertyAccessor.getDataValue(rowObject, 3);
@@ -455,7 +457,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
         searchColumns[3] = "total";
  */
         final MatcherEditor<Document> textMatcherEditor = new TextWidgetMatcherEditor<Document>(searchText.getTextControl(), GlazedLists.textFilterator(Document.class,
-                Document_.name.getName(), Document_.addressFirstLine.getName()));
+                Document_.name.getName(), Document_.addressFirstLine.getName(), Document_.customerRef.getName()));
         
         // Filtered list for Search text field filter
         final FilterList<Document> textFilteredIssues = new FilterList<Document>(documentListData, textMatcherEditor);

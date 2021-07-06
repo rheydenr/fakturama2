@@ -315,6 +315,7 @@ public class Messages {
 	public String editorDocumentCheckboxPaidTooltip;
 	public String editorDocumentCollectiveinvoiceTooltip;
 	public String editorDocumentCreateduplicate;
+	public String editorDocumentCommondata;
 	public String editorDocumentDateofpayment;
 	public String editorDocumentDateTooltip;
 	public String editorDocumentDeleteitemTooltip;
@@ -935,6 +936,7 @@ public class Messages {
 	public String wizardImportCsvProductsDescription;
 	public String wizardImportCsvProductsName;
 	public String wizardCommonTitleSelectsource;
+    public String editorDocumentErrorStartdateafterenddate;
 
 	public String getPurchaseTaxString() {
 		// T: Name of the tax that is raised when goods are purchased

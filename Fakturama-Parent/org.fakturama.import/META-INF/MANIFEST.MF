@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Import Wizard Service
 Bundle-SymbolicName: org.fakturama.import;singleton:=true
-Bundle-Version: 2.1.1
+Bundle-Version: 2.1.2
 Bundle-Vendor: Fakturama.org
 Require-Bundle: javax.inject;bundle-version="1.0.0",
  org.eclipse.e4.core.services,
@@ -11,7 +11,6 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
  com.sebulli.fakturama.rcp,
  com.sebulli.fakturama.common,
  org.eclipse.jface,
- org.eclipse.equinox.ds,
  com.opcoach.e4.preferences,
  org.eclipse.nebula.widgets.formattedtext,
  org.eclipse.nebula.widgets.cdatetime,
@@ -21,7 +20,7 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
 Bundle-ActivationPolicy: lazy
 Import-Package: ca.odell.glazedlists;version="1.11.0",
  ca.odell.glazedlists.event;version="1.11.0",
- com.ibm.icu.util;version="67.1.0",
+ com.ibm.icu.util,
  com.sebulli.fakturama.i18n,
  com.sebulli.fakturama.log,
  com.sebulli.fakturama.misc,
@@ -29,15 +28,15 @@ Import-Package: ca.odell.glazedlists;version="1.11.0",
  com.sebulli.fakturama.resources.core,
  javax.annotation,
  javax.money,
- org.apache.commons.collections4;version="4.4.0",
+ org.apache.commons.collections4,
  org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans,
  org.eclipse.core.databinding.beans.typed,
  org.eclipse.core.databinding.observable.value,
  org.eclipse.core.databinding.property.value,
  org.eclipse.core.databinding.validation,
- org.eclipse.core.runtime;version="3.6.0",
- org.eclipse.core.runtime.preferences;version="3.4.0",
+ org.eclipse.core.runtime,
+ org.eclipse.core.runtime.preferences,
  org.eclipse.draw2d,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di,
@@ -50,7 +49,7 @@ Import-Package: ca.odell.glazedlists;version="1.11.0",
  org.eclipse.jface.databinding.fieldassist,
  org.eclipse.jface.databinding.swt,
  org.eclipse.jface.databinding.swt.typed,
- org.eclipse.nebula.widgets.nattable.extension.glazedlists;version="1.5.0",
+ org.eclipse.nebula.widgets.nattable.extension.glazedlists,
  org.eclipse.swt,
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
@@ -58,7 +57,7 @@ Import-Package: ca.odell.glazedlists;version="1.11.0",
  org.javamoney.moneta,
  org.osgi.framework;version="1.8.0",
  org.osgi.service.prefs;version="1.1.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ClassPath: .
 Service-Component: OSGI-INF/importservice.xml
 Automatic-Module-Name: org.fakturama.import

@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Export Wizard Service
 Bundle-SymbolicName: org.fakturama.export;singleton:=true
-Bundle-Version: 2.1.1
+Bundle-Version: 2.1.2
 Bundle-Vendor: Fakturama.org
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Service-Component: OSGI-INF/exportservice.xml,
  OSGI-INF/org.fakturama.export.wizard.contacts.ContactDatasheetWriter.xml
 Bundle-ActivationPolicy: lazy

@@ -17,12 +17,19 @@ package com.sebulli.fakturama.preferences;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Text;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
@@ -76,8 +83,33 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_MOBILE, msg.exporterDataMobile, getFieldEditorParent()));
 
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_FAX, msg.exporterDataTelefax, getFieldEditorParent()));
+		
+        StringFieldEditor emailField = new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_EMAIL, msg.exporterDataEmail, getFieldEditorParent());
 
-		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_EMAIL, msg.exporterDataEmail, getFieldEditorParent()));
+		// create error decoration
+		ControlDecoration deco =  new ControlDecoration(emailField.getTextControl(getFieldEditorParent()), 
+		        SWT.TOP | SWT.LEFT);
+
+        Image image = FieldDecorationRegistry.getDefault()
+                .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR)
+                .getImage();
+		deco.setDescriptionText(msg.editorContactFieldEmailValidationerror);
+		deco.setImage(image);
+		deco.setShowOnlyOnFocus(true);
+
+        emailField.getTextControl(getFieldEditorParent()).addModifyListener(e -> {
+            Text source = (Text) e.getSource();
+            String text = source.getText();
+            if (StringUtils.isBlank(text) || EmailValidator.getInstance().isValid(text)) {
+                deco.hide();
+                setValid(true);
+            } else {
+                deco.show();
+                setValid(false);
+            }
+        });
+			
+		addField(emailField);
 
 		addField(new StringFieldEditor(Constants.PREFERENCES_YOURCOMPANY_WEBSITE, msg.exporterDataWebsite, getFieldEditorParent()));
 
@@ -114,6 +146,7 @@ public class YourCompanyPreferencePage extends FieldEditorPreferencePage impleme
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_EMAIL, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_WEBSITE, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_VATNR, write);
+		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_TAXNR, write);
 		preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_YOURCOMPANY_TAXOFFICE, write);
 //		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BANKACCOUNTNR, write);
 //		preferencesInDatabase.syncWithPreferencesFromDatabase(PREFERENCES_YOURCOMPANY_COMPANY_BANKCODE, write);
