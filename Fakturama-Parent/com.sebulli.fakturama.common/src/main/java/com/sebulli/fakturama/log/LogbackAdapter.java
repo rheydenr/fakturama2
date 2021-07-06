@@ -18,8 +18,8 @@ import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogListener;
-import org.osgi.service.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -125,7 +125,7 @@ public class LogbackAdapter implements LogListener {
 		}		
 
 		// Show the error view (only if it is not just an information message)
-		if (log.getLevel() == LogService.LOG_ERROR && !showErrorView(log)) {
+		if (log.getLogLevel() == LogLevel.ERROR && !showErrorView(log)) {
 		    logger.error(bundleMarker, "Can't show the error message in Error View because no EventBroker is available!");
 		}
 
@@ -133,17 +133,17 @@ public class LogbackAdapter implements LogListener {
 		// the message
 		String message = log.getMessage();
 		if (log.getException() != null) {
-			switch (log.getLevel()) {
-			case LogService.LOG_DEBUG:
+			switch (log.getLogLevel()) {
+			case DEBUG:
 				logger.debug(message, log.getException());
 				break;
-			case LogService.LOG_INFO:
+			case INFO:
 				logger.info(message, log.getException());
 				break;
-			case LogService.LOG_WARNING:
+			case WARN:
 				logger.warn(message, log.getException());
 				break;
-			case LogService.LOG_ERROR:
+			case ERROR:
 				logger.error(message, log.getException());
 				break;
 			}
@@ -154,17 +154,20 @@ public class LogbackAdapter implements LogListener {
 					bundleMarker = MarkerFactory.getMarker(splittedString[0]);
 					message = splittedString[1];
 				}
-				switch (log.getLevel()) {
-				case LogService.LOG_DEBUG:
+				switch (log.getLogLevel()) {
+				case TRACE:
+					logger.trace(bundleMarker, message);
+					break;
+				case DEBUG:
 					logger.debug(bundleMarker, message);
 					break;
-				case LogService.LOG_INFO:
+				case INFO:
 					logger.info(bundleMarker, message);
 					break;
-				case LogService.LOG_WARNING:
+				case WARN:
 					logger.warn(bundleMarker, message);
 					break;
-				case LogService.LOG_ERROR:
+				case ERROR:
 					logger.error(bundleMarker, message);
 					break;
 				}

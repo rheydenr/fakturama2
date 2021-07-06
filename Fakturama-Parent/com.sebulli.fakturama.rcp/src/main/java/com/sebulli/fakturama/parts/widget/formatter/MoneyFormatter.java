@@ -84,7 +84,7 @@ public class MoneyFormatter extends NumberFormatter implements ITextFormatter {
     public Object getValue() {
         Number val = (Number) super.getValue();
         if ( val != null ) {
-            val = new Double(val.doubleValue());
+            val = Double.valueOf(val.doubleValue());
         }
         return val;
     }

@@ -16,11 +16,8 @@ package com.sebulli.fakturama.preferences;
 
 import java.io.File;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.StringButtonFieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -30,7 +27,6 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.OSDependent;
-import com.sebulli.fakturama.office.OfficeStarter;
 
 /**
  * A field editor for a file path type preference. A standard file dialog
@@ -43,12 +39,7 @@ public class AppFieldEditor extends StringButtonFieldEditor {
     @Inject
     @Translation
     protected Messages msg;
-    
-    @Inject
-    private IEclipseContext context;
 
-    private OfficeStarter ooStarter;
-  
 	/**
 	 * Creates a file field editor.
 	 * 
@@ -65,11 +56,6 @@ public class AppFieldEditor extends StringButtonFieldEditor {
 		setChangeButtonText(JFaceResources.getString("openBrowse"));
 		setValidateStrategy(VALIDATE_ON_FOCUS_LOST);
 		createControl(parents);
-	}
-	
-	@PostConstruct
-	public void preInit() {
-        ooStarter = ContextInjectionFactory.make(OfficeStarter.class, context);
 	}
 
 	/**

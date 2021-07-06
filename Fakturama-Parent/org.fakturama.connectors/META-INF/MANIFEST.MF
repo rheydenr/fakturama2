@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Fakturama Connectors
 Bundle-SymbolicName: org.fakturama.connectors;singleton:=true
-Bundle-Version: 2.1.2.qualifier
+Bundle-Version: 2.1.2
 Bundle-ClassPath: .,
  lib/dsn-2.0.1.jar,
  lib/imap-2.0.1.jar,

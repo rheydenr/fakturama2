@@ -2,7 +2,7 @@
 <feature
       id="org.apache.odftoolkit.feature"
       label="ODF Toolkit Feature"
-      version="0.9.0">
+      version="1.0.0.qualifier">
 
    <description url="https://incubator.apache.org/odftoolkit/index.html">
       The Apache ODF Toolkit is a set of Java modules that allow programmatic creation, scanning and manipulation of Open Document Format (ISO/IEC 26300 == ODF) documents.
@@ -21,5 +21,19 @@
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="org.apache.xerces"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.validator"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>

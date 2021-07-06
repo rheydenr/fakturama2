@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ODF Toolkit
 Bundle-SymbolicName: org.apache.odftoolkit
-Bundle-Version: 0.9.0
+Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Apache.org
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.odftoolkit.odfdom,
@@ -88,9 +88,38 @@ Bundle-ClassPath: lib/java-rdfa-0.4.2.jar,
  lib/jena-sdb-1.5.1.jar,
  lib/jena-tdb-1.1.1.jar,
  lib/libthrift-0.9.1.jar,
- lib/odfdom-java-0.9.0-RC2-SNAPSHOT.jar,
- lib/simple-odf-0.9.0-RC2-SNAPSHOT.jar,
- lib/taglets-0.9.0-RC2-SNAPSHOT.jar
+ lib/odfdom-java-1.0.0-BETA2-SNAPSHOT.jar,
+ lib/schema2template-1.0.0-BETA2-SNAPSHOT.jar,
+ lib/simple-odf-1.0.0-BETA2-SNAPSHOT.jar,
+ lib/taglets-1.0.0-BETA2-SNAPSHOT.jar
 Automatic-Module-Name: org.apache.odftoolkit
-Require-Bundle: org.apache.xerces;bundle-version="[2.9.0,2.9.9)",
- org.apache.commons.validator
+Import-Package: org.apache.commons.validator,
+ org.apache.commons.validator.routines,
+ org.apache.commons.validator.util,
+ org.apache.xerces.dom;version="2.9.0",
+ org.apache.xerces.dom.events;version="2.9.0",
+ org.apache.xerces.dom3.as;version="2.9.0",
+ org.apache.xerces.impl;version="2.9.0",
+ org.apache.xerces.impl.dtd;version="2.9.0",
+ org.apache.xerces.impl.dtd.models;version="2.9.0",
+ org.apache.xerces.impl.dv;version="2.9.0",
+ org.apache.xerces.impl.dv.dtd;version="2.9.0",
+ org.apache.xerces.impl.dv.util;version="2.9.0",
+ org.apache.xerces.impl.dv.xs;version="2.9.0",
+ org.apache.xerces.impl.io;version="2.9.0",
+ org.apache.xerces.impl.msg;version="2.9.0",
+ org.apache.xerces.impl.validation;version="2.9.0",
+ org.apache.xerces.impl.xpath;version="2.9.0",
+ org.apache.xerces.impl.xpath.regex;version="2.9.0",
+ org.apache.xerces.impl.xs;version="2.9.0",
+ org.apache.xerces.impl.xs.identity;version="2.9.0",
+ org.apache.xerces.impl.xs.models;version="2.9.0",
+ org.apache.xerces.impl.xs.opti;version="2.9.0",
+ org.apache.xerces.impl.xs.traversers;version="2.9.0",
+ org.apache.xerces.impl.xs.util;version="2.9.0",
+ org.apache.xerces.jaxp;version="2.9.0",
+ org.apache.xerces.jaxp.datatype;version="2.9.0",
+ org.apache.xerces.jaxp.validation;version="2.9.0",
+ org.apache.xerces.parsers;version="2.9.0",
+ org.apache.xerces.util;version="2.9.0",
+ org.json

@@ -49,7 +49,7 @@
           <entry location="plugins/javax.persistence_2.2.1.v201807122140.jar" />
         </exclude>
       </dirEntry>
-      <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64" entryMode="subdir" subDirectory="fakturama2">
+      <dirEntry mountPoint="56" file="../target/products/Fakturama.ID/linux/gtk/x86_64">
         <exclude>
           <entry location="plugins/javax.persistence_2.2.1.v201807122140.jar" />
         </exclude>
@@ -726,7 +726,7 @@ return console.askYesNo(message, true);
       </exclude>
       <jreBundle usePack200="false" />
     </windows>
-    <unixInstaller name="Unix Installer (Linux 64bit)" id="59" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/Fakturama2" require64BitVm="true">
+    <unixInstaller name="Unix Installer (Linux 64bit)" id="59" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/fakturama2" require64BitVm="true">
       <excludedLaunchers>
         <launcher id="44" />
       </excludedLaunchers>
@@ -738,7 +738,7 @@ return console.askYesNo(message, true);
       </exclude>
       <jreBundle usePack200="false" />
     </unixInstaller>
-    <linuxRPM name="Linux RPM" id="119" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" require64BitVm="true" arch="x86_64">
+    <linuxRPM name="Linux RPM" id="119" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/fakturama2" require64BitVm="true" arch="x86_64">
       <excludedLaunchers>
         <launcher id="44" />
       </excludedLaunchers>
@@ -747,10 +747,11 @@ return console.askYesNo(message, true);
         <entry filesetId="32" />
         <entry filesetId="41" />
       </exclude>
-      <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
+      <postInstallScript>sudo mv /usr/share/fakturama2/pixmaps /usr/share/fakturama2/applications ..
 sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
+      <preUninstallScript>sudo rm /usr/local/bin/Fakturama</preUninstallScript>
     </linuxRPM>
-    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share" require64BitVm="true" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
+    <linuxDeb name="Linux Deb Archive (64bit)" id="120" mediaFileName="Installer_${compiler:sys.shortName}_${compiler:sys.platform}_x64_${compiler:sys.version}" installDir="/usr/share/fakturama2" require64BitVm="true" bzip="true" description="Free and Open Source Invoicing Software" maintainerEmail="Ralf Heydenreich &lt;ralf.heydenreich@fakturama.net&gt;" architectureSet="true" architecture="amd64">
       <excludedLaunchers>
         <launcher id="44" />
       </excludedLaunchers>
@@ -759,8 +760,9 @@ sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
         <entry filesetId="32" />
         <entry filesetId="41" />
       </exclude>
-      <postInstallScript>sudo chmod 755 /usr/share/fakturama2/Fakturama
+      <postInstallScript>sudo mv /usr/share/fakturama2/pixmaps /usr/share/fakturama2/applications ..
 sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
+      <preUninstallScript>sudo rm /usr/local/bin/Fakturama</preUninstallScript>
     </linuxDeb>
     <macosFolderArchive name="macOS Folder Archive" id="611">
       <excludedLaunchers>
@@ -774,6 +776,8 @@ sudo ln -s /usr/share/fakturama2/Fakturama /usr/local/bin</postInstallScript>
     </macosFolderArchive>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="611" />
+    <mediaSet refId="59" />
+    <mediaSet refId="119" />
+    <mediaSet refId="120" />
   </buildIds>
 </install4j>

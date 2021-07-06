@@ -2,14 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Fakturama ZUGFeRD-Exporter
 Bundle-SymbolicName: org.fakturama.exporter.zugferd;singleton:=true
-Bundle-Version: 2.1.2.qualifier
+Bundle-Version: 2.1.2
 Bundle-ClassPath: .,
  lib/fontbox-2.0.20.jar,
  lib/pdfbox-2.0.20.jar,
  lib/xmpbox-2.0.20.jar
 Bundle-Vendor: Fakturama.org
-Require-Bundle: javax.inject,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts;bundle-version="[1.5.0,1.9.0)",
  org.eclipse.e4.core.services,
  org.eclipse.jface,
@@ -23,18 +22,20 @@ Require-Bundle: javax.inject,
  org.eclipse.e4.core.di.extensions,
  com.ibm.icu,
  org.eclipse.osgi.services,
- javax.annotation,
  org.eclipse.persistence.moxy,
  jakarta.xml.bind,
  jakarta.xml.bind-api,
  org.eclipse.nebula.widgets.opal.checkboxgroup
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Localization: OSGI-INF/l10n/zfbundle
 Export-Package: org.fakturama.export.zugferd
 Bundle-ActivationPolicy: lazy
 Import-Package: com.sebulli.fakturama.model,
  com.sebulli.fakturama.preferences,
  com.sebulli.fakturama.util,
+ javax.annotation;version="1.3.5",
+ javax.inject;version="1.0.0",
+ org.apache.xerces.dom,
  org.eclipse.persistence.jaxb;version="2.7.7"
 Bundle-Activator: org.fakturama.export.einvoice.Activator
 Automatic-Module-Name: org.fakturama.exporter.zugferd

@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -535,7 +536,7 @@ public class MigrationManager {
 					    VAT newVat = vatsDAO.findById(vatId);
 					    product.setVat(newVat);
 					}
-					product.setWebshopId(new Long(oldProduct.getWebshopid()));
+					product.setWebshopId(Long.valueOf(oldProduct.getWebshopid()));
 					product.setWeight(oldProduct.getWeight());
 					product.setValidFrom(new Date());
 					
@@ -743,7 +744,7 @@ public class MigrationManager {
 						document.setPayment(newPayment);
 					}
 					document.setTotalValue(roundValue(oldDocument.getTotal()));
-					document.setTransactionId(new Integer(oldDocument.getTransaction()));
+					document.setTransactionId(Integer.valueOf(oldDocument.getTransaction()));
 					document.setWebshopDate(getSaveParsedDate(oldDocument.getWebshopdate()));
 					document.setWebshopId(oldDocument.getWebshopid());
 					document.setProgress(oldDocument.getProgress());
@@ -1654,6 +1655,6 @@ public class MigrationManager {
     private double roundValue(double value) {
         int scale = 5;
         BigDecimal b = new BigDecimal(value);
-        return b.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return b.setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 }

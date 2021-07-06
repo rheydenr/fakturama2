@@ -2,7 +2,7 @@
 <feature
       id="org.fakturama.export.feature"
       label="Fakturama Exporter Feature"
-      version="2.1.2.qualifier"
+      version="2.1.2"
       provider-name="Fakturama.org">
 
    <description url="http://www.fakturama.info">

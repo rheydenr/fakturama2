@@ -1,22 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.opcoach.e4.preference.feature_1.0.0.jar" id="com.opcoach.e4.preference.feature" version="1.0.0">
-      <category name="de.rhe.libs.additional"/>
-   </feature>
-   <feature url="features/org.apache.odftoolkit.feature_0.9.0.jar" id="org.apache.odftoolkit.feature" version="0.9.0">
-      <category name="de.rhe.libs.apache"/>
-   </feature>
    <feature id="org.hsql.jdbc.feature">
       <category name="de.rhe.apps.osgi.drivers"/>
    </feature>
-   <feature id="org.apache.commons.feature">
-      <category name="de.rhe.libs.apache"/>
-   </feature>
    <feature id="org.javamoney.feature">
       <category name="de.rhe.libs.additional"/>
-   </feature>
-   <feature id="com.opencsv.feature" version="5.2.0">
-      <category name="de.rhe.apps.osgi.drivers"/>
    </feature>
    <feature id="com.mysql.jdbc.feature">
       <category name="de.rhe.apps.osgi.drivers"/>
@@ -24,7 +12,7 @@
    <feature id="org.slf4j.osgi.feature">
       <category name="de.rhe.libs.additional"/>
    </feature>
-   <feature id="org.apache.poi.feature">
+   <feature id="org.apache.odftoolkit.feature">
       <category name="de.rhe.libs.apache"/>
    </feature>
    <category-def name="de.rhe.apps.osgi.drivers" label="JDBC drivers for OSGi plugins">

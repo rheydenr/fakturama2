@@ -36,6 +36,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -156,6 +157,10 @@ public class TemplateProcessor {
 
     private final TemplateProcessorHelper templateProcessorHelper = new TemplateProcessorHelper();
 
+    @PostConstruct
+    public void init() {
+        contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+    }
 	/**
 	 * Replaces all line breaks by a "-"
 	 * 
@@ -421,7 +426,6 @@ public class TemplateProcessor {
 	 * @param documentSummary
 	 */
 	public void processTemplate(TextDocument textdoc, Document document, DocumentSummary documentSummary) {
-        contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
 
         // check if we have to use sales equalization tax
         setUseSalesEquationTaxForDocument(documentReceiverDao.isSETEnabled(document));

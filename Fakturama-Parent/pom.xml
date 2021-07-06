@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sebulli.fakturama</groupId>
 	<artifactId>Fakturama-Parent</artifactId>
-	<version>2.1.2-SNAPSHOT</version>
+	<version>2.1.2</version>
 	<packaging>pom</packaging>
 	<properties>
 		<tycho.version>2.3.0</tycho.version>
@@ -129,22 +129,6 @@
 							<version>${project.version}</version>
 						</artifact>
 					</target>
-					<filters>
-         <!-- remove all providers of the package javax.persistence -->
-				         <!--
-				         cannot be removed because of ancient Gemini plugin
-				         <filter>
-				            <type>eclipse-plugin</type>
-				            <id>javax.persistence</id>
-				            <removeAll />
-				         </filter>
-				          don't remove until ODF toolkit is upgraded! -->
-				         <!-- filter>
-				            <type>eclipse-plugin</type>
-				            <id>javax.xml</id>
-				            <removeAll />
-				         </filter>-->
-					</filters>
           			<pomDependencies>wrapAsBundle</pomDependencies>
 				</configuration>
 			</plugin>

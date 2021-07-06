@@ -771,22 +771,27 @@ public class ContactUtil {
 	 *            TRUE, if the string should be translated
 	 * @return Reliability as string
 	 */
-	public String getReliabilityString(ReliabilityType type, boolean translate) {
-		switch (type) {
-		case NONE:
-			return "---";
-		case POOR:
-			//T: Reliability
-			return msg.contactFieldReliabilityPoorName;
-		case MEDIUM:
-			//T: Reliability
-			return msg.contactFieldReliabilityMediumName;
-		case GOOD:
-			//T: Reliability
-			return msg.contactFieldReliabilityGoodName;
-		}
-		return "";
-	}
+    public String getReliabilityString(ReliabilityType type, boolean translate) {
+        if (type != null) {
+            switch (type) {
+            case NONE:
+                return "---";
+            case POOR:
+                // T: Reliability
+                return msg.contactFieldReliabilityPoorName;
+            case MEDIUM:
+                // T: Reliability
+                return msg.contactFieldReliabilityMediumName;
+            case GOOD:
+                // T: Reliability
+                return msg.contactFieldReliabilityGoodName;
+            default:
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
 	
 	/**
 	 * Get the reliability number by the string

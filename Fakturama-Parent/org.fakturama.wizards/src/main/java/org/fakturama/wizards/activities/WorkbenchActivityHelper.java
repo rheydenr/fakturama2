@@ -3,9 +3,6 @@ package org.fakturama.wizards.activities;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import org.fakturama.wizards.IE4WizardDescriptor;
-import org.fakturama.wizards.internal.dialogs.WorkbenchWizardElement;
-
 public class WorkbenchActivityHelper {
 	/**
 	 * The ID of the trigger point that only returns activities with core
