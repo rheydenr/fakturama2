@@ -531,7 +531,7 @@ public class DocumentEditor extends Editor<Document> {
 		    try {
                 document = documentsDAO.save(document);
                 if(itemListTable != null) {
-                    itemListTable.reloadItemList();
+                    itemListTable.reloadItemList(document);
                 }
             } catch (FakturamaStoringException e) {
                 log.error(e);
@@ -564,7 +564,7 @@ public class DocumentEditor extends Editor<Document> {
         try {
             document = documentsDAO.save(document);
             if(itemListTable != null) {
-                itemListTable.reloadItemList();
+                itemListTable.reloadItemList(document);
             }
         } catch (FakturamaStoringException e) {
             log.error(e);
@@ -3142,14 +3142,29 @@ public class DocumentEditor extends Editor<Document> {
     @org.eclipse.e4.core.di.annotations.Optional
     protected void handleDialogSelection(@UIEventTopic("DialogSelection/*") Event event) {
         if (event != null) {
-            // the event has already all given params in it since we created them as Map
-            Integer targetDocumentName = (Integer) event.getProperty(DOCUMENT_ID);
             // at first we have to check if the message is for us
-//            if(!StringUtils.equals(targetDocumentName, document.getName())) {
-            if(targetDocumentName != document.hashCode()) {
-                // silently ignore this event if it's not for this document
-                return; 
-            }
+
+            if (event.getProperty(DOCUMENT_ID) instanceof String) {
+                String targetDocumentName = (String) event.getProperty(DOCUMENT_ID);
+                // at first we have to check if the message is for us
+                if (!StringUtils.equals(targetDocumentName, document.getName())) {
+                    // silently ignore this event if it's not for this document
+                    return;
+                }
+
+            } else {
+
+                // the event has already all given params in it since we created
+                // them as Map
+                Integer targetDocumentName = (Integer) event.getProperty(DOCUMENT_ID);
+
+                // if(!StringUtils.equals(targetDocumentName,
+                // document.getName())) {
+                if (targetDocumentName != document.hashCode()) {
+                    // silently ignore this event if it's not for this document
+                    return;
+                }
+            }            
             
             boolean isChanged = false;
             String topic = StringUtils.defaultString(event.getTopic());
