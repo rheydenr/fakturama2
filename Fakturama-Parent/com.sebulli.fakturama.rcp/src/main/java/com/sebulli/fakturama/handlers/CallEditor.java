@@ -160,7 +160,7 @@ public class CallEditor {
             List<Document> selectedObjects = (List<Document>) selectionService.getSelection(activePart.getElementId());
             retval = selectedObjects != null && selectedObjects.size() == 1;
         }
-        return retval;
+        return  retval;
     }
 
 	/**

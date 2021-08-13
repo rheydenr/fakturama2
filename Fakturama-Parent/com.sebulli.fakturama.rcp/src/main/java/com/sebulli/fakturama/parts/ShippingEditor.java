@@ -266,6 +266,11 @@ public class ShippingEditor extends Editor<Shipping> {
             objId = Long.valueOf(tmpObjId);
             // Set the editor's data set to the editor's input
             editorShipping = shippingDao.findById(objId, true);
+            if(editorShipping.getShippingVat() == null) {
+                long vatId = defaultValuePrefs.getLong(Constants.DEFAULT_VAT);
+                VAT vat = vatsDao.findById(vatId);  // initially set default VAT
+                editorShipping.setShippingVat(vat);
+            }
         }
         
         // Some of this editos's control elements can be hidden.
@@ -378,7 +383,7 @@ public class ShippingEditor extends Editor<Shipping> {
         }
 
 		context.set(Constants.CONTEXT_STYLE, SWT.BORDER | SWT.RIGHT);
-		context.set(Constants.CONTEXT_VATVALUE, editorShipping.getShippingVat().getTaxValue());
+		context.set(Constants.CONTEXT_VATVALUE, editorShipping.getShippingVat() != null ? editorShipping.getShippingVat().getTaxValue() : Double.valueOf(0.0));
 		context.set(Constants.CONTEXT_CANVAS, netGrossComposite);
 		context.set(Constants.CONTEXT_NETVALUE, net);
         // Create a net text widget

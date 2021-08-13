@@ -65,13 +65,14 @@ public class VatSummarySetManager {
 		// Create a new summary object and start the calculation.
 		// This will add all the entries to the VatSummarySet
 		DocumentSummaryCalculator documentSummaryCalculator = ContextInjectionFactory.make(DocumentSummaryCalculator.class, context);
-		documentSummaryCalculator.calculate(vatSummarySet, document.getItems(), 
+		DocumentSummary documentSummary = documentSummaryCalculator.calculate(vatSummarySet, document.getItems(), 
 				document.getShipping() != null ? document.getShipping().getShippingValue() : Optional.ofNullable(document.getShippingValue()).orElse(Double.valueOf(0.0)) * parentSign,
 				document.getShipping() != null ? document.getShipping().getShippingVat() : null,
 				document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), 
 				Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0)), 
 				document.getNoVatReference(),
  			    scaleFactor, document.getNetGross(), deposit);
+		vatSummarySet.addVatSummarySet(documentSummary.getVatSummary());
 	}
 	
 	/**
