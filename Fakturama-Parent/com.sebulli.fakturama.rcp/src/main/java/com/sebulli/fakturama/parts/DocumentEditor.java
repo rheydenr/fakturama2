@@ -1131,7 +1131,26 @@ public class DocumentEditor extends Editor<Document> {
 					long paymentId = defaultValuePrefs.getLong(Constants.DEFAULT_PAYMENT);
 	                Payment payment = paymentsDao.findById(paymentId);
 	                document.setPayment(payment);
+// GS/20210922 set/calculate due days in follow-up documents
+				} else {
+					Payment payment = null;
+					DocumentReceiver drc = addressManager.getBillingAdress(document);
+					if (drc != null) {
+						// get _current_ payment info from the contact
+						// may have changed meanwhile since the preceeding doc was created
+						payment = contactDAO.findById(drc.getOriginContactId()).getPayment();
+					}
+					if (payment == null) {
+						// default as before: use what we got from the preceeding document
+						payment = document.getPayment();
+					}
+	                if (payment != null) {
+	                	document.setPayment(payment);
+	                	document.setDueDays(payment.getNetDays());
+	                }
+// GS/ -end-
 				}
+
 				
 				if (document.getShipping() != null)
 					shipping = document.getShipping();
