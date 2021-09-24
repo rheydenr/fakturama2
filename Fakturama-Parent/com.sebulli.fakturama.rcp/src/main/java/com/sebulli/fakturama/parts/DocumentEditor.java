@@ -1274,6 +1274,13 @@ public class DocumentEditor extends Editor<Document> {
 		retval.setCustomerRef(parentDoc.getCustomerRef());
 		retval.setServiceDate(parentDoc.getServiceDate());
 		retval.setOrderDate(parentDoc.getOrderDate());
+// GS/20210922 for Confirmation (Auftragsbest.) set(overwrite) some dates to today
+		if (retval.getBillingType().isCONFIRMATION()) {
+			Date today = Calendar.getInstance().getTime();
+			retval.setServiceDate(today);
+			retval.setOrderDate(today);
+		}
+// GS/ -end-
 		if(parentDoc.getBillingType().isINVOICE()) {
 			retval.setInvoiceReference((Invoice) parentDoc);
 		} else if(parentDoc.getInvoiceReference() != null) {
