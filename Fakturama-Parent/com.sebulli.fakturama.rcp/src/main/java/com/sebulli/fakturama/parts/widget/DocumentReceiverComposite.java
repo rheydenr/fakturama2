@@ -50,6 +50,7 @@ import com.sebulli.fakturama.handlers.CallEditor;
 import com.sebulli.fakturama.handlers.CommandIds;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.misc.DocumentType;
 import com.sebulli.fakturama.misc.EmbeddedProperties;
 import com.sebulli.fakturama.misc.Util;
 import com.sebulli.fakturama.model.BillingType;
@@ -480,6 +481,14 @@ public class DocumentReceiverComposite extends Composite {
 		Document document = theEditor.getDocument();
 		BillingType docBT = document.getBillingType();
 		if (mailProgCall != null && mailProgCall.length() > 0) {
+// GS/20210922 warn/confirm if selected documentReceiver is not the billing address
+			if (theReceiver.getBillingType() != BillingType.INVOICE) {
+				DocumentType documentType = DocumentTypeUtil.findByBillingType(theReceiver.getBillingType());
+				String addressTypeName = msg.getMessageFromKey(documentType.getAddressKey());
+				if (!MessageDialog.openQuestion(getShell(), "Mailversand an "+addressTypeName+"!",
+						"ACHTUNG!\n\nMailversand an "+addressTypeName+".\n\nFortfahren?"))
+					return;
+			}
 			try {
 				// required for exec command
 				String[] execCommandSegments = mailProgCall.split("_\\|_"); // segments separated by: _|_
