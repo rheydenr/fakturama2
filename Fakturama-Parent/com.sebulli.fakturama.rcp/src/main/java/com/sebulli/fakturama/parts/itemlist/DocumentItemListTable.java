@@ -725,7 +725,8 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
     }
 
 
-    public void reloadItemList() {
+    public void reloadItemList(Document document) {
+        this.document = document;
         DocumentType documentType = DocumentTypeUtil.findByBillingType(document.getBillingType());
         
         if (!documentType.hasPrice()) {

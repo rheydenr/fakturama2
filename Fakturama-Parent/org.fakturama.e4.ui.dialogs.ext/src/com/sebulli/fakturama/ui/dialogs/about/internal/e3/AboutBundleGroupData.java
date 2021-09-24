@@ -91,7 +91,7 @@ public class AboutBundleGroupData extends AboutData {
 				}
 			}
 
-			featureImageCrc = new Long(checksum.getValue());
+			featureImageCrc = Long.valueOf(checksum.getValue());
 			return featureImageCrc;
 
 		} catch (IOException e) {

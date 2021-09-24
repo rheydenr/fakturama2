@@ -38,7 +38,8 @@
         <setEntry value="ch.qos.logback.core@2:default"/>
         <setEntry value="ch.qos.logback.slf4j@default:false"/>
         <setEntry value="com.ibm.icu@default:default"/>
-        <setEntry value="com.mysql.jdbc@2:true"/>
+        <setEntry value="com.mysql.jdbc*1.2.0@2:true"/>
+        <setEntry value="com.mysql.jdbc*5.1.48@2:true"/>
         <setEntry value="com.opcoach.e4.preferences@default:default"/>
         <setEntry value="com.opencsv@default:default"/>
         <setEntry value="com.sun.activation.jakarta.activation@default:default"/>
@@ -82,8 +83,8 @@
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@2:true"/>
         <setEntry value="org.apache.odftoolkit@default:default"/>
-        <setEntry value="org.apache.poi@default:default"/>
-        <setEntry value="org.apache.xerces@default:default"/>
+        <setEntry value="org.apache.xerces*2.12.1.v20210115-0812@default:default"/>
+        <setEntry value="org.apache.xerces*2.9.0.v201101211617@default:default"/>
         <setEntry value="org.apache.xml.resolver@default:default"/>
         <setEntry value="org.apache.xml.serializer@default:default"/>
         <setEntry value="org.apache.xmlbeans@default:default"/>

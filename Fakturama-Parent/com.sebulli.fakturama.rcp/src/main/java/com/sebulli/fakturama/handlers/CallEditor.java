@@ -14,7 +14,6 @@
 
 package com.sebulli.fakturama.handlers;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +68,6 @@ import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.parts.TextEditor;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
-import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.contacts.ContactListTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.views.datatable.lists.ItemAccountTypeListTable;
@@ -162,7 +160,7 @@ public class CallEditor {
             List<Document> selectedObjects = (List<Document>) selectionService.getSelection(activePart.getElementId());
             retval = selectedObjects != null && selectedObjects.size() == 1;
         }
-        return retval;
+        return  retval;
     }
 
 	/**

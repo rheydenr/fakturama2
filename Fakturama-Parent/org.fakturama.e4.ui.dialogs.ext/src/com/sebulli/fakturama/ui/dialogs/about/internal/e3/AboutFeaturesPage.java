@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.IBundleGroup;
 import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.Platform;
@@ -59,9 +57,6 @@ import com.sebulli.fakturama.ui.dialogs.WorkbenchMessages;
  * outside the workbench.
  */
 public class AboutFeaturesPage extends ProductInfoPage {
-	
-	@Inject
-	private IEclipseContext context;
 
 	/** used as the page id when this page is launched in its own dialog */
 	private static final String ID = "productInfo.features"; //$NON-NLS-1$

@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.fakturama.wizards.internal.dialogs.WizardCollectionElement;
+import org.fakturama.wizards.internal.dialogs.model.WorkbenchAdapter;
 
 /**
  * Provider used by the NewWizardNewPage.
@@ -32,17 +33,17 @@ public class WizardTreeContentProvider implements ITreeContentProvider {
      */
     public Object[] getChildren(Object parentElement) {
         if (parentElement instanceof WizardCollectionElement) {
-            List list = new ArrayList();
+            List<WorkbenchAdapter> list = new ArrayList<>();
             WizardCollectionElement element = (WizardCollectionElement) parentElement;
 
             Object[] childCollections = element.getChildren();
             for (int i = 0; i < childCollections.length; i++) {
-                handleChild(childCollections[i], list);
+                handleChild((WorkbenchAdapter) childCollections[i], list);
             }
 
             Object[] childWizards = element.getWizards();
             for (int i = 0; i < childWizards.length; i++) {
-                handleChild(childWizards[i], list);
+                handleChild((WorkbenchAdapter) childWizards[i], list);
             }
 //
 //            // flatten lists with only one category
@@ -55,9 +56,9 @@ public class WizardTreeContentProvider implements ITreeContentProvider {
         } else if (parentElement instanceof AdaptableList) {
             AdaptableList aList = (AdaptableList) parentElement;
             Object[] children = aList.getChildren();
-            List list = new ArrayList(children.length);
+            List<WorkbenchAdapter> list = new ArrayList<>(children.length);
             for (int i = 0; i < children.length; i++) {
-                handleChild(children[i], list);
+                handleChild((WorkbenchAdapter) children[i], list);
             }
 //            // if there is only one category, return it's children directly (flatten list)
 //            if (list.size() == 1
@@ -105,7 +106,7 @@ public class WizardTreeContentProvider implements ITreeContentProvider {
      * @param list the <code>Collection</code> to add to.
      * @since 3.0
      */
-    private void handleChild(Object element, List list) {
+    private void handleChild(WorkbenchAdapter element, List<WorkbenchAdapter> list) {
         if (element instanceof WizardCollectionElement) {
             if (hasChildren(element)) {
 				list.add(element);
