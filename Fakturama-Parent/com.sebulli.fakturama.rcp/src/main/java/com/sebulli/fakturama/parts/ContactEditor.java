@@ -1079,7 +1079,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 			    if(editorContact.getAddresses().get(realIndex).getDeleted()) {
 			        continue;
 			    }
-				createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress, realIndex, visibleIndex, invisible, createAddressPanel(), SWT.CLOSE);
+			    createAddressTabForBillingType(msg.editorContactLabelAdditionaladdress, realIndex, visibleIndex, invisible, createAddressPanel(), SWT.CLOSE);
 				visibleIndex++;
 			}
 		}
@@ -1163,12 +1163,40 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	private CTabItem createAddressTabForBillingType(String name, Integer realIndex, int visibleIndex, Composite invisible, Composite addressGroup, int style) {
 		CTabItem addressForBillingType = new CTabItem(addressTabFolder, style);
 		AddressTabWidget addressTabWidget = new AddressTabWidget();
-		if(realIndex != null) {
-		    addressForBillingType.setText(name + " #" + visibleIndex);
-		    addressForBillingType.setData(ADDRESS_INDEX, realIndex);
+// GS/20210922 set 'real' data in tab labels
+		String tabLabelText = null;
+		try {
+			Address adr = editorContact.getAddresses().get(realIndex != null ? realIndex : 0);
+			tabLabelText = adr.getName();
+			if (tabLabelText == null || tabLabelText.length() < 1) {
+				tabLabelText = adr.getLocalConsultant();
+			}
+		} catch (Exception e) { ; }
+		if (tabLabelText != null && tabLabelText.length() > 0) {
+			// if text too long, shorten and add full text to tooltip
+			if (tabLabelText.length() > 20) {
+				addressForBillingType.setToolTipText(tabLabelText);
+				tabLabelText = tabLabelText.substring(0, 14) + " ...";
+			}
 		} else {
-		    addressForBillingType.setText(name);
-		}
+			// default as it was
+			if(realIndex != null) {
+				tabLabelText = name + " #" + visibleIndex;
+			    addressForBillingType.setData(ADDRESS_INDEX, realIndex);
+			} else {
+				tabLabelText = name;
+			}
+		}					
+		addressForBillingType.setText(tabLabelText);
+		if(realIndex != null)
+		    addressForBillingType.setData(ADDRESS_INDEX, realIndex);
+//		if(realIndex != null) {
+//		    addressForBillingType.setText(name + " #" + visibleIndex);
+//		    addressForBillingType.setData(ADDRESS_INDEX, realIndex);
+//		} else {
+//		    addressForBillingType.setText(name);
+//		}
+//GS/ -end-
 		addressForBillingType.setData(ADDRESS_TAB_WIDGET, addressTabWidget);
         
         // Name Addon
