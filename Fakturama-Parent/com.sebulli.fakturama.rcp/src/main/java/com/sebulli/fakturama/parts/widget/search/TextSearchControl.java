@@ -171,7 +171,7 @@ public class TextSearchControl extends Composite {
 						style |= SWT.ICON_SEARCH;
 					}
 					testText = new Text(parent, style);
-					useNativeSearchField = new Boolean((testText.getStyle() & SWT.ICON_CANCEL) != 0
+					useNativeSearchField = Boolean.valueOf((testText.getStyle() & SWT.ICON_CANCEL) != 0
 							&& (!automaticFind || (testText.getStyle() & SWT.ICON_SEARCH) != 0));
 				} finally {
 					if (testText != null) {

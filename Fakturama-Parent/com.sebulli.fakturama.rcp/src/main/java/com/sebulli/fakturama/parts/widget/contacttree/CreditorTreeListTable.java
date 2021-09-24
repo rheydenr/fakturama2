@@ -11,12 +11,9 @@ import org.eclipse.swt.widgets.Control;
 import com.sebulli.fakturama.dao.AbstractDAO;
 import com.sebulli.fakturama.dao.CreditorsDAO;
 import com.sebulli.fakturama.dao.DebitorAddress;
-import com.sebulli.fakturama.dao.DebitorsDAO;
 import com.sebulli.fakturama.model.ContactType;
 import com.sebulli.fakturama.model.Creditor;
-import com.sebulli.fakturama.model.Debitor;
 import com.sebulli.fakturama.parts.CreditorEditor;
-import com.sebulli.fakturama.parts.DebitorEditor;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;

@@ -184,7 +184,7 @@ public class DocumentSummaryCalculator {
 			retval.setTotalNet(retval.getItemsNet());
 		}
 		
-		retval.setTotalGross(retval.getItemsGross());
+		retval.setTotalGross(retval.getItemsGrossDiscounted());
 
 		MonetaryAmount itemsNet = retval.getItemsNetDiscounted();
 		MonetaryAmount itemsGross = retval.getItemsGross();
@@ -310,8 +310,8 @@ public class DocumentSummaryCalculator {
 		}
 
 		// Add the shipping to the documents sum.
-		retval.addToTotalNet(retval.getShippingNet().with(rounding));
-		retval.addToTotalGross(retval.getShippingGross().with(rounding));
+		retval.addToTotalNet(retval.getShippingNet());
+		retval.addToTotalGross(retval.getShippingGross());
 
 		// Finally, round the values
 		retval.setDiscountNet(retval.getDiscountNet().with(rounding));
@@ -319,6 +319,8 @@ public class DocumentSummaryCalculator {
 
 		retval.setItemsNet(retval.getItemsNet().with(rounding));
 		retval.setItemsGross(retval.getItemsGross().with(rounding));
+		
+		retval.setTotalGross(retval.getTotalGross().with(rounding));
 
 		// round the shipping values
 		if (param.getNetGross() == DocumentSummary.ROUND_NET_VALUES) {

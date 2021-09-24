@@ -28,7 +28,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -54,9 +53,6 @@ public class FakturamaCoolbarAction extends Action {
 
     @Inject
     private IEclipseContext ctx;
-    
-    @Inject
-    private ESelectionService selectionService;
 
     private ParameterizedCommand pCmd;
 

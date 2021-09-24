@@ -83,7 +83,6 @@
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@2:true"/>
         <setEntry value="org.apache.odftoolkit@default:default"/>
-        <setEntry value="org.apache.poi@default:default"/>
         <setEntry value="org.apache.xerces*2.12.1.v20210115-0812@default:default"/>
         <setEntry value="org.apache.xerces*2.9.0.v201101211617@default:default"/>
         <setEntry value="org.apache.xml.resolver@default:default"/>

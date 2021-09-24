@@ -12,9 +12,9 @@ import java.nio.file.Paths;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
@@ -108,7 +108,7 @@ public class ConfigurationManager {
         Options options = new Options();
         options.addOption(selectWorkspaceOpt).addOption(persistState).addOption(showlocation);
         
-        CommandLineParser parser = new BasicParser();
+        CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args, true);
             if(cmd.hasOption('w')) {

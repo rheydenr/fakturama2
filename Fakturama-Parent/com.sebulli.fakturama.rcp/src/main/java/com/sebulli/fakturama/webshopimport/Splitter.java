@@ -180,6 +180,8 @@ public class Splitter extends XMLFilterImpl {
 	    }
 	}
 
+	// only used for logging / debugging
+    @SuppressWarnings("unused")
     private void logXml(Object jaxbElement) {
         // Write the web shop log file
         if (logBuffer != null) {
@@ -188,7 +190,6 @@ public class Splitter extends XMLFilterImpl {
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 marshaller.marshal(jaxbElement, logBuffer);
             } catch (JAXBException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
