@@ -123,7 +123,6 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
                 booleanPropertyAction.setChecked(((Button)e.getSource()).getSelection());
                 booleanPropertyAction.run();
                 enableXRechnungPathField(getPreferenceStore().getString(ZFConstants.PREFERENCES_ZUGFERD_PROFILE));
-                super.widgetSelected(e);
             }
         });
         editorParent = group.getContent();
@@ -149,7 +148,14 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 				featureMap.get(zfVersion.get()), editorParent);
 		addField(conformanceLevelCombo);
 		
-        xrechnungPathField = new StringFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, editorParent);
+        xrechnungPathField = new StringFieldEditor(ZFConstants.PREFERENCES_ZUGFERD_PATH, msg.zugferdPreferencesFilelocation, editorParent) {
+            public void setEmptyStringAllowed(boolean b) {
+                super.setEmptyStringAllowed(b);
+                // else the error flag isn't reset
+                refreshValidState();
+            };
+        };
+        xrechnungPathField.setEmptyStringAllowed(false);
         addField(xrechnungPathField);
         boolean isZFActive = getPreferenceStore().getBoolean(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE);
         group.setSelection(isZFActive);
@@ -164,7 +170,10 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
             // only if conformance level can't be determined
             currentConformanceLevel = ConformanceLevel.FACTURX_EN16931;
         }
-        xrechnungPathField.setEnabled(ConformanceLevel.XRECHNUNG == currentConformanceLevel, editorParent);
+        boolean enabled = ConformanceLevel.XRECHNUNG == currentConformanceLevel;
+        xrechnungPathField.setEnabled(enabled, editorParent);
+        xrechnungPathField.setEmptyStringAllowed(!enabled);
+        checkState();
     }
 	
 	@Override
@@ -179,9 +188,8 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
             Arrays.stream(featureMap.get(selectionValue.get())).forEach(v -> cfCombo.add(v[0]));
             cfCombo.select(0);
 
-            enableXRechnungPathField(getPreferenceStore().getString(ZFConstants.PREFERENCES_ZUGFERD_PROFILE));
-	    } else if(event.getSource() instanceof ComboFieldEditor
-	            && event.getOldValue() != event.getNewValue()) {
+            enableXRechnungPathField(cfCombo.getText());
+	    } else if(event.getSource() instanceof ComboFieldEditor) {
 	        enableXRechnungPathField((String) event.getNewValue());
 	    }
 	}
@@ -218,7 +226,7 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
         node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE, Boolean.FALSE);
         node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_VERSION, ZugferdVersion.V2_1.getVersion());
         node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_TEST, Boolean.FALSE);
-        node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, ConformanceLevel.XRECHNUNG.getDescriptor());
+        node.setDefault(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, ConformanceLevel.XRECHNUNG.name());
     }
 
     @Override
