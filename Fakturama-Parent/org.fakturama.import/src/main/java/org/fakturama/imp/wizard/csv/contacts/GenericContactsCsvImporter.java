@@ -154,16 +154,16 @@ public class GenericContactsCsvImporter {
             csv.setCsvReader(csvr);
             csv.setMappingStrategy(strat);
 
-            Iterator<ContactBeanCSV> productCsvIterator = csv.iterator();            
+            Iterator<ContactBeanCSV> contactCsvIterator = csv.iterator();            
             
             // Read the existing file and store it in a buffer
             // with a fixed size. Only the latest lines are kept.
 
             // Read line by line
-            while (productCsvIterator.hasNext()) {
+            while (contactCsvIterator.hasNext()) {
 //                lineNr++;
 
-                ContactBeanCSV contactBean = productCsvIterator.next();
+                ContactBeanCSV contactBean = contactCsvIterator.next();
                 
                 Address address = modelFactory.createAddress();
                 address.setZip(contactBean.getZip());
