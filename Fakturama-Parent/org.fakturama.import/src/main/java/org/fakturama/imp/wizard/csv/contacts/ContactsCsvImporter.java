@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -45,6 +46,7 @@ import com.sebulli.fakturama.dao.ContactCategoriesDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.dao.PaymentsDAO;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.DataUtils;
@@ -88,6 +90,9 @@ public class ContactsCsvImporter {
     @Inject
 	private ContactUtil contactUtil;
     
+    @Inject
+    private ILocaleService localeUtil;
+
     @Inject
     private PaymentsDAO paymentsDAO;
     
@@ -396,7 +401,22 @@ public class ContactsCsvImporter {
 		address.setFax(prop.getProperty(StringUtils.join(prefix, "fax")));
 		address.setMobile(prop.getProperty(StringUtils.join(prefix, "mobile")));
 		address.setEmail(prop.getProperty(StringUtils.join(prefix, "email")));
-//		address.setCountryCode(prop.getProperty("country")); // FIXME set correct country code!!!!
+		
+		String countryCode = prop.getProperty("country");
+		if(countryCode != null) {
+		      // Code has to be a two-char ISO code (i.e., "DE" or "AT")
+		      // case 1: Code is already a valid country code
+		      if(localeUtil.findByCode(countryCode).isPresent()) {
+		          // ok
+		      } else if(localeUtil.findLocaleByDisplayCountry(countryCode).isPresent()) {
+		          // case 2: Code is a valid country name in locale language
+		          countryCode = localeUtil.findLocaleByDisplayCountry(countryCode).get().getCountry();
+		      } else {
+    		      // case 3: code is a country name in English
+    		      countryCode = localeUtil.findCodeByDisplayCountry(countryCode, Locale.ENGLISH.getLanguage());
+		      }
+		}
+        address.setCountryCode(countryCode);
 		return address;
 	}
 
