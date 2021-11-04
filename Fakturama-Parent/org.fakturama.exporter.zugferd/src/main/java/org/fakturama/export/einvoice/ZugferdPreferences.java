@@ -122,7 +122,7 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
             public void widgetSelected(SelectionEvent e) {
                 booleanPropertyAction.setChecked(((Button)e.getSource()).getSelection());
                 booleanPropertyAction.run();
-                enableXRechnungPathField(getPreferenceStore().getString(ZFConstants.PREFERENCES_ZUGFERD_PROFILE));
+                enableXRechnungPathField(group.getSelection(), null);
             }
         });
         editorParent = group.getContent();
@@ -159,18 +159,24 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
         addField(xrechnungPathField);
         boolean isZFActive = getPreferenceStore().getBoolean(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE);
         group.setSelection(isZFActive);
-        enableXRechnungPathField(getPreferenceStore().getString(ZFConstants.PREFERENCES_ZUGFERD_PROFILE));
+        enableXRechnungPathField(isZFActive, getPreferenceStore().getString(ZFConstants.PREFERENCES_ZUGFERD_PROFILE));
 	}
 
-    private void enableXRechnungPathField(String currentConformanceLevelString) {
+    private void enableXRechnungPathField(boolean isZFActive, String currentConformanceLevelString) {
         ConformanceLevel currentConformanceLevel;
+        
+        if(currentConformanceLevelString == null) {
+            Combo comboBox = getCombo(conformanceLevelCombo);
+            currentConformanceLevelString = comboBox.getItem(comboBox.getSelectionIndex());
+        }
+        
         try {
             currentConformanceLevel = ConformanceLevel.valueOf(currentConformanceLevelString);
         } catch (Exception e) {
             // only if conformance level can't be determined
             currentConformanceLevel = ConformanceLevel.FACTURX_EN16931;
         }
-        boolean enabled = ConformanceLevel.XRECHNUNG == currentConformanceLevel;
+        boolean enabled = isZFActive && ConformanceLevel.XRECHNUNG == currentConformanceLevel;
         xrechnungPathField.setEnabled(enabled, editorParent);
         xrechnungPathField.setEmptyStringAllowed(!enabled);
         checkState();
@@ -179,6 +185,7 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 	    super.propertyChange(event);
+        boolean isZFActive = getPreferenceStore().getBoolean(ZFConstants.PREFERENCES_ZUGFERD_ACTIVE);
 	    if(event.getSource() instanceof RadioGroupFieldEditor
 	            && event.getOldValue() != event.getNewValue()) {
 		    String selectionValueStr = ((RadioGroupFieldEditor)event.getSource()).getSelectionValue();
@@ -188,9 +195,9 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
             Arrays.stream(featureMap.get(selectionValue.get())).forEach(v -> cfCombo.add(v[0]));
             cfCombo.select(0);
 
-            enableXRechnungPathField(cfCombo.getText());
+            enableXRechnungPathField(isZFActive, cfCombo.getText());
 	    } else if(event.getSource() instanceof ComboFieldEditor) {
-	        enableXRechnungPathField((String) event.getNewValue());
+	        enableXRechnungPathField(isZFActive, (String) event.getNewValue());
 	    }
 	}
 
