@@ -122,7 +122,6 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
             public void widgetSelected(SelectionEvent e) {
                 booleanPropertyAction.setChecked(((Button)e.getSource()).getSelection());
                 booleanPropertyAction.run();
-                enableXRechnungPathField(group.getSelection(), null);
             }
         });
         editorParent = group.getContent();
@@ -201,6 +200,11 @@ public class ZugferdPreferences extends FieldEditorPreferencePage implements IIn
 	    }
 	}
 
+	/**
+	 * Ugly hack get the combo box from field editor.
+	 * @param comboFieldEditor
+	 * @return
+	 */
     private Combo getCombo(ComboFieldEditor comboFieldEditor) {
         Method privateStringMethod;
 
