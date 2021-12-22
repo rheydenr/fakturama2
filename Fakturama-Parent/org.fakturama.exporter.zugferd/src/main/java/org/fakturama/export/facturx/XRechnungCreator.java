@@ -90,7 +90,7 @@ public class XRechnungCreator extends AbstractEInvoiceCreator {
         
         // 3. merge XML & PDF/A-1 to PDF/A-3
         return createPdf(invoice.get(), () -> invoiceXml, zugferdProfile);
-        //      testOutput(root);
+        //      testOutput(invoice.get());
     }
 
     @Override
