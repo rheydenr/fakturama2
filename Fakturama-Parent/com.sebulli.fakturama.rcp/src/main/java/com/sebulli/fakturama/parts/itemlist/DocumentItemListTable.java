@@ -1069,14 +1069,14 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
      */
     public void renumberItems() {
         int no = 1;
-        for (int i = 0; i < documentItemsListData.size(); i++) {
-        	DocumentItemDTO documentItemDTO = documentItemsListData.get(i);
-        	if(documentItemDTO.getDocumentItem().getDeleted()) {
-        		continue;
-        	}
-            int rowPositionByIndex = getGridLayer().getBodyLayerStack().getRowReorderLayer().getRowPositionByIndex(i);
-            getGridLayer().getBodyDataProvider().getRowObject(rowPositionByIndex).getDocumentItem().setPosNr(no++);
-        }
+        List<Integer> rowIndexOrder = getGridLayer().getBodyLayerStack().getRowReorderLayer().getRowIndexOrder();
+        for (Integer i : rowIndexOrder) {
+            DocumentItem documentItem = documentItemsListData.get(i).getDocumentItem();
+            if (documentItem.getDeleted()) {
+                continue;
+            }
+            documentItem.setPosNr(no++);
+        }        
     }
     
     /**

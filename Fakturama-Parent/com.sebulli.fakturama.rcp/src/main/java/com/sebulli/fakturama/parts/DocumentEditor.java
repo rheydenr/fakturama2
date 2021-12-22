@@ -1324,7 +1324,9 @@ public class DocumentEditor extends Editor<Document> {
                 DocumentReceiver rec = addressManager.createDocumentReceiverForBillingType(contactFromReceiver, resultingDoc.getBillingType());
                 
                 // create a main receiver (only if address is different from parent doc's receivers)
-                java.util.Optional<DocumentReceiver> existingMatchingReceiver = parentDoc.getReceiver().stream().filter(r -> r.getOriginAddressId() != null && r.getOriginAddressId() == rec.getOriginAddressId()).findFirst();
+                java.util.Optional<DocumentReceiver> existingMatchingReceiver = parentDoc.getReceiver().stream()
+                        .filter(r -> r.getOriginAddressId() != null && r.getOriginAddressId().equals(rec.getOriginAddressId())).findFirst();
+                
                 if(existingMatchingReceiver.isPresent()) {
                     mainReceiver = existingMatchingReceiver;
                     mainReceiver.get().setBillingType(resultingDoc.getBillingType());

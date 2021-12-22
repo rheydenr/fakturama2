@@ -96,7 +96,7 @@ public class ZugferdExporter implements IPdfPostProcessor {
 			// Therefore we check this at the beginning.
     	    if(eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_VERSION, "2.1").contentEquals("2.1")) {
                 // currently only COMFORT profile is supported
-    			String conformanceLevel = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, ConformanceLevel.ZUGFERD_V2_COMFORT.getDescriptor());
+    			String conformanceLevel = eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PROFILE, ConformanceLevel.XRECHNUNG.name());
     	        zugferdProfile = ConformanceLevel.valueOf(conformanceLevel);
     	    } else { // V1
     	        zugferdProfile = ConformanceLevel.ZUGFERD_V1_COMFORT;
