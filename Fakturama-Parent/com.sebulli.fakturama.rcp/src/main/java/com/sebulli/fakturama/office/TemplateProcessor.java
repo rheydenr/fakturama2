@@ -1379,7 +1379,7 @@ public class TemplateProcessor {
 
         String value = "";
         
-        String placeholderDisplayText = cellPlaceholder.getNodeText().toUpperCase();
+        String placeholderDisplayText = cellPlaceholder.getNodeText();
         String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
         String key = placeholder.split("\\$")[0];
 

@@ -492,7 +492,15 @@ public class ContactUtil {
 		if (address == null) {
 			return "";
 		} else {
-			addressLines = address.split(System.lineSeparator());
+		    String sep;
+		    if(address.contains(System.lineSeparator())) {
+		        sep = System.lineSeparator();
+		    } else if(address.contains("\n")) {
+		        sep = "\n";
+		    } else {
+		        sep = "\r";
+		    }
+			addressLines = address.split(sep);
 		}
 		
 		Boolean countryFound = false;
