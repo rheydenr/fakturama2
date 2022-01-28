@@ -201,8 +201,6 @@ public class WebShopController implements IRunnableWithProgress {
         	return;
         }
         
-        orderSyncManager.setConn(webshopConfig);
-
         localMonitor = pMonitor;
         
 		currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
