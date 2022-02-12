@@ -108,7 +108,7 @@
 						</goals>
 						<configuration>
 		                    <!-- see https://github.com/highsource/maven-jaxb2-plugin/wiki/Do-Not-Use-forceRegenerate -->
-		                    <!--  forceRegenerate>true</forceRegenerate --> 
+		                    <!-- forceRegenerate>true</forceRegenerate -->
 							<verbose>true</verbose>
 							<schemaDirectory>src/main/resources</schemaDirectory>
 			                <schemaIncludes>
@@ -146,14 +146,22 @@
                             <version>1.1.0</version>
                         </plugin>
 						<!-- https://mvnrepository.com/artifact/net.java.dev.jaxb2-commons/jaxb-fluent-api -->
+
+
 						<dependency>
 						    <groupId>net.java.dev.jaxb2-commons</groupId>
 						    <artifactId>jaxb-fluent-api</artifactId>
 						    <version>2.1.8</version>
 						</dependency>
                     </plugins>
-                </configuration>
+                </configuration><dependencies><dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <version>2.3.1</version>
+    </dependency></dependencies>
             </plugin>
+
+
 		</plugins>
 		<resources>
 			<resource>
