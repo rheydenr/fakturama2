@@ -60,6 +60,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyAdapter;
@@ -429,7 +430,7 @@ public class ProductEditor extends Editor<Product> {
 				}
 			}
 		}
-		catch (IOException e) {
+		catch (IOException | SWTException  e) {
 			// Show an error icon, if the picture is not found
 			try {
 				Image prodImage = resourceManager.getProgramImage(display, ProgramImages.NOT_FOUND_PICTURE);
