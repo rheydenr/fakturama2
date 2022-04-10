@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.nls.Translation;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.fakturama.imp.ImportMessages;
@@ -88,7 +89,7 @@ public class GenericProductsCsvImporter {
      *            Options for Import
      * 
      */
-    public void importCSV(ImportOptions importOptions, boolean test) {
+    public void importCSV(ImportOptions importOptions, boolean test, IProgressMonitor monitor) {
 
         // if true, also existing entries will be updated
         boolean updateExisting = importOptions.getUpdateExisting();
@@ -116,9 +117,10 @@ public class GenericProductsCsvImporter {
         int updatedProducts = 0;
 
         // Count the line of the import file
-//        int lineNr = 0;
+        int lineNr = 0;
 
         Path inputFile = Paths.get(fileName);
+        monitor.beginTask("Import products from " + fileName, 0);
 
         // Open the existing file
         try (BufferedReader in = Files.newBufferedReader(inputFile)) {
@@ -139,17 +141,19 @@ public class GenericProductsCsvImporter {
             csv.setCsvReader(csvr);
             csv.setMappingStrategy(strat);
 
-            Iterator<ProductBeanCSV> productCsvIterator = csv.iterator();            
+            Iterator<ProductBeanCSV> productCsvIterator = csv.iterator();         
             
             // Read the existing file and store it in a buffer
             // with a fixed size. Only the newest lines are kept.
 
             // Read line by line
             while (productCsvIterator.hasNext()) {
-//                lineNr++;
+                lineNr++;
 
                 //  Product product = modelFactory.createProduct();
                 ProductBeanCSV productBean = productCsvIterator.next();
+                monitor.subTask("Importing item no. " + productBean.getItemNumber());
+
                 Product product = modelFactory.createProduct();
                 product.setItemNumber(StringUtils.trim(productBean.getItemNumber()));
                 product.setName(StringUtils.trim(productBean.getName()));
@@ -169,7 +173,7 @@ public class GenericProductsCsvImporter {
                 }
                 //                setProductOptions(product, prop.getProperty("options"));
 
-                if(productBean.getPictureName() != null && !basePath.toString().isEmpty() 
+                if(!StringUtils.isBlank(productBean.getPictureName())&& !basePath.toString().isEmpty() 
                         && (!productBean.getPictureName().isEmpty() || importEmptyValues)) {
                     byte[] picture = ProductUtil.readPicture(productBean.getPictureName(), basePath);
                     product.setPicture(picture);
@@ -202,7 +206,11 @@ public class GenericProductsCsvImporter {
                 }
                 // Update the modified product data
                 productsDAO.update(product);
+                
+                monitor.worked(1);
             }            
+            
+            monitor.done();
 
             // The result string
             // T: Message: xx Products HAVE BEEN IMPORTED
@@ -215,7 +223,12 @@ public class GenericProductsCsvImporter {
             result += NL + importMessages.wizardImportErrorOpenfile;
         } catch (FakturamaStoringException e) {
             log.error(e, "cant't store import data.");
+        } catch (Exception excp) {
+            result += NL + "Error in import file line: " + lineNr;
+            result += NL + "Exception: " + excp.getMessage();
+            log.error(excp, "Unspecified Exception. Line in import file: " + lineNr);
         }
+        monitor.done();
 
     }
 

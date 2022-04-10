@@ -3,6 +3,8 @@ package org.fakturama.imp.wizard.csv.products;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -14,6 +16,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.fakturama.imp.ImportMessages;
@@ -128,19 +131,22 @@ public class ProductsGenericCsvImportWizard extends Wizard implements IImportWiz
         if (selectedFile != null && !selectedFile.isEmpty()) {
             ImportOptions importOptions = optionPage.getImportOptions();
             importOptions.setMappings(csvConfigPage.getCompleteMappings());
-
-            GenericProductsCsvImporter csvImporter = ContextInjectionFactory.make(GenericProductsCsvImporter.class, ctx);
-            csvImporter.importCSV(importOptions, false);
+            BusyIndicator.showWhile(Display.getCurrent(), () -> {
+                GenericProductsCsvImporter csvImporter = ContextInjectionFactory.make(GenericProductsCsvImporter.class, ctx);
+                csvImporter.importCSV(importOptions, false, new NullProgressMonitor());
+                ctx.set("LAST_EXECUTION_RESULT", csvImporter.getResult());
+                // return Status.OK_STATUS;
+            });
 
             ImportProgressDialog dialog = ContextInjectionFactory.make(ImportProgressDialog.class, ctx);
-            dialog.setStatusText(csvImporter.getResult());
+            dialog.setStatusText((String) ctx.get("LAST_EXECUTION_RESULT"));
 
             // Refresh the table view of all products
             evtBroker.post("ProductEditor", "update");
 
             // Find the VAT table view
             evtBroker.post("VatEditor", "update");
-            
+
             optionPage.saveSettings();
             return (dialog.open() == ImportProgressDialog.OK);
         }
