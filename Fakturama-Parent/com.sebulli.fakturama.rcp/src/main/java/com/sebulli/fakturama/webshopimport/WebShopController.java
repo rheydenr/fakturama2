@@ -34,6 +34,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 
@@ -62,6 +63,7 @@ import com.sebulli.fakturama.dao.VatsDAO;
 import com.sebulli.fakturama.dao.WebshopDAO;
 import com.sebulli.fakturama.dto.DocumentSummary;
 import com.sebulli.fakturama.exception.FakturamaStoringException;
+import com.sebulli.fakturama.handlers.WebshopCommand;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.i18n.Messages;
 import com.sebulli.fakturama.log.ILogger;
@@ -169,8 +171,12 @@ public class WebShopController implements IRunnableWithProgress {
 	@Inject
 	private IDocumentAddressManager addressManager;
 
-    @Inject
+ //   @Inject
 	private WebShopConfig webshopConfig;
+    
+    @Inject
+    private IWebshopConnectionService webshopConnectionService;
+   
 	private Webshopexport runResult = null;
 
 	// true, if the product's EAN number is imported as item number
@@ -185,8 +191,10 @@ public class WebShopController implements IRunnableWithProgress {
     private ObjectFactory objectFactory;
 
 	@PostConstruct
-	public void init() {
-        orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, context);
+	public void init(@org.eclipse.e4.core.di.annotations.Optional @Named(Constants.WEBSHOP_COMMAND) WebshopCommand cmd) {
+        IEclipseContext privateCtx = webshopConnectionService.createWebshopContext(null, cmd);
+        webshopConfig = privateCtx.get(WebShopConfig.class);
+        orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, context, privateCtx);
 		useEANasItemNr = preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_USE_EAN_AS_ITEMNR);
         productUtil = ContextInjectionFactory.make(ProductUtil.class, context);
         objectFactory = new ObjectFactory();

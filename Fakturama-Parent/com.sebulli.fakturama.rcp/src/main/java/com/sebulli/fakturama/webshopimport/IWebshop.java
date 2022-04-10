@@ -28,6 +28,12 @@ import com.sebulli.fakturama.webshopimport.type.Webshopexport;
  */
 public interface IWebshop {
 
+    /**
+     * Establishes a connection to the currently selected webshop.
+     * 
+     * @return
+     * @throws IOException
+     */
     URLConnection connect() throws IOException;
 
     /**

@@ -40,19 +40,19 @@ public class OrderSyncManager {
     @Inject
     private WebshopDAO webshopDAO;
 
+    @Inject
 	private WebShopConfig conn;
 
 	/**
 	 * file name for the temporary sync info file.
 	 */
 	public static final String FILENAME_ORDERS2SYNC = "orders2sync.txt";
-	private Properties ordersToSync;
 
     /**
      * Mark all orders as "in sync" with the web shop
      */
     public void allOrdersAreInSync() {
-        ordersToSync = new Properties();
+        conn.setOrderstosynchronize(new Properties());
     	Path f = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), OrderSyncManager.FILENAME_ORDERS2SYNC);
     	try {
             Files.deleteIfExists(f);
@@ -104,7 +104,7 @@ public class OrderSyncManager {
 		comment = StringUtils.replace(comment, "%2C", "%26comma%3B").replace("%3D", "%26equal%3B");
 		if (notify)	webshopState += "*" + comment;
 
-		ordersToSync.setProperty(orderId, webshopState);
+		conn.getOrderstosynchronize().setProperty(orderId, webshopState);
 		saveOrdersToSynchronize();
 	}
 
@@ -114,11 +114,11 @@ public class OrderSyncManager {
      * 
      */
 	public void readOrdersToSynchronize() {
-	    ordersToSync = new Properties();
+        conn.setOrderstosynchronize(new Properties());
 		String generalWorkspace = preferences.getString(Constants.GENERAL_WORKSPACE);
         Path orders2sync = Paths.get(generalWorkspace, FILENAME_ORDERS2SYNC);
         try (InputStream reader = Files.newInputStream(orders2sync)) {
-        	ordersToSync.load(reader);
+            conn.getOrderstosynchronize().load(reader);
         } catch (NoSuchFileException fnex) {
             // log.warn(fnex, "file not found: orders2sync.txt (will be created next time)");
         	// it's not really important...
@@ -133,13 +133,13 @@ public class OrderSyncManager {
 	 * 
 	 */
 	public void saveOrdersToSynchronize() {
-		if (ordersToSync.isEmpty())
+		if (conn.getOrderstosynchronize().isEmpty())
 			return;
 		
 		Path orders2sync = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), FILENAME_ORDERS2SYNC);
 
 		try (Writer writer = Files.newBufferedWriter(orders2sync)) {
-			ordersToSync.store(writer, "Orders not in sync with Webshop");
+		    conn.getOrderstosynchronize().store(writer, "Orders not in sync with Webshop");
 		}
 		catch (IOException e) {
 			e.printStackTrace();

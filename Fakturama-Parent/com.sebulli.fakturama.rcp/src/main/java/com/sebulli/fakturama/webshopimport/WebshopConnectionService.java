@@ -13,6 +13,7 @@ package com.sebulli.fakturama.webshopimport;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -21,12 +22,14 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.opcoach.e4.preferences.IPreferenceStoreProvider;
+import com.sebulli.fakturama.handlers.WebshopCommand;
 import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.webshopimport.shops.LegacyWebshopConnector;
+import com.sebulli.fakturama.webshopimport.shops.OXIDv6Connector;
 import com.sebulli.fakturama.webshopimport.shops.ShopwareV5Connector;
 
 /**
- *
+ * Service class for handling of different webshops. 
  */
 @Component(name = "webshopfactory" )
 public class WebshopConnectionService implements IWebshopConnectionService {
@@ -63,6 +66,8 @@ public class WebshopConnectionService implements IWebshopConnectionService {
             switch (selectedWebshop) {
             case SHOPWARE_V5:
                 return new ShopwareV5Connector(webshopConnection);
+            case OXID_ESHOP_V6:
+                return new OXIDv6Connector(webshopConnection);
             case LEGACY_WEBSHOP:
                 IWebshop ws = ContextInjectionFactory.make(LegacyWebshopConnector.class, ctx, localCtx);
                 return ws;
@@ -72,6 +77,34 @@ public class WebshopConnectionService implements IWebshopConnectionService {
         } 
         return null;
     }
+    
+    
+    @Override
+    public IEclipseContext createWebshopContext(String selectedShopSystemId, WebshopCommand cmd) {
+           if(selectedShopSystemId == null) {
+                // use default shop from preferences
+                selectedShopSystemId = preferenceStore.getString(Constants.PREFERENCES_WEBSHOP_SHOPTYPE);
+            }
+            
+            // Base URL points to where the API of the Shop starts
+            String shopBaseURL = preferenceStore.getString(Constants.PREFERENCES_WEBSHOP_URL);
+            Webshop selectedShopsystem = Webshop.valueOf(selectedShopSystemId);
+            WebShopConfig conn = new WebShopConfig()
+                    .withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopBaseURL, "http://", "https://", "file://"))
+                    .withUseAuthorization(preferenceStore.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
+                    .withAuthorizationUser(preferenceStore.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
+                    .withAuthorizationPassword(preferenceStore.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
+                    .withUser(preferenceStore.getString(Constants.PREFERENCES_WEBSHOP_USER))
+                    .withPassword(preferenceStore.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD))
+                    .withShopSystem(selectedShopsystem)
+                    .withCommand(cmd)
+                    ;
+            IEclipseContext privateCtx = EclipseContextFactory.create("webshop-conn");
+            privateCtx.set(WebShopConfig.class, conn);
+            
+            return privateCtx;
+    }
+
 
     @Override
     public Webshop[] getAvailableWebshops() {

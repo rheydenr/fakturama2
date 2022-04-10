@@ -572,6 +572,8 @@ public class Constants {
 	public static final String PARAM_PROGRESS = "com.sebulli.fakturama.command.order.markas.progress";
 
 	public static final String PARAM_ORDERID = "com.sebulli.fakturama.command.order.markas.orderid";
+	public static final String WEBSHOP_COMMAND = "WEBSHOP_COMMAND";
+	
 
     public static final String DISPLAY_SUCCESSFUL_PRINTING = "DISPLAY_SUCCESSFUL_PRINTING";
 

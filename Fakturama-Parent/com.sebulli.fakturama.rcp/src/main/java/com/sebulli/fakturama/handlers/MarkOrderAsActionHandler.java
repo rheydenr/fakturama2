@@ -55,6 +55,7 @@ import com.sebulli.fakturama.parts.Editor;
 import com.sebulli.fakturama.parts.ProductEditor;
 import com.sebulli.fakturama.views.datatable.AbstractViewDataTable;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
+import com.sebulli.fakturama.webshopimport.IWebshopConnectionService;
 import com.sebulli.fakturama.webshopimport.OrderSyncManager;
 
 /**
@@ -86,6 +87,9 @@ public class MarkOrderAsActionHandler {
     
     @Inject
     private ESelectionService selectionService;
+    
+    @Inject
+    private IWebshopConnectionService webshopConnectionService;
 
     /**
      * Event Broker for sending update events to the list table
@@ -110,16 +114,6 @@ public class MarkOrderAsActionHandler {
         return retval;
     }
 
-    public void markOrderAs(/*@Active */MPart activePart,
-    /*@Named(PARAM_STATUS) */String status,
-    /*@Named(IServiceConstants.ACTIVE_SHELL)*/Shell parent) {
-        OrderState progress = OrderState.NONE;
-        progress = OrderState.valueOf(status);
-        @SuppressWarnings("rawtypes")
-        AbstractViewDataTable currentListtable = (AbstractViewDataTable) activePart.getObject();
-        markOrderAs(parent, (Document[]) currentListtable.getSelectedObjects(), progress, null, false, activePart.getContext());
-    }
-
     /**
      * Set the progress of the order to a new state. Do it also in the web shop.
      * Send a comment by email.
@@ -132,14 +126,6 @@ public class MarkOrderAsActionHandler {
      *            The comment of the confirmation email.
      * @param iEclipseContext
      */
-    public void markOrderAs(Shell parent, Document[] documents, OrderState progress, String comment, boolean sendNotification, IEclipseContext iEclipseContext) {
-
-        for (int i = 0; i < documents.length; i++) {
-        	Document document = (Document) documents[i];
-            markOrderAs(parent, document, progress, comment, sendNotification, iEclipseContext);
-        }
-    }
-
     public void markOrderAs(Shell parent, Document document, OrderState progress, String comment, boolean sendNotification, IEclipseContext iEclipseContext) {
     	boolean needUpdate = false ;  // if an update of views is needed
         // Do it only, if it is an order.
@@ -169,8 +155,9 @@ public class MarkOrderAsActionHandler {
                 // Change the state also in the webshop
                 if (StringUtils.isNotEmpty(document.getWebshopId()) && eclipsePrefs.getBoolean(Constants.PREFERENCES_WEBSHOP_ENABLED, Boolean.FALSE)) {
 
-                	// sync orders with web shop
-                	OrderSyncManager orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, iEclipseContext);
+                    // sync orders with web shop
+                    IEclipseContext privateCtx = webshopConnectionService.createWebshopContext(null,WebshopCommand.CHANGE_STATE);
+                	OrderSyncManager orderSyncManager = ContextInjectionFactory.make(OrderSyncManager.class, iEclipseContext, privateCtx);
                 	orderSyncManager.updateOrderProgress(document, comment, sendNotification);
                 	
                     // Send a request to the web shop import manager.
@@ -180,7 +167,7 @@ public class MarkOrderAsActionHandler {
                     parameters.put(WebShopCallHandler.PARAM_IS_GET_PRODUCTS, Boolean.FALSE);
                     parameters.put(WebShopCallHandler.PARAM_ACTION, CommandIds.CMD_MARK_ORDER_AS);
                     ParameterizedCommand command = cmdService.createCommand(CommandIds.CMD_WEBSHOP_IMPORT, parameters);
-                    /*ExecutionResult executionResult = (ExecutionResult) */handlerService.executeHandler(command);
+                    /*ExecutionResult executionResult = (ExecutionResult) */handlerService.executeHandler(command, privateCtx);
                     //                  webShopImportManager.prepareChangeState();
                     //
                     //                  try {

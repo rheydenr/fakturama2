@@ -14,7 +14,9 @@
  
 package com.sebulli.fakturama.webshopimport;
 
-import java.util.List;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+
+import com.sebulli.fakturama.handlers.WebshopCommand;
 
 /**
  *
@@ -34,5 +36,15 @@ public interface IWebshopConnectionService {
      * @return List of available web shops.
      */
     Webshop[] getAvailableWebshops();
+
+    /**
+     * Creates a static {@link IEclipseContext} which contains connection
+     * information about the currently selected webshop.
+     * 
+     * @param selectedShopSystemId the webshop id which is currently in use
+     * @param cmd (optional) command for which the the connector is prepared. Can be <code>null</code>.
+     * @return {@link IEclipseContext}
+     */
+    IEclipseContext createWebshopContext(String selectedShopSystemId, WebshopCommand cmd);
 
 }

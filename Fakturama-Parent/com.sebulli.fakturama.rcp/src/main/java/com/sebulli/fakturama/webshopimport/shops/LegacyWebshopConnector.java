@@ -135,7 +135,7 @@ public class LegacyWebshopConnector implements IWebshop {
             HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
             webshopCallResult = (Webshopexport) unmarshaller.unmarshal(response.body());
 
-            String error = "";//
+            String error = "";
             if (StringUtils.isNotEmpty(error)) {
                 webshopCallResult.setError(error);
                 return webshopCallResult;
@@ -191,7 +191,7 @@ public class LegacyWebshopConnector implements IWebshop {
         // 2. Use JAXBContext instance to create the Unmarshaller.
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
     
-            if (webshopConfig.getScriptURL().toLowerCase().startsWith("file://")) {
+            if (isLocalConnection()) {
                 // for local (file) connections
     
                 // Start a connection in an extra thread
@@ -286,6 +286,10 @@ public class LegacyWebshopConnector implements IWebshop {
         return webshopCallResult;
     }
 
+    private boolean isLocalConnection() {
+        return webshopConfig.getScriptURL().toLowerCase().startsWith("file://");
+    }
+
     private void createErrorMessage(String scriptBaseUrl, Webshopexport webshopCallResult, Exception exc) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(msg.importWebshopErrorCantopen).append("\n")
@@ -367,7 +371,10 @@ public class LegacyWebshopConnector implements IWebshop {
 
         // If the connection was interrupted and not finished: return
         if (!interruptConnection.isFinished()) {
-            ((HttpURLConnection) urlConnection).disconnect();
+            if (!isLocalConnection()) {
+                ((HttpURLConnection) urlConnection).disconnect();
+            }
+            
             if (interruptConnection.isError()) {
                 // T: Status error message importing data from web shop
                 return msg.importWebshopErrorCantconnect;
@@ -377,7 +384,9 @@ public class LegacyWebshopConnector implements IWebshop {
 
         // If there was an error, return with error message
         if (interruptConnection.isError()) {
-            ((HttpURLConnection) urlConnection).disconnect();
+            if (!isLocalConnection()) {
+                ((HttpURLConnection) urlConnection).disconnect();
+            }
             // T: Status message importing data from web shop
             return msg.importWebshopErrorCantread;
         }

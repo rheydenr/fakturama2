@@ -18,15 +18,16 @@ public class WebShopConfig {
 	/**
 	 * Main URL for the shop.
 	 */
-	protected String shopURL = "";
-	protected String user;
-	protected String password;
-	protected Boolean useAuthorization;
-	protected String authorizationUser;
-	protected String authorizationPassword;
+	private String shopURL = "";
+	private String user;
+	private String password;
+	private Boolean useAuthorization;
+	private String authorizationUser;
+	private String authorizationPassword;
+	private String authToken;
 	
 	// Configuration of the web shop request
-	protected WebshopCommand webshopCommand;
+	private WebshopCommand webshopCommand;
 
     private Webshop selectedWebshop;
 	
@@ -160,23 +161,23 @@ public class WebShopConfig {
 		return this;
 	}
 
-	/**
-	 * Prepare the web shop import to request products and orders.
-	 */
-	public void prepareGetProductsAndOrders() {
-		setWebshopCommand(WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS);
-	}
-
-	/**
-	 * Prepare the web shop import to change the state of an order.
-	 */
-	public void prepareChangeState() {
-	    setWebshopCommand(WebshopCommand.CHANGE_STATE);
-	}
-	
-    public void setWebshopCommand(WebshopCommand webshopCommand) {
-        this.webshopCommand = webshopCommand;
-    }
+//	/**
+//	 * Prepare the web shop import to request products and orders.
+//	 */
+//	public void prepareGetProductsAndOrders() {
+//		setWebshopCommand(WebshopCommand.GET_PRODUCTS_AND_ORDERS_AND_SYNCHRONIZEORDERS);
+//	}
+//
+//	/**
+//	 * Prepare the web shop import to change the state of an order.
+//	 */
+//	public void prepareChangeState() {
+//	    setWebshopCommand(WebshopCommand.CHANGE_STATE);
+//	}
+//	
+//    public void setWebshopCommand(WebshopCommand webshopCommand) {
+//        this.webshopCommand = webshopCommand;
+//    }
 
 	@Override
 	public String toString() {
@@ -214,6 +215,12 @@ public class WebShopConfig {
             actionString += "_orders";
         }
         return "get" + actionString;
+    }
+    public String getAuthToken() {
+        return authToken;
+    }
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 
 }

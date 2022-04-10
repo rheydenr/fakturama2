@@ -88,6 +88,7 @@
 		<unit id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
 		<unit id="org.slf4j.ext" version="1.7.30.v20200204-2150"/>
 		<unit id="org.slf4j.jul" version="1.7.2.v20121108-1250"/>
+		<unit id="com.google.api.client-json" version="1.2.3.v20200819-2030"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/nebula/releases/2.4.3"/>

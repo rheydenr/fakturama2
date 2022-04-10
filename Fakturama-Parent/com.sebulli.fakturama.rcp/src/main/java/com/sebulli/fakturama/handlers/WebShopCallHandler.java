@@ -22,7 +22,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -50,9 +49,8 @@ import com.sebulli.fakturama.parts.ShippingEditor;
 import com.sebulli.fakturama.parts.VatEditor;
 import com.sebulli.fakturama.views.datatable.documents.DocumentsListTable;
 import com.sebulli.fakturama.webshopimport.ExecutionResult;
-import com.sebulli.fakturama.webshopimport.WebShopConfig;
+import com.sebulli.fakturama.webshopimport.IWebshopConnectionService;
 import com.sebulli.fakturama.webshopimport.WebShopController;
-import com.sebulli.fakturama.webshopimport.Webshop;
 
 /**
  * Handler for calling web shop import actions or getting status values from web shop. This
@@ -117,9 +115,6 @@ public class WebShopCallHandler {
 	    // The result of this import process
 	    ExecutionResult executionResult = null;
 	    
-	    // Base URL points to where the API of the Shop starts
-		String shopBaseURL = preferences.getString(Constants.PREFERENCES_WEBSHOP_URL);
-	    
         WebshopCommand cmd = null;
         boolean refreshUI = false;
         if (BooleanUtils.toBoolean(prepareGetProductsAndOrders)) {
@@ -140,28 +135,11 @@ public class WebShopCallHandler {
             return new ExecutionResult("no command to execute, aborting", 3);
         }
     	
-	    if(selectedShopSystemId == null) {
-	        // use default shop from preferences
-	        selectedShopSystemId = preferences.getString(Constants.PREFERENCES_WEBSHOP_SHOPTYPE);
-	    }
-		Webshop selectedShopsystem = Webshop.valueOf(selectedShopSystemId);
-		WebShopConfig conn = new WebShopConfig()
-        		.withScriptURL(StringUtils.prependIfMissingIgnoreCase(shopBaseURL, "http://", "https://", "file://"))
-        		.withUseAuthorization(preferences.getBoolean(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_ENABLED))
-        		.withAuthorizationUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_USER))
-        		.withAuthorizationPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_AUTHORIZATION_PASSWORD))
-        		.withUser(preferences.getString(Constants.PREFERENCES_WEBSHOP_USER))
-        		.withPassword(preferences.getString(Constants.PREFERENCES_WEBSHOP_PASSWORD))
-        		.withShopSystem(selectedShopsystem)
-        		.withCommand(cmd)
-        		;
-	    
         try {
             ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(parent);
             
-            IEclipseContext privateCtx = EclipseContextFactory.create("webshop-conn");
-            privateCtx.set(WebShopConfig.class, conn);
-            WebShopController importOperation = ContextInjectionFactory.make(WebShopController.class, context, privateCtx);
+            context.set(Constants.WEBSHOP_COMMAND, cmd);
+            WebShopController importOperation = ContextInjectionFactory.make(WebShopController.class, context);
 
             progressMonitorDialog.run(true, true, importOperation);
             executionResult = new ExecutionResult(importOperation.getRunResult());
