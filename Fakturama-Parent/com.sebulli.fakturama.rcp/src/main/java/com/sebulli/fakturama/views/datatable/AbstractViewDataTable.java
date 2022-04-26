@@ -96,6 +96,15 @@ import com.sebulli.fakturama.views.datatable.tree.ui.TreeObjectType;
  */
 public abstract class AbstractViewDataTable<T extends IEntity, C extends AbstractCategory> {
 
+    /**
+     * Mode identifier for the current running state of the ViewDataTable 
+     *
+     */
+    public enum ViewDataTableMode {
+        DIALOG,
+        LIST
+    }
+
     public static final String ROOT_NODE_NAME = "all";
 
     /**
@@ -110,7 +119,7 @@ public abstract class AbstractViewDataTable<T extends IEntity, C extends Abstrac
     public static final String DATE_CELL_LABEL = "DateValue_Cell_LABEL";
     public static final String STATE_CELL_LABEL = "StateValue_Cell_LABEL";
     public static final String VAT_CELL_LABEL = "VAT_Cell_LABEL";
-
+    
     @Inject
     protected IPreferenceStore eclipsePrefs;
  

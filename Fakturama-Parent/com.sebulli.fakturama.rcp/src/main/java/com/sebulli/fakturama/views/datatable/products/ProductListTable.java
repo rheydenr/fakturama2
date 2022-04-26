@@ -131,8 +131,8 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
     protected FilterList<Product> treeFilteredIssues;
 
 	private CommonListItemMatcher<Product> currentFilter;
-
 	private BidiMap<Integer, ProductListDescriptor> prodListDescriptors;
+	private ViewDataTableMode viewDataTableMode;
 
     @PostConstruct
     public Control createPartControl(Composite parent, MPart listTablePart) {
@@ -144,8 +144,10 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         Object commandId = this.listTablePart.getTransientData().get(Constants.PROPERTY_PRODUCTS_CLICKHANDLER);
         if(commandId != null) { // exactly would it be Constants.COMMAND_SELECTITEM
             hookDoubleClickCommand(natTable, getGridLayer(), (String) commandId);
+            viewDataTableMode = ViewDataTableMode.DIALOG;
         } else {
             hookDoubleClickCommand2(natTable, getGridLayer());
+            viewDataTableMode = ViewDataTableMode.LIST;
         }
         topicTreeViewer.setTable(this);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
@@ -221,24 +223,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                 // from PartDescriptor
                 
                 if(commandId != null) {
-                    // If we don't give a target document number the event will  be caught by *all*
-                    // open editors which listens to this event. This is (obviously :-) ) not
-                    // the intended behavior...
-                    Map<String, Object> eventParams = new HashMap<>();
-                    // the transientData HashMap contains the target document number
-                    // (was set in MouseEvent handler)
-                    eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
-                    eventParams.put(SELECTED_PRODUCT_ID, Arrays.asList(Long.valueOf(selectedObject.getId())));
-//                    // alternatively use the Selection Service
-                    // ==> no! Because this SelectionService has another context than 
-                    // the receiver of this topic. Therefore the receiver's SelectionService
-                    // is empty :-(
-//                    selectionService.setSelection(selectedObject);
-                    
-                    // selecting an entry and closing the dialog are two different actions.
-                    // the "CloseProduct" event is caught by SelectProductDialog#handleDialogDoubleClickClose. 
-                    evtBroker.post("DialogSelection/Product", eventParams);
-                    evtBroker.post("DialogAction/CloseProduct", eventParams);
+                    fireClosingEvent();
                 } else {
                     Map<String, Object> params = new HashMap<>();
                     // if we come from the list view then we should open a new editor 
@@ -252,6 +237,27 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                 }
             }
         });
+    }
+
+    private void fireClosingEvent() {
+        // If we don't give a target document number the event will  be caught by *all*
+        // open editors which listens to this event. This is (obviously :-) ) not
+        // the intended behavior...
+        Map<String, Object> eventParams = new HashMap<>();
+        // the transientData HashMap contains the target document number
+        // (was set in MouseEvent handler)
+        eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
+        eventParams.put(SELECTED_PRODUCT_ID, Arrays.asList(Long.valueOf(selectedObject.getId())));
+//            // alternatively use the Selection Service
+        // ==> no! Because this SelectionService has another context than 
+        // the receiver of this topic. Therefore the receiver's SelectionService
+        // is empty :-(
+//            selectionService.setSelection(selectedObject);
+        
+        // selecting an entry and closing the dialog are two different actions.
+        // the "CloseProduct" event is caught by SelectProductDialog#handleDialogDoubleClickClose. 
+        evtBroker.post("DialogSelection/Product", eventParams);
+        evtBroker.post("DialogAction/CloseProduct", eventParams);
     }
 
     @Override
@@ -386,6 +392,13 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         // build the list for the tree-filtered values (i.e., the value list which is affected by
         // tree selection)
         treeFilteredIssues = new FilterList<Product>(textFilteredIssues);
+        
+        textFilteredIssues.addListEventListener(e -> {
+            if(viewDataTableMode == ViewDataTableMode.DIALOG && textFilteredIssues.size() == 1) {
+                selectedObject = textFilteredIssues.get(0);
+                fireClosingEvent();
+            }
+        });
        
         gridListLayer = new EntityGridListLayer<>(treeFilteredIssues, propertyNames, derivedColumnPropertyAccessor, configRegistry);
         
@@ -489,7 +502,7 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
         // Reset transaction and contact filter, set category filter
     	currentFilter = new CommonListItemMatcher<Product>(filter, treeObjectType, createRootNodeDescriptor(filter));
 		treeFilteredIssues.setMatcher(currentFilter);
-
+		
         //Refresh is done automagically...
     }
 

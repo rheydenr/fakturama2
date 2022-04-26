@@ -136,6 +136,7 @@ import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.converter.DateDisplayConverter;
 import com.sebulli.fakturama.parts.converter.DoublePercentageDisplayConverter;
 import com.sebulli.fakturama.parts.converter.VatDisplayConverter;
+import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
 import com.sebulli.fakturama.util.DocumentItemUtil;
@@ -178,6 +179,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	
 	@Inject
 	private DocumentReceiverDAO documentReceiverDao;
+	   
+    @Inject
+    private ITemplateResourceManager resourceManager;
 
     // ID of this view
     public static final String ID = "fakturama.document.itemTable";
@@ -1264,7 +1268,7 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
                     CellConfigAttributes.CELL_STYLE,
                     styleCentered,      
                     DisplayMode.NORMAL, PICTURE_CELL_LABEL); 
-            CellImagePainter cellImagePainter = new CellImagePainter();
+            CellImagePainter cellImagePainter = new CellImagePainter(resourceManager);
             cellImagePainter.setCalculateByHeight(true);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER, 

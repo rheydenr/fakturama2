@@ -91,6 +91,7 @@ import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
 import com.sebulli.fakturama.parts.DocumentEditor;
 import com.sebulli.fakturama.parts.Editor;
+import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.startup.ConfigurationManager;
 import com.sebulli.fakturama.util.ContactUtil;
@@ -150,6 +151,9 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
     
 	@Inject
 	private INumberFormatterService numberFormatterService;
+	
+    @Inject
+    private ITemplateResourceManager resourceManager;
 
     private EntityGridListLayer<Document> gridLayer;
     
@@ -747,7 +751,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER, 
-                    new CellImagePainter(),
+                    new CellImagePainter(resourceManager),
                     DisplayMode.NORMAL, ICON_CELL_LABEL);
             configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
                     styleCentered,      
@@ -756,7 +760,7 @@ public class DocumentsListTable extends AbstractViewDataTable<Document, DummyStr
 
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.CELL_PAINTER, 
-                    new CellPainterDecorator(new TextPainter(), CellEdgeEnum.LEFT, new CellImagePainter()),
+                    new CellPainterDecorator(new TextPainter(), CellEdgeEnum.LEFT, new CellImagePainter(resourceManager)),
                     DisplayMode.NORMAL, STATE_CELL_LABEL);
             configRegistry.registerConfigAttribute(
                     CellConfigAttributes.DISPLAY_CONVERTER,
