@@ -11,8 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.MissingResourceException;
 
-import javax.inject.Inject;
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
