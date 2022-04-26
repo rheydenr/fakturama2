@@ -237,8 +237,7 @@ public class ImportCSVConfigTablePage extends WizardPage {
                 }
                 if(isUpdated) {
                     specComboViewer.removeSelectionChangedListener(listener);
-                    specComboViewer.add(prop);
-                    specComboViewer.setSelection(new StructuredSelection(prop));
+                    specComboViewer.update(prop, null); // full update spec object
                     specComboViewer.addSelectionChangedListener(listener);
                     deleteSpecButton.setEnabled(!specComboViewer.getStructuredSelection().isEmpty());
                 }
