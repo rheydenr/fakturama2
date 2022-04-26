@@ -11,17 +11,22 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.MissingResourceException;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ILayerCell;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ImagePainter;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+import com.sebulli.fakturama.resources.ITemplateResourceManager;
 import com.sebulli.fakturama.resources.core.Icon;
 import com.sebulli.fakturama.resources.core.IconSize;
+import com.sebulli.fakturama.resources.core.ProgramImages;
 
 /**
  * {@link ImagePainter} for all sorts of Images in a NatTable.
@@ -29,6 +34,12 @@ import com.sebulli.fakturama.resources.core.IconSize;
 public class CellImagePainter extends ImagePainter {
     
     public static final int MAX_IMAGE_PREVIEW_WIDTH = 250;
+    
+    private ITemplateResourceManager resourceManager;
+
+    public CellImagePainter(ITemplateResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
+    }
 
     @Override
     protected Image getImage(ILayerCell cell, IConfigRegistry configRegistry) {
@@ -50,31 +61,35 @@ public class CellImagePainter extends ImagePainter {
 	 * @param dataValue
 	 * @return
 	 */
-	private Image getImagefromByteArray(Object dataValue) {
-		Image image, retval;
-		ByteArrayInputStream imgStream = new ByteArrayInputStream((byte[]) dataValue);
-		image = new Image(Display.getCurrent(), imgStream);
+    private Image getImagefromByteArray(Object dataValue) {
+        Image image, retval = null;
+        ByteArrayInputStream imgStream = new ByteArrayInputStream((byte[]) dataValue);
+        try {
+            image = new Image(Display.getCurrent(), imgStream);
+        } catch (SWTException e) {
+            image = resourceManager.getProgramImage(Display.getCurrent(), ProgramImages.NOT_FOUND_PICTURE);
+        }
 
-		// Get the pictures size
-		int width = image.getBounds().width;
-		int height = image.getBounds().height;
+        // Get the pictures size
+        int width = image.getBounds().width;
+        int height = image.getBounds().height;
 
-		// Scale the image to 64x48 Pixel
-		if (width != 0 && height != 0) {
+        // Scale the image to 64x48 Pixel
+        if (width != 0 && height != 0) {
 
-			// Picture is more width than height.
-			if (width >= 64 * height / 48) {
-				height = (height * 64) / width;
-				width = 64;
-			} else { // if (height > ((48*width)/64)) {
-				width = (width * 48) / height;
-				height = 48;
-			}
-		}
+            // Picture is more width than height.
+            if (width >= 64 * height / 48) {
+                height = (height * 64) / width;
+                width = 64;
+            } else { // if (height > ((48*width)/64)) {
+                width = (width * 48) / height;
+                height = 48;
+            }
+        }
 
-		retval = new Image(Display.getCurrent(), image.getImageData().scaledTo(width, height));
-		return retval;
-	}
+        retval = new Image(Display.getCurrent(), image.getImageData().scaledTo(width, height));
+        return retval;
+    }
     
     private Image getImageFrom(Icon dataValue) {
         Image retval = null;
