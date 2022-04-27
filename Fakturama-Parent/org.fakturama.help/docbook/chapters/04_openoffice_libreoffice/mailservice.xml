@@ -17,6 +17,7 @@
 			</imageobject>
 		</mediaobject>
 	</informalfigure>
+	<para>Die Felder für CC und BCC können in den Einstellungen vorbelegt werden. Mehrere Adressen können durch Semikolon (;) voneinander getrennt werden.</para>
   <para>Über die Schaltflächen <emphasis role="bold">Hinzufügen</emphasis> und <emphasis role="bold">Entfernen</emphasis> können Anhänge hinzugefügt oder entfernt werden.</para>
   <para>Der Betreff der E-Mail wird gemäß der hinterlegten Einstellungen erzeugt. Der Mailtext kann als Vorlage im Vorlagenordner der jeweiligen Dokumentart als Textdatei
   mit der Endung <filename>.txt</filename> hinterlegt werden.</para>

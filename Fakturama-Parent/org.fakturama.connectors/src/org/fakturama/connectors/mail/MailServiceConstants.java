@@ -39,5 +39,7 @@ public class MailServiceConstants {
     public static final String MAIL_SMTP_AUTH = "mail.smtp.auth";
     public static final String MAIL_SMTP_HOST = "mail.smtp.host";
     public static final String MAIL_APP_MAIN_WINDOW_ID = "org.fakturama.connectors.mailapp";
+    public static final String PREFERENCES_MAIL_CC_FIX = "PREFERENCES_MAIL_CC_FIX";
+    public static final String PREFERENCES_MAIL_BCC_FIX = "PREFERENCES_MAIL_BCC_FIX";
 
 }

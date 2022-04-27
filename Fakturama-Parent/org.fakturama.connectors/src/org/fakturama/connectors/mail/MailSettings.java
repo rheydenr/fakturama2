@@ -27,7 +27,7 @@ import org.apache.commons.validator.routines.EmailValidator;
  * Container class for Mail Settings
  */
 public class MailSettings {
-    public static final String ADDRESS_SEPARATOR_CHAR = ",";
+    public static final String ADDRESS_SEPARATOR_CHAR = ";";
     private String user, password, host, templateText, subject, body, sender;
     private final List<String> receiversTo = new ArrayList<>();
     private final List<String> receiversCC = new ArrayList<>();
@@ -71,6 +71,7 @@ public class MailSettings {
             receivers = Collections.<String>emptyList();
             break;
         }
+       
         boolean receiversAreValid = receivers
                 .stream()
                 .allMatch(e -> StringUtils.isBlank(e) || EmailValidator.getInstance().isValid(e));

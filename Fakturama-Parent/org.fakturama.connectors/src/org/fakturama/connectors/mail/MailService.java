@@ -173,6 +173,8 @@ public class MailService implements IPdfPostProcessor {
                 .withPassword(prefs.get(MailServiceConstants.PREFERENCES_MAIL_PASSWORD, "")) 
                 .withHost(prefs.get(MailServiceConstants.PREFERENCES_MAIL_HOST, ""))
                 .withReceiversTo(billingAdress.getEmail())
+                .withReceiversCC(prefs.get(MailServiceConstants.PREFERENCES_MAIL_CC_FIX, "").split(MailSettings.ADDRESS_SEPARATOR_CHAR))
+                .withReceiversBCC(prefs.get(MailServiceConstants.PREFERENCES_MAIL_BCC_FIX, "").split(MailSettings.ADDRESS_SEPARATOR_CHAR))
                 .withSubject(createMailSubject(invoice, templateProcessor));
 
         settings.setBody(createBodyFromTemplate(invoice, templateProcessor));
