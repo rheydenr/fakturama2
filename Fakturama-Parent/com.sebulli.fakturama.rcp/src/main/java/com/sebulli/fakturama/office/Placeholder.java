@@ -15,6 +15,8 @@
  
 package com.sebulli.fakturama.office;
 
+import java.util.Arrays;
+
 /**
  * Placeholders for document templates
  */
@@ -97,6 +99,7 @@ public enum Placeholder {
     DOCUMENT_REFERENCE_CREDIT("DOCUMENT.REFERENCE.CREDIT"),
     DOCUMENT_REFERENCE_DUNNING("DOCUMENT.REFERENCE.DUNNING"),
     DOCUMENT_REFERENCE_PROFORMA("DOCUMENT.REFERENCE.PROFORMA"),
+    INVOICE_SWISSCODE("INVOICE.SWISSCODE"),
     
     /* Hint: The "discounted" flag for Vouchers isn't persisted,
      so we can't create a placeholder for it. */
@@ -234,5 +237,7 @@ public enum Placeholder {
         return key;
     }
     
-    
+    public Placeholder findByKey(String key) {
+        return Arrays.stream(values()).filter(p -> p.getKey().equalsIgnoreCase(key)).findFirst().orElse(null);
+    }
 }

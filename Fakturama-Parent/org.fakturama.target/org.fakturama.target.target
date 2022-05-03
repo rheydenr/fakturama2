@@ -223,6 +223,18 @@
 		<version>2.0.24</version>
 		<type>jar</type>
 	</location>
+	<location includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>net.codecrete.qrbill</groupId>
+		<artifactId>qrbill-generator</artifactId>
+		<version>3.0.3</version>
+		<type>jar</type>
+	</location>
+	<location includeSource="true" missingManifest="generate" type="Maven">
+		<groupId>io.nayuki</groupId>
+		<artifactId>qrcodegen</artifactId>
+		<version>1.8.0</version>
+		<type>jar</type>
+	</location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
 </target>

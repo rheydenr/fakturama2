@@ -4,8 +4,10 @@
 package org.odftoolkit.simple.common.navigation;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.odftoolkit.odfdom.dom.element.text.TextLineBreakElement;
@@ -76,6 +78,8 @@ public class PlaceholderNode extends Selection {
 	 */
 	private boolean styleNode;
 	
+	final private Map<String, String> params = new HashMap<>();
+	
 	private Document ownerDocument;
 
 	/**
@@ -119,9 +123,9 @@ public class PlaceholderNode extends Selection {
 		this.node = node;
 		this.nodeType = nodeType;
 		// determine table type, if any
+		String content = node.getTextContent();
 		if (tableType == null && nodeType == PlaceholderNodeType.TABLE_NODE && node != null
 		        && node.getNodeType() == Node.ELEMENT_NODE) {
-			String content = node.getTextContent();
 			if (StringUtils.defaultString(content).startsWith("<ITEM.")) {
 				this.tableType = PlaceholderTableType.ITEMS_TABLE;
 			}
@@ -129,9 +133,26 @@ public class PlaceholderNode extends Selection {
 			this.tableType = tableType;
 		}
 		this.styleNode = styleNode;
+		fillParams(content);
 	}
 
-	/**
+	private void fillParams(String content) {
+        // add params, if any
+        if(content.contains("$")) {
+            String contentWithoutDelimiters = StringUtils.removeStart(StringUtils.removeEnd(content, ">"), "<");
+            String[] splittedContent = contentWithoutDelimiters.split("\\$");
+            for (int i = 1; i < splittedContent.length; i++) {
+                if(splittedContent[i].contains(":")) {
+                    String[] splittedParam = splittedContent[i].split("\\:");
+                    for (int j = 0; j < splittedParam.length; j=j+2) {
+                        params.put(splittedParam[j], splittedParam[j+1]);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
 	 * Replace the text content of this placeholder with a new string. If the string is a multiline string (with 
 	 * one or more line breaks), the string is split into multiple text nodes. This is, because a simple line-break element
 	 * doesn't create a hard line break (e.g., if you format the paragraph with "justify").  
@@ -459,8 +480,11 @@ public class PlaceholderNode extends Selection {
 	public String getNodeText() {
 		if (node.getNodeType() == Node.TEXT_NODE)
 			return node.getNodeValue();
-		if (node instanceof OdfElement)
-			return TextExtractor.getText((OdfElement) node);
+		if (node instanceof OdfElement) {
+            String nodeText = TextExtractor.getText((OdfElement) node);
+            // only return the "base node text"
+            return nodeText.contains("$") ? StringUtils.appendIfMissing(nodeText.split("\\$")[0], ">") : nodeText;
+        }
 		return "";
 	}
 
@@ -515,6 +539,14 @@ public class PlaceholderNode extends Selection {
 
     public void setOwnerDocument(Document ownerDocument) {
         this.ownerDocument = ownerDocument;
+    }
+    
+    public void addParam(String key, String value) {
+        params.put(key, value);
+    }
+    
+    public String getParam(String key) {
+        return params.get(key);
     }
 
 }
