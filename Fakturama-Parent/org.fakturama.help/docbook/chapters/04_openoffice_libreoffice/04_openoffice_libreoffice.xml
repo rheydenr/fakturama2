@@ -309,6 +309,11 @@ id="04_openoffice_libreoffice">
 						<entry>Mahnstufe</entry>
 					</row>
 					<row>
+						<entry>INVOICE.SWISSCODE</entry>
+						<entry>Platzhalter für den Zahlschein mit einem Swiss-QRCode. Die Größe der Ausgabegraphik kann durch die Parameter <parameter>WIDTH</parameter>
+						und <parameter>HEIGHT</parameter> beeinflußt werden.</entry>
+					</row>
+					<row>
 						<entry>SHIPPING.NET</entry>
 						<entry>Versandkosten (netto)</entry>
 					</row>
