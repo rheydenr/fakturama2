@@ -1,6 +1,6 @@
 package com.sebulli.fakturama.qrcode;
 
-import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.model.Invoice;
 
 /**
  * Service class for generating various QR codes 
@@ -8,6 +8,10 @@ import com.sebulli.fakturama.model.Document;
  */
 public interface QRCodeService {
 
-    byte[] createSwissCodeQR(Document document);
+    byte[] createSwissCodeQR(Invoice document);
+
+    byte[] createGiroCode(Invoice document);
+
+    byte[] createVCardQRCode(Invoice document);
 
 }

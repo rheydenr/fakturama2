@@ -99,6 +99,7 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
+import com.sebulli.fakturama.model.Invoice;
 //import com.sebulli.fakturama.model.ModelObject;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
@@ -451,7 +452,9 @@ public class TemplateProcessor {
                         PlaceholderTableType.ITEMS_TABLE, 
                         PlaceholderTableType.VATLIST_TABLE, 
                         PlaceholderTableType.SALESEQUALIZATIONTAX_TABLE)
-                .withImageIdentifiers(Placeholder.INVOICE_SWISSCODE.getKey())
+                .withImageIdentifiers(Placeholder.INVOICE_SWISSCODE.getKey(),
+                        Placeholder.INVOICE_GIROCODE.getKey(),
+                        Placeholder.YOURCOMPANY_QRVCARD.getKey())
                 .build();
         List<PlaceholderNode> placeholderNodes = Collections.unmodifiableList(navi.getPlaceHolders());
         
@@ -699,6 +702,7 @@ public class TemplateProcessor {
             case YOURCOMPANY_BANK: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BANK);
             case YOURCOMPANY_IBAN: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN);
             case YOURCOMPANY_BIC: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BIC);
+            case YOURCOMPANY_QRVCARD: return createImageFile(qrCodeService.createVCardQRCode((Invoice) document), null, "png").toString();
             default:
                 break;
             }
@@ -766,7 +770,8 @@ public class TemplateProcessor {
 		if (key.equals("DOCUMENT.TOTAL.GROSS")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalGross()) : "";
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return documentSummary.isPresent() ? Double.toString(documentSummary.get().getTotalQuantity()) : ""; // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
-		if (key.equals("INVOICE.SWISSCODE")) return createImageFile(qrCodeService.createSwissCodeQR(document), null, "png").toString();
+		if (key.equals("INVOICE.SWISSCODE")) return createImageFile(qrCodeService.createSwissCodeQR((Invoice) document), null, "png").toString();
+		if (key.equals("INVOICE.GIROCODE")) return createImageFile(qrCodeService.createGiroCode((Invoice) document), null, "png").toString();
 
 		if (key.startsWith("DOCUMENT.WEIGHT")) {
 			if (key.equals("DOCUMENT.WEIGHT.TARA"))
