@@ -46,6 +46,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
@@ -57,16 +59,20 @@ import org.odftoolkit.odfdom.dom.element.text.TextPlaceholderElement;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.common.navigation.PlaceholderNavigation;
 import org.odftoolkit.simple.common.navigation.PlaceholderNode;
+import org.odftoolkit.simple.common.navigation.PlaceholderNode.PlaceholderNodeType;
 import org.odftoolkit.simple.common.navigation.PlaceholderNode.PlaceholderTableType;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.ULocale;
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AddressDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -93,9 +99,11 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.DocumentReceiver;
 import com.sebulli.fakturama.model.Dunning;
 import com.sebulli.fakturama.model.IDocumentAddressManager;
+import com.sebulli.fakturama.model.Invoice;
 //import com.sebulli.fakturama.model.ModelObject;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.qrcode.QRCodeService;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
 
@@ -140,7 +148,9 @@ public class TemplateProcessor {
     
     @Inject
     private IDocumentAddressManager addressManager;
-
+    
+    private QRCodeService qrCodeService;
+    
     /**
      * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
      */
@@ -158,8 +168,13 @@ public class TemplateProcessor {
     private final TemplateProcessorHelper templateProcessorHelper = new TemplateProcessorHelper();
 
     @PostConstruct
-    public void init() {
+    public void init() throws InvalidSyntaxException {
         contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+        ServiceReference<QRCodeService> serviceReference = Activator.getContext().getServiceReference(QRCodeService.class);
+        if(serviceReference != null) {
+            qrCodeService = Activator.getContext().getService(serviceReference);
+            ContextInjectionFactory.inject(qrCodeService, context);
+        }
     }
 	/**
 	 * Replaces all line breaks by a "-"
@@ -269,7 +284,7 @@ public class TemplateProcessor {
 		if (retval == null)
 			return retval;
 		
-		// The parameters "PRE" and "POST" are only used, if the
+		// The parameters "PRE" and "POST" are only used if the
 		// placeholder value is not empty
 		if (!retval.isEmpty()) {
 			
@@ -394,9 +409,9 @@ public class TemplateProcessor {
 	 * @return
 	 * 		The extracted value
 	 */
-	public String getDocumentInfo(Document document, Optional<DocumentSummary> documentSummary, String placeholder) {
-		String value = getDocumentInfoByPlaceholder(document, documentSummary, templateProcessorHelper.extractPlaceholderName(placeholder));
-		return interpretParameters(placeholder, value);
+	public String getDocumentInfo(Document document, Optional<DocumentSummary> documentSummary, Placeholder placeholder) {
+		String value = getDocumentInfoByPlaceholder(document, documentSummary, placeholder);
+		return interpretParameters(placeholder.getKey(), value);
 	}
 	
     
@@ -437,6 +452,9 @@ public class TemplateProcessor {
                         PlaceholderTableType.ITEMS_TABLE, 
                         PlaceholderTableType.VATLIST_TABLE, 
                         PlaceholderTableType.SALESEQUALIZATIONTAX_TABLE)
+                .withImageIdentifiers(Placeholder.INVOICE_SWISSCODE.getKey(),
+                        Placeholder.INVOICE_GIROCODE.getKey(),
+                        Placeholder.YOURCOMPANY_QRVCARD.getKey())
                 .build();
         List<PlaceholderNode> placeholderNodes = Collections.unmodifiableList(navi.getPlaceHolders());
         
@@ -482,6 +500,9 @@ public class TemplateProcessor {
                     }
                 } 
               // Replace all other placeholders
+                replaceNodeText(placeholderNode);
+                break;
+            case IMAGE_NODE:
                 replaceNodeText(placeholderNode);
                 break;
             case TABLE_NODE:
@@ -575,7 +596,7 @@ public class TemplateProcessor {
      *  Name of the placeholder
      */
     private void setCommonProperty(Placeholder placeholder, Document document, Optional<DocumentSummary> documentSummary) {
-        setProperty(placeholder.getKey(), getDocumentInfo(document, documentSummary, placeholder.getKey()) );
+        setProperty(placeholder.getKey(), getDocumentInfo(document, documentSummary, placeholder) );
     }
     
     /**
@@ -593,7 +614,20 @@ public class TemplateProcessor {
         // Get the placeholder's text
         String placeholderDisplayText = placeholderNode.getNodeText().toUpperCase();
         String text = replaceText(placeholderDisplayText);
-        placeholderNode.replaceWith(text);
+        if (placeholderNode.getNodeType() == PlaceholderNodeType.IMAGE_NODE) {
+            try {
+                int width = Integer.parseInt(placeholderNode.getParam("WIDTH"));
+                int height = Integer.parseInt(placeholderNode.getParam("HEIGHT"));
+                placeholderNode.replaceWith(Path.of(text).toUri(), 
+                        width, 
+                        height);
+            } catch (NumberFormatException e) {
+                // fallback without width and height
+                placeholderNode.replaceWith(Path.of(text).toUri()); 
+            }
+        } else {
+            placeholderNode.replaceWith(text);
+        }
     }
 
     /**
@@ -612,6 +646,7 @@ public class TemplateProcessor {
         if(StringUtils.isNotBlank(text)){
             text = text.replaceAll("\n", "\r");
         }
+        
         // Replace the placeholder with the value of the property list.
         log.debug(String.format("trying to replace %s with [%s]", placeholderDisplayText, text));
         return text;
@@ -629,41 +664,48 @@ public class TemplateProcessor {
 	 * @return
 	 *  The extracted result
 	 */
-	private String getDocumentInfoByPlaceholder(Document document, Optional<DocumentSummary> documentSummary, String key) {
+	private String getDocumentInfoByPlaceholder(Document document, Optional<DocumentSummary> documentSummary, Placeholder placeholder) {
 	    // Get the company information from the preferences
+	    
+	    String key = placeholder.getKey(); // Placeholder.valueOf(key.replaceAll("\\.", "_"));
+	    
 		if (key.startsWith("YOURCOMPANY")) {
-			if (key.equals("YOURCOMPANY.COMPANY")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME);
+		    String owner = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER);
+		    String streetWithNo = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET);
+		    switch (placeholder) {
+            case YOURCOMPANY_COMPANY: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME);
+            case YOURCOMPANY_OWNER: return  owner;
+            case YOURCOMPANY_OWNER_FIRSTNAME: return  contactUtil.getFirstName(owner);
+            case YOURCOMPANY_OWNER_LASTNAME: return  contactUtil.getLastName(owner);
+            
+            case YOURCOMPANY_STREET: return  streetWithNo;
+            case YOURCOMPANY_STREETNAME: return  contactUtil.getStreetName(streetWithNo);
+            case YOURCOMPANY_STREETNO: return  contactUtil.getStreetNo(streetWithNo);
 
-			String owner = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER);
-			if (key.equals("YOURCOMPANY.OWNER")) return  owner;
-			if (key.equals("YOURCOMPANY.OWNER.FIRSTNAME")) return  contactUtil.getFirstName(owner);
-			if (key.equals("YOURCOMPANY.OWNER.LASTNAME")) return  contactUtil.getLastName(owner);
-
-			String streetWithNo = preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET);
-			if (key.equals("YOURCOMPANY.STREET")) return  streetWithNo;
-			if (key.equals("YOURCOMPANY.STREETNAME")) return  contactUtil.getStreetName(streetWithNo);
-			if (key.equals("YOURCOMPANY.STREETNO")) return  contactUtil.getStreetNo(streetWithNo);
-
-			if (key.equals("YOURCOMPANY.ZIP")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP);
-			if (key.equals("YOURCOMPANY.CITY")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY);
-			if (key.equals("YOURCOMPANY.COUNTRY")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COUNTRY);
-			if (key.equals("YOURCOMPANY.EMAIL")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_EMAIL);
-			if (key.equals("YOURCOMPANY.PHONE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL);
-			if (key.equals("YOURCOMPANY.PHONE.PRE")) return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), true);
-			if (key.equals("YOURCOMPANY.PHONE.POST")) return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), false);
-			if (key.equals("YOURCOMPANY.MOBILE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_MOBILE);
-			if (key.equals("YOURCOMPANY.FAX")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX);
-			if (key.equals("YOURCOMPANY.FAX.PRE")) return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), true);
-			if (key.equals("YOURCOMPANY.FAX.POST")) return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), false);
-			if (key.equals("YOURCOMPANY.WEBSITE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_WEBSITE);
-			if (key.equals("YOURCOMPANY.VATNR")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR);
-			if (key.equals("YOURCOMPANY.TAXNR")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXNR);
-			if (key.equals("YOURCOMPANY.TAXOFFICE")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXOFFICE);
-			if (key.equals("YOURCOMPANY.BANKACCOUNTNR")) return  preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR");
-			if (key.equals("YOURCOMPANY.BANKCODE")) return  preferences.getString("YOURCOMPANY_COMPANY_BANKCODE");
-			if (key.equals("YOURCOMPANY.BANK")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BANK);
-			if (key.equals("YOURCOMPANY.IBAN")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN);
-			if (key.equals("YOURCOMPANY.BIC")) return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BIC);
+            case YOURCOMPANY_ZIP: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP);
+            case YOURCOMPANY_CITY: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY);
+            case YOURCOMPANY_COUNTRY: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COUNTRY);
+            case YOURCOMPANY_EMAIL: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_EMAIL);
+            case YOURCOMPANY_PHONE: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL);
+            case YOURCOMPANY_PHONE_PRE:  return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), true);
+            case YOURCOMPANY_PHONE_POST: return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TEL), false);
+            case YOURCOMPANY_MOBILE: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_MOBILE);
+            case YOURCOMPANY_FAX: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX);
+            case YOURCOMPANY_FAX_PRE: return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), true);
+            case YOURCOMPANY_FAX_POST: return templateProcessorHelper.getTelPrePost(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_FAX), false);
+            case YOURCOMPANY_WEBSITE: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_WEBSITE);
+            case YOURCOMPANY_VATNR: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_VATNR);
+            case YOURCOMPANY_TAXNR: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXNR);
+            case YOURCOMPANY_TAXOFFICE: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_TAXOFFICE);
+            case YOURCOMPANY_BANKACCOUNTNR: return  preferences.getString("YOURCOMPANY_COMPANY_BANKACCOUNTNR");
+            case YOURCOMPANY_BANKCODE: return  preferences.getString("YOURCOMPANY_COMPANY_BANKCODE");
+            case YOURCOMPANY_BANK: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BANK);
+            case YOURCOMPANY_IBAN: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN);
+            case YOURCOMPANY_BIC: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BIC);
+            case YOURCOMPANY_QRVCARD: return createImageFile(qrCodeService.createVCardQRCode((Invoice) document), null, "png").toString();
+            default:
+                break;
+            }
 		}
 
 		if (document == null)
@@ -728,6 +770,8 @@ public class TemplateProcessor {
 		if (key.equals("DOCUMENT.TOTAL.GROSS")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalGross()) : "";
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return documentSummary.isPresent() ? Double.toString(documentSummary.get().getTotalQuantity()) : ""; // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
+		if (key.equals("INVOICE.SWISSCODE")) return createImageFile(qrCodeService.createSwissCodeQR((Invoice) document), null, "png").toString();
+		if (key.equals("INVOICE.GIROCODE")) return createImageFile(qrCodeService.createGiroCode((Invoice) document), null, "png").toString();
 
 		if (key.startsWith("DOCUMENT.WEIGHT")) {
 			if (key.equals("DOCUMENT.WEIGHT.TARA"))
@@ -920,8 +964,7 @@ public class TemplateProcessor {
 
 		return null;
 	}
-
-	private Optional<String> checkAddressPlaceholders(DocumentReceiver contact, String key, ContactType billing) {
+    private Optional<String> checkAddressPlaceholders(DocumentReceiver contact, String key, ContactType billing) {
 	    if(key.startsWith(billing.getName())) {
 	        key = key.replaceAll(billing.getName() + "\\.", "");
 	    }
@@ -1375,7 +1418,7 @@ public class TemplateProcessor {
      *            The cell's placeholder.
      * @return 
      */
-    private Node fillItemTableWithData(DocumentItem item, PlaceholderNode cellPlaceholder) {
+    private void fillItemTableWithData(DocumentItem item, PlaceholderNode cellPlaceholder) {
 
         String value = "";
         
@@ -1580,123 +1623,16 @@ public class TemplateProcessor {
         // Get product picture
         else if (key.startsWith("ITEM.PICTURE")){
             
-            String width_s = templateProcessorHelper.extractParam(placeholder,"WIDTH");
-            String height_s = templateProcessorHelper.extractParam(placeholder,"HEIGHT");
-
             if (item.getPicture() != null) {
-                // Default height and with
-                int pixelWidth = 0;
-                int pixelHeight = 0;
 
-                // Use the parameter values
-                try {
-                    pixelWidth = Integer.parseInt(width_s);
-                    pixelHeight = Integer.parseInt(height_s);
-                }
-                catch (NumberFormatException e) {
-                }
+                Pair<Integer, Integer> widthHeight = getCustomImageSize(placeholder);
+                Path imageFile = createImageFile(item.getPicture(), widthHeight, "JPG");
                 
-                // Use default values
-                if (pixelWidth < 1)
-                    pixelWidth = 150;
-                if (pixelHeight < 1)
-                    pixelHeight = 100;
-
-                int pictureHeight = 100;
-                int pictureWidth = 100;
-                double pictureRatio = 1.0;
-                double pixelRatio = 1.0;
-                Path workDir = null;
-
-                // Read the image a first time to get width and height
-                try (ByteArrayInputStream imgStream = new ByteArrayInputStream(item.getPicture());) {
-                    
-                    BufferedImage image = ImageIO.read(imgStream);
-                    pictureHeight = image.getHeight();
-                    pictureWidth = image.getWidth();
-
-                    // Calculate the ratio of the original image
-                    if (pictureHeight > 0) {
-                        pictureRatio = (double)pictureWidth/(double)pictureHeight;
-                    }
-                    
-                    // Calculate the ratio of the placeholder
-                    if (pixelHeight > 0) {
-                        pixelRatio = (double)pixelWidth/(double)pixelHeight;
-                    }
-                    
-                    // Correct the height and width of the placeholder 
-                    // to match the original image
-                    if ((pictureRatio > pixelRatio) &&  (pictureRatio != 0.0)) {
-                        pixelHeight = (int) Math.round(((double)pixelWidth / pictureRatio));
-                    }
-                    if ((pictureRatio < pixelRatio) &&  (pictureRatio != 0.0)) {
-                        pixelWidth = (int) Math.round(((double)pixelHeight * pictureRatio));
-                    }
-                    
-                    // Generate the image
-                    String imageName = "tmpImage"+RandomStringUtils.randomAlphanumeric(8);
-                
-                    /*
-                     * Workaround: As long as the ODF toolkit can't handle images from a ByteStream
-                     * we have to convert it to a temporary image and insert that into the document.
-                     */
-                    workDir = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), imageName);
-                    
-                    // FIXME Scaling doesn't work! :-(
-                    // Therefore we "scale" the image manually by setting width and height inside result document
-                    
-//                  java.awt.Image scaledInstance = image.getScaledInstance(pixelWidth, pixelHeight, 0);
-//                  BufferedImage bi = new BufferedImage(scaledInstance.getWidth(null),
-//                          scaledInstance.getHeight(null),
-//                          BufferedImage.TYPE_4BYTE_ABGR);
-//
-//                  Graphics2D grph = (Graphics2D) bi.getGraphics();
-//                  grph.scale(pictureRatio, pictureRatio);
-//
-//                  // everything drawn with grph from now on will get scaled.
-//                  grph.drawImage(image, 0, 0, null);
-//                  grph.dispose();
-                    // ============================================
-
-                    String formatName = "jpg"; // fallback
-                    ImageInputStream iis = ImageIO.createImageInputStream(new ByteArrayInputStream(item.getPicture()));
-                    if (iis != null) {
-                        Iterator<ImageReader> iter = ImageIO.getImageReaders(iis);
-                        if (!iter.hasNext()) {
-                            throw new IOException("cannot determine image format");
-                        }
-                        // get the first reader
-                        ImageReader reader = iter.next();
-                        formatName = reader.getFormatName();
-                        reader.dispose();
-                        iis.close();
-                    }
-
-                    ImageIO.write(image, formatName, workDir.toFile());
-                    
-                    // with NoaLibre:
-//                  GraphicInfo graphicInfo = null;
-//                  graphicInfo = new GraphicInfo(new FileInputStream(imagePath),
-//                          pixelWidth,
-//                          true,
-//                          pixelHeight,
-//                          true,
-//                          VertOrientation.TOP,
-//                          HoriOrientation.LEFT,
-//                          TextContentAnchorType.AT_PARAGRAPH);
-//
-//                  ITextContentService textContentService = textDocument.getTextService().getTextContentService();
-//                  ITextDocumentImage textDocumentImage = textContentService.constructNewImage(graphicInfo);
-//                  textContentService.insertTextContent(iText.getTextCursorService().getTextCursor().getEnd(), textDocumentImage);
-
+                if (imageFile != null) {
                     // replace the placeholder
-                    return cellPlaceholder.replaceWith(workDir.toUri(), pixelWidth, pixelHeight);
-
+                    cellPlaceholder.replaceWith(imageFile.toUri(), widthHeight.getLeft(), widthHeight.getRight());
                 }
-                catch (IOException e) {
-                    log.error("Can't create temporary image file. Reason: " + e);
-                }
+                return;
             }
             
             value = "";
@@ -1736,13 +1672,137 @@ public class TemplateProcessor {
         
         // Set the text of the cell
 //      placeholderDisplayText = Matcher.quoteReplacement(placeholderDisplayText).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}");
-        return cellPlaceholder.replaceWith(value); // Matcher.quoteReplacement(value) ???
+        cellPlaceholder.replaceWith(value); // Matcher.quoteReplacement(value) ???
 
         // And also add it to the user defined text fields in the OpenOffice
         // Writer document.
 //      addUserTextField(key, value, index);
     }
 
+    private Pair<Integer, Integer> getCustomImageSize(String placeholder) {
+        String width_s = templateProcessorHelper.extractParam(placeholder,"WIDTH");
+        String height_s = templateProcessorHelper.extractParam(placeholder,"HEIGHT");
+        
+        // Default height and with
+        int pixelWidth = 0;
+        int pixelHeight = 0;
+
+        // Use the parameter values
+        try {
+            pixelWidth = Integer.parseInt(width_s);
+            pixelHeight = Integer.parseInt(height_s);
+        } catch (NumberFormatException e) {}
+        
+        // Use default values
+        if (pixelWidth < 1)
+            pixelWidth = 150;
+        if (pixelHeight < 1)
+            pixelHeight = 100;
+        return ImmutablePair.of(pixelWidth, pixelHeight);
+    }
+    
+    private Path createImageFile(byte[] imageBytes, Pair<Integer, Integer> widthHeight, String formatName) {
+        int pictureHeight = 100;
+        int pictureWidth = 100;
+        double pictureRatio = 1.0;
+        double pixelRatio = 1.0;
+        
+        int pixelWidth=widthHeight != null ? widthHeight.getLeft() : 300;
+        int pixelHeight = widthHeight != null ? widthHeight.getRight() : 300;
+        Path imageFile = null;
+        
+        if(imageBytes == null) {
+            return null;
+        }
+
+        // Read the image a first time to get width and height
+        try (ByteArrayInputStream imgStream = new ByteArrayInputStream(imageBytes);) {
+            
+            BufferedImage image = ImageIO.read(imgStream);
+            pictureHeight = image.getHeight();
+            pictureWidth = image.getWidth();
+
+            // Calculate the ratio of the original image
+            if (pictureHeight > 0) {
+                pictureRatio = (double)pictureWidth/(double)pictureHeight;
+            }
+            
+            // Calculate the ratio of the placeholder
+            if (pixelHeight > 0) {
+                pixelRatio = (double)pixelWidth/(double)pixelHeight;
+            }
+            
+            // Correct the height and width of the placeholder 
+            // to match the original image
+            if ((pictureRatio > pixelRatio) &&  (pictureRatio != 0.0)) {
+                pixelHeight = (int) Math.round(((double)pixelWidth / pictureRatio));
+            }
+            if ((pictureRatio < pixelRatio) &&  (pictureRatio != 0.0)) {
+                pixelWidth = (int) Math.round(((double)pixelHeight * pictureRatio));
+            }
+            
+            // Generate the image
+            String imageName = "tmpImage"+RandomStringUtils.randomAlphanumeric(8);
+        
+            /*
+             * Workaround: As long as the ODF toolkit can't handle images from a ByteStream
+             * we have to convert it to a temporary image and insert that into the document.
+             */
+            imageFile = Paths.get(preferences.getString(Constants.GENERAL_WORKSPACE), imageName);
+            
+            // FIXME Scaling doesn't work! :-(
+            // Therefore we "scale" the image manually by setting width and height inside result document
+            
+//          java.awt.Image scaledInstance = image.getScaledInstance(pixelWidth, pixelHeight, 0);
+//          BufferedImage bi = new BufferedImage(scaledInstance.getWidth(null),
+//                  scaledInstance.getHeight(null),
+//                  BufferedImage.TYPE_4BYTE_ABGR);
+//
+//          Graphics2D grph = (Graphics2D) bi.getGraphics();
+//          grph.scale(pictureRatio, pictureRatio);
+//
+//          // everything drawn with grph from now on will get scaled.
+//          grph.drawImage(image, 0, 0, null);
+//          grph.dispose();
+            // ============================================
+
+            ImageInputStream iis = ImageIO.createImageInputStream(new ByteArrayInputStream(imageBytes));
+            if (iis != null) {
+                Iterator<ImageReader> iter = ImageIO.getImageReaders(iis);
+                if (!iter.hasNext()) {
+                    throw new IOException("cannot determine image format");
+                }
+                // get the first reader
+                ImageReader reader = iter.next();
+                formatName = reader.getFormatName();
+                reader.dispose();
+                iis.close();
+            }
+
+            ImageIO.write(image, formatName, imageFile.toFile());
+            
+            // with NoaLibre:
+//          GraphicInfo graphicInfo = null;
+//          graphicInfo = new GraphicInfo(new FileInputStream(imagePath),
+//                  pixelWidth,
+//                  true,
+//                  pixelHeight,
+//                  true,
+//                  VertOrientation.TOP,
+//                  HoriOrientation.LEFT,
+//                  TextContentAnchorType.AT_PARAGRAPH);
+//
+//          ITextContentService textContentService = textDocument.getTextService().getTextContentService();
+//          ITextDocumentImage textDocumentImage = textContentService.constructNewImage(graphicInfo);
+//          textContentService.insertTextContent(iText.getTextCursorService().getTextCursor().getEnd(), textDocumentImage);
+
+        }
+        catch (IOException e) {
+            log.error("Can't create temporary image file. Reason: " + e);
+        }
+        return imageFile;
+    }
+    
     private void setUseSalesEquationTaxForDocument(boolean isSET) {
         this.useSET = isSET;
     }

@@ -44,6 +44,7 @@ import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.IParcelService;
 import com.sebulli.fakturama.model.Document;
+import com.sebulli.fakturama.office.Placeholder;
 import com.sebulli.fakturama.office.TemplateProcessor;
 
 /**
@@ -230,7 +231,7 @@ public class ParcelServiceFormFiller {
 
 			    	// It is a placeholder
 			    	if (placeholders.isPlaceholder(value)) {
-						fillFormField(key, placeholders.getDocumentInfo(document, Optional.ofNullable(documentSummary), value));
+						fillFormField(key, placeholders.getDocumentInfo(document, Optional.ofNullable(documentSummary), Placeholder.valueOf(value)));
 			    	}
 			    	// It is a constant String
 			    	else if (value.startsWith("\"") && value.endsWith("\"")) {

@@ -52,6 +52,7 @@ public class PlaceholderNavigation extends Navigation {
 	private List<PlaceholderNode> placeHolders = new ArrayList<>();
 	private boolean useDelimiters;
     private PlaceholderTableType[] tableIdentifiers = new PlaceholderTableType[]{};
+    private String[] imageIdentifiers;
 
     /**
      * Strings for the table identifiers, perhaps with additional delimiters
@@ -113,7 +114,12 @@ public class PlaceholderNavigation extends Navigation {
         this.tableIdentifiers = tableIdentifiers;
         return this;
     }
-	
+
+    public PlaceholderNavigation withImageIdentifiers(String... keys) {
+        this.imageIdentifiers = keys;
+        return this;
+    }
+
 	public PlaceholderNavigation withPattern(String pattern) {
         this.mPattern = pattern;
 	    return this;
@@ -253,6 +259,10 @@ public class PlaceholderNavigation extends Navigation {
 				placeholderNode = new PlaceholderNode(item, PlaceholderNodeType.TABLE_NODE, tableIdentifier.orElse(PlaceholderTableType.NO_TABLE), false);
 			} else {
 				placeholderNode = new PlaceholderNode(item);
+				placeholderNode.setOwnerDocument(mDocument);
+				if(isImageIdentifier(placeholderNode.getNodeText())) {
+				    placeholderNode.setNodeType(PlaceholderNodeType.IMAGE_NODE);
+				}
 			}
 
 			// if a pattern is set we only collect matching patterns
@@ -283,6 +293,11 @@ public class PlaceholderNavigation extends Navigation {
      */
     public final String[] getTableIdentifierStrings() {
         return tableIdentifierStrings;
+    }
+    
+    public boolean isImageIdentifier(String identifier) {
+        return Arrays.stream(imageIdentifiers)
+                .anyMatch(i -> StringUtils.appendIfMissing(StringUtils.prependIfMissing(i, PLACEHOLDER_PREFIX), PLACEHOLDER_SUFFIX).equalsIgnoreCase(identifier));
     }
 
     private Node getContainerNode(Node item, String urn, Class<?> clazz) {

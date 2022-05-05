@@ -309,6 +309,15 @@ id="04_openoffice_libreoffice">
 						<entry>Mahnstufe</entry>
 					</row>
 					<row>
+						<entry>INVOICE.SWISSCODE</entry>
+						<entry>Platzhalter für den Zahlschein mit einem Swiss-QRCode. Die Größe der Ausgabegraphik kann durch die Parameter <parameter>WIDTH</parameter>
+						und <parameter>HEIGHT</parameter> beeinflußt werden.</entry>
+					</row>
+					<row>
+						<entry>INVOICE.GIROCODE</entry>
+						<entry>Platzhalter für einen GiroCode (Überweisungsdaten in einem QR Code)</entry>
+					</row>
+					<row>
 						<entry>SHIPPING.NET</entry>
 						<entry>Versandkosten (netto)</entry>
 					</row>
@@ -767,6 +776,11 @@ id="04_openoffice_libreoffice">
 					<row>
 						<entry>YOURCOMPANY.CREDITORID</entry>
 						<entry>Creditor-ID</entry>
+					</row>
+					<row>
+						<entry>YOURCOMPANY.QRVCARD</entry>
+						<entry>VCard als QR-Code. Damit kann man die eigene Adresse so codieren, daß sie direkt 
+						mit dem Handy als Kontakt gespeichert werden kann.</entry>
 					</row>
 					<row>
 						<entry>ITEMS.DISCOUNT.VALUE</entry>
