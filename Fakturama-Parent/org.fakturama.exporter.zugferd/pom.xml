@@ -70,7 +70,7 @@
 		                <configuration>
 		                    <extension>true</extension>
 		                    <!-- see https://github.com/highsource/maven-jaxb2-plugin/wiki/Do-Not-Use-forceRegenerate -->
-		                    <!--  forceRegenerate>true</forceRegenerate --> 
+		                    <!-- forceRegenerate>true</forceRegenerate -->
 		                    <locale>en</locale>
 		                    <args>
 		                        <arg>-Xfluent-api</arg>
@@ -106,7 +106,11 @@
                             <version>2.1.8</version>
                         </plugin>
                     </plugins>
-               	</configuration>
+               	</configuration><dependencies><dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <version>2.3.1</version>
+    </dependency></dependencies>
             </plugin>
  
 <!-- alternative
@@ -142,6 +146,8 @@
             </plugin> -->
 
     </plugins>
+
+
   </build>
    <!-- To use the report goals in your POM or parent POM -->
   <reporting>

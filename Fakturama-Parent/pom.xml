@@ -6,8 +6,8 @@
 	<version>2.1.2</version>
 	<packaging>pom</packaging>
 	<properties>
-		<tycho.version>2.3.0</tycho.version>
-		<tycho-extras.version>2.3.0</tycho-extras.version>
+		<tycho.version>2.5.0</tycho.version>
+		<tycho-extras.version>2.5.0</tycho-extras.version>
 	<!-- 	<maven.compiler.release>8</maven.compiler.release> -->
 		<maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
 		<buildTimestamp>${maven.build.timestamp}</buildTimestamp>
@@ -116,11 +116,11 @@
                             <arch>x86_64</arch>
                         </environment>
 						<!-- works only with a native MacOS -->
-<!-- 						<environment> -->
-<!-- 							<os>macosx</os> -->
-<!-- 							<ws>cocoa</ws> -->
-<!-- 							<arch>aarch64</arch> -->
-<!-- 						</environment> -->
+ 						<environment>
+ 							<os>macosx</os>
+ 							<ws>cocoa</ws> 
+ 							<arch>aarch64</arch>
+ 						</environment>
                     </environments>
             <!-- Use custom target platform -->
 					<target>
