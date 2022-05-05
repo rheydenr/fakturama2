@@ -18,6 +18,7 @@ Export-Package: com.sebulli.fakturama.calculate,
  com.sebulli.fakturama.parts.widget.formatter,
  com.sebulli.fakturama.parts.widget.labelprovider,
  com.sebulli.fakturama.preferences,
+ com.sebulli.fakturama.qrcode,
  org.fakturama.wizard.export.handler
 Require-Bundle: javax.inject,
  com.sebulli.fakturama.common,

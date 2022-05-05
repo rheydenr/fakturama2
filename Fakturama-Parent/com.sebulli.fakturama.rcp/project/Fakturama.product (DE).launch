@@ -37,7 +37,6 @@
         <setEntry value="ch.qos.logback.classic@2:default"/>
         <setEntry value="ch.qos.logback.core@2:default"/>
         <setEntry value="ch.qos.logback.slf4j@default:false"/>
-        <setEntry value="com.google.zxing.core@default:default"/>
         <setEntry value="com.ibm.icu@default:default"/>
         <setEntry value="com.mysql.jdbc*1.2.0@2:true"/>
         <setEntry value="com.mysql.jdbc*5.1.48@2:true"/>
@@ -254,7 +253,6 @@
         <setEntry value="org.w3c.dom.svg@default:default"/>
         <setEntry value="org.yaml.snakeyaml*1.27.0.v20201111-1638@default:default"/>
         <setEntry value="osgi.enterprise@default:default"/>
-        <setEntry value="wrapped.com.google.zxing.javase@default:default"/>
         <setEntry value="wrapped.io.nayuki.qrcodegen@default:default"/>
         <setEntry value="wrapped.net.codecrete.qrbill.qrbill-generator@default:default"/>
         <setEntry value="wrapped.org.apache.poi.poi@default:default"/>
@@ -274,6 +272,7 @@
         <setEntry value="org.fakturama.exporter.zugferd@default:default"/>
         <setEntry value="org.fakturama.import@default:default"/>
         <setEntry value="org.fakturama.print.openoffice@default:default"/>
+        <setEntry value="org.fakturama.qrcode@default:default"/>
         <setEntry value="org.fakturama.wizards@default:default"/>
     </setAttribute>
     <booleanAttribute key="show_selected_only" value="false"/>

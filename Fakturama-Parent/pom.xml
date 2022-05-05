@@ -38,6 +38,7 @@
 	    <module>org.fakturama.exporter.zugferd.feature</module>
 	    <module>org.fakturama.exporter.zugferd</module>
 	    <module>org.fakturama.connectors</module>
+	    <module>org.fakturama.qrcode</module>
 	</modules>
 	<build>
 		<plugins>

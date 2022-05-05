@@ -65,12 +65,14 @@ import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.ULocale;
+import com.sebulli.fakturama.Activator;
 import com.sebulli.fakturama.converter.CommonConverter;
 import com.sebulli.fakturama.dao.AddressDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -100,16 +102,9 @@ import com.sebulli.fakturama.model.IDocumentAddressManager;
 //import com.sebulli.fakturama.model.ModelObject;
 import com.sebulli.fakturama.model.Payment;
 import com.sebulli.fakturama.model.Product;
+import com.sebulli.fakturama.qrcode.QRCodeService;
 import com.sebulli.fakturama.util.ContactUtil;
 import com.sebulli.fakturama.util.DocumentTypeUtil;
-
-import net.codecrete.qrbill.generator.Bill;
-import net.codecrete.qrbill.generator.BillFormat;
-import net.codecrete.qrbill.generator.GraphicsFormat;
-import net.codecrete.qrbill.generator.Language;
-import net.codecrete.qrbill.generator.OutputSize;
-import net.codecrete.qrbill.generator.Payments;
-import net.codecrete.qrbill.generator.QRBill;
 
 /**
  * This class fills an OpenOffice template and replaces all the
@@ -153,6 +148,8 @@ public class TemplateProcessor {
     @Inject
     private IDocumentAddressManager addressManager;
     
+    private QRCodeService qrCodeService;
+    
     /**
      * Checks if the current editor uses sales equalization tax (this is only needed for some customers).
      */
@@ -172,6 +169,11 @@ public class TemplateProcessor {
     @PostConstruct
     public void init() throws InvalidSyntaxException {
         contactUtil = ContextInjectionFactory.make(ContactUtil.class, context);
+        ServiceReference<QRCodeService> serviceReference = Activator.getContext().getServiceReference(QRCodeService.class);
+        if(serviceReference != null) {
+            qrCodeService = Activator.getContext().getService(serviceReference);
+            ContextInjectionFactory.inject(qrCodeService, context);
+        }
     }
 	/**
 	 * Replaces all line breaks by a "-"
@@ -764,7 +766,7 @@ public class TemplateProcessor {
 		if (key.equals("DOCUMENT.TOTAL.GROSS")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalGross()) : "";
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return documentSummary.isPresent() ? Double.toString(documentSummary.get().getTotalQuantity()) : ""; // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
-		if (key.equals("INVOICE.SWISSCODE")) return createImageFile(createSwissCodeQR(document), null, "png").toString();
+		if (key.equals("INVOICE.SWISSCODE")) return createImageFile(qrCodeService.createSwissCodeQR(document), null, "png").toString();
 
 		if (key.startsWith("DOCUMENT.WEIGHT")) {
 			if (key.equals("DOCUMENT.WEIGHT.TARA"))
@@ -957,77 +959,6 @@ public class TemplateProcessor {
 
 		return null;
 	}
-
-    private byte[] createSwissCodeQR(Document document) {
-        DocumentReceiver documentReceiver = addressManager.getBillingAdress(document);
-        Contact debitor = contactsDAO.findById(documentReceiver.getOriginContactId());
-        if (debitor != null && debitor.getBankAccount() != null) {
-            // Setup bill
-            Bill bill = new Bill();
-            bill.setAccount(debitor.getBankAccount().getIban());
-            bill.setAmountFromDouble(document.getTotalValue());
-            bill.setCurrency(DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode());
-
-            // Set creditor
-            net.codecrete.qrbill.generator.Address creditor = new net.codecrete.qrbill.generator.Address();
-            creditor.setName(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER));
-            creditor.setAddressLine1(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET));
-            
-            String zipCity = String.join(" ", preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP),
-                    preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY));
-            creditor.setAddressLine2(zipCity);
-            
-            String countryCode = localeUtil.findCodeByDisplayCountry(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COUNTRY),
-                    localeUtil.getDefaultLocale().getLanguage());
-            creditor.setCountryCode(countryCode);
-            
-            bill.setCreditor(creditor);
-
-            // only add a reference if the IBAN is a valid QR-IBAN
-            if (Payments.isQRIBAN(debitor.getBankAccount().getIban())) {
-                bill.setReference(document.getCustomerRef());
-            }
-            bill.setUnstructuredMessage(document.getMessage());
-
-            // Set debtor
-            net.codecrete.qrbill.generator.Address debtor = new net.codecrete.qrbill.generator.Address();
-            debtor.setName(document.getAddressFirstLine());
-            debtor.setAddressLine1(documentReceiver.getStreet());
-            debtor.setAddressLine2(documentReceiver.getCity());
-            debtor.setCountryCode(documentReceiver.getCountryCode());
-            bill.setDebtor(debtor);
-
-            // Set output format
-            BillFormat format = bill.getFormat();
-            format.setGraphicsFormat(GraphicsFormat.PNG);
-            format.setOutputSize(OutputSize.QR_BILL_ONLY);
-            
-            net.codecrete.qrbill.generator.Language lang;
-            switch (localeUtil.getDefaultLocale().getLanguage()) {
-            case "de":
-                lang = Language.DE;
-                break;
-            case "en":
-                lang = Language.EN;
-                break;
-            case "fr":
-                lang = Language.FR;
-                break;
-            case "ro":
-                lang = Language.RM;
-                break;
-            default:
-                lang = Language.DE;
-                break;
-            }
-            
-            format.setLanguage(lang);
-
-            // Generate QR bill
-            return QRBill.generate(bill);
-        } else 
-            return new byte[] {};
-    }
     private Optional<String> checkAddressPlaceholders(DocumentReceiver contact, String key, ContactType billing) {
 	    if(key.startsWith(billing.getName())) {
 	        key = key.replaceAll(billing.getName() + "\\.", "");
