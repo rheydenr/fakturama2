@@ -18,6 +18,7 @@ public class DocumentSummaryParam {
 	private VAT shippingVat;
 	private int netGross;
 	private MonetaryAmount deposit;
+    private int sign;
 
 	public DocumentSummaryParam withItems(List<DocumentItem> documentItems) {
 		this.documentItems = documentItems;
@@ -58,6 +59,7 @@ public class DocumentSummaryParam {
 	public VAT getShippingVat() {
 		return shippingVat;
 	}
+	
 
 	public DocumentSummaryParam withShippingVat(VAT shippingVat) {
 		this.shippingVat = shippingVat;
@@ -99,4 +101,13 @@ public class DocumentSummaryParam {
 		this.deposit = deposit;
 		return this;
 	}
+
+    public DocumentSummaryParam withSign(int sign) {
+        this.sign= sign;
+        return this;
+    }
+
+    public int getSign() {
+        return sign;
+    }
 }

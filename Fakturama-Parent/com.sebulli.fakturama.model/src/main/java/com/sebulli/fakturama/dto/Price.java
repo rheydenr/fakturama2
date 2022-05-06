@@ -98,7 +98,7 @@ public class Price {
     }
 	
 	public Price(DocumentItem item) {
-		this(item, false);
+		this(item, false, 1);
 	}
 
 	/**
@@ -107,9 +107,9 @@ public class Price {
 	 * @param item
 	 *            Item as DocumentItem
 	 */
-	public Price(DocumentItem item, boolean useSET) {
+	public Price(DocumentItem item, boolean useSET, int sign) {
 		this(   BooleanUtils.isTrue(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
-		        Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()), 
+		        Money.of(item.getPrice()*sign, DataUtils.getInstance().getDefaultCurrencyUnit()), 
 		        item.getItemVat().getTaxValue(), 
 		        item.getItemRebate(), 
 		        BooleanUtils.toBoolean(item.getNoVat()), 
@@ -126,9 +126,9 @@ public class Price {
 	 * @param scaleFactor
 	 * 				Scale factor of this item
 	 */
-    public Price(DocumentItem item, Double scaleFactor, boolean useSET, boolean useGross) {
+    public Price(DocumentItem item, Double scaleFactor, boolean useSET, boolean useGross, int sign) {
         this(BooleanUtils.toBoolean(item.getOptional()) ? Double.valueOf(0.0) : item.getQuantity(), 
-        	 Money.of(item.getPrice(), DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(scaleFactor), 
+        	 Money.of(item.getPrice()*sign, DataUtils.getInstance().getDefaultCurrencyUnit()).multiply(scaleFactor), 
         	 item.getItemVat().getTaxValue(), 
         	 item.getItemRebate(), 
         	 BooleanUtils.toBoolean(item.getNoVat()), 

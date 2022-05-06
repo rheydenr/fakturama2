@@ -33,6 +33,7 @@ import com.sebulli.fakturama.model.DocumentItem;
 import com.sebulli.fakturama.model.Shipping;
 import com.sebulli.fakturama.model.ShippingVatType;
 import com.sebulli.fakturama.model.VAT;
+import com.sebulli.fakturama.util.DocumentTypeUtil;
 
 /**
  * Calculator for the document summaries.
@@ -86,18 +87,22 @@ public class DocumentSummaryCalculator {
         // amount is not equal to zero we get unpredictable results in later processing)
         MonetaryAmount deposit = Money.of(BooleanUtils.isTrue(dataSetDocument.getDeposit()) ? dataSetDocument.getPaidValue() : NumberUtils.DOUBLE_ZERO, getCurrencyCode());
         Shipping shipping = dataSetDocument.getShipping();
+
+        // Get the sign of this document ( + or -)
+        int sign = DocumentTypeUtil.findByBillingType(dataSetDocument.getBillingType()).getSign();
         
 		return calculate(vatSummarySet, dataSetDocument.getItems(), 
         		shipping != null ? shipping.getShippingValue() : Optional.ofNullable(dataSetDocument.getShippingValue()).orElse(NumberUtils.DOUBLE_ZERO), 
         		shipping != null ? shipping.getShippingVat() : null, 
                 shipping != null ? shipping.getAutoVat() : dataSetDocument.getShippingAutoVat(), 
                 Optional.ofNullable(dataSetDocument.getItemsRebate()).orElse(NumberUtils.DOUBLE_ZERO), noVatReference, 
-                scaleFactor, dataSetDocument.getNetGross(), deposit);
+                scaleFactor, dataSetDocument.getNetGross(), deposit, sign);
     }
 
 	public DocumentSummary calculate(List<DocumentItem> items, Shipping shipping, ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, 
-            int netGross, MonetaryAmount deposit) {
-        return calculate(null, items, shipping.getShippingValue(), shipping.getShippingVat(), shippingAutoVat, itemsDiscount, noVatReference, NumberUtils.DOUBLE_ONE, netGross, deposit);
+            int netGross, MonetaryAmount deposit, int sign) {
+        return calculate(null, items, shipping.getShippingValue(), shipping.getShippingVat(), shippingAutoVat, 
+                itemsDiscount, noVatReference, NumberUtils.DOUBLE_ONE, netGross, deposit, sign);
     }
 	
 	/**
@@ -128,7 +133,7 @@ public class DocumentSummaryCalculator {
 	 */
     public DocumentSummary calculate(VatSummarySet globalVatSummarySet, List<DocumentItem> items, Double shippingValue, VAT shippingVat,
             ShippingVatType shippingAutoVat, Double itemsDiscount, VAT noVatReference, Double scaleFactor, 
-            int netGross, MonetaryAmount deposit) {
+            int netGross, MonetaryAmount deposit, int sign) {
     	return calculate(new DocumentSummaryParam()
     			.withItems(items)
     			.withShippingValue(shippingValue)
@@ -139,6 +144,7 @@ public class DocumentSummaryCalculator {
     			.withScaleFactor(scaleFactor)
     			.withNetGross(netGross)
     			.withDeposit(deposit)
+    			.withSign(sign)
     			);
     }
     
@@ -152,8 +158,8 @@ public class DocumentSummaryCalculator {
 		for (DocumentItem item : param.getDocumentItems()) {
 			
 			if(BooleanUtils.isTrue(item.getDeleted())) continue;
-			Price price = new DocumentItemDTO(item).getPrice(useSET, false);  // scaleFactor was always 1.0 in the old application, hence we could omit this
-
+			Price price = new DocumentItemDTO(item, param.getSign()).getPrice(useSET, false);  // scaleFactor was always 1.0 in the old application, hence we could omit this
+			
 			// Add the total net value of this item to the sum of net items
 			retval.addPrice(price, item.getQuantity());
 			
@@ -180,14 +186,14 @@ public class DocumentSummaryCalculator {
 		
 		// round to full gross cents
 		if (param.getNetGross() == DocumentSummary.ROUND_GROSS_VALUES) {
-			retval.setItemsGrossDiscounted(retval.getItemsGross().with(rounding));
-			retval.setTotalNet(retval.getItemsNet());
+			retval.setItemsGrossDiscounted(retval.getItemsGross().with(rounding).multiply(param.getSign()));
+			retval.setTotalNet(retval.getItemsNet().multiply(param.getSign()));
 		}
 		
 		retval.setTotalGross(retval.getItemsGrossDiscounted());
 
-		MonetaryAmount itemsNet = retval.getItemsNetDiscounted();
-		MonetaryAmount itemsGross = retval.getItemsGross();
+		MonetaryAmount itemsNet = retval.getItemsNetDiscounted().multiply(param.getSign());
+		MonetaryAmount itemsGross = retval.getItemsGross().multiply(param.getSign());
 
 		// *** DISCOUNT ***
 		
@@ -204,7 +210,7 @@ public class DocumentSummaryCalculator {
 		// calculate shipping
 
 		// Scale the shipping
-		MonetaryAmount shippingAmount = Money.of(param.getShippingValue() * param.getScaleFactor(), getCurrencyCode());
+		MonetaryAmount shippingAmount = Money.of(param.getShippingValue() * param.getScaleFactor() * param.getSign(), getCurrencyCode());
 		Double shippingVatPercent = param.getShippingVat() != null ? param.getShippingVat().getTaxValue() : NumberUtils.DOUBLE_ZERO;
 		String currentVatDescription = param.getShippingVat() != null
 				? StringUtils.defaultString(param.getShippingVat().getDescription(), param.getShippingVat().getName()) 
@@ -336,7 +342,7 @@ public class DocumentSummaryCalculator {
 		    retval.setShippingGross(retval.getShippingGross().with(rounding));
 		    retval.setShippingVat(retval.getShippingGross().subtract(retval.getShippingNet()));
 		}
-
+		
 		//calculate the final payment
 		retval.setDeposit(param.getDeposit());
 		retval.setFinalPayment(retval.getTotalGross().subtract(retval.getDeposit()));

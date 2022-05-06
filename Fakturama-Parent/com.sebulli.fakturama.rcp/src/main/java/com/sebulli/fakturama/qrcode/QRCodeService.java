@@ -1,5 +1,6 @@
 package com.sebulli.fakturama.qrcode;
 
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Invoice;
 
 /**
@@ -12,7 +13,7 @@ public interface QRCodeService {
 
     byte[] createGiroCode(Invoice document);
 
-    byte[] createVCardQRCode(Invoice document);
+    byte[] createVCardQRCode(Document document);
 
     byte[] createEANCode(String productNumber);
 

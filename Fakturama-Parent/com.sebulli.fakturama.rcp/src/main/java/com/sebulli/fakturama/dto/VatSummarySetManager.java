@@ -59,7 +59,7 @@ public class VatSummarySetManager {
 	 *            Document to add
 	 */
 	public void add(Document document, Double scaleFactor) {
-		int parentSign =DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
+		int parentSign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
 		CurrencyUnit currencyCode = DataUtils.getInstance().getDefaultCurrencyUnit();
 		MonetaryAmount deposit = Money.of(document.getPaidValue(), currencyCode);
 		// Create a new summary object and start the calculation.
@@ -71,7 +71,7 @@ public class VatSummarySetManager {
 				document.getShipping() != null ? document.getShipping().getAutoVat() : document.getShippingAutoVat(), 
 				Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0)), 
 				document.getNoVatReference(),
- 			    scaleFactor, document.getNetGross(), deposit);
+ 			    scaleFactor, document.getNetGross(), deposit, parentSign);
 		vatSummarySet.addVatSummarySet(documentSummary.getVatSummary());
 	}
 	

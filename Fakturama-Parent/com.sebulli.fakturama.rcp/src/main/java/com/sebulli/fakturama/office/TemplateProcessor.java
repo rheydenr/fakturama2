@@ -478,7 +478,9 @@ public class TemplateProcessor {
                 .sorted((i1, i2) -> {return i1.getPosNr().compareTo(i2.getPosNr());})
                 .collect(Collectors.toList());
         Set<Node> nodesMarkedForRemoving = new HashSet<>();
-        
+        // Get the sign of this document ( + or -)
+        int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
+
         for (PlaceholderNode placeholderNode : placeholderNodes) {
             if(!StringUtils.startsWith(placeholderNode.getNodeText(), PlaceholderNavigation.PLACEHOLDER_PREFIX)) continue;
             switch (placeholderNode.getNodeType()) {
@@ -525,7 +527,7 @@ public class TemplateProcessor {
                          * table template.
                          * We distinguish the placeholders for a certain table by its user data field.
                          */
-                        fillItemTableWithData(itemDataSets, pTable, pRowTemplate);
+                        fillItemTableWithData(itemDataSets, pTable, pRowTemplate, sign);
                         break;
                     case VATLIST_TABLE:
                         fillVatTableWithData(documentSummary, pTable, pRowTemplate,
@@ -702,7 +704,7 @@ public class TemplateProcessor {
             case YOURCOMPANY_BANK: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BANK);
             case YOURCOMPANY_IBAN: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN);
             case YOURCOMPANY_BIC: return  preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BIC);
-            case YOURCOMPANY_QRVCARD: return createImageFile(qrCodeService.createVCardQRCode((Invoice) document), null, "png").toString();
+            case YOURCOMPANY_QRVCARD: return createImageFile(qrCodeService.createVCardQRCode(document), null, "png").toString();
             default:
                 break;
             }
@@ -770,8 +772,12 @@ public class TemplateProcessor {
 		if (key.equals("DOCUMENT.TOTAL.GROSS")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalGross()) : "";
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return documentSummary.isPresent() ? Double.toString(documentSummary.get().getTotalQuantity()) : ""; // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
-		if (key.equals("INVOICE.SWISSCODE")) return createImageFile(qrCodeService.createSwissCodeQR((Invoice) document), null, "png").toString();
-		if (key.equals("INVOICE.GIROCODE")) return createImageFile(qrCodeService.createGiroCode((Invoice) document), null, "png").toString();
+		if (key.equals("INVOICE.SWISSCODE")) return document instanceof Invoice 
+		        ? createImageFile(qrCodeService.createSwissCodeQR((Invoice) document), null, "png").toString()
+		                : "";
+		if (key.equals("INVOICE.GIROCODE")) return document instanceof Invoice
+		        ? createImageFile(qrCodeService.createGiroCode((Invoice) document), null, "png").toString()
+		                :"";
 
 		if (key.startsWith("DOCUMENT.WEIGHT")) {
 			if (key.equals("DOCUMENT.WEIGHT.TARA"))
@@ -1367,7 +1373,7 @@ public class TemplateProcessor {
      * @param cellText
      *            The cell's text.
      */
-    private void fillItemTableWithData(List<DocumentItem> itemDataSets, Table pTable, Row pRowTemplate) {
+    private void fillItemTableWithData(List<DocumentItem> itemDataSets, Table pTable, Row pRowTemplate, int sign) {
         // Get all items
         for (int row = 0; row < itemDataSets.size(); row++) {
 //               clone one row from template
@@ -1402,7 +1408,7 @@ public class TemplateProcessor {
                   Node item = cellPlaceholders.item(0);
                   PlaceholderNode cellPlaceholder = new PlaceholderNode(item);
                   cellPlaceholder.setOwnerDocument(pTable.getOwnerDocument());
-                  fillItemTableWithData(itemDataSets.get(row), cellPlaceholder);
+                  fillItemTableWithData(itemDataSets.get(row), cellPlaceholder, sign);
                 }
             }
         }
@@ -1418,7 +1424,7 @@ public class TemplateProcessor {
      *            The cell's placeholder.
      * @return 
      */
-    private void fillItemTableWithData(DocumentItem item, PlaceholderNode cellPlaceholder) {
+    private void fillItemTableWithData(DocumentItem item, PlaceholderNode cellPlaceholder, int sign) {
 
         String value = "";
         
@@ -1426,7 +1432,7 @@ public class TemplateProcessor {
         String placeholder = placeholderDisplayText.substring(1, placeholderDisplayText.length() - 1);
         String key = placeholder.split("\\$")[0];
 
-        Price price = new Price(item, useSET);
+        Price price = new Price(item, useSET, sign);
         boolean isReplaceOptionalPrice = item.getOptional() && preferences.getBoolean(Constants.PREFERENCES_OPTIONALITEMS_REPLACE_PRICE);
 
         // Get the item quantity

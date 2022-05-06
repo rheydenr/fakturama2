@@ -1421,7 +1421,7 @@ public class DocumentEditor extends Editor<Document> {
 		}
 		
 		// Get the sign of this document ( + or -)
-//		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
+		int sign = DocumentTypeUtil.findByBillingType(document.getBillingType()).getSign();
 		
 		// Get the discount value from the document or (if exists) from control element
 		Double rebate = java.util.Optional.ofNullable(document.getItemsRebate()).orElse(Double.valueOf(0.0));
@@ -1467,7 +1467,8 @@ public class DocumentEditor extends Editor<Document> {
         		.withScaleFactor(Double.valueOf(1.0))
         		.withNetGross(netgross)
         		.withDeposit(deposit)
-        		.withItemsDiscount(rebate);
+        		.withItemsDiscount(rebate)
+        		.withSign(sign);
         	
         } else {
 			sumCalcParam = new DocumentSummaryParam()
@@ -1480,7 +1481,8 @@ public class DocumentEditor extends Editor<Document> {
         		.withScaleFactor(Double.valueOf(1.0))
         		.withNetGross(netgross)
         		.withDeposit(deposit)
-        		.withItemsDiscount(rebate);
+        		.withItemsDiscount(rebate)
+        		.withSign(sign);
         }
         	
         documentSummary = documentSummaryManager.calculate(document, sumCalcParam);

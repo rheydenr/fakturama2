@@ -34,14 +34,20 @@ public class DocumentItemDTO implements IEntity {
 	private DocumentItem documentItem;
 	private boolean dirty;
 	private List<String> ignoredAttributes = new ArrayList<>();
+	private int sign = 1;
+	
+	public DocumentItemDTO(DocumentItem documentItem) {
+	    this(documentItem, 1);
+	}
 
 	/**
 	 * Creates a new DTO based on a given {@link DocumentItem}.
 	 * 
 	 * @param documentItem
 	 */
-	public DocumentItemDTO(DocumentItem documentItem) {
+	public DocumentItemDTO(DocumentItem documentItem, int sign) {
 		this.documentItem = documentItem;
+		this.sign = sign;
 		ignoredAttributes.add("dateAdded");
 		ignoredAttributes.add("validFrom");
 		ignoredAttributes.add("modifiedBy");
@@ -96,7 +102,7 @@ public class DocumentItemDTO implements IEntity {
 	}
 
 	public Price getPrice(boolean useSET, boolean useGross) {
-		return new Price(documentItem, 1.0, useSET, useGross);
+		return new Price(documentItem, 1.0, useSET, useGross, sign);
 	}
 	
 	@Override

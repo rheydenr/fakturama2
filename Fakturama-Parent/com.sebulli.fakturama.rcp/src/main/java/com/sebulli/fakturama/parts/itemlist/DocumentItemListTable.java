@@ -459,7 +459,9 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
 	                			: price.getUnitNetRounded();
 	                    break;
 	                case TOTALPRICE:
+	                    int sign = container.getDocumentType().getSign();
 	                    price = rowObject.getPrice(useSET);
+	                    price.multiply(sign);
 	                    if (container.getUseGross()) { // "$ItemGrossTotal"
 	                        // Fill the cell with the total gross value of the item
 	                        retval = price.getTotalGrossRounded();
@@ -906,11 +908,11 @@ public class DocumentItemListTable extends AbstractViewDataTable<DocumentItemDTO
         		.map(DocumentItemDTO::new).collect(Collectors.toList());
         documentItemsListData = GlazedLists.eventList(wrappedItems);
 
-        //            // Set the sign
-        //            if (parentSign != documentType.sign())
-        //                newItem = new DataSetItem(item, -1);
-        //            else
-        //                newItem = new DataSetItem(item);
+//        // Set the sign
+//        if (parentSign != documentType.sign())
+//            newItem = new DataSetItem(item, -1);
+//        else
+//            newItem = new DataSetItem(item);
 
         // Reset the property "optional" from all items if the parent document was an offer
         // the parents document type

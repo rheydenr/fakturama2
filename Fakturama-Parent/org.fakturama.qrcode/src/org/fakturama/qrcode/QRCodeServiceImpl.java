@@ -18,6 +18,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.EAN13Writer;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.qrcode.QRCodeService;
 
@@ -50,7 +51,7 @@ public class QRCodeServiceImpl implements QRCodeService {
     }
     
     @Override
-    public byte[] createVCardQRCode(Invoice document) {
+    public byte[] createVCardQRCode(Document document) {
         VCard vcard = new VCard(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER));
         vcard.setAddress(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET));
         vcard.setCompany(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_NAME));
