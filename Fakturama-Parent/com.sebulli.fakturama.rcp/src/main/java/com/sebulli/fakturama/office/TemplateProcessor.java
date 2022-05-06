@@ -1625,8 +1625,24 @@ public class TemplateProcessor {
             
             if (item.getPicture() != null) {
 
-                Pair<Integer, Integer> widthHeight = getCustomImageSize(placeholder);
+                Pair<Integer, Integer> widthHeight = getCustomImageSize(cellPlaceholder);
                 Path imageFile = createImageFile(item.getPicture(), widthHeight, "JPG");
+                
+                if (imageFile != null) {
+                    // replace the placeholder
+                    cellPlaceholder.replaceWith(imageFile.toUri(), widthHeight.getLeft(), widthHeight.getRight());
+                }
+                return;
+            }
+            
+            value = "";
+        }
+        else if (key.startsWith("ITEM.BARCODE")){
+            
+            if (item.getItemNumber() != null) {
+                
+                Pair<Integer, Integer> widthHeight = getCustomImageSize(cellPlaceholder);
+                Path imageFile = createImageFile(qrCodeService.createEANCode(item.getItemNumber()), widthHeight, "JPG");
                 
                 if (imageFile != null) {
                     // replace the placeholder
@@ -1679,9 +1695,9 @@ public class TemplateProcessor {
 //      addUserTextField(key, value, index);
     }
 
-    private Pair<Integer, Integer> getCustomImageSize(String placeholder) {
-        String width_s = templateProcessorHelper.extractParam(placeholder,"WIDTH");
-        String height_s = templateProcessorHelper.extractParam(placeholder,"HEIGHT");
+    private Pair<Integer, Integer> getCustomImageSize(PlaceholderNode placeholder) {
+        String width_s = placeholder.getParam("WIDTH");
+        String height_s = placeholder.getParam("HEIGHT");
         
         // Default height and with
         int pixelWidth = 0;

@@ -1209,6 +1209,15 @@ id="04_openoffice_libreoffice">
 						</entry>
 					</row>
 					<row>
+						<entry>ITEM.BARCODE</entry>
+						<entry>
+							<para>Platzhalter für den EAN-Code des Produktes (EAN-13). Die Größe des Bilder kann über die Parameter <emphasis role="bold">HEIGHT</emphasis> und <emphasis role="bold">WIDTH</emphasis> festgelegt werden.</para>
+							<para>
+								<emphasis role="italic">Beispiel:</emphasis>
+								<emphasis role="bold">ITEM.BARCODE$WIDTH:200$HEIGHT:150</emphasis> EAN-Code wird 200 x 150 Pixel groß.</para>
+						</entry>
+					</row>
+					<row>
 						<entry>ITEM.UNIT.UDF01; ITEM.UNIT.UDF02; ITEM.UNIT.UDF03</entry>
 						<entry>
 							<para>Nutzerdefinierte Felder. Diese Werte werden nur ersetzt, wenn der 

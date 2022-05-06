@@ -14,4 +14,6 @@ public interface QRCodeService {
 
     byte[] createVCardQRCode(Invoice document);
 
+    byte[] createEANCode(String productNumber);
+
 }
