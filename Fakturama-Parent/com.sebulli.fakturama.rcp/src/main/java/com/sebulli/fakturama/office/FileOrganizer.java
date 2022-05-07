@@ -20,6 +20,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -175,11 +177,17 @@ public class FileOrganizer {
 		LocalDateTime docDateTime = LocalDateTime.ofInstant(document.getDocumentDate().toInstant(), ZoneId.systemDefault());
 
 		int yyyy = docDateTime.getYear();
+		int weekOfYear = docDateTime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+		int quarter = docDateTime.get(IsoFields.QUARTER_OF_YEAR);
+		
 		// Replace the date information
 		fileNamePlaceholder = fileNamePlaceholder.replaceAll("\\{yyyy\\}", String.format("%04d", yyyy))
 									.replaceAll("\\{yy\\}", String.format("%04d", yyyy).substring(2, 4))
 									.replaceAll("\\{mm\\}",	String.format("%02d", docDateTime.getMonth().getValue()))
-									.replaceAll("\\{dd\\}",	String.format("%02d", docDateTime.getDayOfMonth()));
+									.replaceAll("\\{dd\\}",	String.format("%02d", docDateTime.getDayOfMonth()))
+									.replaceAll("\\{w\\}",String.format("%02d", weekOfYear))
+									.replaceAll("\\{q\\}",String.format("%d", quarter))
+									;
 
 		// Extract path and filename
 		int pos = fileNamePlaceholder.lastIndexOf('/');

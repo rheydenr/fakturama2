@@ -636,10 +636,10 @@
             <para>Für das Datum sind folgende Platzhalter vorgesehen:</para>
             <itemizedlist>
                 <listitem>
-                    <para>{YYYY}  Jahr 4 stellig (2011)</para>
+                    <para>{YYYY}  Jahr 4 stellig (2021)</para>
                 </listitem>
                 <listitem>
-                    <para>{YY}  Jahr 2 stellig (11)</para>
+                    <para>{YY}  Jahr 2 stellig (21)</para>
                 </listitem>
                 <listitem>
                     <para>{MM}  Monat</para>
@@ -651,17 +651,25 @@
             <para>Beispiel:</para>
             <programlisting>RE{YYYY}-{MM}-{DD}-{5nr}</programlisting>
             <para>erzeugt bei einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> eine formatierte Rechnungsnummer von:</para>
-            <programlisting>RE2011-04-09-00200</programlisting>
+            <programlisting>RE2021-04-09-00200</programlisting>
         </sect2>
         <sect2>
             <subtitle>Nummerierung mit Datum und neu beginnender Nummerierung</subtitle>
             <para>Soll die Dokumentennummer täglich / monatlich / jährlich bei 1 beginnen, so sind die Platzhalter für das Datum in Kleinbuchstaben zu setzen:</para>
             <itemizedlist>
                 <listitem>
-                    <para>{yyyy}  Jahr 4 stellig (2011), Nummerierung beginnt jährlich bei 1.</para>
+                    <para>{yyyy}  Jahr 4 stellig (2021), Nummerierung beginnt jährlich bei 1.</para>
                 </listitem>
                 <listitem>
-                    <para>{yy}  Jahr 2 stellig (11), Nummerierung beginnt jährlich bei 1.</para>
+                    <para>{yy}  Jahr 2 stellig (21), Nummerierung beginnt jährlich bei 1.</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        {w} Kalenderwoche (2-stellig)</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        {q} Quartal (1, 2 usw.)</para>
                 </listitem>
                 <listitem>
                     <para>{mm}  Monat, Nummerierung beginnt monatlich bei 1.</para>
@@ -672,8 +680,8 @@
             </itemizedlist>
             <para>Beispiel:</para>
             <programlisting>RE{yyyy}-{mm}-{5nr}</programlisting>
-            <para>erzeugt trotz einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> am 31.03.2011 eine formatierte Rechnungsnummer am Beginn des 01.04.2011 von:</para>
-            <programlisting>RE2011-04-00001</programlisting>
+            <para>erzeugt trotz einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> am 31.03.2021 eine formatierte Rechnungsnummer am Beginn des 01.04.2021 von:</para>
+            <programlisting>RE2021-04-00001</programlisting>
         </sect2>
         <section>
             <title>Verwendung</title>
@@ -811,6 +819,14 @@
                 <listitem>
                     <para>
                         <emphasis role="bold">{Xnr}</emphasis> Dokument-Nr. (z. B. Rechnungsnr.), wobei X durch eine Zahl zu ersetzen ist, die die Anzahl der darzustellenden Stellen wiedergibt (z.B. {6nr})</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{w}</emphasis> Kalenderwoche (2-stellig)</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis role="bold">{q}</emphasis> Quartal (1, 2 usw.)</para>
                 </listitem>
                 <listitem>
                     <para>

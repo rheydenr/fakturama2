@@ -5,6 +5,8 @@ package com.sebulli.fakturama.calculate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -201,6 +203,9 @@ public class NumberGenerator {
 		format = defaultValuePrefs.getString(prefStrFormat);
 //		nr = defaultValuePrefs.getInt(prefStrNr);
 		nr = getCurrentNumber(editorId);
+		
+        int weekOfYear = now.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+        int quarter = now.get(IsoFields.QUARTER_OF_YEAR);
 
 		// Check, whether the date string is a new one
 		boolean startNewCounting = false;
@@ -218,6 +223,8 @@ public class NumberGenerator {
 		// Replace the date information
 		format = format.replace("{yyyy}", String.format("%04d", yyyy));
 		format = format.replace("{yy}", String.format("%04d", yyyy).substring(2, 4));
+		format = format.replace("{w}", String.format("%02d", weekOfYear));
+		format = format.replace("{q}", String.format("%d", quarter));
 		format = format.replace("{mm}", String.format("%02d", mm));
 		format = format.replace("{dd}", String.format("%02d", dd));
 		format = format.replace("{YYYY}", String.format("%04d", yyyy));
