@@ -185,8 +185,8 @@ public class FileOrganizer {
 									.replaceAll("\\{yy\\}", String.format("%04d", yyyy).substring(2, 4))
 									.replaceAll("\\{mm\\}",	String.format("%02d", docDateTime.getMonth().getValue()))
 									.replaceAll("\\{dd\\}",	String.format("%02d", docDateTime.getDayOfMonth()))
-									.replaceAll("\\{woy\\}",String.format("%02d", weekOfYear))
-									.replaceAll("\\{qu\\}",String.format("%d", quarter))
+									.replaceAll("\\{w\\}",String.format("%02d", weekOfYear))
+									.replaceAll("\\{q\\}",String.format("%d", quarter))
 									;
 
 		// Extract path and filename

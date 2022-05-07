@@ -651,7 +651,7 @@
             <para>Beispiel:</para>
             <programlisting>RE{YYYY}-{MM}-{DD}-{5nr}</programlisting>
             <para>erzeugt bei einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> eine formatierte Rechnungsnummer von:</para>
-            <programlisting>RE2011-04-09-00200</programlisting>
+            <programlisting>RE2021-04-09-00200</programlisting>
         </sect2>
         <sect2>
             <subtitle>Nummerierung mit Datum und neu beginnender Nummerierung</subtitle>
@@ -664,6 +664,14 @@
                     <para>{yy}  Jahr 2 stellig (21), Nummerierung beginnt jährlich bei 1.</para>
                 </listitem>
                 <listitem>
+                    <para>
+                        {w} Kalenderwoche (2-stellig)</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        {q} Quartal (1, 2 usw.)</para>
+                </listitem>
+                <listitem>
                     <para>{mm}  Monat, Nummerierung beginnt monatlich bei 1.</para>
                 </listitem>
                 <listitem>
@@ -672,8 +680,8 @@
             </itemizedlist>
             <para>Beispiel:</para>
             <programlisting>RE{yyyy}-{mm}-{5nr}</programlisting>
-            <para>erzeugt trotz einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> am 31.03.2011 eine formatierte Rechnungsnummer am Beginn des 01.04.2011 von:</para>
-            <programlisting>RE2011-04-00001</programlisting>
+            <para>erzeugt trotz einer Rechnungsnummer <emphasis role="bold">'200'</emphasis> am 31.03.2021 eine formatierte Rechnungsnummer am Beginn des 01.04.2021 von:</para>
+            <programlisting>RE2021-04-00001</programlisting>
         </sect2>
         <section>
             <title>Verwendung</title>
@@ -814,11 +822,11 @@
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{woy}</emphasis> Kalenderwoche (2-stellig)</para>
+                        <emphasis role="bold">{w}</emphasis> Kalenderwoche (2-stellig)</para>
                 </listitem>
                 <listitem>
                     <para>
-                        <emphasis role="bold">{qu}</emphasis> Quartal (1, 2 usw.)</para>
+                        <emphasis role="bold">{q}</emphasis> Quartal (1, 2 usw.)</para>
                 </listitem>
                 <listitem>
                     <para>
