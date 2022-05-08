@@ -108,6 +108,18 @@
 			<programlisting>/home/Benutzername/Dokumente/MeineFirma/</programlisting>
 			<para>Siehe auch <link linkend="workspace_workspace">Arbeitsverzeichnis</link>
 			</para>
+			<para>Nach der Installation finden Sie Fakturama im Startmenü in der Rubrik "Büroanwendungen" (bzw. "Office"):
+			<informalfigure>
+				<mediaobject>
+					<imageobject role="html">
+						<imagedata fileref="../images/install/Kubuntu_launch_Fakturama.png" format="PNG" scalefit="1"/>
+					</imageobject>
+					<imageobject role="fo">
+						<imagedata contentdepth="70%" fileref="../images/install/Kubuntu_launch_Fakturama.png" format="PNG" scalefit="1"/>
+					</imageobject>
+				</mediaobject>
+			</informalfigure>
+			</para>
 		</sect2>
 	</section>
 	<section>
