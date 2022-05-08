@@ -33,6 +33,9 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.AbstractSelectionDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -111,6 +114,22 @@ public class SelectProductDialog extends AbstractSelectionDialog<Product> {
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(top);
         productListTable.getSearchControl().getTextControl().setFocus();
+        
+        productListTable.getNatTable().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.keyCode == SWT.CR) {
+                    Map<String, Object> eventParams = new HashMap<>();
+                    eventParams.put(DocumentEditor.DOCUMENT_ID, context.get(DocumentEditor.DOCUMENT_ID));
+                    eventParams.put(ProductListTable.SELECTED_PRODUCT_ID, Arrays.asList(productListTable.getSelectedObject().getId()));
+                    evtBroker.post("DialogSelection/Product", eventParams);
+
+                    setReturnCode(OK);
+                    close();
+                }
+                super.keyPressed(e);
+            }
+        });
 
 		return top;
 	}

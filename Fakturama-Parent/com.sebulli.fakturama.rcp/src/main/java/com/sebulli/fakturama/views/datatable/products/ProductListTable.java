@@ -173,14 +173,14 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
             for (int i = 0; i < fullySelectedRowPositions.length; i++) {
                 selectedObjects.add(getGridLayer().getBodyDataProvider().getRowObject(fullySelectedRowPositions[i]));
             }
-        } if(gridListLayer.getGridLayer().getBodyLayer().getRowCount() == 1) {
+        } 
+        
+        if(gridListLayer.getGridLayer().getBodyLayer().getRowCount() == 1) {
             int rowPos = natTable.getRowPositionByY(1);
             int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, getGridLayer().getBodyDataLayer());
             // TODO Why is selectedObject set? 
             selectedObject = getGridLayer().getBodyDataProvider().getRowObject(bodyRowPos);
             selectedObjects = Arrays.asList(selectedObject);
-        } else {
-            log.debug("no rows selected!");
         }
         Product[] retArr = selectedObjects.toArray(new Product[selectedObjects.size()]);
         selectionService.setSelection(selectedObjects);
@@ -292,9 +292,12 @@ public class ProductListTable extends AbstractViewDataTable<Product, ProductCate
                     @Override
                     public void run(NatTable natTable, MouseEvent event) {
                         int rowPosition = natTable.getRowPositionByY(event.y);
-//                        System.err.println("products clicked!");
                         if(!gridListLayer.getSelectionLayer().isRowPositionSelected(rowPosition)) {
                             selectRowAction.run(natTable, event);
+
+                            int rowPos = natTable.getRowPositionByY(event.y);
+                            int bodyRowPos = LayerUtil.convertRowPosition(natTable, rowPos, getGridLayer().getBodyDataLayer());
+                            selectedObject = getGridLayer().getBodyDataProvider().getRowObject(bodyRowPos);
                         }                   
                     }
                 });
