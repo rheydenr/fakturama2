@@ -60,6 +60,7 @@ import com.sebulli.fakturama.dao.CEFACTCodeDAO;
 import com.sebulli.fakturama.dao.ContactsDAO;
 import com.sebulli.fakturama.i18n.ILocaleService;
 import com.sebulli.fakturama.log.ILogger;
+import com.sebulli.fakturama.misc.Constants;
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
 import com.sebulli.fakturama.model.Contact;
@@ -146,8 +147,7 @@ public abstract class AbstractEInvoiceCreator implements IEinvoiceCreator {
         if (zugferdProfile == ConformanceLevel.XRECHNUNG) {
             FileOrganizer fo = ContextInjectionFactory.make(FileOrganizer.class, eclipseContext);
             Set<PathOption> pathOptions = Stream.of(PathOption.values()).collect(Collectors.toSet());
-            Path path = fo.getDocumentPath(pathOptions, TargetFormat.XML, eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, ""), invoice);
-            
+            Path path = fo.getDocumentPath(pathOptions, TargetFormat.XML, eclipsePrefs.get(ZFConstants.PREFERENCES_ZUGFERD_PATH, preferences.getString(Constants.GENERAL_WORKSPACE)), invoice);
             // only to be on the safe side...
             try {
                 Files.deleteIfExists(path);
