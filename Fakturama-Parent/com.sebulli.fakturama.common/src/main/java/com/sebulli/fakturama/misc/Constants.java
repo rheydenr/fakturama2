@@ -24,7 +24,10 @@ public class Constants {
     public static final String PREFERENCES_GENERAL_COLLAPSE_EXPANDBAR = "GENERAL_COLLAPSE_EXPANDBAR";
     public static final String PREFERENCES_GENERAL_CLOSE_OTHER_EDITORS = "GENERAL_CLOSE_OTHER_EDITORS";
     public static final String PREFERENCE_GENERAL_CURRENCY = "GENERAL_CURRENCY";
-    
+    public static final String PREFERENCES_BACKUP_STRATEGY = "BACKUP_STRATEGY";
+    public static final String PREFERENCES_GENERAL_DELETEBACKUPS_OLDER_THAN = "GENERAL_DELETEBACKUPS_OLDER_THAN";
+    public static final String PREFERENCES_GENERAL_KEEP_NUMBER_BACKUPS = "PREFERENCES_GENERAL_KEEP_NUMBER_BACKUPS";
+
     /**
      * Path to product pictures (relative to Workspace path!)
      */
