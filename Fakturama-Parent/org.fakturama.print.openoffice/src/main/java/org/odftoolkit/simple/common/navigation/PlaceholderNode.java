@@ -304,6 +304,10 @@ public class PlaceholderNode extends Selection {
 		// replace image from URI
         Image img = sel.replaceWithImage(uri);
         
+        if(img == null) {
+            return null;
+        }
+        
         // if scaling is needed
         if(width != null) {
         	img.getFrame().getDrawFrameElement().setSvgWidthAttribute(Length.mapToUnit(String.valueOf(width) + "px", Unit.CENTIMETER));

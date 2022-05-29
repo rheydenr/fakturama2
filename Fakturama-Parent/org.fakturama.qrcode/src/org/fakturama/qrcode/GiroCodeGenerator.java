@@ -1,15 +1,15 @@
 package org.fakturama.qrcode;
 
 import java.io.ByteArrayOutputStream;
+import java.security.InvalidParameterException;
 
 import javax.inject.Inject;
 
-import com.sebulli.fakturama.dao.ContactsDAO;
+import org.apache.commons.lang3.StringUtils;
+
 import com.sebulli.fakturama.misc.IDateFormatterService;
 import com.sebulli.fakturama.misc.INumberFormatterService;
-import com.sebulli.fakturama.model.Contact;
-import com.sebulli.fakturama.model.DocumentReceiver;
-import com.sebulli.fakturama.model.IDocumentAddressManager;
+import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.Invoice;
 
 import net.glxn.qrgen.core.image.ImageType;
@@ -24,29 +24,22 @@ public class GiroCodeGenerator {
     @Inject
     private IDateFormatterService dateFormatter;
 
-    @Inject
-    private ContactsDAO contactsDAO;
+    public byte[] createGiroCode(Invoice document, BankAccount companyBankaccount) {
+        if (companyBankaccount == null || companyBankaccount.getBic() == null || companyBankaccount.getIban() == null) {
+            throw new InvalidParameterException(StringUtils.join("No bank account given for your company", '\n'));
+        }
+        Girocode girocode = new Girocode();
 
-    @Inject
-    private IDocumentAddressManager addressManager;
+        String amount = numberFormatterService.doubleToFormattedPrice(document.getTotalValue());
+        girocode.setAmount(amount);
 
-    public byte[] createGiroCode(Invoice document) {
-        DocumentReceiver documentReceiver = addressManager.getBillingAdress(document);
-        Contact debitor = contactsDAO.findById(documentReceiver.getOriginContactId());
-        if (debitor != null && debitor.getBankAccount() != null) {
-            Girocode girocode = new Girocode();
+        girocode.setBic(companyBankaccount.getBic());
+        girocode.setIban(companyBankaccount.getIban());
+        girocode.setName(document.getAddressFirstLine());
+        girocode.setReference(document.getName());
+        girocode.setText("Rechnung vom " + dateFormatter.getFormattedLocalizedDate(document.getDocumentDate()));
 
-            String amount = numberFormatterService.doubleToFormattedPrice(document.getTotalValue());
-            girocode.setAmount(amount);
-
-            girocode.setBic(debitor.getBankAccount().getBic());
-            girocode.setIban(debitor.getBankAccount().getIban());
-            girocode.setName(document.getAddressFirstLine());
-            girocode.setReference(document.getName());
-            girocode.setText("Rechnung vom " + dateFormatter.getFormattedLocalizedDate(document.getDocumentDate()));
-
-            ByteArrayOutputStream qrCodeFile = QRCode.from(girocode).to(ImageType.PNG).stream();
-            return qrCodeFile.toByteArray();
-        } else return null;
+        ByteArrayOutputStream qrCodeFile = QRCode.from(girocode).to(ImageType.PNG).stream();
+        return qrCodeFile.toByteArray();
     }
 }
