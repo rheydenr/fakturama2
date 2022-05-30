@@ -11,7 +11,7 @@ Export-Package: com.sebulli.fakturama.hsqlconnector
 Require-Bundle: org.eclipse.osgi;bundle-version="3.9.1",
  org.eclipse.osgi.services;bundle-version="3.3.100",
  com.sebulli.fakturama.model;bundle-version="2.0.0",
- wrapped.org.hsqldb.hsqldb;bundle-version="2.6.0"
+ org.hsqldb.hsqldb;bundle-version="2.6.1"
 Import-Package: com.opcoach.e4.preferences,
  com.sebulli.fakturama.misc,
  org.eclipse.jface.preference,

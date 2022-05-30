@@ -81,7 +81,7 @@ public class QRCodeServiceImpl implements QRCodeService {
                 imageBytes = baos.toByteArray();    
                 
             } catch (IllegalArgumentException | IOException e) {
-                log.error(e);
+                log.error(e, "wrong EAN code for product '"+productNumber+"'");
             }
             return imageBytes;
     }

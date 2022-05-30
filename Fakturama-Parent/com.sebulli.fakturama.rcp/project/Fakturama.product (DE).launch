@@ -44,11 +44,10 @@
         <setEntry value="com.opcoach.e4.preferences@default:default"/>
         <setEntry value="com.opencsv@default:default"/>
         <setEntry value="com.sun.activation.jakarta.activation@default:default"/>
-        <setEntry value="com.sun.jna*4.5.1.v20190425-1842@default:default"/>
-        <setEntry value="com.sun.jna*5.8.0.v20210503-0343@default:default"/>
-        <setEntry value="com.sun.jna.platform*4.5.1.v20190425-1842@default:default"/>
-        <setEntry value="com.sun.jna.platform*5.8.0.v20210406-1004@default:default"/>
+        <setEntry value="com.sun.jna.platform@default:default"/>
+        <setEntry value="com.sun.jna@default:default"/>
         <setEntry value="com.sun.mail.jakarta.mail@default:default"/>
+        <setEntry value="jakarta.activation-api@default:default"/>
         <setEntry value="jakarta.activation@default:default"/>
         <setEntry value="jakarta.mail-api@default:default"/>
         <setEntry value="jakarta.persistence@default:default"/>
@@ -64,7 +63,7 @@
         <setEntry value="org.apache.batik.css@default:default"/>
         <setEntry value="org.apache.batik.i18n@default:default"/>
         <setEntry value="org.apache.batik.util@default:default"/>
-        <setEntry value="org.apache.commons.cli*1.4.0.v20200417-1444@default:default"/>
+        <setEntry value="org.apache.commons.cli@default:default"/>
         <setEntry value="org.apache.commons.codec@default:default"/>
         <setEntry value="org.apache.commons.collections@default:default"/>
         <setEntry value="org.apache.commons.commons-beanutils@default:default"/>
@@ -208,10 +207,12 @@
         <setEntry value="org.eclipse.jface.databinding@default:default"/>
         <setEntry value="org.eclipse.jface.nl_de@default:false"/>
         <setEntry value="org.eclipse.jface@default:default"/>
-        <setEntry value="org.eclipse.nebula.cwt@default:default"/>
+        <setEntry value="org.eclipse.nebula.cwt*1.1.0.202011020719@default:default"/>
+        <setEntry value="org.eclipse.nebula.cwt*1.1.0.202202012159@default:default"/>
         <setEntry value="org.eclipse.nebula.jface.cdatetime@default:default"/>
+        <setEntry value="org.eclipse.nebula.widgets.cdatetime*1.5.0.202011020719@default:default"/>
+        <setEntry value="org.eclipse.nebula.widgets.cdatetime*1.5.0.202202012159@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.cdatetime.css@default:default"/>
-        <setEntry value="org.eclipse.nebula.widgets.cdatetime@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.formattedtext@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.nattable.core@default:default"/>
         <setEntry value="org.eclipse.nebula.widgets.nattable.extension.e4@default:default"/>
@@ -244,6 +245,7 @@
         <setEntry value="org.eclipse.update.configurator@default:default"/>
         <setEntry value="org.eclipse.urischeme.nl_de@default:false"/>
         <setEntry value="org.eclipse.urischeme@default:default"/>
+        <setEntry value="org.hsqldb.hsqldb@default:default"/>
         <setEntry value="org.javamoney.osgi@default:default"/>
         <setEntry value="org.json@default:default"/>
         <setEntry value="org.liquibase.core@default:default"/>
@@ -263,7 +265,6 @@
         <setEntry value="wrapped.io.nayuki.qrcodegen@default:default"/>
         <setEntry value="wrapped.net.codecrete.qrbill.qrbill-generator@default:default"/>
         <setEntry value="wrapped.org.apache.poi.poi@default:default"/>
-        <setEntry value="wrapped.org.hsqldb.hsqldb@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
         <setEntry value="com.sebulli.fakturama.common@default:default"/>
