@@ -43,6 +43,7 @@ import com.sebulli.fakturama.misc.Constants;
 
 public class BackupManager {
 
+    private static final String BACKUP_DIRECTORY = "Backup";
     private Logger log;
     private IPreferenceStore preferenceStore;
     
@@ -65,7 +66,7 @@ public class BackupManager {
 			return;
 		}
 
-		Path directory = Paths.get(workspacePath, "Backup");
+		Path directory = Paths.get(workspacePath, BACKUP_DIRECTORY);
 
 		// Create the backup folder, if it dosn't exist.
 		if (Files.notExists(directory)) {
@@ -82,7 +83,7 @@ public class BackupManager {
 		dateString = dateString.replace(" ", "_");
 		dateString = dateString.replace(":", "");
 
-		Path backupPath = Paths.get(directory.toString(), "/Backup_" + dateString + ".zip");
+		Path backupPath = Paths.get(directory.toString(), BACKUP_DIRECTORY + "_" + dateString + ".zip");
 		log.info("create Database backup in " + backupPath.toString());
 
 		// The file to add to the ZIP archive
@@ -171,7 +172,7 @@ public class BackupManager {
     }
 
     private void deletebackupsOlderThan(int olderThanDays) {
-        Path backupPath = Paths.get(preferenceStore.getString(Constants.GENERAL_WORKSPACE), "Backup");
+        Path backupPath = Paths.get(preferenceStore.getString(Constants.GENERAL_WORKSPACE), BACKUP_DIRECTORY);
         final LocalDateTime deleteBeforeLocalDate = LocalDateTime.now().minusDays(olderThanDays);
         final Instant localDateInstant = deleteBeforeLocalDate.atZone(ZoneOffset.systemDefault()).toInstant();
         final FileTime fileTimeDeleteBefore = FileTime.from(localDateInstant);
@@ -179,7 +180,7 @@ public class BackupManager {
             Files.walkFileTree(backupPath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (file.getFileName().toString().startsWith("Backup_") 
+                    if (file.getFileName().toString().startsWith(BACKUP_DIRECTORY) 
                             && file.getFileName().toString().endsWith(".zip")
                             && Files.getLastModifiedTime(file).compareTo(fileTimeDeleteBefore) < 0) {
                         Files.delete(file);
@@ -199,10 +200,10 @@ public class BackupManager {
      */
     private void deleteBackupsUnto(int keepBackups) {
         try {
-            Path backupPath = Paths.get(preferenceStore.getString(Constants.GENERAL_WORKSPACE), "Backup");
+            Path backupPath = Paths.get(preferenceStore.getString(Constants.GENERAL_WORKSPACE), BACKUP_DIRECTORY);
             
             List<Path> allBackupFiles = Files.list(backupPath)
-                    .filter(f -> f.getFileName().toString().startsWith("Backup_")
+                    .filter(f -> f.getFileName().toString().startsWith(BACKUP_DIRECTORY)
                     && f.getFileName().toString().endsWith(".zip"))
                     .sorted((p, q) -> {
                 try {
