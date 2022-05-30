@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -51,6 +52,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.odftoolkit.odfdom.dom.element.table.TableCoveredTableCellElement;
 import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
@@ -616,7 +618,7 @@ public class TemplateProcessor {
         // Get the placeholder's text
         String placeholderDisplayText = placeholderNode.getNodeText().toUpperCase();
         String text = replaceText(placeholderDisplayText);
-        if (placeholderNode.getNodeType() == PlaceholderNodeType.IMAGE_NODE) {
+        if (placeholderNode.getNodeType() == PlaceholderNodeType.IMAGE_NODE && !text.isBlank()) {
             try {
                 int width = Integer.parseInt(placeholderNode.getParam("WIDTH"));
                 int height = Integer.parseInt(placeholderNode.getParam("HEIGHT"));
@@ -772,12 +774,28 @@ public class TemplateProcessor {
 		if (key.equals("DOCUMENT.TOTAL.GROSS")) return documentSummary.isPresent() ? numberFormatterService.formatCurrency(documentSummary.get().getTotalGross()) : "";
 		if (key.equals("DOCUMENT.TOTAL.QUANTITY")) return documentSummary.isPresent() ? Double.toString(documentSummary.get().getTotalQuantity()) : ""; // FAK-410
 		if (key.equals("DOCUMENT.ITEMS.COUNT")) return String.format("%d", document.getItems().size());
-		if (key.equals("INVOICE.SWISSCODE")) return document instanceof Invoice 
-		        ? createImageFile(qrCodeService.createSwissCodeQR((Invoice) document), null, "png").toString()
-		                : "";
-		if (key.equals("INVOICE.GIROCODE")) return document instanceof Invoice
-		        ? createImageFile(qrCodeService.createGiroCode((Invoice) document), null, "png").toString()
-		                :"";
+		
+		try {
+            if (key.equals("INVOICE.SWISSCODE")) {
+                if (document instanceof Invoice) {
+                    Path imageFile = createImageFile(qrCodeService.createSwissCodeQR((Invoice) document), null, "png");
+                    return imageFile != null ? imageFile.toString() : "";
+                } else {
+                    return "";
+                }
+            }
+            
+            if (key.equals("INVOICE.GIROCODE")) {
+                if (document instanceof Invoice) {
+                    Path imageFile = createImageFile(qrCodeService.createGiroCode((Invoice) document), null, "png");
+                    return imageFile != null ? imageFile.toString() : "";
+                }
+                else return "";
+            }
+        } catch (InvalidParameterException e) {
+            MessageDialog.openError(null, msg.dialogMessageboxTitleError, e.getMessage());
+            return "";
+        }
 
 		if (key.startsWith("DOCUMENT.WEIGHT")) {
 			if (key.equals("DOCUMENT.WEIGHT.TARA"))
@@ -1733,7 +1751,7 @@ public class TemplateProcessor {
         int pixelHeight = widthHeight != null ? widthHeight.getRight() : 300;
         Path imageFile = null;
         
-        if(imageBytes == null) {
+        if(imageBytes == null || imageBytes.length == 0) {
             return null;
         }
 

@@ -17,6 +17,7 @@ package com.sebulli.fakturama.preferences;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +37,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.nls.Translation;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -45,14 +47,13 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.widgets.WidgetFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.ibm.icu.text.Collator;
@@ -97,13 +98,18 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
     private PreferencesInDatabase preferencesInDatabase;
 
     private ComboFieldEditor currencyLocaleCombo;
-    private Text example, dbConnectionInfo;
+    private Text example;
     private BooleanFieldEditor cashCheckbox;
     private BooleanFieldEditor thousandsSeparatorCheckbox;
     private RadioGroupFieldEditor useCurrencySymbolCheckbox;
     private IntegerFieldEditor decimalCurrencyPlaces, generalDecimalPlaces;
 
     private Group currencySettings;
+
+    private IntegerFieldEditor backupSettingKeepNumberBackups;
+    private IntegerFieldEditor backupSettingDeleteBackupsOlderThan;
+    private Button radioButtonKeepNumberBackups;
+    private Button radioButtonDeleteBackupsOlderThan;
 
 	/**
 	 * Constructor
@@ -133,7 +139,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         collator.setStrength(Collator.SECONDARY);
         List<Locale> currencyLocaleList = Arrays.stream(locales)
                 .filter(l -> l.getCountry().length() == 2
-                && StringUtils.length(l.getLanguage()) < 3)
+                    && StringUtils.length(l.getLanguage()) < 3)
                 .sorted((o1, o2) -> collator.compare(o1.getDisplayCountry(),o2.getDisplayCountry()))
                 // distinguish different Locales by country AND language! 
                 .filter(distinctByKey(l -> l.getDisplayCountry() + l.getDisplayLanguage()))
@@ -148,16 +154,18 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         currencyLocaleCombo = new ComboFieldEditor(Constants.PREFERENCE_CURRENCY_LOCALE, msg.preferencesGeneralCurrencyLocale, currencyLocales, currencySettings);
         addField(currencyLocaleCombo);
         
-        Label exampleLabel = new Label(currencySettings, SWT.NONE);
-        exampleLabel.setText(msg.preferencesGeneralCurrencyExample);
-        example = new Text(currencySettings, SWT.BORDER);
-        example.setEditable(false);
-        example.setText(calculateExampleCurrencyFormatString(
+        WidgetFactory.label(SWT.NONE)
+            .text(msg.preferencesGeneralCurrencyExample)
+            .create(currencySettings);
+        example = WidgetFactory.text(SWT.BORDER)
+            .text(calculateExampleCurrencyFormatString(
         		super.getPreferenceStore().getString(Constants.PREFERENCE_CURRENCY_LOCALE), 
         		super.getPreferenceStore().getBoolean(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR), 
         		super.getPreferenceStore().getBoolean(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING), 
-        		CurrencySettingEnum.valueOf(super.getPreferenceStore().getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL))));
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(example);
+        		CurrencySettingEnum.valueOf(super.getPreferenceStore().getString(Constants.PREFERENCES_CURRENCY_USE_SYMBOL))))
+            .layoutData(GridDataFactory.fillDefaults().grab(true, false).create())
+            .create(currencySettings);
+        example.setEditable(false);
                 
         cashCheckbox = new BooleanFieldEditor(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, msg.preferencesGeneralCurrencyCashrounding, currencySettings);
         cashCheckbox.getDescriptionControl(currencySettings).setToolTipText(msg.preferencesGeneralCurrencyCashroundingTooltip);
@@ -181,32 +189,106 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         decimalCurrencyPlaces.setValidRange(0, 5);
         addField(decimalCurrencyPlaces);
         GridDataFactory.fillDefaults().indent(SWT.DEFAULT, 10).span(2, 1).applyTo(currencySettings);
-        Label spaceLabel = new Label(getFieldEditorParent(), SWT.NONE); // SPACE LABEL
-        GridDataFactory.swtDefaults().span(2, SWT.DEFAULT).applyTo(spaceLabel);
 
         generalDecimalPlaces = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, msg.preferencesGeneralQuantityDecimalplaces, getFieldEditorParent());
         generalDecimalPlaces.setValidRange(0, 5);     
         addField(generalDecimalPlaces);
 
+        addField(useCurrencySymbolCheckbox);
+        
+        // Backup handling
+        Group backupSettings = WidgetFactory.group(SWT.NONE)
+            .layout(GridLayoutFactory.fillDefaults()
+                    .numColumns(3).margins(2, 7).create())
+            .layoutData(GridDataFactory.fillDefaults().span(2, 1).create())
+            .create(getFieldEditorParent());
+        backupSettings.setText(msg.preferencesGeneralBackupStrategy);
+        
+        Composite radioButtonContainer = WidgetFactory.composite(SWT.NONE)
+            .layout(GridLayoutFactory.fillDefaults()
+                    .numColumns(1).create())
+            .layoutData(GridDataFactory.swtDefaults().span(1, 2).align(SWT.BEGINNING, SWT.BEGINNING).create())
+            .create(backupSettings);
+        Composite valueFieldContainer = WidgetFactory.composite(SWT.NONE)
+            .layout(GridLayoutFactory.fillDefaults()
+                    .numColumns(3).create())
+            .layoutData(GridDataFactory.fillDefaults().span(1, 2).grab(true, false).create())
+            .create(backupSettings);
+        
+        // get text blocks
+        String[] messageForOlderThan = msg.preferencesGeneralBackupStrategyOlderthan.split("#");
+        radioButtonDeleteBackupsOlderThan = WidgetFactory.button(SWT.RADIO)
+            .text(messageForOlderThan[0])
+            .create(radioButtonContainer);
+        backupSettingDeleteBackupsOlderThan = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_DELETEBACKUPS_OLDER_THAN, "", valueFieldContainer) {
+
+            @Override
+            protected void valueChanged() {
+                radioButtonKeepNumberBackups.setSelection(false);
+                radioButtonDeleteBackupsOlderThan.setSelection(true);
+                super.valueChanged();
+            }
+        };
+        
+        backupSettingDeleteBackupsOlderThan.getTextControl(valueFieldContainer).setLayoutData(GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.BEGINNING).create());
+        backupSettingDeleteBackupsOlderThan.fillIntoGrid(valueFieldContainer, 2);
+        backupSettingDeleteBackupsOlderThan.setValidRange(0, 360);
+        backupSettingDeleteBackupsOlderThan.setErrorMessage(MessageFormat.format(msg.preferencesGeneralBackupStrategyInvalid, 0, 360));
+        addField(backupSettingDeleteBackupsOlderThan);
+        WidgetFactory.label(SWT.NONE).text(messageForOlderThan[1])
+            .layoutData(GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.CENTER).create())
+            .create(backupSettings);
+
+        String[] messageForKeepBackups = msg.preferencesGeneralBackupStrategyKeep.split("#");
+        radioButtonKeepNumberBackups = WidgetFactory.button(SWT.RADIO)
+            .text(messageForKeepBackups[0])
+            .create(radioButtonContainer);
+        backupSettingKeepNumberBackups = new IntegerFieldEditor(Constants.PREFERENCES_GENERAL_KEEP_NUMBER_BACKUPS, "", valueFieldContainer) {
+            
+            @Override
+            protected void valueChanged() {
+                radioButtonKeepNumberBackups.setSelection(true);
+                radioButtonDeleteBackupsOlderThan.setSelection(false);
+                super.refreshValidState();
+            }
+        };
+        backupSettingKeepNumberBackups.setValidRange(0, 50);
+        backupSettingKeepNumberBackups.setErrorMessage(MessageFormat.format(msg.preferencesGeneralBackupStrategyInvalid, 0, 50));
+        
+        backupSettingKeepNumberBackups.getLabelControl(valueFieldContainer).setLayoutData(GridDataFactory.swtDefaults().align(SWT.END, SWT.CENTER).create());
+        backupSettingKeepNumberBackups.fillIntoGrid(valueFieldContainer, 2);
+        WidgetFactory.label(SWT.NONE).text(messageForKeepBackups[1]).create(backupSettings);
+        addField(backupSettingKeepNumberBackups);
+        
         // Info: DB connection string
-        Label dbConnectionLabel = new Label(getFieldEditorParent(), SWT.NONE);
-        dbConnectionLabel.setText(msg.preferencesGeneralDatabase);
-        dbConnectionInfo = new Text(getFieldEditorParent(), SWT.BORDER);
+        WidgetFactory.label(SWT.NONE)
+            .text(msg.preferencesGeneralDatabase)
+            .create(getFieldEditorParent());
+        Text dbConnectionInfo = WidgetFactory.text(SWT.BORDER)
+            .layoutData(GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).create())
+            .text(getPreferenceStore().getString(PersistenceUnitProperties.JDBC_URL))
+            .create(getFieldEditorParent());
         dbConnectionInfo.setEditable(false);
-        dbConnectionInfo.setText(getPreferenceStore().getString(PersistenceUnitProperties.JDBC_URL));
-        GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(dbConnectionInfo);
         
-        Button resetMemorizedSetting = new Button(getFieldEditorParent(), SWT.PUSH);
-        resetMemorizedSetting.setText(msg.preferencesGeneralResetdialogsettings);
-        resetMemorizedSetting.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                getPreferenceStore().setToDefault(Constants.DISPLAY_SUCCESSFUL_PRINTING);
-            };
-        });
-        GridDataFactory.swtDefaults().indent(SWT.DEFAULT, 5).span(2, SWT.DEFAULT).applyTo(resetMemorizedSetting);
-        
+        WidgetFactory.button(SWT.PUSH)
+            .text(msg.preferencesGeneralResetdialogsettings)
+            .onSelect(e -> {
+                    getPreferenceStore().setToDefault(Constants.DISPLAY_SUCCESSFUL_PRINTING);
+                    MessageDialog.openInformation(getShell(), msg.dialogMessageboxTitleInfo, "Einstellung wurde zurückgesetzt.");
+            })
+            .layoutData(GridDataFactory.swtDefaults().indent(SWT.DEFAULT, 5).span(2, SWT.DEFAULT).create())
+            .create(getFieldEditorParent());
 	}
 	
+    @Override
+    protected void initialize() {
+        super.initialize();
+
+        boolean isOlderThanSelected = getPreferenceStore().getString(Constants.PREFERENCES_BACKUP_STRATEGY).equals(Constants.PREFERENCES_GENERAL_DELETEBACKUPS_OLDER_THAN);
+        radioButtonDeleteBackupsOlderThan.setSelection(isOlderThanSelected);
+        radioButtonKeepNumberBackups.setSelection(!isOlderThanSelected);
+    }
+    
 	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {
 	    Map<Object,Boolean> seen = new ConcurrentHashMap<>();
 	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
@@ -368,6 +450,9 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_CURRENCY_USE_CASHROUNDING, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_DELETEBACKUPS_OLDER_THAN, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_KEEP_NUMBER_BACKUPS, write);
+        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_BACKUP_STRATEGY, write);
 	}
     
     @Override
@@ -406,6 +491,11 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
         String exampleFormat = calculateExampleCurrencyFormatString(currencyLocaleString, 
                 true, false, currencySetting);
         node.setDefault(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, exampleFormat);
+        node.setDefault(Constants.PREFERENCES_GENERAL_DELETEBACKUPS_OLDER_THAN, Integer.valueOf(0));
+        node.setDefault(Constants.PREFERENCES_GENERAL_KEEP_NUMBER_BACKUPS, Integer.valueOf(10));
+
+        // use constant as strategy identifier
+        node.setDefault(Constants.PREFERENCES_BACKUP_STRATEGY, Constants.PREFERENCES_GENERAL_DELETEBACKUPS_OLDER_THAN);
 	}
 
 	/**
@@ -415,6 +505,14 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 	 */
     @Override
     public boolean performOk() {
+        // modify backup options
+        // if Opt1 was selected then delete value for Opt2 and vice versa
+        if(radioButtonDeleteBackupsOlderThan.getSelection()) {
+            getPreferenceStore().setValue(Constants.PREFERENCES_BACKUP_STRATEGY, Constants.PREFERENCES_GENERAL_DELETEBACKUPS_OLDER_THAN);
+        } else if(radioButtonKeepNumberBackups.getSelection()) {
+            getPreferenceStore().setValue(Constants.PREFERENCES_BACKUP_STRATEGY, Constants.PREFERENCES_GENERAL_KEEP_NUMBER_BACKUPS);
+        }
+        
         boolean preferencesSuccessfulStored = super.performOk();
         if (preferencesSuccessfulStored) {
             localeUtil.refresh();

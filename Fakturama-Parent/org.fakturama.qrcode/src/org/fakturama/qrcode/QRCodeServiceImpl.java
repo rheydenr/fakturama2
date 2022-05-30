@@ -18,6 +18,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.EAN13Writer;
 import com.sebulli.fakturama.log.ILogger;
 import com.sebulli.fakturama.misc.Constants;
+import com.sebulli.fakturama.model.BankAccount;
 import com.sebulli.fakturama.model.Document;
 import com.sebulli.fakturama.model.Invoice;
 import com.sebulli.fakturama.qrcode.QRCodeService;
@@ -46,8 +47,11 @@ public class QRCodeServiceImpl implements QRCodeService {
 
     @Override
     public byte[] createGiroCode(Invoice document) {
+        BankAccount companyBankaccount = new BankAccount();
+        companyBankaccount.setBic(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_BIC));
+        companyBankaccount.setIban(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN));
         GiroCodeGenerator giroCodeGenerator = ContextInjectionFactory.make(GiroCodeGenerator.class, context);
-        return giroCodeGenerator.createGiroCode(document);
+        return giroCodeGenerator.createGiroCode(document, companyBankaccount);
     }
     
     @Override
@@ -66,17 +70,17 @@ public class QRCodeServiceImpl implements QRCodeService {
     @Override
     public byte[] createEANCode(String productNumber) {
             EAN13Writer barcodeWriter = new EAN13Writer();
-            BitMatrix bitMatrix = barcodeWriter.encode(productNumber, BarcodeFormat.EAN_13, 300, 50);
 
             byte[] imageBytes = null;
             try {
+                BitMatrix bitMatrix = barcodeWriter.encode(productNumber, BarcodeFormat.EAN_13, 300, 50);
                 BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
                 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ImageIO.write(bufferedImage, "jpg", baos);
                 imageBytes = baos.toByteArray();    
                 
-            } catch (IOException e) {
+            } catch (IllegalArgumentException | IOException e) {
                 log.error(e);
             }
             return imageBytes;

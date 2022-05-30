@@ -1,7 +1,12 @@
 package org.fakturama.qrcode;
 
+import java.security.InvalidParameterException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.sebulli.fakturama.dao.ContactsDAO;
@@ -20,6 +25,8 @@ import net.codecrete.qrbill.generator.Language;
 import net.codecrete.qrbill.generator.OutputSize;
 import net.codecrete.qrbill.generator.Payments;
 import net.codecrete.qrbill.generator.QRBill;
+import net.codecrete.qrbill.generator.ValidationMessage;
+import net.codecrete.qrbill.generator.ValidationResult;
 
 public class QRSwissCodeGenerator {
 
@@ -39,9 +46,10 @@ public class QRSwissCodeGenerator {
         DocumentReceiver documentReceiver = addressManager.getBillingAdress(document);
         Contact debitor = contactsDAO.findById(documentReceiver.getOriginContactId());
         if (debitor != null && debitor.getBankAccount() != null) {
+
             // Setup bill
             Bill bill = new Bill();
-            bill.setAccount(debitor.getBankAccount().getIban());
+            bill.setAccount(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_IBAN));
             bill.setAmountFromDouble(document.getTotalValue());
             bill.setCurrency(DataUtils.getInstance().getDefaultCurrencyUnit().getCurrencyCode());
 
@@ -50,9 +58,8 @@ public class QRSwissCodeGenerator {
             creditor.setName(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_OWNER));
             creditor.setAddressLine1(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_STREET));
             
-            String zipCity = String.join(" ", preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP),
-                    preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY));
-            creditor.setAddressLine2(zipCity);
+            creditor.setPostalCode(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_ZIP));
+            creditor.setTown(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_CITY));
             
             String countryCode = localeUtil.findCodeByDisplayCountry(preferences.getString(Constants.PREFERENCES_YOURCOMPANY_COUNTRY),
                     localeUtil.getDefaultLocale().getLanguage());
@@ -61,7 +68,7 @@ public class QRSwissCodeGenerator {
             bill.setCreditor(creditor);
 
             // only add a reference if the IBAN is a valid QR-IBAN
-            if (Payments.isQRIBAN(debitor.getBankAccount().getIban())) {
+            if (debitor.getBankAccount().getIban() != null && Payments.isQRIBAN(debitor.getBankAccount().getIban())) {
                 bill.setReference(document.getCustomerRef());
             }
             bill.setUnstructuredMessage(document.getMessage());
@@ -100,8 +107,15 @@ public class QRSwissCodeGenerator {
             
             format.setLanguage(lang);
 
-            // Generate QR bill
-            return QRBill.generate(bill);
+            ValidationResult validationResult = QRBill.validate(bill);
+            if (validationResult.isValid()) {
+                // Generate QR bill
+                return QRBill.generate(bill);
+            } else {
+                List<ValidationMessage> validationMessages = validationResult.getValidationMessages();
+                List<String> errorStrings = validationMessages.stream().map(m -> m.getField() + ": " + m.getMessageKey()).collect(Collectors.toList());
+                throw new InvalidParameterException(StringUtils.join(errorStrings, '\n'));
+            }
         } else 
             return new byte[] {};
     }

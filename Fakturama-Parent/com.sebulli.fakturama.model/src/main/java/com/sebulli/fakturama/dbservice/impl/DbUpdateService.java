@@ -50,7 +50,7 @@ public class DbUpdateService implements IDbUpdateService {
 
 	private static final String SYS_PROP_DATABASE_PORT = "hsql.database.port";
 	private IPreferenceStore preferenceStore;
-	private IActivateDbServer currentService;
+	private IActivateDbServer currentDbServer;
     
 	/* (non-Javadoc)
 	 * @see com.sebulli.fakturama.dbservice.IDbUpdateService#updateDatabase()
@@ -142,7 +142,7 @@ public class DbUpdateService implements IDbUpdateService {
 			if (dataSource.contains("hsqldb") ) {
 				allServiceReferences = context.getAllServiceReferences(IActivateDbServer.class.getName(), null);
 				if(allServiceReferences != null && allServiceReferences.length > 0) {
-					ServiceReference<IActivateDbServer> serviceDbRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
+					ServiceReference<IActivateDbServer> currentDbServerRef = (ServiceReference<IActivateDbServer>) allServiceReferences[0];
 					String dataSourceName = preferenceStore.getString(DataSourceFactory.JDBC_DATASOURCE_NAME);
 					
 					// check old setting (before v2.1.2)
@@ -159,9 +159,9 @@ public class DbUpdateService implements IDbUpdateService {
 					prop.put("encoding", "UTF-8");
 					prop.put(Constants.GENERAL_WORKSPACE, preferenceStore.getString(Constants.GENERAL_WORKSPACE));
 					
-                    currentService = context.getService(serviceDbRef);
+                    currentDbServer = context.getService(currentDbServerRef);
                     if (!isDbAlive()) {
-                        Properties activateProps = currentService.activateServer(prop);
+                        Properties activateProps = currentDbServer.activateServer(prop);
                         preferenceStore.putValue(PersistenceUnitProperties.JDBC_URL,
                                 String.format("jdbc:hsqldb:hsql://localhost:%s/%s", 
                                         activateProps.get(DataSourceFactory.JDBC_PORT_NUMBER), 
@@ -172,9 +172,9 @@ public class DbUpdateService implements IDbUpdateService {
                     } else {
                         System.err.println("database was already started");
                     }
-                    ServiceReference<IDbConnection> serviceDbRef2 = (ServiceReference<IDbConnection>) allServiceReferences[0];
-                    IDbConnection dbConn = context.getService(serviceDbRef2);
-                    conn = dbConn.getConnection();
+                    ServiceReference<IDbConnection> dbConnectionRef = (ServiceReference<IDbConnection>) allServiceReferences[0];
+                    IDbConnection dbConnection = context.getService(dbConnectionRef);
+                    conn = dbConnection.getConnection();
 				}				
 			}
 			
@@ -195,9 +195,9 @@ public class DbUpdateService implements IDbUpdateService {
 	
 	@Override
 	public void shutDownDb() {
-		if(currentService != null) {
+		if(currentDbServer != null) {
 			try {
-				currentService.stopServer();
+				currentDbServer.stopServer();
 			} catch (Exception e) {
 				// ignore any exception
 			}
@@ -206,6 +206,6 @@ public class DbUpdateService implements IDbUpdateService {
 
     @Override
     public boolean isDbAlive() {
-        return currentService != null && currentService.isAlive();
+        return currentDbServer != null && currentDbServer.isAlive();
     }
 }

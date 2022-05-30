@@ -323,7 +323,7 @@ public class XRechnung extends AbstractEInvoice {
     //                .withSpecifiedLegalOrganization(createLegalOrganizationType(invoice))  // not available
                     .withPostalTradeAddress(createAddress(invoice, ContactType.BUYER))
 //                    .withURIUniversalCommunication(email)
-                    .withSpecifiedTaxRegistration(createTaxNumber(invoice, ContactType.BUYER))
+//                    .withSpecifiedTaxRegistration(createTaxNumber(invoice, ContactType.BUYER))
                     ;
             Long originContactId = invoice.getReceiver() != null && !invoice.getReceiver().isEmpty() 
                     ? invoice.getReceiver().get(0).getOriginContactId() 

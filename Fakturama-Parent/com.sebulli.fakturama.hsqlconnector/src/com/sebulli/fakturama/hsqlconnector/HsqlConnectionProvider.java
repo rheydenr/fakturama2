@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.hsqldb.Database;
 import org.hsqldb.persist.HsqlProperties;
 import org.hsqldb.server.Server;
@@ -19,6 +20,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 
+import com.opcoach.e4.preferences.IPreferenceStoreProvider;
 import com.sebulli.fakturama.dbconnector.IActivateDbServer;
 import com.sebulli.fakturama.dbconnector.IDbConnection;
 
@@ -148,11 +150,14 @@ public class HsqlConnectionProvider implements IDbConnection, IActivateDbServer 
 	    if(isAlive()) {
     		server.shutdownCatalogs(Database.CLOSEMODE_COMPACT);
     		server.stop();
+            
+            // get the preferences for this application
+            BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+            ServiceReference<IPreferenceStoreProvider> serviceReference = context.getServiceReference(IPreferenceStoreProvider.class);
+            IPreferenceStore preferenceStore = context.getService(serviceReference).getPreferenceStore();
     		
-    //		// #0000604: Create a database backup
-    //		BackupManager backupManager = ContextInjectionFactory.make(BackupManager.class, context);
-    		
-    		BackupManager bm = new BackupManager();
+    		// #0000604: Create a database backup
+    		BackupManager bm = new BackupManager(preferenceStore);
     		bm.createBackup(workspace);
 	    }
 	}
