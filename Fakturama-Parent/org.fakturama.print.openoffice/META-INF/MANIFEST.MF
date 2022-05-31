@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenOffice print adapter
 Bundle-SymbolicName: org.fakturama.print.openoffice
-Bundle-Version: 2.1.2
+Bundle-Version: 2.1.3.qualifier
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Vendor: Fakturama.org

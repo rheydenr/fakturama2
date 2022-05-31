@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: QR-Code Generators
 Bundle-SymbolicName: org.fakturama.qrcode
-Bundle-Version: 2.1.2
+Bundle-Version: 2.1.3.qualifier
 Bundle-Activator: org.fakturama.qrcode.Activator
 Require-Bundle: org.javamoney.osgi;bundle-version="1.0.2",
  com.sebulli.fakturama.rcp;bundle-version="2.1.2",

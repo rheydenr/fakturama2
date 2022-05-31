@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Icons
 Bundle-SymbolicName: com.sebulli.fakturama.resources.icons
-Bundle-Version: 2.1.2
+Bundle-Version: 2.1.3.qualifier
 Bundle-Vendor: SEBULLI
 Fragment-Host: com.sebulli.fakturama.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-11
