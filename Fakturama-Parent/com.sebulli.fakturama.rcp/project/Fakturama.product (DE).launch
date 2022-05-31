@@ -259,7 +259,7 @@
         <setEntry value="org.w3c.dom.events@default:default"/>
         <setEntry value="org.w3c.dom.smil@default:default"/>
         <setEntry value="org.w3c.dom.svg@default:default"/>
-        <setEntry value="org.yaml.snakeyaml*1.27.0.v20201111-1638@default:default"/>
+        <setEntry value="org.yaml.snakeyaml@default:default"/>
         <setEntry value="osgi.enterprise@default:default"/>
         <setEntry value="wrapped.com.google.zxing.javase@default:default"/>
         <setEntry value="wrapped.io.nayuki.qrcodegen@default:default"/>
