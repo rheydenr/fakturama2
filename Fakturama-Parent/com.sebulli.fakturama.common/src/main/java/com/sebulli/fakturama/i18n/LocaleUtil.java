@@ -99,11 +99,6 @@ public class LocaleUtil implements ILocaleService {
             }
         }
         
-//        for (String countryCode : locales) {
-//            ULocale obj = new ULocale("", countryCode);
-//            localeLookUp.put(countryCode, obj);
-//            countryLocaleMap.put(obj.getDisplayCountry(defaultLocale), obj);
-//        }
         // fill some helper maps
         for (ULocale locale : availableLocales) {
             if(locale != null && StringUtils.length(locale.getCountry()) > 0 && localeLookUp.get(locale.getCountry()) == null) {

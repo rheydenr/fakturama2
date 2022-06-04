@@ -1390,7 +1390,7 @@ public abstract class ContactEditor<C extends Contact> extends Editor<C> {
 	    Address currentAddress = getOrCreateAddressByIndexFromContact(index);
 		// sometimes the country code is null
 		// ==> country is determined by locale
-	    if(currentAddress.getCountryCode() == null) {
+	    if(StringUtils.isBlank(currentAddress.getCountryCode())) {
 	    	currentAddress.setCountryCode(localeUtil.getDefaultLocale().getCountry());
 	    }
 	    
