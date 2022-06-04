@@ -382,8 +382,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
      *            locale string
      * @return formatted example value
      */
-    private String calculateExampleCurrencyFormatString(String localeString, 
-            boolean useThousandsSeparator, boolean useCashRounding, CurrencySettingEnum currencySetting) {
+    private String calculateExampleCurrencyFormatString(String localeString, boolean useThousandsSeparator, boolean useCashRounding,
+            CurrencySettingEnum currencySetting) {
         double myNumber = -1234.56864;
         String retval = "";
         Pattern pattern = Pattern.compile("(\\w{2})/(\\w{2})");
@@ -393,39 +393,27 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
             String s2 = matcher.group(2);
             ULocale locale = new ULocale(s, s2);
 
-//            NumberFormat form;
-//            if(currencySetting == CurrencySettingEnum.NONE) {
-//            	form = NumberFormat.getNumberInstance();
-//            } else {
-//            	form = NumberFormat.getCurrencyInstance(locale);
-//            }
-//            form.setGroupingUsed(useThousandsSeparator);
-//            form.setMinimumFractionDigits(decimalPlaces != null ? decimalPlaces.getIntValue() : 2);
-//            retval = form.format(myNumber);
-            
-            if (locale.getCountry().equals("CH")) {
-                if(cashCheckbox != null) {
-                    cashCheckbox.setEnabled(true, currencySettings);
-                }
-             //   if(useCashRounding) {
-                    /* 
-                     * Can't work directly with JavaMoney classes (ServiceProviders) since
-                     * they already loaded by DataUtils and therefore the classloader gets
-                     * confused.
-                     */
-                    retval = numberFormatterService.formatCurrency(myNumber, locale, 
-                    				currencySetting,
-                                    cashCheckbox != null ? cashCheckbox.getBooleanValue() : true,
-                                            useThousandsSeparator);
-              //  }
-            } else {
-                retval = numberFormatterService.formatCurrency(myNumber, locale, 
-                				currencySetting,
-                                cashCheckbox != null ? cashCheckbox.getBooleanValue() : true, useThousandsSeparator);
-                if(cashCheckbox != null) {
-                    cashCheckbox.setEnabled(false, currencySettings);
-                }
+            // NumberFormat form;
+            // if(currencySetting == CurrencySettingEnum.NONE) {
+            // form = NumberFormat.getNumberInstance();
+            // } else {
+            // form = NumberFormat.getCurrencyInstance(locale);
+            // }
+            // form.setGroupingUsed(useThousandsSeparator);
+            // form.setMinimumFractionDigits(decimalPlaces != null ?
+            // decimalPlaces.getIntValue() : 2);
+            // retval = form.format(myNumber);
+
+            /* 
+             * Can't work directly with JavaMoney classes (ServiceProviders) since
+             * they already loaded by DataUtils and therefore the classloader gets
+             * confused.
+             */
+            if (cashCheckbox != null) {
+                cashCheckbox.setEnabled(locale.getCountry().equals("CH"), currencySettings);
             }
+            retval = numberFormatterService.formatCurrency(myNumber, locale, currencySetting, cashCheckbox != null ? cashCheckbox.getBooleanValue() : true,
+                    useThousandsSeparator);
         }
         return retval;
     }
@@ -445,7 +433,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage implements 
 		// TODO put it in a service!
 		DataUtils.getInstance().refresh();
 
-//        preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCE_CURRENCY_FORMAT_EXAMPLE, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_HAS_THOUSANDS_SEPARATOR, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_CURRENCY_DECIMALPLACES, write);
         preferencesInDatabase.syncWithPreferencesFromDatabase(Constants.PREFERENCES_GENERAL_QUANTITY_DECIMALPLACES, write);

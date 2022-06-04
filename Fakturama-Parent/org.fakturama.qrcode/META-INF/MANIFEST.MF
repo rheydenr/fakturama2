@@ -2,11 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: QR-Code Generators
 Bundle-SymbolicName: org.fakturama.qrcode
-Bundle-Version: 2.1.2.qualifier
+Bundle-Version: 2.1.3.qualifier
 Bundle-Activator: org.fakturama.qrcode.Activator
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.osgi.services;bundle-version="3.10.0",
- org.javamoney.osgi;bundle-version="1.0.2",
+Require-Bundle: org.javamoney.osgi;bundle-version="1.0.2",
  com.sebulli.fakturama.rcp;bundle-version="2.1.2",
  com.sebulli.fakturama.model;bundle-version="2.1.2",
  com.sebulli.fakturama.common;bundle-version="2.1.2",
@@ -15,13 +13,15 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: org.fakturama.qrcode
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/qrcodeservice.xml
 Import-Package: com.ibm.icu.util;version="67.1.0",
  javax.inject;version="1.0.0",
  net.codecrete.qrbill.generator;version="3.0.3",
  org.eclipse.e4.core.contexts;version="1.7.0",
  org.eclipse.e4.core.di;version="1.7.0",
- org.eclipse.jface.preference
+ org.eclipse.jface.preference,
+ org.osgi.framework;version="1.10.0",
+ org.osgi.service.component.annotations;version="1.3.0"
 Bundle-ClassPath: lib/core-2.7.0-SNAPSHOT.jar,
  lib/javase-2.7.0-SNAPSHOT.jar,
  .
+Service-Component: OSGI-INF/qrcodeservice.xml

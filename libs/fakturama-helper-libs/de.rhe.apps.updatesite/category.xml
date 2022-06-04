@@ -15,6 +15,9 @@
    <feature id="org.apache.odftoolkit.feature">
       <category name="de.rhe.libs.apache"/>
    </feature>
+   <feature id="net.glxn.qrgen.feature">
+      <category name="de.rhe.libs.additional"/>
+   </feature>
    <category-def name="de.rhe.apps.osgi.drivers" label="JDBC drivers for OSGi plugins">
       <description>
          JDBC driver for various databases as OSGi plugin.
